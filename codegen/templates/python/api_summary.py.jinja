@@ -16,8 +16,6 @@
 from ..models import {{ type | to_upper_camel_case }}
 {% endfor %}
 from .svix import Svix, SvixAsync, SvixOptions, DEFAULT_SERVER_URL
-{# hardcode this import until we fix empty openapi structs #}
-from ..models import BackgroundTaskData
 
 
 
@@ -36,8 +34,6 @@ __all__ = [
         {%- endfor -%}
     {%- endif -%}
 {% endfor %}
-{# hardcode this until we fix empty openapi structs #}
-    "BackgroundTaskData",
 {% for type in api.types -%}
     "{{ type | to_upper_camel_case }}",
 {% endfor -%}

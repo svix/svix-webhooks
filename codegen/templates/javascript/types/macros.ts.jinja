@@ -6,16 +6,11 @@
             new Date({{ field_expr }})
         {%- endif -%}
     {%- elif type.is_schema_ref() -%}
-        {# TODO(10055) remove this hack #}
-        {% if type.to_js() == "any" -%}
-            {{ field_expr }}
-        {% else -%}
-            {%- if not field_required -%}
-                {{ field_expr }} != null ? {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }}): undefined
-            {%- else -%}
-                {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }})
-            {%- endif %}
-        {% endif -%}
+        {%- if not field_required -%}
+            {{ field_expr }} != null ? {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }}): undefined
+        {%- else -%}
+            {{ type.to_js() }}Serializer._fromJsonObject({{ field_expr }})
+        {%- endif %}
     {%- elif type.is_list() or type.is_set() -%}
         {{ field_expr }}
         {%- set inner_t = type.inner_type() -%}
@@ -47,16 +42,11 @@
 
 {% macro field_to_json(field_expr, type, field_required) %}
     {%- if type.is_schema_ref() -%}
-        {# TODO(10055) remove this hack #}
-        {% if type.to_js() == "any" -%}
-            {{ field_expr }}
-        {% else -%}
-            {%- if not field_required -%}
-            {{ field_expr }} != null ? {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }}) : undefined
-            {%- else -%}
-            {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }})
-            {%- endif -%}
-        {% endif -%}
+        {%- if not field_required -%}
+        {{ field_expr }} != null ? {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }}) : undefined
+        {%- else -%}
+        {{ type.to_js() }}Serializer._toJsonObject({{ field_expr }})
+        {%- endif -%}
     {%- elif type.is_list() or type.is_set() -%}
         {{ field_expr }}
         {%- set inner_t = type.inner_type() -%}
