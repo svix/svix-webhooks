@@ -138,35 +138,6 @@ func (authentication *Authentication) ExpireAll(
 	return err
 }
 
-// Deprecated: Please use `AppPortalAccess` instead.
-func (authentication *Authentication) DashboardAccess(
-	ctx context.Context,
-	appId string,
-	o *AuthenticationDashboardAccessOptions,
-) (*models.DashboardAccessOut, error) {
-	pathMap := map[string]string{
-		"app_id": appId,
-	}
-	headerMap := map[string]string{}
-	var err error
-	if o != nil {
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[any, models.DashboardAccessOut](
-		ctx,
-		authentication.client,
-		"POST",
-		"/api/v1/auth/dashboard-access/{app_id}",
-		pathMap,
-		nil,
-		headerMap,
-		nil,
-	)
-}
-
 // Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
 func (authentication *Authentication) StreamPortalAccess(
 	ctx context.Context,

@@ -18,7 +18,6 @@ from .application_token_expire_in import ApplicationTokenExpireIn
 from .auto_config_sink_type import AutoConfigSinkType
 from .azure_blob_storage_config import AzureBlobStorageConfig
 from .azure_blob_storage_patch_config import AzureBlobStoragePatchConfig
-from .background_task_data import BackgroundTaskData
 from .background_task_out import BackgroundTaskOut
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
@@ -223,7 +222,6 @@ from .zoom_config import ZoomConfig
 from .zoom_config_out import ZoomConfigOut
 
 __all__ = [
-    "BackgroundTaskData",
     "AdobeSignConfig",
     "AdobeSignConfigOut",
     "AggregateEventTypesOut",
