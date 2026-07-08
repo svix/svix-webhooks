@@ -93,7 +93,6 @@ def create_svix_endpoint(
         EndpointIn(
             url=endpoint_url,
             uid=endpoint_uid,
-            version=1,
             filter_types=[event_type_name],
             channels=[channel] if channel else None,
             metadata=metadata,

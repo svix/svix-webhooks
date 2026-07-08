@@ -159,12 +159,10 @@ pub enum EndpointCommands {
     \"filterTypes\": [\"user.signup\",\"user.deleted\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"metadata\": {\"key\": \"...\"},
-    \"rateLimit\": 123,
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\",
-    \"version\": 1
+    \"url\": \"https://example.com/webhook/\"
   }],
   \"done\": true,
   \"iterator\": \"iterator\",
@@ -197,12 +195,10 @@ pub enum EndpointCommands {
     \"X-Foobar\": \"Bar\"
   },
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"url\": \"https://example.com/webhook/\"
 }\n\nExample response:
 {
   \"channels\": [\"project_123\",\"group_2\"],
@@ -212,12 +208,10 @@ pub enum EndpointCommands {
   \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"url\": \"https://example.com/webhook/\"
 }\n")]
     Create {
         app_id: String,
@@ -243,12 +237,10 @@ pub enum EndpointCommands {
   \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"url\": \"https://example.com/webhook/\"
 }\n")]
     Get { app_id: String, id: String },
     /// Create or update an endpoint.
@@ -267,11 +259,9 @@ pub enum EndpointCommands {
   \"disabled\": false,
   \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"url\": \"https://example.com/webhook/\"
 }\n\nExample response:
 {
   \"channels\": [\"project_123\",\"group_2\"],
@@ -281,12 +271,10 @@ pub enum EndpointCommands {
   \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"url\": \"https://example.com/webhook/\"
 }\n")]
     Update {
         app_id: String,
@@ -319,12 +307,9 @@ pub enum EndpointCommands {
   \"disabled\": true,
   \"filterTypes\": [\"...\"],
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"...\",
-  \"version\": 1
+  \"url\": \"...\"
 }\n\nExample response:
 {
   \"channels\": [\"project_123\",\"group_2\"],
@@ -334,12 +319,10 @@ pub enum EndpointCommands {
   \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"url\": \"https://example.com/webhook/\"
 }\n")]
     Patch {
         app_id: String,

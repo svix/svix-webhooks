@@ -7,8 +7,7 @@ type ApplicationOut struct {
 	CreatedAt time.Time         `json:"createdAt"`
 	Id        string            `json:"id"` // The Application's ID.
 	Metadata  map[string]string `json:"metadata"`
-	Name      string            `json:"name"`                // Application name for human consumption.
-	RateLimit *uint16           `json:"rateLimit,omitempty"` // Deprecated, use `throttleRate` instead.
+	Name      string            `json:"name"` // Application name for human consumption.
 	// Maximum messages per second to send to this application.
 	//
 	// Outgoing messages will be throttled to this rate.

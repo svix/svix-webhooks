@@ -29,12 +29,6 @@ pub struct MessageEndpointOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub next_attempt: Option<String>,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
-
     pub status: MessageStatus,
 
     #[serde(rename = "statusText")]
@@ -55,9 +49,6 @@ pub struct MessageEndpointOut {
     pub updated_at: String,
 
     pub url: String,
-
-    #[deprecated]
-    pub version: i32,
 }
 
 impl MessageEndpointOut {
@@ -69,9 +60,7 @@ impl MessageEndpointOut {
         status_text: MessageStatusText,
         updated_at: String,
         url: String,
-        version: i32,
     ) -> Self {
-        #[allow(deprecated)]
         Self {
             channels: None,
             created_at,
@@ -80,14 +69,12 @@ impl MessageEndpointOut {
             filter_types: None,
             id,
             next_attempt: None,
-            rate_limit: None,
             status,
             status_text,
             throttle_rate: None,
             uid: None,
             updated_at,
             url,
-            version,
         }
     }
 }

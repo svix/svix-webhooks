@@ -8,8 +8,6 @@ data class ApplicationIn(
     val metadata: Map<String, String>? = null,
     /** Application name for human consumption. */
     val name: String,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     /**
      * Maximum messages per second to send to this application.
      *

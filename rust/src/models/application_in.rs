@@ -9,12 +9,6 @@ pub struct ApplicationIn {
     /// Application name for human consumption.
     pub name: String,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
-
     /// Maximum messages per second to send to this application.
     ///
     /// Outgoing messages will be throttled to this rate.
@@ -29,11 +23,9 @@ pub struct ApplicationIn {
 
 impl ApplicationIn {
     pub fn new(name: String) -> Self {
-        #[allow(deprecated)]
         Self {
             metadata: None,
             name,
-            rate_limit: None,
             throttle_rate: None,
             uid: None,
         }

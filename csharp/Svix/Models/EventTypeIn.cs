@@ -15,9 +15,6 @@ namespace Svix.Models
         [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
-        [JsonProperty("featureFlag")]
-        public string? FeatureFlag { get; set; } = null;
-
         [JsonProperty("featureFlags")]
         public List<string>? FeatureFlags { get; set; } = null;
 
@@ -38,7 +35,6 @@ namespace Svix.Models
             sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
-            sb.Append("  FeatureFlag: ").Append(FeatureFlag).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
             sb.Append("  GroupName: ").Append(GroupName).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');

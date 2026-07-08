@@ -14,8 +14,6 @@ module Svix
     # The Endpoint's ID.
     attr_accessor :id
     attr_accessor :next_attempt
-    # Deprecated, use `throttleRate` instead.
-    attr_accessor :rate_limit
     attr_accessor :status
     attr_accessor :status_text
     # Maximum messages per second to send to this endpoint.
@@ -26,7 +24,6 @@ module Svix
     attr_accessor :uid
     attr_accessor :updated_at
     attr_accessor :url
-    attr_accessor :version
 
     ALL_FIELD ||= [
       "channels",
@@ -36,14 +33,12 @@ module Svix
       "filter_types",
       "id",
       "next_attempt",
-      "rate_limit",
       "status",
       "status_text",
       "throttle_rate",
       "uid",
       "updated_at",
-      "url",
-      "version"
+      "url"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -72,14 +67,12 @@ module Svix
       attrs["filter_types"] = attributes["filterTypes"]
       attrs["id"] = attributes["id"]
       attrs["next_attempt"] = DateTime.rfc3339(attributes["nextAttempt"]).to_time if attributes["nextAttempt"]
-      attrs["rate_limit"] = attributes["rateLimit"]
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"])
       attrs["status_text"] = Svix::MessageStatusText.deserialize(attributes["statusText"])
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
       attrs["url"] = attributes["url"]
-      attrs["version"] = attributes["version"]
       new(attrs)
     end
 
@@ -92,14 +85,12 @@ module Svix
       out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
-      out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @rate_limit
       out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out["url"] = Svix::serialize_primitive(@url) if @url
-      out["version"] = Svix::serialize_primitive(@version) if @version
       out
     end
 

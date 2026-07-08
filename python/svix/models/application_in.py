@@ -10,9 +10,6 @@ class ApplicationIn(BaseModel):
     name: str
     """Application name for human consumption."""
 
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
-
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this application.
 

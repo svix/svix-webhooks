@@ -158,7 +158,6 @@ pub enum EventTypeCommands {
   \"archived\": false,
   \"deprecated\": true,
   \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
   \"groupName\": \"user\",
   \"name\": \"user.signup\",
@@ -280,7 +279,6 @@ pub enum EventTypeCommands {
     \"to_modify\": [{
       \"deprecated\": true,
       \"description\": \"...\",
-      \"featureFlag\": \"...\",
       \"featureFlags\": [\"...\"],
       \"groupName\": \"user\",
       \"name\": \"user.signup\",
@@ -362,7 +360,6 @@ pub enum EventTypeCommands {
   \"archived\": false,
   \"deprecated\": true,
   \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
   \"groupName\": \"user\",
   \"schemas\": {
@@ -450,7 +447,6 @@ pub enum EventTypeCommands {
   \"archived\": true,
   \"deprecated\": true,
   \"description\": \"...\",
-  \"featureFlag\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
   \"groupName\": \"user\",
   \"schemas\": {

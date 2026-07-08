@@ -13,19 +13,12 @@ type EndpointPatch struct {
 	Disabled    *bool                    `json:"disabled,omitempty"`
 	FilterTypes utils.Nullable[[]string] `json:"filterTypes"`
 	Metadata    *map[string]string       `json:"metadata,omitempty"`
-	RateLimit   utils.Nullable[uint16]   `json:"rateLimit"` // Deprecated, use `throttleRate` instead.
-	// The endpoint's verification secret.
-	//
-	// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-	// It is recommended to not set this and let the server generate the secret.
-	Secret utils.Nullable[string] `json:"secret"`
 	// Maximum messages per second to send to this endpoint.
 	//
 	// Outgoing messages will be throttled to this rate.
 	ThrottleRate utils.Nullable[uint16] `json:"throttleRate"`
 	Uid          utils.Nullable[string] `json:"uid"` // The Endpoint's UID.
 	Url          *string                `json:"url,omitempty"`
-	Version      *uint16                `json:"version,omitempty"`
 }
 
 func (o EndpointPatch) MarshalJSON() ([]byte, error) {
@@ -45,12 +38,6 @@ func (o EndpointPatch) MarshalJSON() ([]byte, error) {
 	if o.Metadata != nil {
 		toSerialize["metadata"] = o.Metadata
 	}
-	if o.RateLimit.IsSet() {
-		toSerialize["rateLimit"] = o.RateLimit
-	}
-	if o.Secret.IsSet() {
-		toSerialize["secret"] = o.Secret
-	}
 	if o.ThrottleRate.IsSet() {
 		toSerialize["throttleRate"] = o.ThrottleRate
 	}
@@ -59,9 +46,6 @@ func (o EndpointPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.Url != nil {
 		toSerialize["url"] = o.Url
-	}
-	if o.Version != nil {
-		toSerialize["version"] = o.Version
 	}
 	return json.Marshal(toSerialize)
 }

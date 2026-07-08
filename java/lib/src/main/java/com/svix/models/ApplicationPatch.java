@@ -22,7 +22,6 @@ import java.util.Map;
 public class ApplicationPatch {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
-    @JsonProperty private MaybeUnset<Long> rateLimit;
     @JsonProperty private MaybeUnset<Long> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
 
@@ -73,31 +72,6 @@ public class ApplicationPatch {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Deprecated
-    public ApplicationPatch rateLimit(Long rateLimit) {
-        this.rateLimit = new MaybeUnset<>(rateLimit);
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        if (rateLimit == null) {
-            return null;
-        }
-        return rateLimit.getValue();
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = new MaybeUnset<>(rateLimit);
     }
 
     public ApplicationPatch throttleRate(Long throttleRate) {

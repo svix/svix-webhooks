@@ -9,12 +9,6 @@ export interface EndpointIn {
   headers?: { [key: string]: string } | null;
   metadata?: { [key: string]: string };
   /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
-  /**
    * The endpoint's verification secret.
    *
    * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -30,7 +24,6 @@ export interface EndpointIn {
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   url: string;
-  version?: number | null;
 }
 
 export const EndpointInSerializer = {
@@ -42,12 +35,10 @@ export const EndpointInSerializer = {
       filterTypes: object["filterTypes"],
       headers: object["headers"],
       metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
       secret: object["secret"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
-      version: object["version"],
     };
   },
 
@@ -59,12 +50,10 @@ export const EndpointInSerializer = {
       filterTypes: self.filterTypes,
       headers: self.headers,
       metadata: self.metadata,
-      rateLimit: self.rateLimit,
       secret: self.secret,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
-      version: self.version,
     };
   },
 };

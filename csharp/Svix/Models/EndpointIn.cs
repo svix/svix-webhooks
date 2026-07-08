@@ -24,9 +24,6 @@ namespace Svix.Models
         [JsonProperty("metadata")]
         public Dictionary<string, string>? Metadata { get; set; } = null;
 
-        [JsonProperty("rateLimit")]
-        public ushort? RateLimit { get; set; } = null;
-
         [JsonProperty("secret")]
         public string? Secret { get; set; } = null;
 
@@ -39,9 +36,6 @@ namespace Svix.Models
         [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
 
-        [JsonProperty("version")]
-        public ushort? Version { get; set; } = null;
-
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -53,12 +47,10 @@ namespace Svix.Models
             sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
             sb.Append("  Headers: ").Append(Headers).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
-            sb.Append("  RateLimit: ").Append(RateLimit).Append('\n');
             sb.Append("  Secret: ").Append(Secret).Append('\n');
             sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
-            sb.Append("  Version: ").Append(Version).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

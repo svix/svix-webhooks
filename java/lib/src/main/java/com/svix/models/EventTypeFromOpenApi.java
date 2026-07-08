@@ -21,7 +21,6 @@ import java.util.Set;
 public class EventTypeFromOpenApi {
     @JsonProperty private Boolean deprecated;
     @JsonProperty private String description;
-    @JsonProperty private String featureFlag;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String groupName;
     @JsonProperty private String name;
@@ -65,28 +64,6 @@ public class EventTypeFromOpenApi {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Deprecated
-    public EventTypeFromOpenApi featureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `featureFlags` instead.
-     *
-     * @return featureFlag
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public String getFeatureFlag() {
-        return featureFlag;
-    }
-
-    @Deprecated
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
     }
 
     public EventTypeFromOpenApi featureFlags(Set<String> featureFlags) {

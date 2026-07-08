@@ -12,12 +12,6 @@ pub struct IngestEndpointIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
 
-    /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
-
     /// The endpoint's verification secret.
     ///
     /// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -42,12 +36,10 @@ pub struct IngestEndpointIn {
 
 impl IngestEndpointIn {
     pub fn new(url: String) -> Self {
-        #[allow(deprecated)]
         Self {
             description: None,
             disabled: None,
             metadata: None,
-            rate_limit: None,
             secret: None,
             throttle_rate: None,
             uid: None,

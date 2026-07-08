@@ -11,9 +11,6 @@ class IngestEndpointIn(BaseModel):
 
     metadata: t.Optional[t.Dict[str, str]] = None
 
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
-
     secret: t.Optional[str] = None
     """The endpoint's verification secret.
 
