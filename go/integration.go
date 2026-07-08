@@ -200,27 +200,3 @@ func (integration Integration) RotateKey(
 		nil,
 	)
 }
-
-// Get an integration's key.
-//
-// Deprecated: GetKey is deprecated.
-func (integration Integration) GetKey(
-	ctx context.Context,
-	appId string,
-	integId string,
-) (*models.IntegrationKeyOut, error) {
-	pathMap := map[string]string{
-		"app_id":   appId,
-		"integ_id": integId,
-	}
-	return internal.ExecuteRequest[any, models.IntegrationKeyOut](
-		ctx,
-		integration.client,
-		"GET",
-		"/api/v1/app/{app_id}/integration/{integ_id}/key",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}

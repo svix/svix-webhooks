@@ -117,19 +117,4 @@ class Integration
 
         return IntegrationKeyOut::fromJson($res);
     }
-
-    /**
-     * Get an integration's key.
-     *
-     * @throws ApiException
-     */
-    public function getKey(
-        string $appId,
-        string $integId,
-    ): IntegrationKeyOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/integration/{$integId}/key");
-        $res = $this->client->send($request);
-
-        return IntegrationKeyOut::fromJson($res);
-    }
 }
