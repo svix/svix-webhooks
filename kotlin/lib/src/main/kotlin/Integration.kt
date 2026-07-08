@@ -96,15 +96,4 @@ class Integration(private val client: SvixHttpClient) {
             headers = headers.build(),
         )
     }
-
-    /**
-     * Get an integration's key.
-     *
-     * @deprecated
-     */
-    @Deprecated("")
-    suspend fun getKey(appId: String, integId: String): IntegrationKeyOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/integration/$integId/key")
-        return client.executeRequest<Any, IntegrationKeyOut>("GET", url.build())
-    }
 }

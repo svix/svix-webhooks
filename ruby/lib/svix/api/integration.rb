@@ -72,13 +72,5 @@ module Svix
       IntegrationKeyOut.deserialize(res)
     end
 
-    def get_key(app_id, integ_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/app/#{app_id}/integration/#{integ_id}/key"
-      )
-      IntegrationKeyOut.deserialize(res)
-    end
-
   end
 end
