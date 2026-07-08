@@ -432,7 +432,7 @@ test("mockttp tests", async (t) => {
     const requests = await endpointMock.getSeenRequests();
     assert.equal(
       await requests[0].body.getText(),
-      '{"type":"cron","config":{"payload":"world","schedule":"hello"},"name":"crontab -r"}'
+      '{"type":"cron","config":{"schedule":"hello","payload":"world"},"name":"crontab -r"}'
     );
   });
 
