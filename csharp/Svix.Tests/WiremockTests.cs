@@ -174,9 +174,9 @@ namespace Svix.Tests
             stub.Given(Request.Create().WithPath("/api/v1/app/*"))
                 .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
 
-            client.Application.Patch("app1", new ApplicationPatch { RateLimit = null });
+            client.Application.Patch("app1", new ApplicationPatch { ThrottleRate = null });
 
-            string expected_json_body = """{"rateLimit":null}""";
+            string expected_json_body = """{"throttleRate":null}""";
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }

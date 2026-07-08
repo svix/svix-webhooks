@@ -80,7 +80,7 @@ def test_idempotency_key_is_sent_for_create_request():
         httpretty.POST,
         "http://test.example/api/v1/app",
         body=(
-            '{"uid":"unique-identifier","name":"My first application","rateLimit":0,'
+            '{"uid":"unique-identifier","name":"My first application","throttleRate":0,'
             '"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z"'
             ',"updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string",'
             '"property2":"string"}}'
@@ -100,7 +100,7 @@ def test_client_provided_idempotency_key_is_not_overridden():
         httpretty.POST,
         "http://test.example/api/v1/app",
         body=(
-            '{"uid":"unique-identifier","name":"My first application","rateLimit":0'
+            '{"uid":"unique-identifier","name":"My first application","throttleRate":0'
             ',"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:'
             '22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string"'
             ',"property2":"string"}}'
