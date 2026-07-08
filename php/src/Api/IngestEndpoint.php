@@ -12,17 +12,18 @@ use Svix\Models\IngestEndpointIn;
 use Svix\Models\IngestEndpointOut;
 use Svix\Models\IngestEndpointSecretIn;
 use Svix\Models\IngestEndpointSecretOut;
-use Svix\Models\IngestEndpointTransformationOut;
-use Svix\Models\IngestEndpointTransformationPatch;
 use Svix\Models\IngestEndpointUpdate;
 use Svix\Models\ListResponseIngestEndpointOut;
 use Svix\Request\SvixHttpClient;
 
 class IngestEndpoint
 {
+    public IngestEndpointTransformation $transformation;
+
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->transformation = new IngestEndpointTransformation($client);
     }
 
     /**
@@ -81,7 +82,7 @@ class IngestEndpoint
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $sourceId,
         string $endpointId,
         IngestEndpointUpdate $ingestEndpointUpdate,
@@ -163,43 +164,13 @@ class IngestEndpoint
      *
      * @throws ApiException
      */
-    public function updateHeaders(
+    public function setHeaders(
         string $sourceId,
         string $endpointId,
         IngestEndpointHeadersIn $ingestEndpointHeadersIn,
     ): void {
         $request = $this->client->newReq('PUT', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/headers");
         $request->setBody(json_encode($ingestEndpointHeadersIn));
-        $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
-     * Get the transformation code associated with this ingest endpoint.
-     *
-     * @throws ApiException
-     */
-    public function getTransformation(
-        string $sourceId,
-        string $endpointId,
-    ): IngestEndpointTransformationOut {
-        $request = $this->client->newReq('GET', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/transformation");
-        $res = $this->client->send($request);
-
-        return IngestEndpointTransformationOut::fromJson($res);
-    }
-
-    /**
-     * Set or unset the transformation code associated with this ingest endpoint.
-     *
-     * @throws ApiException
-     */
-    public function setTransformation(
-        string $sourceId,
-        string $endpointId,
-        IngestEndpointTransformationPatch $ingestEndpointTransformationPatch,
-    ): void {
-        $request = $this->client->newReq('PATCH', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}/transformation");
-        $request->setBody(json_encode($ingestEndpointTransformationPatch));
         $res = $this->client->sendNoResponseBody($request);
     }
 }

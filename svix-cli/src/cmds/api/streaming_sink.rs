@@ -4,6 +4,7 @@ use svix::api::Svix;
 #[allow(unused_imports)]
 use svix::models::*;
 
+use super::streaming_sink_transformation::StreamingSinkTransformationArgs;
 #[derive(Args, Clone)]
 pub struct StreamingSinkListOptions {
     /// Limit the number of returned items
@@ -68,6 +69,7 @@ pub struct StreamingSinkArgs {
 #[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum StreamingSinkCommands {
+    Transformation(StreamingSinkTransformationArgs),
     /// List of all the stream's sinks.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -151,12 +153,15 @@ pub enum StreamingSinkCommands {
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Get { stream_id: String, sink_id: String },
+    Get {
+        stream_id: String,
+        sink_id: String,
+    },
     /// Create or update a sink.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix streaming sink update strm_abc000000000000000000 sink_abc000000000000000000 {...}\n",
+            "Example: svix streaming sink upsert strm_abc000000000000000000 sink_abc000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -184,7 +189,7 @@ pub enum StreamingSinkCommands {
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         stream_id: String,
         sink_id: String,
         stream_sink_in: crate::json::JsonOf<StreamSinkIn>,
@@ -198,7 +203,10 @@ pub enum StreamingSinkCommands {
             "\n",
             "{all-args}",
         ))]
-    Delete { stream_id: String, sink_id: String },
+    Delete {
+        stream_id: String,
+        sink_id: String,
+    },
     /// Partially update a sink.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -236,26 +244,6 @@ pub enum StreamingSinkCommands {
         sink_id: String,
         stream_sink_patch: crate::json::JsonOf<StreamSinkPatch>,
     },
-    /// Set or unset the transformation code associated with this sink.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix streaming sink transformation-partial-update strm_abc000000000000000000 sink_abc000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"code\": \"...\"
-}\n\nExample response:
-{
-}\n")]
-    TransformationPartialUpdate {
-        stream_id: String,
-        sink_id: String,
-        sink_transform_in: Option<crate::json::JsonOf<SinkTransformIn>>,
-    },
     /// Get the sink's signing secret (only supported for http sinks)
     ///
     /// This is used to verify the authenticity of the delivery.
@@ -273,7 +261,10 @@ pub enum StreamingSinkCommands {
 {
   \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
 }\n")]
-    GetSecret { stream_id: String, sink_id: String },
+    GetSecret {
+        stream_id: String,
+        sink_id: String,
+    },
     /// Rotates the signing secret (only supported for http sinks).
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -306,6 +297,9 @@ impl StreamingSinkCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
+            Self::Transformation(args) => {
+                args.command.exec(client, color_mode).await?;
+            }
             Self::List { stream_id, options } => {
                 let resp = client
                     .streaming()
@@ -330,7 +324,7 @@ impl StreamingSinkCommands {
                 let resp = client.streaming().sink().get(stream_id, sink_id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 stream_id,
                 sink_id,
                 stream_sink_in,
@@ -338,7 +332,7 @@ impl StreamingSinkCommands {
                 let resp = client
                     .streaming()
                     .sink()
-                    .update(stream_id, sink_id, stream_sink_in.into_inner())
+                    .upsert(stream_id, sink_id, stream_sink_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -354,22 +348,6 @@ impl StreamingSinkCommands {
                     .streaming()
                     .sink()
                     .patch(stream_id, sink_id, stream_sink_patch.into_inner())
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::TransformationPartialUpdate {
-                stream_id,
-                sink_id,
-                sink_transform_in,
-            } => {
-                let resp = client
-                    .streaming()
-                    .sink()
-                    .transformation_partial_update(
-                        stream_id,
-                        sink_id,
-                        sink_transform_in.unwrap_or_default().into_inner(),
-                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

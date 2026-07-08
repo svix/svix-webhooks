@@ -113,7 +113,7 @@ impl<'a> Application<'a> {
     }
 
     /// Create or update an application.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         app_id: String,
         application_in: ApplicationIn,

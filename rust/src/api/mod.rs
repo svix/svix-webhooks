@@ -10,11 +10,13 @@ mod authentication;
 mod background_task;
 mod connector;
 mod endpoint;
+mod endpoint_transformation;
 mod environment;
 mod event_type;
 mod health;
 mod ingest;
 mod ingest_endpoint;
+mod ingest_endpoint_transformation;
 mod ingest_source;
 mod integration;
 mod message;
@@ -27,6 +29,7 @@ mod streaming;
 mod streaming_event_type;
 mod streaming_events;
 mod streaming_sink;
+mod streaming_sink_transformation;
 mod streaming_stream;
 
 #[cfg(feature = "svix_beta")]
@@ -46,6 +49,7 @@ pub use self::{
         EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
         EndpointRotateSecretOptions, EndpointSendExampleOptions,
     },
+    endpoint_transformation::EndpointTransformation,
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
     event_type::{
         EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
@@ -57,6 +61,7 @@ pub use self::{
         IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
         IngestEndpointRotateSecretOptions,
     },
+    ingest_endpoint_transformation::IngestEndpointTransformation,
     ingest_source::{
         IngestSource, IngestSourceCreateOptions, IngestSourceListOptions,
         IngestSourceRotateTokenOptions,
@@ -93,6 +98,7 @@ pub use self::{
         StreamingSink, StreamingSinkCreateOptions, StreamingSinkListOptions,
         StreamingSinkRotateSecretOptions,
     },
+    streaming_sink_transformation::StreamingSinkTransformation,
     streaming_stream::{StreamingStream, StreamingStreamCreateOptions, StreamingStreamListOptions},
 };
 

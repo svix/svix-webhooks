@@ -309,7 +309,7 @@ extra_codegen_args = [
     "--exclude-op-id=v1.ingest.source.list",
     "--exclude-op-id=v1.ingest.source.create",
     "--exclude-op-id=v1.ingest.source.get",
-    "--exclude-op-id=v1.ingest.source.update",
+    "--exclude-op-id=v1.ingest.source.upsert",
     "--exclude-op-id=v1.ingest.source.delete",
 ]
 [[php.task]]
@@ -319,7 +319,7 @@ extra_codegen_args = [
     "--exclude-op-id=v1.ingest.source.list",
     "--exclude-op-id=v1.ingest.source.create",
     "--exclude-op-id=v1.ingest.source.get",
-    "--exclude-op-id=v1.ingest.source.update",
+    "--exclude-op-id=v1.ingest.source.upsert",
     "--exclude-op-id=v1.ingest.source.delete",
     "--include-op-id=v1.endpoint.auto-config.update",
     "--include-op-id=v1.message.pollerv2.consumer-poll",
@@ -333,7 +333,7 @@ extra_codegen_args = [
     "--exclude-op-id=v1.ingest.source.list",
     "--exclude-op-id=v1.ingest.source.create",
     "--exclude-op-id=v1.ingest.source.get",
-    "--exclude-op-id=v1.ingest.source.update",
+    "--exclude-op-id=v1.ingest.source.upsert",
     "--exclude-op-id=v1.ingest.source.delete",
 ]
 [[php.task]]

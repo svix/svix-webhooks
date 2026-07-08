@@ -187,7 +187,7 @@ class MockTest extends TestCase
         // POST
         $svx->application->create(ApplicationIn::create('asd'));
         // PUT
-        $svx->application->update('app_id', ApplicationIn::create('asd'));
+        $svx->application->upsert('app_id', ApplicationIn::create('asd'));
         // PATCH
         $svx->application->patch('app_id', ApplicationPatch::create()->withName('asd'));
 

@@ -169,7 +169,7 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix operational-webhook endpoint update ep_abc000000000000000000000000 {...}\n",
+            "Example: svix operational-webhook endpoint upsert ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -196,7 +196,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
 }\n")]
-    Update {
+    Upsert {
         endpoint_id: String,
         operational_webhook_endpoint_update: crate::json::JsonOf<OperationalWebhookEndpointUpdate>,
     },
@@ -271,7 +271,7 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix operational-webhook endpoint update-headers ep_abc000000000000000000000000 {...}\n",
+            "Example: svix operational-webhook endpoint set-headers ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -283,7 +283,7 @@ pub enum OperationalWebhookEndpointCommands {
     \"X-Foobar\": \"Bar\"
   }
 }\n")]
-    UpdateHeaders {
+    SetHeaders {
         endpoint_id: String,
         operational_webhook_endpoint_headers_in:
             crate::json::JsonOf<OperationalWebhookEndpointHeadersIn>,
@@ -327,14 +327,14 @@ impl OperationalWebhookEndpointCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 endpoint_id,
                 operational_webhook_endpoint_update,
             } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
-                    .update(
+                    .upsert(
                         endpoint_id,
                         operational_webhook_endpoint_update.into_inner(),
                     )
@@ -381,14 +381,14 @@ impl OperationalWebhookEndpointCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::UpdateHeaders {
+            Self::SetHeaders {
                 endpoint_id,
                 operational_webhook_endpoint_headers_in,
             } => {
                 client
                     .operational_webhook()
                     .endpoint()
-                    .update_headers(
+                    .set_headers(
                         endpoint_id,
                         operational_webhook_endpoint_headers_in.into_inner(),
                     )

@@ -77,7 +77,7 @@ public class Connector {
     }
 
     /** Create or update a connector. */
-    public ConnectorOut update(final String connectorId, final ConnectorUpdate connectorUpdate)
+    public ConnectorOut upsert(final String connectorId, final ConnectorUpdate connectorUpdate)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client

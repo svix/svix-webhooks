@@ -23,24 +23,6 @@ pub enum StreamingCommands {
     Events(StreamingEventsArgs),
     Sink(StreamingSinkArgs),
     Stream(StreamingStreamArgs),
-    /// Get the transformation code associated with this sink.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix streaming sink-transformation-get strm_abc000000000000000000 sink_abc000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"code\": \"...\",
-  \"enabled\": true
-}\n")]
-    SinkTransformationGet {
-        stream_id: String,
-        sink_id: String,
-    },
     /// Get the HTTP sink headers.
     ///
     /// Only valid for `http` or `otelTracing` sinks.
@@ -114,13 +96,6 @@ impl StreamingCommands {
             }
             Self::Stream(args) => {
                 args.command.exec(client, color_mode).await?;
-            }
-            Self::SinkTransformationGet { stream_id, sink_id } => {
-                let resp = client
-                    .streaming()
-                    .sink_transformation_get(stream_id, sink_id)
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::SinkHeadersGet { stream_id, sink_id } => {
                 let resp = client

@@ -10,10 +10,10 @@ import com.svix.models.IngestEndpointIn;
 import com.svix.models.IngestEndpointOut;
 import com.svix.models.IngestEndpointSecretIn;
 import com.svix.models.IngestEndpointSecretOut;
-import com.svix.models.IngestEndpointTransformationOut;
-import com.svix.models.IngestEndpointTransformationPatch;
 import com.svix.models.IngestEndpointUpdate;
 import com.svix.models.ListResponseIngestEndpointOut;
+
+import lombok.Getter;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -25,8 +25,11 @@ import java.util.Map;
 public class IngestEndpoint {
     private final SvixHttpClient client;
 
+    @Getter private final IngestEndpointTransformation transformation;
+
     public IngestEndpoint(SvixHttpClient client) {
         this.client = client;
+        this.transformation = new IngestEndpointTransformation(client);
     }
 
     /** List ingest endpoints. */
@@ -98,7 +101,7 @@ public class IngestEndpoint {
     }
 
     /** Create or update an ingest endpoint. */
-    public IngestEndpointOut update(
+    public IngestEndpointOut upsert(
             final String sourceId,
             final String endpointId,
             final IngestEndpointUpdate ingestEndpointUpdate)
@@ -204,7 +207,7 @@ public class IngestEndpoint {
     }
 
     /** Set the additional headers to be sent to the endpoint. */
-    public void updateHeaders(
+    public void setHeaders(
             final String sourceId,
             final String endpointId,
             final IngestEndpointHeadersIn ingestEndpointHeadersIn)
@@ -217,36 +220,5 @@ public class IngestEndpoint {
                                         "/ingest/api/v1/source/%s/endpoint/%s/headers",
                                         sourceId, endpointId));
         this.client.executeRequest("PUT", url.build(), null, ingestEndpointHeadersIn, null);
-    }
-
-    /** Get the transformation code associated with this ingest endpoint. */
-    public IngestEndpointTransformationOut getTransformation(
-            final String sourceId, final String endpointId) throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/ingest/api/v1/source/%s/endpoint/%s/transformation",
-                                        sourceId, endpointId));
-        return this.client.executeRequest(
-                "GET", url.build(), null, null, IngestEndpointTransformationOut.class);
-    }
-
-    /** Set or unset the transformation code associated with this ingest endpoint. */
-    public void setTransformation(
-            final String sourceId,
-            final String endpointId,
-            final IngestEndpointTransformationPatch ingestEndpointTransformationPatch)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/ingest/api/v1/source/%s/endpoint/%s/transformation",
-                                        sourceId, endpointId));
-        this.client.executeRequest(
-                "PATCH", url.build(), null, ingestEndpointTransformationPatch, null);
     }
 }

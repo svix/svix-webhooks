@@ -15,8 +15,6 @@ import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.EndpointStats;
 import com.svix.models.EndpointTransformationIn;
-import com.svix.models.EndpointTransformationOut;
-import com.svix.models.EndpointTransformationPatch;
 import com.svix.models.EndpointUpdate;
 import com.svix.models.EventExampleIn;
 import com.svix.models.ListResponseEndpointOut;
@@ -25,6 +23,8 @@ import com.svix.models.RecoverIn;
 import com.svix.models.RecoverOut;
 import com.svix.models.ReplayIn;
 import com.svix.models.ReplayOut;
+
+import lombok.Getter;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -36,8 +36,11 @@ import java.util.Map;
 public class Endpoint {
     private final SvixHttpClient client;
 
+    @Getter private final EndpointTransformation transformation;
+
     public Endpoint(SvixHttpClient client) {
         this.client = client;
+        this.transformation = new EndpointTransformation(client);
     }
 
     /** List the application's endpoints. */
@@ -107,7 +110,7 @@ public class Endpoint {
     }
 
     /** Create or update an endpoint. */
-    public EndpointOut update(
+    public EndpointOut upsert(
             final String appId, final String endpointId, final EndpointUpdate endpointUpdate)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -213,7 +216,7 @@ public class Endpoint {
     }
 
     /** Set the additional headers to be sent with the webhook. */
-    public void updateHeaders(
+    public void setHeaders(
             final String appId, final String endpointId, final EndpointHeadersIn endpointHeadersIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -238,36 +241,6 @@ public class Endpoint {
                                 String.format(
                                         "/api/v1/app/%s/endpoint/%s/headers", appId, endpointId));
         this.client.executeRequest("PATCH", url.build(), null, endpointHeadersPatchIn, null);
-    }
-
-    /** Get the transformation code associated with this endpoint. */
-    public EndpointTransformationOut transformationGet(final String appId, final String endpointId)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/transformation",
-                                        appId, endpointId));
-        return this.client.executeRequest(
-                "GET", url.build(), null, null, EndpointTransformationOut.class);
-    }
-
-    /** Set or unset the transformation code associated with this endpoint. */
-    public void patchTransformation(
-            final String appId,
-            final String endpointId,
-            final EndpointTransformationPatch endpointTransformationPatch)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/app/%s/endpoint/%s/transformation",
-                                        appId, endpointId));
-        this.client.executeRequest("PATCH", url.build(), null, endpointTransformationPatch, null);
     }
 
     /**

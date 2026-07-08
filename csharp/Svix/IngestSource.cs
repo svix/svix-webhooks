@@ -230,7 +230,7 @@ namespace Svix
         /// <summary>
         /// Create or update an Ingest Source.
         /// </summary>
-        public async Task<IngestSourceOut> UpdateAsync(
+        public async Task<IngestSourceOut> UpsertAsync(
             string sourceId,
             IngestSourceIn ingestSourceIn,
             CancellationToken cancellationToken = default
@@ -251,7 +251,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -260,7 +260,7 @@ namespace Svix
         /// <summary>
         /// Create or update an Ingest Source.
         /// </summary>
-        public IngestSourceOut Update(string sourceId, IngestSourceIn ingestSourceIn)
+        public IngestSourceOut Upsert(string sourceId, IngestSourceIn ingestSourceIn)
         {
             ingestSourceIn =
                 ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
@@ -276,7 +276,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }

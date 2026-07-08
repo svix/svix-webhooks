@@ -159,7 +159,7 @@ func (eventType EventType) Get(
 }
 
 // Create or update an event type.
-func (eventType EventType) Update(
+func (eventType EventType) Upsert(
 	ctx context.Context,
 	eventTypeName string,
 	eventTypeUpdate models.EventTypeUpdate,

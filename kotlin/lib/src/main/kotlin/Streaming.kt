@@ -3,7 +3,6 @@ package com.svix.kotlin
 
 import com.svix.kotlin.models.EndpointHeadersOut
 import com.svix.kotlin.models.HttpSinkHeadersPatchIn
-import com.svix.kotlin.models.SinkTransformationOut
 
 class Streaming(private val client: SvixHttpClient) {
     val eventType: StreamingEventType = StreamingEventType(client)
@@ -13,15 +12,6 @@ class Streaming(private val client: SvixHttpClient) {
     val sink: StreamingSink = StreamingSink(client)
 
     val stream: StreamingStream = StreamingStream(client)
-
-    /** Get the transformation code associated with this sink. */
-    suspend fun sinkTransformationGet(streamId: String, sinkId: String): SinkTransformationOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/stream/$streamId/sink/$sinkId/transformation")
-        return client.executeRequest<Any, SinkTransformationOut>("GET", url.build())
-    }
 
     /**
      * Get the HTTP sink headers.

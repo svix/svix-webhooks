@@ -75,7 +75,7 @@ public class IngestSource {
     }
 
     /** Create or update an Ingest Source. */
-    public IngestSourceOut update(final String sourceId, final IngestSourceIn ingestSourceIn)
+    public IngestSourceOut upsert(final String sourceId, final IngestSourceIn ingestSourceIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
