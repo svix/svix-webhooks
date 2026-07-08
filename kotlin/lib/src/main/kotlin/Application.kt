@@ -91,7 +91,7 @@ class Application(private val client: SvixHttpClient) {
     }
 
     /** Create or update an application. */
-    suspend fun update(appId: String, applicationIn: ApplicationIn): ApplicationOut {
+    suspend fun upsert(appId: String, applicationIn: ApplicationIn): ApplicationOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId")
 
         return client.executeRequest<ApplicationIn, ApplicationOut>(

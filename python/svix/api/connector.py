@@ -87,7 +87,7 @@ class ConnectorAsync(ApiBaseAsync):
         )
         return ConnectorOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self, connector_id: str, connector_update: ConnectorUpdate
     ) -> ConnectorOut:
         """Create or update a connector."""
@@ -171,7 +171,7 @@ class Connector(ApiBaseSync):
         )
         return ConnectorOut.model_validate(response.json())
 
-    def update(
+    def upsert(
         self, connector_id: str, connector_update: ConnectorUpdate
     ) -> ConnectorOut:
         """Create or update a connector."""

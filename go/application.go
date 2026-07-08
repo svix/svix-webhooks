@@ -154,7 +154,7 @@ func (application Application) Get(
 }
 
 // Create or update an application.
-func (application Application) Update(
+func (application Application) Upsert(
 	ctx context.Context,
 	appId string,
 	applicationIn models.ApplicationIn,

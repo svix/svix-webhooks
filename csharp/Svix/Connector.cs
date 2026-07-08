@@ -215,7 +215,7 @@ namespace Svix
         /// <summary>
         /// Create or update a connector.
         /// </summary>
-        public async Task<ConnectorOut> UpdateAsync(
+        public async Task<ConnectorOut> UpsertAsync(
             string connectorId,
             ConnectorUpdate connectorUpdate,
             CancellationToken cancellationToken = default
@@ -236,7 +236,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -245,7 +245,7 @@ namespace Svix
         /// <summary>
         /// Create or update a connector.
         /// </summary>
-        public ConnectorOut Update(string connectorId, ConnectorUpdate connectorUpdate)
+        public ConnectorOut Upsert(string connectorId, ConnectorUpdate connectorUpdate)
         {
             connectorUpdate =
                 connectorUpdate ?? throw new ArgumentNullException(nameof(connectorUpdate));
@@ -261,7 +261,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }

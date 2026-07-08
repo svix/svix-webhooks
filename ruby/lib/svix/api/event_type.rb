@@ -59,7 +59,7 @@ module Svix
       EventTypeOut.deserialize(res)
     end
 
-    def update(event_type_name, event_type_update)
+    def upsert(event_type_name, event_type_update)
       res = @client.execute_request(
         "PUT",
         "/api/v1/event-type/#{event_type_name}",

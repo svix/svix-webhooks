@@ -5,7 +5,6 @@ import com.svix.SvixHttpClient;
 import com.svix.exceptions.ApiException;
 import com.svix.models.EndpointHeadersOut;
 import com.svix.models.HttpSinkHeadersPatchIn;
-import com.svix.models.SinkTransformationOut;
 
 import lombok.Getter;
 
@@ -27,20 +26,6 @@ public class Streaming {
         this.events = new StreamingEvents(client);
         this.sink = new StreamingSink(client);
         this.stream = new StreamingStream(client);
-    }
-
-    /** Get the transformation code associated with this sink. */
-    public SinkTransformationOut sinkTransformationGet(final String streamId, final String sinkId)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/stream/%s/sink/%s/transformation",
-                                        streamId, sinkId));
-        return this.client.executeRequest(
-                "GET", url.build(), null, null, SinkTransformationOut.class);
     }
 
     /**

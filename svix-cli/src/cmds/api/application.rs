@@ -152,7 +152,7 @@ pub enum ApplicationCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix application update app_abc000000000000000000000000 {...}\n",
+            "Example: svix application upsert app_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -173,7 +173,7 @@ pub enum ApplicationCommands {
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         id: String,
         application_in: crate::json::JsonOf<ApplicationIn>,
     },
@@ -243,10 +243,10 @@ impl ApplicationCommands {
                 let resp = client.application().get(id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update { id, application_in } => {
+            Self::Upsert { id, application_in } => {
                 let resp = client
                     .application()
-                    .update(id, application_in.into_inner())
+                    .upsert(id, application_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

@@ -65,7 +65,7 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
     }
 
     /** Create or update an operational webhook endpoint. */
-    suspend fun update(
+    suspend fun upsert(
         endpointId: String,
         operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate,
     ): OperationalWebhookEndpointOut {
@@ -139,7 +139,7 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
     }
 
     /** Set the additional headers to be sent with the operational webhook. */
-    suspend fun updateHeaders(
+    suspend fun setHeaders(
         endpointId: String,
         operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn,
     ) {

@@ -116,7 +116,7 @@ func (streamingEventType StreamingEventType) Get(
 }
 
 // Create or update or create a event type for Streams.
-func (streamingEventType StreamingEventType) Update(
+func (streamingEventType StreamingEventType) Upsert(
 	ctx context.Context,
 	name string,
 	streamEventTypeIn models.StreamEventTypeIn,

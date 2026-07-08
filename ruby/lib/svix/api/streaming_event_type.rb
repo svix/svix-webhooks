@@ -45,7 +45,7 @@ module Svix
       StreamEventTypeOut.deserialize(res)
     end
 
-    def update(name, stream_event_type_in)
+    def upsert(name, stream_event_type_in)
       res = @client.execute_request(
         "PUT",
         "/api/v1/stream/event-type/#{name}",

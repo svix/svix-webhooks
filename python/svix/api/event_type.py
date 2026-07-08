@@ -144,7 +144,7 @@ class EventTypeAsync(ApiBaseAsync):
         )
         return EventTypeOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
         """Create or update an event type."""
@@ -265,7 +265,7 @@ class EventType(ApiBaseSync):
         )
         return EventTypeOut.model_validate(response.json())
 
-    def update(
+    def upsert(
         self, event_type_name: str, event_type_update: EventTypeUpdate
     ) -> EventTypeOut:
         """Create or update an event type."""

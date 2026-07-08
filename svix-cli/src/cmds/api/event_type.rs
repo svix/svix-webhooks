@@ -350,7 +350,7 @@ pub enum EventTypeCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix event-type update example.event {...}\n",
+            "Example: svix event-type upsert example.event {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -410,7 +410,7 @@ pub enum EventTypeCommands {
   },
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         event_type_name: String,
         event_type_update: crate::json::JsonOf<EventTypeUpdate>,
     },
@@ -541,13 +541,13 @@ impl EventTypeCommands {
                 let resp = client.event_type().get(event_type_name).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 event_type_name,
                 event_type_update,
             } => {
                 let resp = client
                     .event_type()
-                    .update(event_type_name, event_type_update.into_inner())
+                    .upsert(event_type_name, event_type_update.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

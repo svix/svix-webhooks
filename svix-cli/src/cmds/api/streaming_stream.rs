@@ -133,7 +133,7 @@ pub enum StreamingStreamCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix streaming stream update strm_abc000000000000000000 {...}\n",
+            "Example: svix streaming stream upsert strm_abc000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -152,7 +152,7 @@ pub enum StreamingStreamCommands {
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         stream_id: String,
         stream_in: crate::json::JsonOf<StreamIn>,
     },
@@ -222,14 +222,14 @@ impl StreamingStreamCommands {
                 let resp = client.streaming().stream().get(stream_id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 stream_id,
                 stream_in,
             } => {
                 let resp = client
                     .streaming()
                     .stream()
-                    .update(stream_id, stream_in.into_inner())
+                    .upsert(stream_id, stream_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

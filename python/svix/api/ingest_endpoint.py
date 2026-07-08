@@ -10,12 +10,14 @@ from ..models import (
     IngestEndpointOut,
     IngestEndpointSecretIn,
     IngestEndpointSecretOut,
-    IngestEndpointTransformationOut,
-    IngestEndpointTransformationPatch,
     IngestEndpointUpdate,
     ListResponseIngestEndpointOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .ingest_endpoint_transformation import (
+    IngestEndpointTransformation,
+    IngestEndpointTransformationAsync,
+)
 
 
 @dataclass
@@ -62,6 +64,10 @@ class IngestEndpointRotateSecretOptions(BaseOptions):
 
 
 class IngestEndpointAsync(ApiBaseAsync):
+    @property
+    def transformation(self) -> IngestEndpointTransformationAsync:
+        return IngestEndpointTransformationAsync(self._client, self._httpx_client)
+
     async def list(
         self,
         source_id: str,
@@ -112,7 +118,7 @@ class IngestEndpointAsync(ApiBaseAsync):
         )
         return IngestEndpointOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self,
         source_id: str,
         endpoint_id: str,
@@ -200,7 +206,7 @@ class IngestEndpointAsync(ApiBaseAsync):
         )
         return IngestEndpointHeadersOut.model_validate(response.json())
 
-    async def update_headers(
+    async def set_headers(
         self,
         source_id: str,
         endpoint_id: str,
@@ -219,41 +225,12 @@ class IngestEndpointAsync(ApiBaseAsync):
             ),
         )
 
-    async def get_transformation(
-        self, source_id: str, endpoint_id: str
-    ) -> IngestEndpointTransformationOut:
-        """Get the transformation code associated with this ingest endpoint."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return IngestEndpointTransformationOut.model_validate(response.json())
-
-    async def set_transformation(
-        self,
-        source_id: str,
-        endpoint_id: str,
-        ingest_endpoint_transformation_patch: IngestEndpointTransformationPatch,
-    ) -> None:
-        """Set or unset the transformation code associated with this ingest endpoint."""
-        await self._request_asyncio(
-            method="patch",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=ingest_endpoint_transformation_patch.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
 
 class IngestEndpoint(ApiBaseSync):
+    @property
+    def transformation(self) -> IngestEndpointTransformation:
+        return IngestEndpointTransformation(self._client, self._httpx_client)
+
     def list(
         self,
         source_id: str,
@@ -304,7 +281,7 @@ class IngestEndpoint(ApiBaseSync):
         )
         return IngestEndpointOut.model_validate(response.json())
 
-    def update(
+    def upsert(
         self,
         source_id: str,
         endpoint_id: str,
@@ -388,7 +365,7 @@ class IngestEndpoint(ApiBaseSync):
         )
         return IngestEndpointHeadersOut.model_validate(response.json())
 
-    def update_headers(
+    def set_headers(
         self,
         source_id: str,
         endpoint_id: str,
@@ -403,39 +380,6 @@ class IngestEndpoint(ApiBaseSync):
                 "endpoint_id": endpoint_id,
             },
             json_body=ingest_endpoint_headers_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
-    def get_transformation(
-        self, source_id: str, endpoint_id: str
-    ) -> IngestEndpointTransformationOut:
-        """Get the transformation code associated with this ingest endpoint."""
-        response = self._request_sync(
-            method="get",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return IngestEndpointTransformationOut.model_validate(response.json())
-
-    def set_transformation(
-        self,
-        source_id: str,
-        endpoint_id: str,
-        ingest_endpoint_transformation_patch: IngestEndpointTransformationPatch,
-    ) -> None:
-        """Set or unset the transformation code associated with this ingest endpoint."""
-        self._request_sync(
-            method="patch",
-            path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "source_id": source_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=ingest_endpoint_transformation_patch.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

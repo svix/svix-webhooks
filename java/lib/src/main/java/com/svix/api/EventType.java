@@ -133,7 +133,7 @@ public class EventType {
     }
 
     /** Create or update an event type. */
-    public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate)
+    public EventTypeOut upsert(final String eventTypeName, final EventTypeUpdate eventTypeUpdate)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client

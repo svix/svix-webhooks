@@ -74,7 +74,7 @@ export class IngestSource {
   }
 
   /** Create or update an Ingest Source. */
-  public async update(
+  public async upsert(
     sourceId: string,
     ingestSourceIn: IngestSourceIn
   ): Promise<IngestSourceOut> {

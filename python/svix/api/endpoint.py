@@ -18,8 +18,6 @@ from ..models import (
     EndpointSecretRotateIn,
     EndpointStats,
     EndpointTransformationIn,
-    EndpointTransformationOut,
-    EndpointTransformationPatch,
     EndpointUpdate,
     EventExampleIn,
     ListResponseEndpointOut,
@@ -30,6 +28,10 @@ from ..models import (
     ReplayOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .endpoint_transformation import (
+    EndpointTransformation,
+    EndpointTransformationAsync,
+)
 
 
 @dataclass
@@ -140,6 +142,10 @@ class EndpointSendExampleOptions(BaseOptions):
 
 
 class EndpointAsync(ApiBaseAsync):
+    @property
+    def transformation(self) -> EndpointTransformationAsync:
+        return EndpointTransformationAsync(self._client, self._httpx_client)
+
     async def list(
         self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
     ) -> ListResponseEndpointOut:
@@ -188,7 +194,7 @@ class EndpointAsync(ApiBaseAsync):
         )
         return EndpointOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
     ) -> EndpointOut:
         """Create or update an endpoint."""
@@ -282,7 +288,7 @@ class EndpointAsync(ApiBaseAsync):
         )
         return EndpointHeadersOut.model_validate(response.json())
 
-    async def update_headers(
+    async def set_headers(
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
     ) -> None:
         """Set the additional headers to be sent with the webhook."""
@@ -313,39 +319,6 @@ class EndpointAsync(ApiBaseAsync):
                 "endpoint_id": endpoint_id,
             },
             json_body=endpoint_headers_patch_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
-    async def transformation_get(
-        self, app_id: str, endpoint_id: str
-    ) -> EndpointTransformationOut:
-        """Get the transformation code associated with this endpoint."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return EndpointTransformationOut.model_validate(response.json())
-
-    async def patch_transformation(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        endpoint_transformation_patch: EndpointTransformationPatch,
-    ) -> None:
-        """Set or unset the transformation code associated with this endpoint."""
-        await self._request_asyncio(
-            method="patch",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=endpoint_transformation_patch.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -521,6 +494,10 @@ class EndpointAsync(ApiBaseAsync):
 
 
 class Endpoint(ApiBaseSync):
+    @property
+    def transformation(self) -> EndpointTransformation:
+        return EndpointTransformation(self._client, self._httpx_client)
+
     def list(
         self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
     ) -> ListResponseEndpointOut:
@@ -569,7 +546,7 @@ class Endpoint(ApiBaseSync):
         )
         return EndpointOut.model_validate(response.json())
 
-    def update(
+    def upsert(
         self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
     ) -> EndpointOut:
         """Create or update an endpoint."""
@@ -663,7 +640,7 @@ class Endpoint(ApiBaseSync):
         )
         return EndpointHeadersOut.model_validate(response.json())
 
-    def update_headers(
+    def set_headers(
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
     ) -> None:
         """Set the additional headers to be sent with the webhook."""
@@ -694,39 +671,6 @@ class Endpoint(ApiBaseSync):
                 "endpoint_id": endpoint_id,
             },
             json_body=endpoint_headers_patch_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
-    def transformation_get(
-        self, app_id: str, endpoint_id: str
-    ) -> EndpointTransformationOut:
-        """Get the transformation code associated with this endpoint."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return EndpointTransformationOut.model_validate(response.json())
-
-    def patch_transformation(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        endpoint_transformation_patch: EndpointTransformationPatch,
-    ) -> None:
-        """Set or unset the transformation code associated with this endpoint."""
-        self._request_sync(
-            method="patch",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=endpoint_transformation_patch.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

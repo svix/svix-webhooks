@@ -73,7 +73,7 @@ class StreamingEventType
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $name,
         StreamEventTypeIn $streamEventTypeIn,
     ): StreamEventTypeOut {

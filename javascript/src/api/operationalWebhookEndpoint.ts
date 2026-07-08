@@ -113,7 +113,7 @@ export class OperationalWebhookEndpoint {
   }
 
   /** Create or update an operational webhook endpoint. */
-  public async update(
+  public async upsert(
     endpointId: string,
     operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate
   ): Promise<OperationalWebhookEndpointOut> {
@@ -213,7 +213,7 @@ export class OperationalWebhookEndpoint {
   }
 
   /** Set the additional headers to be sent with the operational webhook. */
-  public async updateHeaders(
+  public async setHeaders(
     endpointId: string,
     operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn
   ): Promise<void> {
