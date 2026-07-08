@@ -60,7 +60,7 @@ async fn test_urlencoded_octothorpe() {
 async fn test_idempotency_key_is_sent_for_create_request() {
     let mock_server = MockServer::start().await;
 
-    let json_body = r#"{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
+    let json_body = r#"{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
     Mock::given(method("POST"))
         .and(path("/api/v1/app"))
         .respond_with(ResponseTemplate::new(200).set_body_string(json_body))
@@ -94,7 +94,7 @@ async fn test_idempotency_key_is_sent_for_create_request() {
 async fn test_client_provided_idempotency_key_is_not_overridden() {
     let mock_server = MockServer::start().await;
 
-    let json_body = r#"{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
+    let json_body = r#"{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
     Mock::given(method("POST"))
         .and(path("/api/v1/app"))
         .respond_with(ResponseTemplate::new(200).set_body_string(json_body))

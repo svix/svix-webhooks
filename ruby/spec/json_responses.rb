@@ -4,7 +4,7 @@ ListResponseAppOut_JSON = '{
     {
       "uid": "unique-identifier",
       "name": "My first application",
-      "rateLimit": 0,
+      "throttleRate": 0,
       "id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
       "createdAt": "2019-08-24T14:15:22Z",
       "updatedAt": "2019-08-24T14:15:22Z",
@@ -111,7 +111,7 @@ ListResponseOperationalWebhookEndpointOut_JSON='{
     {
       "id": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
       "description": "string",
-      "rateLimit": 0,
+      "throttleRate": 0,
       "uid": "unique-identifier",
       "url": "https://example.com/webhook/",
       "disabled": false,
@@ -186,7 +186,7 @@ EndpointOut_JSON='{
     "property2": "string"
   },
   "description": "string",
-  "rateLimit": 0,
+  "throttleRate": 0,
   "uid": "unique-identifier",
   "url": "https://example.com/webhook/",
   "version": 1,
@@ -225,7 +225,7 @@ ListResponseMessageAttemptOut_without_msg_JSON='{
 ApplicationOut_JSON='{
   "uid": "unique-identifier",
   "name": "My first application",
-  "rateLimit": 0,
+  "throttleRate": 0,
   "id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
   "createdAt": "2019-08-24T14:15:22Z",
   "updatedAt": "2019-08-24T14:15:22Z",

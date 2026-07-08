@@ -36,8 +36,8 @@ use Svix\SvixClient;
 use Svix\SvixOptions;
 use Svix\Version;
 
-const AppOut = '{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2025-08-27T17:43:50+00:00","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}';
-const ListResAppOut = '{"data":[{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2025-08-27T17:43:50Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}';
+const AppOut = '{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2025-08-27T17:43:50+00:00","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}';
+const ListResAppOut = '{"data":[{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2025-08-27T17:43:50Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}';
 const MsgOut = '{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}';
 const ListResMessageOut = '{"data":[{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}],"iterator":"iterator","prevIterator":"-iterator","done":true}';
 const ListResMessageAttemptOut = '{"data":[{"url":"https://example.com/webhook/","response":"{}","responseStatusCode":200,"responseDurationMs":0,"status":0,"statusText":"success","triggerType":0,"msgId":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","endpointId":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","id":"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","msg":{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","tags":["project_1337"]}}],"iterator":"iterator","prevIterator":"-iterator","done":true}';
@@ -240,7 +240,7 @@ class MockTest extends TestCase
         $app = $response->data[0];
         $this->assertEquals('unique-identifier', $app->uid);
         $this->assertEquals('My first application', $app->name);
-        $this->assertEquals(0, $app->rateLimit);
+        $this->assertEquals(0, $app->throttleRate);
         $this->assertEquals('app_1srOrx2ZWZBpBUvZwXKQmoEYga2', $app->id);
 
         $this->assertInstanceOf(\DateTimeImmutable::class, $app->createdAt);
@@ -343,7 +343,7 @@ class MockTest extends TestCase
 
         $applicationPatch = ApplicationPatch::create()
             ->withName('Updated Application Name')
-            ->withRateLimit(null);
+            ->withThrottleRate(null);
 
         $svx->application->patch('app_1srOrx2ZWZBpBUvZwXKQmoEYga2', $applicationPatch);
 
@@ -352,7 +352,7 @@ class MockTest extends TestCase
 
         $this->assertEquals('PATCH', $req->getMethod());
 
-        $this->assertEquals('{"name":"Updated Application Name","rateLimit":null}', $requestBody);
+        $this->assertEquals('{"name":"Updated Application Name","throttleRate":null}', $requestBody);
     }
 
     public function testOctothorpeInUrlQuery(): void

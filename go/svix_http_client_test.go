@@ -45,7 +45,7 @@ var appListOut = `{
     {
       "uid": "unique-identifier",
       "name": "My first application",
-      "rateLimit": 0,
+      "throttleRate": 0,
       "id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
       "createdAt": "2019-08-24T14:15:22Z",
       "updatedAt": "2019-08-24T14:15:22Z",
@@ -63,7 +63,7 @@ var appListOut = `{
 var appCreateOut = `{
 	"uid": "unique-identifier",
 	"name": "My first application",
-	"rateLimit": 0,
+	"throttleRate": 0,
 	"id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
 	"createdAt": "2019-08-24T14:15:22Z",
 	"updatedAt": "2019-08-24T14:15:22Z",

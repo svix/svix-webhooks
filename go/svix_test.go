@@ -32,7 +32,7 @@ var endpointOurStr = `
     "property2": "string"
   },
   "description": "string",
-  "rateLimit": 0,
+  "throttleRate": 0,
   "uid": "unique-identifier",
   "url": "https://example.com/webhook/",
   "version": 1,
@@ -101,7 +101,7 @@ var MsgOut = `{
   ],
   "application": {
     "name": "My first application",
-    "rateLimit": 1,
+    "throttleRate": 1,
     "uid": "unique-identifier",
     "metadata": {}
   },
@@ -363,8 +363,8 @@ func TestModelDeserialization(t *testing.T) {
 	if len(ep_out.FilterTypes) != 0 {
 		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
 	}
-	if ep_out.RateLimit != nil {
-		t.Error("unexpected value for rateLimit", ep_out.RateLimit)
+	if ep_out.ThrottleRate != nil {
+		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
 	}
 	if ep_out.Uid != nil {
 		t.Error("unexpected value for uid", ep_out.Uid)
@@ -386,7 +386,7 @@ func TestModelDeserialization(t *testing.T) {
 				"property2": "string"
 			},
 			"description": "string",
-			"rateLimit": 0,
+			"throttleRate": 0,
 			"uid": "unique-ep-identifier",
 			"url": "https://example.com/webhook/",
 			"version": 1,
@@ -422,8 +422,8 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Description != "string" {
 		t.Error("unexpected value for description", ep_out.Description)
 	}
-	if *ep_out.RateLimit != 0 {
-		t.Error("unexpected value for rateLimit", ep_out.RateLimit)
+	if *ep_out.ThrottleRate != 0 {
+		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
 	}
 	if *ep_out.Uid != "unique-ep-identifier" {
 		t.Error("unexpected value for uid", ep_out.Uid)
@@ -464,7 +464,7 @@ func TestModelDeserialization(t *testing.T) {
 			"id": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
 			"metadata": {},
 			"description": "string",
-			"rateLimit": null,
+			"throttleRate": null,
 			"uid": null,
 			"url": "https://example.com/webhook/",
 			"version": 1,
@@ -488,8 +488,8 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Description != "string" {
 		t.Error("unexpected value for description", ep_out.Description)
 	}
-	if ep_out.RateLimit != nil {
-		t.Error("unexpected value for rateLimit", ep_out.RateLimit)
+	if ep_out.ThrottleRate != nil {
+		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
 	}
 	if ep_out.Uid != nil {
 		t.Error("unexpected value for uid", ep_out.Uid)
