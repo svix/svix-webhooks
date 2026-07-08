@@ -12,8 +12,6 @@ import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
 import com.svix.kotlin.models.EndpointTransformationIn
-import com.svix.kotlin.models.EndpointTransformationOut
-import com.svix.kotlin.models.EndpointTransformationPatch
 import com.svix.kotlin.models.EndpointUpdate
 import com.svix.kotlin.models.EventExampleIn
 import com.svix.kotlin.models.ListResponseEndpointOut
@@ -55,6 +53,8 @@ data class EndpointRecoverOptions(val idempotencyKey: String? = null)
 data class EndpointSendExampleOptions(val idempotencyKey: String? = null)
 
 class Endpoint(private val client: SvixHttpClient) {
+    val transformation: EndpointTransformation = EndpointTransformation(client)
+
     /** List the application's endpoints. */
     suspend fun list(
         appId: String,
@@ -96,7 +96,7 @@ class Endpoint(private val client: SvixHttpClient) {
     }
 
     /** Create or update an endpoint. */
-    suspend fun update(
+    suspend fun upsert(
         appId: String,
         endpointId: String,
         endpointUpdate: EndpointUpdate,
@@ -177,7 +177,7 @@ class Endpoint(private val client: SvixHttpClient) {
     }
 
     /** Set the additional headers to be sent with the webhook. */
-    suspend fun updateHeaders(
+    suspend fun setHeaders(
         appId: String,
         endpointId: String,
         endpointHeadersIn: EndpointHeadersIn,
@@ -205,33 +205,6 @@ class Endpoint(private val client: SvixHttpClient) {
             "PATCH",
             url.build(),
             reqBody = endpointHeadersPatchIn,
-        )
-    }
-
-    /** Get the transformation code associated with this endpoint. */
-    suspend fun transformationGet(appId: String, endpointId: String): EndpointTransformationOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
-        return client.executeRequest<Any, EndpointTransformationOut>("GET", url.build())
-    }
-
-    /** Set or unset the transformation code associated with this endpoint. */
-    suspend fun patchTransformation(
-        appId: String,
-        endpointId: String,
-        endpointTransformationPatch: EndpointTransformationPatch,
-    ) {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/app/$appId/endpoint/$endpointId/transformation")
-
-        client.executeRequest<EndpointTransformationPatch, Boolean>(
-            "PATCH",
-            url.build(),
-            reqBody = endpointTransformationPatch,
         )
     }
 

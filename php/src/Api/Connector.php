@@ -74,7 +74,7 @@ class Connector
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $connectorId,
         ConnectorUpdate $connectorUpdate,
     ): ConnectorOut {

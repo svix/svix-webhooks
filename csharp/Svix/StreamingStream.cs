@@ -212,7 +212,7 @@ namespace Svix
         /// <summary>
         /// Create or update a stream.
         /// </summary>
-        public async Task<StreamOut> UpdateAsync(
+        public async Task<StreamOut> UpsertAsync(
             string streamId,
             StreamIn streamIn,
             CancellationToken cancellationToken = default
@@ -232,7 +232,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -241,7 +241,7 @@ namespace Svix
         /// <summary>
         /// Create or update a stream.
         /// </summary>
-        public StreamOut Update(string streamId, StreamIn streamIn)
+        public StreamOut Upsert(string streamId, StreamIn streamIn)
         {
             streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
@@ -256,7 +256,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }

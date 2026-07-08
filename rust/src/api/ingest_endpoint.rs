@@ -1,4 +1,5 @@
 // this file is @generated
+use super::IngestEndpointTransformation;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -30,6 +31,10 @@ pub struct IngestEndpoint<'a> {
 impl<'a> IngestEndpoint<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn transformation(&self) -> IngestEndpointTransformation<'a> {
+        IngestEndpointTransformation::new(self.cfg)
     }
 
     /// List ingest endpoints.
@@ -89,7 +94,7 @@ impl<'a> IngestEndpoint<'a> {
     }
 
     /// Create or update an ingest endpoint.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         source_id: String,
         endpoint_id: String,
@@ -180,7 +185,7 @@ impl<'a> IngestEndpoint<'a> {
     }
 
     /// Set the additional headers to be sent to the endpoint.
-    pub async fn update_headers(
+    pub async fn set_headers(
         &self,
         source_id: String,
         endpoint_id: String,
@@ -193,42 +198,6 @@ impl<'a> IngestEndpoint<'a> {
         .with_path_param("source_id", source_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_body_param(ingest_endpoint_headers_in)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Get the transformation code associated with this ingest endpoint.
-    pub async fn get_transformation(
-        &self,
-        source_id: String,
-        endpoint_id: String,
-    ) -> Result<IngestEndpointTransformationOut> {
-        crate::request::Request::new(
-            http::Method::GET,
-            "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
-        )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Set or unset the transformation code associated with this ingest
-    /// endpoint.
-    pub async fn set_transformation(
-        &self,
-        source_id: String,
-        endpoint_id: String,
-        ingest_endpoint_transformation_patch: IngestEndpointTransformationPatch,
-    ) -> Result<()> {
-        crate::request::Request::new(
-            http::Method::PATCH,
-            "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
-        )
-        .with_path_param("source_id", source_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(ingest_endpoint_transformation_patch)
         .returns_nothing()
         .execute(self.cfg)
         .await

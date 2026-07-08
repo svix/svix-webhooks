@@ -107,7 +107,7 @@ class OperationalWebhookEndpointAsync(ApiBaseAsync):
         )
         return OperationalWebhookEndpointOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self,
         endpoint_id: str,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
@@ -186,7 +186,7 @@ class OperationalWebhookEndpointAsync(ApiBaseAsync):
         )
         return OperationalWebhookEndpointHeadersOut.model_validate(response.json())
 
-    async def update_headers(
+    async def set_headers(
         self,
         endpoint_id: str,
         operational_webhook_endpoint_headers_in: OperationalWebhookEndpointHeadersIn,
@@ -252,7 +252,7 @@ class OperationalWebhookEndpoint(ApiBaseSync):
         )
         return OperationalWebhookEndpointOut.model_validate(response.json())
 
-    def update(
+    def upsert(
         self,
         endpoint_id: str,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
@@ -329,7 +329,7 @@ class OperationalWebhookEndpoint(ApiBaseSync):
         )
         return OperationalWebhookEndpointHeadersOut.model_validate(response.json())
 
-    def update_headers(
+    def set_headers(
         self,
         endpoint_id: str,
         operational_webhook_endpoint_headers_in: OperationalWebhookEndpointHeadersIn,

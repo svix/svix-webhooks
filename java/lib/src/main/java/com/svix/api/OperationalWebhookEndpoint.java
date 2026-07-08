@@ -92,7 +92,7 @@ public class OperationalWebhookEndpoint {
     }
 
     /** Create or update an operational webhook endpoint. */
-    public OperationalWebhookEndpointOut update(
+    public OperationalWebhookEndpointOut upsert(
             final String endpointId,
             final OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate)
             throws IOException, ApiException {
@@ -195,7 +195,7 @@ public class OperationalWebhookEndpoint {
     }
 
     /** Set the additional headers to be sent with the operational webhook. */
-    public void updateHeaders(
+    public void setHeaders(
             final String endpointId,
             final OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn)
             throws IOException, ApiException {

@@ -93,7 +93,7 @@ class Application
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $appId,
         ApplicationIn $applicationIn,
     ): ApplicationOut {

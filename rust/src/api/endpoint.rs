@@ -1,4 +1,5 @@
 // this file is @generated
+use super::EndpointTransformation;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -65,6 +66,10 @@ impl<'a> Endpoint<'a> {
         Self { cfg }
     }
 
+    pub fn transformation(&self) -> EndpointTransformation<'a> {
+        EndpointTransformation::new(self.cfg)
+    }
+
     /// List the application's endpoints.
     pub async fn list(
         &self,
@@ -119,7 +124,7 @@ impl<'a> Endpoint<'a> {
     }
 
     /// Create or update an endpoint.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         app_id: String,
         endpoint_id: String,
@@ -229,7 +234,7 @@ impl<'a> Endpoint<'a> {
     }
 
     /// Set the additional headers to be sent with the webhook.
-    pub async fn update_headers(
+    pub async fn set_headers(
         &self,
         app_id: String,
         endpoint_id: String,
@@ -261,41 +266,6 @@ impl<'a> Endpoint<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
         .with_body_param(endpoint_headers_patch_in)
-        .returns_nothing()
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Get the transformation code associated with this endpoint.
-    pub async fn transformation_get(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-    ) -> Result<EndpointTransformationOut> {
-        crate::request::Request::new(
-            http::Method::GET,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-        )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Set or unset the transformation code associated with this endpoint.
-    pub async fn patch_transformation(
-        &self,
-        app_id: String,
-        endpoint_id: String,
-        endpoint_transformation_patch: EndpointTransformationPatch,
-    ) -> Result<()> {
-        crate::request::Request::new(
-            http::Method::PATCH,
-            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-        )
-        .with_path_param("app_id", app_id)
-        .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(endpoint_transformation_patch)
         .returns_nothing()
         .execute(self.cfg)
         .await

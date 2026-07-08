@@ -84,7 +84,7 @@ public class StreamingEventType {
     }
 
     /** Create or update or create a event type for Streams. */
-    public StreamEventTypeOut update(final String name, final StreamEventTypeIn streamEventTypeIn)
+    public StreamEventTypeOut upsert(final String name, final StreamEventTypeIn streamEventTypeIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client

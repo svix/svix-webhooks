@@ -98,7 +98,7 @@ class IngestSourceAsync(ApiBaseAsync):
         )
         return IngestSourceOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self, source_id: str, ingest_source_in: IngestSourceIn
     ) -> IngestSourceOut:
         """Create or update an Ingest Source."""
@@ -190,7 +190,7 @@ class IngestSource(ApiBaseSync):
         )
         return IngestSourceOut.model_validate(response.json())
 
-    def update(
+    def upsert(
         self, source_id: str, ingest_source_in: IngestSourceIn
     ) -> IngestSourceOut:
         """Create or update an Ingest Source."""

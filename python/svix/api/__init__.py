@@ -252,6 +252,7 @@ from .endpoint import (
     EndpointRotateSecretOptions,
     EndpointSendExampleOptions,
 )
+from .endpoint_transformation import EndpointTransformation, EndpointTransformationAsync
 from .event_type import (
     EventType,
     EventTypeAsync,
@@ -365,6 +366,8 @@ __all__ = [
     "EndpointGetStatsOptions",
     "EndpointRecoverOptions",
     "EndpointSendExampleOptions",
+    "EndpointTransformation",
+    "EndpointTransformationAsync",
     "EventType",
     "EventTypeAsync",
     "EventTypeListOptions",

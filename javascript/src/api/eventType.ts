@@ -125,7 +125,7 @@ export class EventType {
   }
 
   /** Create or update an event type. */
-  public async update(
+  public async upsert(
     eventTypeName: string,
     eventTypeUpdate: EventTypeUpdate
   ): Promise<EventTypeOut> {

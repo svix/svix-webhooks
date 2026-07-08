@@ -171,7 +171,7 @@ pub enum ConnectorCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix connector update CONNECTOR_ID {...}\n",
+            "Example: svix connector upsert CONNECTOR_ID {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -204,7 +204,7 @@ pub enum ConnectorCommands {
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         id: String,
         connector_update: crate::json::JsonOf<ConnectorUpdate>,
     },
@@ -286,13 +286,13 @@ impl ConnectorCommands {
                 let resp = client.connector().get(id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 id,
                 connector_update,
             } => {
                 let resp = client
                     .connector()
-                    .update(id, connector_update.into_inner())
+                    .upsert(id, connector_update.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

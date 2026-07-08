@@ -17,8 +17,6 @@ use Svix\Models\EndpointSecretOut;
 use Svix\Models\EndpointSecretRotateIn;
 use Svix\Models\EndpointStats;
 use Svix\Models\EndpointTransformationIn;
-use Svix\Models\EndpointTransformationOut;
-use Svix\Models\EndpointTransformationPatch;
 use Svix\Models\EndpointUpdate;
 use Svix\Models\EventExampleIn;
 use Svix\Models\ListResponseEndpointOut;
@@ -31,9 +29,12 @@ use Svix\Request\SvixHttpClient;
 
 class Endpoint
 {
+    public EndpointTransformation $transformation;
+
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->transformation = new EndpointTransformation($client);
     }
 
     /**
@@ -94,7 +95,7 @@ class Endpoint
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $appId,
         string $endpointId,
         EndpointUpdate $endpointUpdate,
@@ -193,7 +194,7 @@ class Endpoint
      *
      * @throws ApiException
      */
-    public function updateHeaders(
+    public function setHeaders(
         string $appId,
         string $endpointId,
         EndpointHeadersIn $endpointHeadersIn,
@@ -215,36 +216,6 @@ class Endpoint
     ): void {
         $request = $this->client->newReq('PATCH', "/api/v1/app/{$appId}/endpoint/{$endpointId}/headers");
         $request->setBody(json_encode($endpointHeadersPatchIn));
-        $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
-     * Get the transformation code associated with this endpoint.
-     *
-     * @throws ApiException
-     */
-    public function transformationGet(
-        string $appId,
-        string $endpointId,
-    ): EndpointTransformationOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/transformation");
-        $res = $this->client->send($request);
-
-        return EndpointTransformationOut::fromJson($res);
-    }
-
-    /**
-     * Set or unset the transformation code associated with this endpoint.
-     *
-     * @throws ApiException
-     */
-    public function patchTransformation(
-        string $appId,
-        string $endpointId,
-        EndpointTransformationPatch $endpointTransformationPatch,
-    ): void {
-        $request = $this->client->newReq('PATCH', "/api/v1/app/{$appId}/endpoint/{$endpointId}/transformation");
-        $request->setBody(json_encode($endpointTransformationPatch));
         $res = $this->client->sendNoResponseBody($request);
     }
 

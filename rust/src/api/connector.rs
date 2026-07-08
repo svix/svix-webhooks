@@ -74,7 +74,7 @@ impl<'a> Connector<'a> {
     }
 
     /// Create or update a connector.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         connector_id: String,
         connector_update: ConnectorUpdate,

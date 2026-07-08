@@ -72,7 +72,7 @@ export class Connector {
   }
 
   /** Create or update a connector. */
-  public async update(
+  public async upsert(
     connectorId: string,
     connectorUpdate: ConnectorUpdate
   ): Promise<ConnectorOut> {

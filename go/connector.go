@@ -111,7 +111,7 @@ func (connector Connector) Get(
 }
 
 // Create or update a connector.
-func (connector Connector) Update(
+func (connector Connector) Upsert(
 	ctx context.Context,
 	connectorId string,
 	connectorUpdate models.ConnectorUpdate,

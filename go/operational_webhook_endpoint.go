@@ -112,7 +112,7 @@ func (operationalWebhookEndpoint OperationalWebhookEndpoint) Get(
 }
 
 // Create or update an operational webhook endpoint.
-func (operationalWebhookEndpoint OperationalWebhookEndpoint) Update(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) Upsert(
 	ctx context.Context,
 	endpointId string,
 	operationalWebhookEndpointUpdate models.OperationalWebhookEndpointUpdate,
@@ -233,7 +233,7 @@ func (operationalWebhookEndpoint OperationalWebhookEndpoint) GetHeaders(
 }
 
 // Set the additional headers to be sent with the operational webhook.
-func (operationalWebhookEndpoint OperationalWebhookEndpoint) UpdateHeaders(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) SetHeaders(
 	ctx context.Context,
 	endpointId string,
 	operationalWebhookEndpointHeadersIn models.OperationalWebhookEndpointHeadersIn,

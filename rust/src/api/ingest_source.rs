@@ -75,7 +75,7 @@ impl<'a> IngestSource<'a> {
     }
 
     /// Create or update an Ingest Source.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         source_id: String,
         ingest_source_in: IngestSourceIn,

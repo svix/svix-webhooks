@@ -76,7 +76,7 @@ class OperationalWebhookEndpoint
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $endpointId,
         OperationalWebhookEndpointUpdate $operationalWebhookEndpointUpdate,
     ): OperationalWebhookEndpointOut {
@@ -153,7 +153,7 @@ class OperationalWebhookEndpoint
      *
      * @throws ApiException
      */
-    public function updateHeaders(
+    public function setHeaders(
         string $endpointId,
         OperationalWebhookEndpointHeadersIn $operationalWebhookEndpointHeadersIn,
     ): void {

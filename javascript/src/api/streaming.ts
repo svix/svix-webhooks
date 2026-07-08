@@ -8,10 +8,6 @@ import {
   type HttpSinkHeadersPatchIn,
   HttpSinkHeadersPatchInSerializer,
 } from "../models/httpSinkHeadersPatchIn";
-import {
-  type SinkTransformationOut,
-  SinkTransformationOutSerializer,
-} from "../models/sinkTransformationOut";
 import { StreamingEventType } from "./streamingEventType";
 import { StreamingEvents } from "./streamingEvents";
 import { StreamingSink } from "./streamingSink";
@@ -35,25 +31,6 @@ export class Streaming {
 
   public get stream() {
     return new StreamingStream(this.requestCtx);
-  }
-
-  /** Get the transformation code associated with this sink. */
-  public async sinkTransformationGet(
-    streamId: string,
-    sinkId: string
-  ): Promise<SinkTransformationOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation"
-    );
-
-    request.setPathParam("stream_id", streamId);
-    request.setPathParam("sink_id", sinkId);
-
-    return await request.send(
-      this.requestCtx,
-      SinkTransformationOutSerializer._fromJsonObject
-    );
   }
 
   /**

@@ -332,7 +332,7 @@ namespace Svix
         /// <summary>
         /// Create or update an event type.
         /// </summary>
-        public async Task<EventTypeOut> UpdateAsync(
+        public async Task<EventTypeOut> UpsertAsync(
             string eventTypeName,
             EventTypeUpdate eventTypeUpdate,
             CancellationToken cancellationToken = default
@@ -356,7 +356,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -365,7 +365,7 @@ namespace Svix
         /// <summary>
         /// Create or update an event type.
         /// </summary>
-        public EventTypeOut Update(string eventTypeName, EventTypeUpdate eventTypeUpdate)
+        public EventTypeOut Upsert(string eventTypeName, EventTypeUpdate eventTypeUpdate)
         {
             eventTypeUpdate =
                 eventTypeUpdate ?? throw new ArgumentNullException(nameof(eventTypeUpdate));
@@ -384,7 +384,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }

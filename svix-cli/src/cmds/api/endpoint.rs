@@ -4,6 +4,7 @@ use svix::api::Svix;
 #[allow(unused_imports)]
 use svix::models::*;
 
+use super::endpoint_transformation::EndpointTransformationArgs;
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {
     /// Limit the number of returned items
@@ -140,6 +141,7 @@ pub struct EndpointArgs {
 #[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum EndpointCommands {
+    Transformation(EndpointTransformationArgs),
     /// List the application's endpoints.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -242,12 +244,15 @@ pub enum EndpointCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
 }\n")]
-    Get { app_id: String, id: String },
+    Get {
+        app_id: String,
+        id: String,
+    },
     /// Create or update an endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint update app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "Example: svix endpoint upsert app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -276,7 +281,7 @@ pub enum EndpointCommands {
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
 }\n")]
-    Update {
+    Upsert {
         app_id: String,
         id: String,
         endpoint_update: crate::json::JsonOf<EndpointUpdate>,
@@ -290,7 +295,10 @@ pub enum EndpointCommands {
             "\n",
             "{all-args}",
         ))]
-    Delete { app_id: String, id: String },
+    Delete {
+        app_id: String,
+        id: String,
+    },
     /// Partially update an endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -345,7 +353,10 @@ pub enum EndpointCommands {
 {
   \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
 }\n")]
-    GetSecret { app_id: String, id: String },
+    GetSecret {
+        app_id: String,
+        id: String,
+    },
     /// Rotates the endpoint's signing secret.
     ///
     /// The previous secret will remain valid for the specified grace period (default 24 hours).
@@ -386,12 +397,15 @@ pub enum EndpointCommands {
   },
   \"sensitive\": [\"Authorization\"]
 }\n")]
-    GetHeaders { app_id: String, id: String },
+    GetHeaders {
+        app_id: String,
+        id: String,
+    },
     /// Set the additional headers to be sent with the webhook.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint update-headers app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "Example: svix endpoint set-headers app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -403,7 +417,7 @@ pub enum EndpointCommands {
     \"X-Foobar\": \"Bar\"
   }
 }\n")]
-    UpdateHeaders {
+    SetHeaders {
         app_id: String,
         id: String,
         endpoint_headers_in: crate::json::JsonOf<EndpointHeadersIn>,
@@ -429,43 +443,6 @@ pub enum EndpointCommands {
         app_id: String,
         id: String,
         endpoint_headers_patch_in: crate::json::JsonOf<EndpointHeadersPatchIn>,
-    },
-    /// Get the transformation code associated with this endpoint.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint transformation-get app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"code\": \"...\",
-  \"enabled\": true,
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"variables\": {\"key\": \"...\"}
-}\n")]
-    TransformationGet { app_id: String, id: String },
-    /// Set or unset the transformation code associated with this endpoint.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint patch-transformation app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"code\": \"function handler(webhook) { /* ... */ }\",
-  \"enabled\": true,
-  \"variables\": {\"key\": \"...\"}
-}\n")]
-    PatchTransformation {
-        app_id: String,
-        id: String,
-        endpoint_transformation_patch: Option<crate::json::JsonOf<EndpointTransformationPatch>>,
     },
     /// Replays messages to the endpoint.
     ///
@@ -683,6 +660,9 @@ impl EndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
+            Self::Transformation(args) => {
+                args.command.exec(client, color_mode).await?;
+            }
             Self::List { app_id, options } => {
                 let resp = client.endpoint().list(app_id, Some(options.into())).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
@@ -702,14 +682,14 @@ impl EndpointCommands {
                 let resp = client.endpoint().get(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 app_id,
                 id,
                 endpoint_update,
             } => {
                 let resp = client
                     .endpoint()
-                    .update(app_id, id, endpoint_update.into_inner())
+                    .upsert(app_id, id, endpoint_update.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -751,14 +731,14 @@ impl EndpointCommands {
                 let resp = client.endpoint().get_headers(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::UpdateHeaders {
+            Self::SetHeaders {
                 app_id,
                 id,
                 endpoint_headers_in,
             } => {
                 client
                     .endpoint()
-                    .update_headers(app_id, id, endpoint_headers_in.into_inner())
+                    .set_headers(app_id, id, endpoint_headers_in.into_inner())
                     .await?;
             }
             Self::PatchHeaders {
@@ -769,26 +749,6 @@ impl EndpointCommands {
                 client
                     .endpoint()
                     .patch_headers(app_id, id, endpoint_headers_patch_in.into_inner())
-                    .await?;
-            }
-            Self::TransformationGet { app_id, id } => {
-                let resp = client.endpoint().transformation_get(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::PatchTransformation {
-                app_id,
-                id,
-                endpoint_transformation_patch,
-            } => {
-                client
-                    .endpoint()
-                    .patch_transformation(
-                        app_id,
-                        id,
-                        endpoint_transformation_patch
-                            .unwrap_or_default()
-                            .into_inner(),
-                    )
                     .await?;
             }
             Self::ReplayMissing {
