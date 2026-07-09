@@ -47,9 +47,4 @@ impl Svix {
             {{ resource_type_name }}::new(&self.cfg)
         }
     {% endfor -%}
-
-    #[deprecated = "Use .operational_webhook().endpoint() instead"]
-    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
-        OperationalWebhookEndpoint::new(&self.cfg)
-    }
 }

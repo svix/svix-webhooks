@@ -29,7 +29,6 @@ type (
 		{% for resource in api.resources -%}
 		{{ resource.name | to_upper_camel_case }} *{{ resource.name | to_upper_camel_case }}
 		{% endfor -%}
-		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
 
@@ -67,7 +66,6 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 		{% for resource in api.resources -%}
 		{{ resource.name | to_upper_camel_case }}: new{{ resource.name | to_upper_camel_case }}(&svixHttpClient),
 		{% endfor -%}
-		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil
 }

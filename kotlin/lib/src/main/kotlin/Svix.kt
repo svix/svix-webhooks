@@ -15,7 +15,6 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val statistics: Statistics
     val streaming: Streaming
     val operationalWebhook: OperationalWebhook
-    val operationalWebhookEndpoint: OperationalWebhookEndpoint
 
     init {
         val tokenParts = token.split(".")
@@ -49,6 +48,5 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
         statistics = Statistics(httpClient)
         streaming = Streaming(httpClient)
         operationalWebhook = OperationalWebhook(httpClient)
-        operationalWebhookEndpoint = OperationalWebhookEndpoint(httpClient)
     }
 }

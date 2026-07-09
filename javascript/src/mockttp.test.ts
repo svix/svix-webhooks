@@ -226,7 +226,7 @@ test("mockttp tests", async (t) => {
       .thenReply(200, ListResponseOperationalWebhookEndpointOut);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
-    await svx.operationalWebhookEndpoint.list();
+    await svx.operationalWebhook.endpoint.list();
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
