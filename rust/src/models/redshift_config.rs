@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// For provisioned clusters, set `cluster_identifier` and `db_user`. For
 /// Redshift Serverless, set `workgroup_name`.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RedshiftConfig {
     #[serde(rename = "accessKeyId")]
     pub access_key_id: String,

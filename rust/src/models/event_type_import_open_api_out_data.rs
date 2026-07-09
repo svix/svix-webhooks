@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::event_type_from_open_api::EventTypeFromOpenApi;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventTypeImportOpenApiOutData {
     pub modified: Vec<String>,
 

@@ -13,7 +13,7 @@ use super::{
     veriff_config::VeriffConfig, vgs_config::VgsConfig, zoom_config::ZoomConfig,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestSourceIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
@@ -117,11 +117,4 @@ pub enum IngestSourceInConfig {
     Airwallex(AirwallexConfig),
     #[serde(rename = "vgs")]
     Vgs(VgsConfig),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for IngestSourceInConfig {
-    fn default() -> Self {
-        Self::GenericWebhook
-    }
 }

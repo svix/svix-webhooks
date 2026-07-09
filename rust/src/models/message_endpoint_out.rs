@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{message_status::MessageStatus, message_status_text::MessageStatusText};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct MessageEndpointOut {
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]

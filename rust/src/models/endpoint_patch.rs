@@ -2,7 +2,7 @@
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointPatch {
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub channels: JsOption<Vec<String>>,
@@ -70,5 +70,11 @@ impl EndpointPatch {
             url: None,
             version: None,
         }
+    }
+}
+
+impl Default for EndpointPatch {
+    fn default() -> Self {
+        Self::new()
     }
 }

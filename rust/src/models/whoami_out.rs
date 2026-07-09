@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::authentication_source::AuthenticationSource;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct WhoamiOut {
     /// The dispatch application that the current token is limited to, if there
     /// is one

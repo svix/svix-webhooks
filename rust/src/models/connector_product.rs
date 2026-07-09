@@ -3,11 +3,8 @@ use std::fmt;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(
-    Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize,
-)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum ConnectorProduct {
-    #[default]
     #[serde(rename = "Dispatch")]
     Dispatch,
     #[serde(rename = "Stream")]

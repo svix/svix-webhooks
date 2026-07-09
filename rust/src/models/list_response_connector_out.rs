@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::connector_out::ConnectorOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseConnectorOut {
     pub data: Vec<ConnectorOut>,
 

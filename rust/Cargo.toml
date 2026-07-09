@@ -84,3 +84,4 @@ unnameable_types = "warn"
 [lints.clippy]
 all = { priority = -1, level = "warn" }
 literal_string_with_formatting_args = "allow"
+new_without_default = "allow"

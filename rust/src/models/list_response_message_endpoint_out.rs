@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::message_endpoint_out::MessageEndpointOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseMessageEndpointOut {
     pub data: Vec<MessageEndpointOut>,
 

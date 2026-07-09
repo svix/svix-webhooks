@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::connector_kind::ConnectorKind;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ConnectorUpdate {
     #[serde(rename = "allowedEventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]

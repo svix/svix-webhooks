@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct AzureBlobStoragePatchConfig {
     #[serde(rename = "accessKey")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -21,5 +21,11 @@ impl AzureBlobStoragePatchConfig {
             account: None,
             container: None,
         }
+    }
+}
+
+impl Default for AzureBlobStoragePatchConfig {
+    fn default() -> Self {
+        Self::new()
     }
 }

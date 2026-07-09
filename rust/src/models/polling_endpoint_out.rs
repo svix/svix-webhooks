@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::polling_endpoint_message_out::PollingEndpointMessageOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PollingEndpointOut {
     pub data: Vec<PollingEndpointMessageOut>,
 

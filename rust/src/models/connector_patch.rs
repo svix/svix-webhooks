@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::connector_kind::ConnectorKind;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ConnectorPatch {
     #[serde(rename = "allowedEventTypes")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
@@ -45,5 +45,11 @@ impl ConnectorPatch {
             name: None,
             transformation: None,
         }
+    }
+}
+
+impl Default for ConnectorPatch {
+    fn default() -> Self {
+        Self::new()
     }
 }

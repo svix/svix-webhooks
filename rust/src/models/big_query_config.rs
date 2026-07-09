@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Configuration for a Google Cloud BigQuery sink.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct BigQueryConfig {
     /// Google Cloud Credentials JSON Object as a string.
     pub credentials: String,
