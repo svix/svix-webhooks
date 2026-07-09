@@ -34,7 +34,7 @@ fn token_example() -> &'static str {
 }
 
 #[derive(Deserialize, Serialize, JsonSchema)]
-pub struct DashboardAccessOut {
+pub struct AppPortalAccessOut {
     #[schemars(url, example = "login_url_example", length(min = 1, max = 65_536))]
     pub url: String,
     #[schemars(example = "token_example")]
@@ -59,18 +59,6 @@ pub struct AppPortalAccessIn {
     #[validate]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub application: Option<ApplicationIn>,
-}
-
-#[derive(Serialize, JsonSchema)]
-pub struct AppPortalAccessOut {
-    #[serde(flatten)]
-    common_: DashboardAccessOut,
-}
-
-impl From<DashboardAccessOut> for AppPortalAccessOut {
-    fn from(common_: DashboardAccessOut) -> Self {
-        Self { common_ }
-    }
 }
 
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
@@ -110,10 +98,10 @@ async fn app_portal_access(
         data.feature_flags,
     )?;
 
-    Ok(Json(AppPortalAccessOut::from(DashboardAccessOut {
+    Ok(Json(AppPortalAccessOut {
         url: "https://docs.svix.com/app-portal/oss".to_owned(),
         token,
-    })))
+    }))
 }
 
 /// DEPRECATED: Please use `app-portal-access` instead.
@@ -124,7 +112,7 @@ async fn dashboard_access(
     state: State<AppState>,
     path: Path<ApplicationPath>,
     permissions: permissions::Organization,
-) -> Result<Json<DashboardAccessOut>> {
+) -> Result<Json<AppPortalAccessOut>> {
     app_portal_access(
         state,
         path,
@@ -135,7 +123,6 @@ async fn dashboard_access(
         }),
     )
     .await
-    .map(|Json(AppPortalAccessOut { common_: out })| Json(out))
 }
 
 const LOGOUT_DESCRIPTION: &str = r#"
@@ -153,10 +140,10 @@ fn logout_operation(op: TransformOperation<'_>) -> TransformOperation<'_> {
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Authentication");
     ApiRouter::new()
-        .api_route_with(
+        // use route / axum::routing to skip OpenAPI inclusion for the deprecated route
+        .route(
             "/auth/dashboard-access/:app_id",
-            post_with(dashboard_access, dashboard_access_operation),
-            &tag,
+            axum::routing::post(dashboard_access),
         )
         .api_route_with(
             "/auth/logout",
