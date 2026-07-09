@@ -143,8 +143,4 @@ impl Svix {
     pub fn streaming(&self) -> Streaming<'_> {
         Streaming::new(&self.cfg)
     }
-    #[deprecated = "Use .operational_webhook().endpoint() instead"]
-    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
-        OperationalWebhookEndpoint::new(&self.cfg)
-    }
 }

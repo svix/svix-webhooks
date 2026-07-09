@@ -14,7 +14,6 @@ import { MessageAttempt } from "./api/messageAttempt";
 import { OperationalWebhook } from "./api/operationalWebhook";
 import { Statistics } from "./api/statistics";
 import { Streaming } from "./api/streaming";
-import { OperationalWebhookEndpoint } from "./api/operationalWebhookEndpoint";
 import type { SvixRequestContext } from "./request";
 
 export { type PostOptions, ApiException } from "./util";
@@ -30,7 +29,6 @@ export type { EventTypeListOptions } from "./api/eventType";
 export type { IntegrationListOptions } from "./api/integration";
 export { type MessageListOptions, messageInRaw } from "./api/message";
 export type { MessageAttemptListByEndpointOptions } from "./api/messageAttempt";
-export type { OperationalWebhookEndpointListOptions } from "./api/operationalWebhookEndpoint";
 
 export type SvixOptions = {
   debug?: boolean;
@@ -157,10 +155,6 @@ export class Svix {
 
   public get streaming() {
     return new Streaming(this.requestCtx);
-  }
-
-  public get operationalWebhookEndpoint() {
-    return new OperationalWebhookEndpoint(this.requestCtx);
   }
 }
 

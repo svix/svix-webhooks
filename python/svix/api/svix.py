@@ -21,10 +21,6 @@ from .integration import Integration, IntegrationAsync
 from .message import Message, MessageAsync
 from .message_attempt import MessageAttempt, MessageAttemptAsync
 from .operational_webhook import OperationalWebhook, OperationalWebhookAsync
-from .operational_webhook_endpoint import (
-    OperationalWebhookEndpoint,
-    OperationalWebhookEndpointAsync,
-)
 from .statistics import Statistics, StatisticsAsync
 from .streaming import Streaming, StreamingAsync
 
@@ -167,10 +163,6 @@ class SvixAsync(ClientBase):
     def streaming(self) -> StreamingAsync:
         return StreamingAsync(self._client, self._httpx_client)
 
-    @property
-    def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
-        return OperationalWebhookEndpointAsync(self._client, self._httpx_client)
-
 
 class Svix(ClientBase):
     _httpx_client: httpx.Client
@@ -238,7 +230,3 @@ class Svix(ClientBase):
     @property
     def streaming(self) -> Streaming:
         return Streaming(self._client, self._httpx_client)
-
-    @property
-    def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
-        return OperationalWebhookEndpoint(self._client, self._httpx_client)

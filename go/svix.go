@@ -26,22 +26,21 @@ type (
 		// to override the user agent use `SetUseragentSuffix`
 		client *internal.SvixHttpClient
 
-		Application                *Application
-		Authentication             *Authentication
-		BackgroundTask             *BackgroundTask
-		Connector                  *Connector
-		Endpoint                   *Endpoint
-		Environment                *Environment
-		EventType                  *EventType
-		Health                     *Health
-		Ingest                     *Ingest
-		Integration                *Integration
-		Message                    *Message
-		MessageAttempt             *MessageAttempt
-		OperationalWebhook         *OperationalWebhook
-		Statistics                 *Statistics
-		Streaming                  *Streaming
-		OperationalWebhookEndpoint *OperationalWebhookEndpoint
+		Application        *Application
+		Authentication     *Authentication
+		BackgroundTask     *BackgroundTask
+		Connector          *Connector
+		Endpoint           *Endpoint
+		Environment        *Environment
+		EventType          *EventType
+		Health             *Health
+		Ingest             *Ingest
+		Integration        *Integration
+		Message            *Message
+		MessageAttempt     *MessageAttempt
+		OperationalWebhook *OperationalWebhook
+		Statistics         *Statistics
+		Streaming          *Streaming
 	}
 )
 
@@ -75,22 +74,21 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	svx := Svix{
 		client: &svixHttpClient,
 
-		Application:                newApplication(&svixHttpClient),
-		Authentication:             newAuthentication(&svixHttpClient),
-		BackgroundTask:             newBackgroundTask(&svixHttpClient),
-		Connector:                  newConnector(&svixHttpClient),
-		Endpoint:                   newEndpoint(&svixHttpClient),
-		Environment:                newEnvironment(&svixHttpClient),
-		EventType:                  newEventType(&svixHttpClient),
-		Health:                     newHealth(&svixHttpClient),
-		Ingest:                     newIngest(&svixHttpClient),
-		Integration:                newIntegration(&svixHttpClient),
-		Message:                    newMessage(&svixHttpClient),
-		MessageAttempt:             newMessageAttempt(&svixHttpClient),
-		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),
-		Statistics:                 newStatistics(&svixHttpClient),
-		Streaming:                  newStreaming(&svixHttpClient),
-		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
+		Application:        newApplication(&svixHttpClient),
+		Authentication:     newAuthentication(&svixHttpClient),
+		BackgroundTask:     newBackgroundTask(&svixHttpClient),
+		Connector:          newConnector(&svixHttpClient),
+		Endpoint:           newEndpoint(&svixHttpClient),
+		Environment:        newEnvironment(&svixHttpClient),
+		EventType:          newEventType(&svixHttpClient),
+		Health:             newHealth(&svixHttpClient),
+		Ingest:             newIngest(&svixHttpClient),
+		Integration:        newIntegration(&svixHttpClient),
+		Message:            newMessage(&svixHttpClient),
+		MessageAttempt:     newMessageAttempt(&svixHttpClient),
+		OperationalWebhook: newOperationalWebhook(&svixHttpClient),
+		Statistics:         newStatistics(&svixHttpClient),
+		Streaming:          newStreaming(&svixHttpClient),
 	}
 	return &svx, nil
 }

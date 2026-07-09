@@ -283,7 +283,7 @@ public class WiremockTests {
                 WireMock.delete(urlEqualTo("/api/v1/operational-webhook/endpoint/ep"))
                         .willReturn(WireMock.status(204)));
 
-        svx.getOperationalWebhookEndpoint().delete("ep");
+        svx.getOperationalWebhook().getEndpoint().delete("ep");
         wireMockRule.verify(
                 1, deleteRequestedFor(urlEqualTo("/api/v1/operational-webhook/endpoint/ep")));
     }
