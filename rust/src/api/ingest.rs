@@ -34,7 +34,7 @@ impl<'a> Ingest<'a> {
         let IngestDashboardOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/ingest/api/v1/source/{source_id}/dashboard",
         )
         .with_path_param("source_id", source_id)

@@ -3,10 +3,11 @@ use crate::{
     api_internal,
     error::Result,
     models::{EndpointIn, EndpointOut, SubscribeIn},
-    webhooks::{HeaderMap, Webhook, WebhookError},
+    webhooks::{Webhook, WebhookError},
 };
 
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
+use http::HeaderMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -88,10 +89,10 @@ impl AutoConfig {
             .await
     }
 
-    pub fn verify<HM: HeaderMap>(
+    pub fn verify(
         &self,
         payload: &[u8],
-        headers: &HM,
+        headers: &HeaderMap,
     ) -> std::result::Result<(), WebhookError> {
         self.webhook.verify(payload, headers)
     }

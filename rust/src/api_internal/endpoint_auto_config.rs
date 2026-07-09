@@ -18,7 +18,7 @@ impl<'a> EndpointAutoConfig<'a> {
         subscribe_in: SubscribeIn,
     ) -> Result<EndpointOut> {
         crate::request::Request::new(
-            http1::Method::PUT,
+            http::Method::PUT,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/auto-config",
         )
         .with_path_param("app_id", app_id)

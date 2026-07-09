@@ -13,7 +13,7 @@ fn check_for_conflict(e: Error) {
         Error::Http(e) => {
             assert_eq!(
                 e.status,
-                http02::StatusCode::CONFLICT,
+                http::StatusCode::CONFLICT,
                 "conflicts are expected but other statuses are not"
             );
         }

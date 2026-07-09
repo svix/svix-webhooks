@@ -31,7 +31,7 @@ impl<'a> Environment<'a> {
     ) -> Result<EnvironmentOut> {
         let EnvironmentExportOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/environment/export")
+        crate::request::Request::new(http::Method::POST, "/api/v1/environment/export")
             .with_optional_header_param("idempotency-key", idempotency_key)
             .execute(self.cfg)
             .await
@@ -51,7 +51,7 @@ impl<'a> Environment<'a> {
     ) -> Result<()> {
         let EnvironmentImportOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/environment/import")
+        crate::request::Request::new(http::Method::POST, "/api/v1/environment/import")
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(environment_in)
             .returns_nothing()

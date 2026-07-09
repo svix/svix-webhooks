@@ -44,7 +44,7 @@ impl<'a> StreamingSink<'a> {
             order,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/stream/{stream_id}/sink")
+        crate::request::Request::new(http::Method::GET, "/api/v1/stream/{stream_id}/sink")
             .with_path_param("stream_id", stream_id)
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
@@ -62,7 +62,7 @@ impl<'a> StreamingSink<'a> {
     ) -> Result<StreamSinkOut> {
         let StreamingSinkCreateOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/sink")
+        crate::request::Request::new(http::Method::POST, "/api/v1/stream/{stream_id}/sink")
             .with_path_param("stream_id", stream_id)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(stream_sink_in)
@@ -73,7 +73,7 @@ impl<'a> StreamingSink<'a> {
     /// Get a sink by id or uid.
     pub async fn get(&self, stream_id: String, sink_id: String) -> Result<StreamSinkOut> {
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
         .with_path_param("stream_id", stream_id)
@@ -90,7 +90,7 @@ impl<'a> StreamingSink<'a> {
         stream_sink_in: StreamSinkIn,
     ) -> Result<StreamSinkOut> {
         crate::request::Request::new(
-            http1::Method::PUT,
+            http::Method::PUT,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
         .with_path_param("stream_id", stream_id)
@@ -103,7 +103,7 @@ impl<'a> StreamingSink<'a> {
     /// Delete a sink.
     pub async fn delete(&self, stream_id: String, sink_id: String) -> Result<()> {
         crate::request::Request::new(
-            http1::Method::DELETE,
+            http::Method::DELETE,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
         .with_path_param("stream_id", stream_id)
@@ -121,7 +121,7 @@ impl<'a> StreamingSink<'a> {
         stream_sink_patch: StreamSinkPatch,
     ) -> Result<StreamSinkOut> {
         crate::request::Request::new(
-            http1::Method::PATCH,
+            http::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}",
         )
         .with_path_param("stream_id", stream_id)
@@ -139,7 +139,7 @@ impl<'a> StreamingSink<'a> {
         sink_transform_in: SinkTransformIn,
     ) -> Result<EmptyResponse> {
         crate::request::Request::new(
-            http1::Method::PATCH,
+            http::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
         )
         .with_path_param("stream_id", stream_id)
@@ -156,7 +156,7 @@ impl<'a> StreamingSink<'a> {
     /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     pub async fn get_secret(&self, stream_id: String, sink_id: String) -> Result<SinkSecretOut> {
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/secret",
         )
         .with_path_param("stream_id", stream_id)
@@ -176,7 +176,7 @@ impl<'a> StreamingSink<'a> {
         let StreamingSinkRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate",
         )
         .with_path_param("stream_id", stream_id)
