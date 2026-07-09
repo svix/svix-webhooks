@@ -15,6 +15,7 @@ mod environment;
 mod event_type;
 mod health;
 mod ingest;
+mod ingest_authentication;
 mod ingest_endpoint;
 mod ingest_endpoint_transformation;
 mod ingest_source;
@@ -56,7 +57,10 @@ pub use self::{
         EventTypeListOptions,
     },
     health::Health,
-    ingest::{Ingest, IngestDashboardOptions},
+    ingest::Ingest,
+    ingest_authentication::{
+        IngestAuthentication, IngestAuthenticationConsumerPortalAccessOptions,
+    },
     ingest_endpoint::{
         IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
         IngestEndpointRotateSecretOptions,

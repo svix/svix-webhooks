@@ -1,9 +1,9 @@
 # This file is @generated
-import typing as t
-from dataclasses import dataclass
-
-from ..models import DashboardAccessOut, IngestSourceConsumerPortalAccessIn
-from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync
+from .ingest_authentication import (
+    IngestAuthentication,
+    IngestAuthenticationAsync,
+)
 from .ingest_endpoint import (
     IngestEndpoint,
     IngestEndpointAsync,
@@ -14,19 +14,11 @@ from .ingest_source import (
 )
 
 
-@dataclass
-class IngestDashboardOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
 class IngestAsync(ApiBaseAsync):
+    @property
+    def authentication(self) -> IngestAuthenticationAsync:
+        return IngestAuthenticationAsync(self._client, self._httpx_client)
+
     @property
     def endpoint(self) -> IngestEndpointAsync:
         return IngestEndpointAsync(self._client, self._httpx_client)
@@ -35,29 +27,12 @@ class IngestAsync(ApiBaseAsync):
     def source(self) -> IngestSourceAsync:
         return IngestSourceAsync(self._client, self._httpx_client)
 
-    async def dashboard(
-        self,
-        source_id: str,
-        ingest_source_consumer_portal_access_in: IngestSourceConsumerPortalAccessIn,
-        options: IngestDashboardOptions = (IngestDashboardOptions()),
-    ) -> DashboardAccessOut:
-        """Get access to the Ingest Source Consumer Portal."""
-        response = await self._request_asyncio(
-            method="post",
-            path="/ingest/api/v1/source/{source_id}/dashboard",
-            path_params={
-                "source_id": source_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=ingest_source_consumer_portal_access_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-        return DashboardAccessOut.model_validate(response.json())
-
 
 class Ingest(ApiBaseSync):
+    @property
+    def authentication(self) -> IngestAuthentication:
+        return IngestAuthentication(self._client, self._httpx_client)
+
     @property
     def endpoint(self) -> IngestEndpoint:
         return IngestEndpoint(self._client, self._httpx_client)
@@ -65,24 +40,3 @@ class Ingest(ApiBaseSync):
     @property
     def source(self) -> IngestSource:
         return IngestSource(self._client, self._httpx_client)
-
-    def dashboard(
-        self,
-        source_id: str,
-        ingest_source_consumer_portal_access_in: IngestSourceConsumerPortalAccessIn,
-        options: IngestDashboardOptions = (IngestDashboardOptions()),
-    ) -> DashboardAccessOut:
-        """Get access to the Ingest Source Consumer Portal."""
-        response = self._request_sync(
-            method="post",
-            path="/ingest/api/v1/source/{source_id}/dashboard",
-            path_params={
-                "source_id": source_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=ingest_source_consumer_portal_access_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-        return DashboardAccessOut.model_validate(response.json())

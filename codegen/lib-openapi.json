@@ -36361,9 +36361,9 @@
                 "tags": [
                     "Ingest Source"
                 ],
-                "summary": "Ingest Source Consumer Portal",
+                "summary": "Ingest Source Consumer Portal Access",
                 "description": "Get access to the Ingest Source Consumer Portal.",
-                "operationId": "v1.ingest.dashboard",
+                "operationId": "v1.ingest.authentication.consumer-portal-access",
                 "parameters": [
                     {
                         "in": "path",
@@ -36405,7 +36405,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/DashboardAccessOut"
+                                    "$ref": "#/components/schemas/AppPortalAccessOut"
                                 }
                             }
                         }
@@ -36490,62 +36490,62 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.ingest.dashboard(\"src_31Dc4Mx7vQVLfxFgArIhq\", {\n  expiry: 1,\n  readOnly: true,\n});"
+                        "source": "const response = await svix.ingest.authentication.consumerPortalAccess(\n  \"src_31Dc4Mx7vQVLfxFgArIhq\",\n  {\n    expiry: 1,\n    readOnly: true,\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.ingest.dashboard(\"src_31Dc4Mx7vQVLfxFgArIhq\", {\n  expiry: 1,\n  readOnly: true,\n});"
+                        "source": "const response = await svix.ingest.authentication.consumerPortalAccess(\n  \"src_31Dc4Mx7vQVLfxFgArIhq\",\n  {\n    expiry: 1,\n    readOnly: true,\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.ingest.dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
+                        "source": "response = svix.ingest.authentication.consumer_portal_access(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.ingest.dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
+                        "source": "response = await svix.ingest.authentication.consumer_portal_access(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Ingest.Dashboard(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceConsumerPortalAccessIn{Expiry: new(uint64(1)), ReadOnly: new(true)},\n\tnil,\n)"
+                        "source": "response, err := svix.Ingest.Authentication.ConsumerPortalAccess(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceConsumerPortalAccessIn{Expiry: new(uint64(1)), ReadOnly: new(true)},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.ingest.dashboard(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\",\n        IngestSourceConsumerPortalAccessIn(expiry = 1u, readOnly = true),\n    )"
+                        "source": "val response =\n    svix.ingest.authentication.consumerPortalAccess(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\",\n        IngestSourceConsumerPortalAccessIn(expiry = 1u, readOnly = true),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getIngest()\n        .dashboard(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            new IngestSourceConsumerPortalAccessIn().expiry(1L).readOnly(true));"
+                        "source": "var response = svix.getIngest()\n        .getAuthentication()\n        .consumerPortalAccess(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            new IngestSourceConsumerPortalAccessIn().expiry(1L).readOnly(true));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix.ingest.dashboard(\"src_31Dc4Mx7vQVLfxFgArIhq\", {expiry: 1, readOnly: true})"
+                        "source": "response = svix.ingest.authentication.consumer_portal_access(\"src_31Dc4Mx7vQVLfxFgArIhq\", {expiry: 1, readOnly: true})"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .ingest()\n    .dashboard(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\".to_string(),\n        IngestSourceConsumerPortalAccessIn {\n            expiry: Some(1),\n            read_only: Some(true),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .ingest()\n    .authentication()\n    .consumer_portal_access(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\".to_string(),\n        IngestSourceConsumerPortalAccessIn {\n            expiry: Some(1),\n            read_only: Some(true),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Ingest.Dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestSourceConsumerPortalAccessIn { Expiry = 1, ReadOnly = true }\n);"
+                        "source": "var response = svix.Ingest.Authentication.ConsumerPortalAccess(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestSourceConsumerPortalAccessIn { Expiry = 1, ReadOnly = true }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->ingest->dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn::create()\n    ->withExpiry(1)\n    ->withReadOnly(true)\n);"
+                        "source": "$response = $svix->ingest->authentication->consumerPortalAccess(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn::create()\n    ->withExpiry(1)\n    ->withReadOnly(true)\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix ingest dashboard \"src_31Dc4Mx7vQVLfxFgArIhq\" '{\n    \"expiry\": 1,\n    \"readOnly\": true\n  }'"
+                        "source": "svix ingest authentication consumer-portal-access \"src_31Dc4Mx7vQVLfxFgArIhq\" '{\n    \"expiry\": 1,\n    \"readOnly\": true\n  }'"
                     },
                     {
                         "lang": "Shell",
@@ -41002,26 +41002,6 @@
                     "loc",
                     "msg",
                     "type"
-                ]
-            },
-            "DashboardAccessOut": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "type": "string",
-                        "format": "uri",
-                        "minLength": 1,
-                        "maxLength": 65536,
-                        "example": "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl"
-                    },
-                    "token": {
-                        "type": "string",
-                        "example": "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"
-                    }
-                },
-                "required": [
-                    "token",
-                    "url"
                 ]
             },
             "WhoamiOut": {

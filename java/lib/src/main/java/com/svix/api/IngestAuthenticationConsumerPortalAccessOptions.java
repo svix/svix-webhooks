@@ -4,6 +4,6 @@ package com.svix.api;
 import lombok.Data;
 
 @Data
-public class IngestDashboardOptions {
+public class IngestAuthenticationConsumerPortalAccessOptions {
     String idempotencyKey;
 }

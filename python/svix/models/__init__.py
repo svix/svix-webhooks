@@ -37,7 +37,6 @@ from .connector_update import ConnectorUpdate
 from .create_stream_events_in import CreateStreamEventsIn
 from .create_stream_events_out import CreateStreamEventsOut
 from .cron_config import CronConfig
-from .dashboard_access_out import DashboardAccessOut
 from .docusign_config import DocusignConfig
 from .docusign_config_out import DocusignConfigOut
 from .easypost_config import EasypostConfig
@@ -260,7 +259,6 @@ __all__ = [
     "CreateStreamEventsIn",
     "CreateStreamEventsOut",
     "CronConfig",
-    "DashboardAccessOut",
     "DocusignConfig",
     "DocusignConfigOut",
     "EasypostConfig",

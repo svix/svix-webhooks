@@ -36,7 +36,6 @@ export { type ConnectorUpdate } from "./connectorUpdate";
 export { type CreateStreamEventsIn } from "./createStreamEventsIn";
 export { type CreateStreamEventsOut } from "./createStreamEventsOut";
 export { type CronConfig } from "./cronConfig";
-export { type DashboardAccessOut } from "./dashboardAccessOut";
 export { type DocusignConfig } from "./docusignConfig";
 export { type DocusignConfigOut } from "./docusignConfigOut";
 export { type EasypostConfig } from "./easypostConfig";
