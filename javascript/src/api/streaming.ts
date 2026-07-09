@@ -21,7 +21,7 @@ import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 export class Streaming {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
-  public get event_type() {
+  public get eventType() {
     return new StreamingEventType(this.requestCtx);
   }
 
