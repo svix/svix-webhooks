@@ -12,7 +12,7 @@ pub async fn events(
         after,
     } = params;
 
-    crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/events")
+    crate::request::Request::new(http::Method::GET, "/api/v1/app/{app_id}/events")
         .with_path_param("app_id", app_id)
         .with_optional_query_param("limit", limit)
         .with_optional_query_param("iterator", iterator)
@@ -39,7 +39,7 @@ pub async fn events_subscription(
     } = params;
 
     crate::request::Request::new(
-        http1::Method::GET,
+        http::Method::GET,
         "/api/v1/app/{app_id}/events/subscription/{subscription_id}",
     )
     .with_path_param("app_id", app_id.to_string())

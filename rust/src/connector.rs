@@ -1,6 +1,6 @@
 use std::{future::Future, pin::Pin};
 
-use http1::Uri;
+use http::Uri;
 use hyper_util::{
     client::legacy::connect::{
         proxy::{SocksV5, Tunnel},

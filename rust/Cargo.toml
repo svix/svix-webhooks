@@ -34,8 +34,7 @@ svix_beta = []
 [dependencies]
 base64 = "0.22.1"
 hmac-sha256 = "1"
-http02 = { package = "http", version = "0.2.0" }
-http1 = { package = "http", version = "1.0.0" }
+http = "1.1.14"
 http-body-util = "0.1.0"
 hyper = "1.7.0"
 hyper-rustls = { version = "0.27.7", optional = true }
