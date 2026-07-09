@@ -2,7 +2,7 @@
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamPatch {
     /// The Stream's description.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -23,5 +23,11 @@ impl StreamPatch {
             metadata: None,
             uid: JsOption::Undefined,
         }
+    }
+}
+
+impl Default for StreamPatch {
+    fn default() -> Self {
+        Self::new()
     }
 }

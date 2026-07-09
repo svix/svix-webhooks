@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::operational_webhook_endpoint_out::OperationalWebhookEndpointOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseOperationalWebhookEndpointOut {
     pub data: Vec<OperationalWebhookEndpointOut>,
 

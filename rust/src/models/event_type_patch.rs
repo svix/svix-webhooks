@@ -2,7 +2,7 @@
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventTypePatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archived: Option<bool>,
@@ -44,5 +44,11 @@ impl EventTypePatch {
             group_name: JsOption::Undefined,
             schemas: JsOption::Undefined,
         }
+    }
+}
+
+impl Default for EventTypePatch {
+    fn default() -> Self {
+        Self::new()
     }
 }

@@ -9,20 +9,9 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 /// - Manual = 1
 #[repr(i64)]
 #[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Hash,
-    Serialize_repr,
-    Deserialize_repr,
+    Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize_repr, Deserialize_repr,
 )]
 pub enum MessageAttemptTriggerType {
-    #[default]
     Scheduled = 0,
     Manual = 1,
 }

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{app_portal_capability::AppPortalCapability, application_in::ApplicationIn};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct AppPortalAccessIn {
     /// Optionally creates a new application while generating the access link.
     ///
@@ -76,5 +76,11 @@ impl AppPortalAccessIn {
             read_only: None,
             session_id: None,
         }
+    }
+}
+
+impl Default for AppPortalAccessIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

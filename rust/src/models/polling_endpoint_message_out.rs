@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 /// The MessageOut equivalent of polling endpoint
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PollingEndpointMessageOut {
     /// List of free-form identifiers that endpoints can filter by
     #[serde(skip_serializing_if = "Option::is_none")]

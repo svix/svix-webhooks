@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamPortalAccessIn {
     /// How long the token will be valid for, in seconds.
     ///
@@ -30,5 +30,11 @@ impl StreamPortalAccessIn {
             feature_flags: None,
             session_id: None,
         }
+    }
+}
+
+impl Default for StreamPortalAccessIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

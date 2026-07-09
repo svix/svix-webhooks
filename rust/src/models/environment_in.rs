@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{connector_in::ConnectorIn, event_type_in::EventTypeIn};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EnvironmentIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub connectors: Option<Vec<ConnectorIn>>,
@@ -23,5 +23,11 @@ impl EnvironmentIn {
             event_types: None,
             settings: None,
         }
+    }
+}
+
+impl Default for EnvironmentIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

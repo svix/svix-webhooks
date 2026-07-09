@@ -11,7 +11,7 @@ use super::{
     snowflake_config::SnowflakeConfig, sns_config::SnsConfig, sqs_config::SqsConfig,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamSinkIn {
     /// How many events will be batched in a request to the Sink.
     #[serde(rename = "batchSize")]
@@ -90,11 +90,4 @@ pub enum StreamSinkInConfig {
     RabbitMq(RabbitMqConfig),
     #[serde(rename = "redshift")]
     Redshift(RedshiftConfig),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for StreamSinkInConfig {
-    fn default() -> Self {
-        Self::Poller
-    }
 }

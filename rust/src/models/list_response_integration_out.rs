@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::integration_out::IntegrationOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseIntegrationOut {
     pub data: Vec<IntegrationOut>,
 

@@ -5,7 +5,7 @@ use super::{
     message_status::MessageStatus,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct MessageAttemptEndpointOut {
     /// The ep's ID
     #[serde(rename = "endpointId")]

@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointSecretRotateIn {
     /// How long the old secret will be valid for, in seconds.
     ///
@@ -26,5 +26,11 @@ impl EndpointSecretRotateIn {
             grace_period_seconds: None,
             key: None,
         }
+    }
+}
+
+impl Default for EndpointSecretRotateIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

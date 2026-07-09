@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Sensitive headers that have been redacted are returned in the sensitive
 /// field.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointHeadersOut {
     pub headers: std::collections::HashMap<String, String>,
 
