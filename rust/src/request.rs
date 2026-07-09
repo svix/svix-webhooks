@@ -8,7 +8,7 @@ use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
 use itertools::Itertools as _;
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
-use rand::Rng;
+use rand::random;
 use serde::de::DeserializeOwned;
 
 use crate::{error::Error, models, Configuration};
@@ -125,7 +125,7 @@ impl Request {
         let mut request = self.build_request(conf)?;
         request
             .headers_mut()
-            .insert("svix-req-id", rand::rng().random::<u32>().into());
+            .insert("svix-req-id", random::<u32>().into());
 
         let mut retry_count = 0;
 
