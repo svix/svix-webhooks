@@ -192,7 +192,7 @@ describe "API Client" do
         body: ListResponseOperationalWebhookEndpointOut_JSON
       )
 
-    svx.operational_webhook_endpoint.list
+    svx.operational_webhook.endpoint.list
 
     expect(WebMock).to(
       have_requested(

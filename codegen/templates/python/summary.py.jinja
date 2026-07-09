@@ -9,10 +9,6 @@ import httpx
 {% for resource in api.resources %}
 from .{{ resource.name | to_snake_case }} import {{ resource.name | to_upper_camel_case }}, {{ resource.name | to_upper_camel_case }}Async
 {% endfor %}
-from .operational_webhook_endpoint import (
-    OperationalWebhookEndpoint,
-    OperationalWebhookEndpointAsync,
-)
 from .client import AuthenticatedClient
 from .common import _make_httpx_async_client, _make_httpx_client
 
@@ -100,10 +96,6 @@ class SvixAsync(ClientBase):
     def {{ resource.name | to_snake_case }}(self) -> {{ resource.name | to_upper_camel_case }}Async:
         return {{ resource.name | to_upper_camel_case }}Async(self._client, self._httpx_client)
 {% endfor %}
-    {# here for backwards compatibly #}
-    @property
-    def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
-        return OperationalWebhookEndpointAsync(self._client, self._httpx_client)
 
 
 class Svix(ClientBase):
@@ -118,8 +110,3 @@ class Svix(ClientBase):
     def {{ resource.name | to_snake_case }}(self) -> {{ resource.name | to_upper_camel_case }}:
         return {{ resource.name | to_upper_camel_case }}(self._client, self._httpx_client)
 {% endfor %}
-
-    {# here for backwards compatibly #}
-    @property
-    def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
-        return OperationalWebhookEndpoint(self._client, self._httpx_client)
