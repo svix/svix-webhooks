@@ -31,7 +31,7 @@ pub struct SeedArgs {
     options: SeedOptions,
 }
 
-#[derive(Debug, Serialize, Default)]
+#[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 struct SeedOut {
     application: ApplicationOut,
@@ -54,10 +54,6 @@ pub async fn exec(
     args: SeedArgs,
     color_mode: colored_json::ColorMode,
 ) -> anyhow::Result<()> {
-    let mut seed_out = SeedOut {
-        ..Default::default()
-    };
-
     if args.options.reset {
         let confirmation = dialoguer::Confirm::new()
          .with_prompt("This will clear out all the applications and event types! Do you want to continue? ")
@@ -72,13 +68,15 @@ pub async fn exec(
         }
     }
 
-    let application_in = ApplicationIn {
-        name: "Test application".to_string(),
-        ..Default::default()
-    };
+    let application_in = ApplicationIn::new("Test application".to_owned());
     let application_out = client.application().create(application_in, None).await?;
 
-    seed_out.application = application_out.clone();
+    let mut seed_out = SeedOut {
+        application: application_out.clone(),
+        endpoints: Vec::new(),
+        event_types: Vec::new(),
+        messages: Vec::new(),
+    };
 
     let app_id = application_out.id;
 
@@ -102,8 +100,13 @@ pub async fn exec(
         let event_type_in = EventTypeIn {
             name: format!("user.{typ}"),
             description: "".to_string(),
-            schemas: Some(json!(schema_example())),
-            ..Default::default()
+            schemas: Some(schema_example()),
+            archived: None,
+            deprecated: None,
+            #[expect(deprecated)]
+            feature_flag: None,
+            feature_flags: None,
+            group_name: None,
         };
         let res = client.event_type().create(event_type_in, None).await;
 
@@ -158,28 +161,24 @@ async fn create_endpoint(client: Svix, app_id: String) -> anyhow::Result<Endpoin
         .await
         .context("Failed to get token from public api")?;
 
-    let endpoint_in = EndpointIn {
-        url: format!("https://play.svix.com/in/{}/", resp.token),
-        ..Default::default()
-    };
+    let endpoint_in = EndpointIn::new(format!("https://play.svix.com/in/{}/", resp.token));
     let endpoint_out = client.endpoint().create(app_id, endpoint_in, None).await?;
     Ok(endpoint_out)
 }
 
 async fn create_message(client: Svix, app_id: String) -> anyhow::Result<MessageOut> {
-    let event_type = USER_EVENT_TYPES
+    let event_type = *USER_EVENT_TYPES
         .choose(&mut rand::rng())
         .context("Couldn't pick a random event type while creating a message")?;
 
-    let message_in = MessageIn {
-        event_type: event_type.to_string(),
-        payload: json!({
+    let message_in = MessageIn::new(
+        event_type.to_owned(),
+        json!({
             "userId": "41376126-35bf-4eda-81ef-83d741b0e026",
             "firstName": "John",
             "lastName": "Doe",
         }),
-        ..Default::default()
-    };
+    );
 
     let message_out = client.message().create(app_id, message_in, None).await?;
     Ok(message_out)

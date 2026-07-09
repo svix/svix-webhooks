@@ -30,7 +30,8 @@ fn test_list_response_xxx_out() {
     let expected_model = ListResponseApplicationOut {
         data: vec![],
         done: true,
-        ..Default::default()
+        iterator: None,
+        prev_iterator: None,
     };
 
     assert_eq!(expected_model, loaded_json);
@@ -172,7 +173,7 @@ fn test_ingest_source_out() {
             name: "foo".to_owned(),
             uid: None,
             updated_at: "2006-01-02T15:04:05Z".to_owned(),
-            config: IngestSourceOutConfig::Segment(SegmentConfigOut::default()),
+            config: IngestSourceOutConfig::Segment(SegmentConfigOut::new()),
             metadata: HashMap::new(),
         },
     );

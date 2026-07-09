@@ -30,13 +30,7 @@ async fn test_endpoint_crud() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await
         .unwrap();
 
@@ -44,9 +38,15 @@ async fn test_endpoint_crud() {
         .event_type()
         .create(
             EventTypeIn {
-                name: String::from("event.started"),
-                description: String::from("Something started"),
-                ..Default::default()
+                name: "event.started".to_owned(),
+                description: "Something started".to_owned(),
+                archived: None,
+                deprecated: None,
+                #[expect(deprecated)]
+                feature_flag: None,
+                feature_flags: None,
+                group_name: None,
+                schemas: None,
             },
             None,
         )
@@ -59,9 +59,15 @@ async fn test_endpoint_crud() {
         .event_type()
         .create(
             EventTypeIn {
-                name: String::from("event.ended"),
-                description: String::from("Something ended"),
-                ..Default::default()
+                name: "event.ended".to_owned(),
+                description: "Something ended".to_owned(),
+                archived: None,
+                deprecated: None,
+                #[expect(deprecated)]
+                feature_flag: None,
+                feature_flags: None,
+                group_name: None,
+                schemas: None,
             },
             None,
         )
@@ -76,8 +82,7 @@ async fn test_endpoint_crud() {
             app.id.clone(),
             EndpointIn {
                 channels: Some(vec![String::from("ch0"), String::from("ch1")]),
-                url: String::from("https://example.svix.com/"),
-                ..Default::default()
+                ..EndpointIn::new("https://example.svix.com/".to_owned())
             },
             None,
         )
@@ -101,7 +106,7 @@ async fn test_endpoint_crud() {
                     String::from("event.started"),
                     String::from("event.ended"),
                 ]),
-                ..Default::default()
+                ..EndpointPatch::new()
             },
         )
         .await
@@ -172,13 +177,7 @@ async fn test_default_retries() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await;
     assert!(app.is_err());
 
@@ -222,13 +221,7 @@ async fn test_custom_retries() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await;
     assert!(app.is_err());
 
@@ -274,13 +267,7 @@ async fn test_custom_retry_schedule() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await;
     assert!(app.is_err());
 
