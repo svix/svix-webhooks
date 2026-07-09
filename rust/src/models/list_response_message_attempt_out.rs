@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::message_attempt_out::MessageAttemptOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseMessageAttemptOut {
     pub data: Vec<MessageAttemptOut>,
 

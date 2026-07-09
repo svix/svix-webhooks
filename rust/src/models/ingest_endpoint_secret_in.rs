@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestEndpointSecretIn {
     /// The endpoint's verification secret.
     ///
@@ -15,5 +15,11 @@ pub struct IngestEndpointSecretIn {
 impl IngestEndpointSecretIn {
     pub fn new() -> Self {
         Self { key: None }
+    }
+}
+
+impl Default for IngestEndpointSecretIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

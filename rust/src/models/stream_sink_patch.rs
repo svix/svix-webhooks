@@ -15,7 +15,7 @@ use super::{
     sns_patch_config::SnsPatchConfig, sqs_patch_config::SqsPatchConfig,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamSinkPatch {
     #[serde(rename = "batchSize")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
@@ -76,11 +76,4 @@ pub enum StreamSinkPatchConfig {
     RabbitMq(RabbitMqPatchConfig),
     #[serde(rename = "redshift")]
     Redshift(RedshiftPatchConfig),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for StreamSinkPatchConfig {
-    fn default() -> Self {
-        Self::Poller
-    }
 }

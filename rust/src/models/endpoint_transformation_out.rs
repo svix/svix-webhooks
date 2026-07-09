@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointTransformationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub code: Option<String>,
@@ -25,5 +25,11 @@ impl EndpointTransformationOut {
             updated_at: None,
             variables: None,
         }
+    }
+}
+
+impl Default for EndpointTransformationOut {
+    fn default() -> Self {
+        Self::new()
     }
 }

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::stream_sink_out::StreamSinkOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseStreamSinkOut {
     pub data: Vec<StreamSinkOut>,
 

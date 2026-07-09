@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Write stream events into the named bucket using the supplied Google Cloud
 /// credentials.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct GoogleCloudStorageConfig {
     pub bucket: String,
 

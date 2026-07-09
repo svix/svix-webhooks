@@ -5,7 +5,7 @@ use super::{message_status::MessageStatus, message_status_text::MessageStatusTex
 
 /// A model containing information on a given message plus additional fields on
 /// the last attempt for that message.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointMessageOut {
     /// List of free-form identifiers that endpoints can filter by
     #[serde(skip_serializing_if = "Option::is_none")]

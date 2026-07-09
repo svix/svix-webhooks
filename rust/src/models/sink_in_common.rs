@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct SinkInCommon {
     /// List of message channels this sink listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -60,5 +60,11 @@ impl SinkInCommon {
             throttle_rate: None,
             uid: None,
         }
+    }
+}
+
+impl Default for SinkInCommon {
+    fn default() -> Self {
+        Self::new()
     }
 }

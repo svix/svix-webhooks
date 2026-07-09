@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RotatePollerTokenIn {
     /// How long the token will be valid for, in seconds. Can be up to
     /// 31,536,000 seconds (1 year).
@@ -25,5 +25,11 @@ impl RotatePollerTokenIn {
             expiry: None,
             old_token_expiry: None,
         }
+    }
+}
+
+impl Default for RotatePollerTokenIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

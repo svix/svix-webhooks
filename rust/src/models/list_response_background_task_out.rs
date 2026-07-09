@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::background_task_out::BackgroundTaskOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseBackgroundTaskOut {
     pub data: Vec<BackgroundTaskOut>,
 

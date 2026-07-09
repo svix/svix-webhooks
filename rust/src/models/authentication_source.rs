@@ -4,11 +4,8 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 
 /// The authentication type of the current request
-#[derive(
-    Clone, Copy, Debug, Default, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize,
-)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
 pub enum AuthenticationSource {
-    #[default]
     #[serde(rename = "OidcJwt")]
     OidcJwt,
     #[serde(rename = "SvixJwt")]

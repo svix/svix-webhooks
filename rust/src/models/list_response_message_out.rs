@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::message_out::MessageOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseMessageOut {
     pub data: Vec<MessageOut>,
 

@@ -11,10 +11,3 @@ pub enum AutoConfigSinkType {
     #[serde(rename = "http")]
     Http(EndpointIn),
 }
-
-#[allow(clippy::derivable_impls)]
-impl Default for AutoConfigSinkType {
-    fn default() -> Self {
-        Self::Poller(SinkInCommon::default())
-    }
-}
