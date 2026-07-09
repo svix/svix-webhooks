@@ -1,8 +1,8 @@
 use crate::{
-    api::{EndpointIn, EndpointOut, Svix, SvixOptions},
+    api::{Svix, SvixOptions},
     api_internal,
     error::Result,
-    models::SubscribeIn,
+    models::{EndpointIn, EndpointOut, SubscribeIn},
     webhooks::{HeaderMap, Webhook, WebhookError},
 };
 

@@ -1,9 +1,12 @@
 use crate::{
-    api::{EndpointOut, Svix, SvixOptions},
+    api::{Svix, SvixOptions},
     api_internal,
     autoconfig::{decode_autoconfig_token_v1, AutoConfigError},
     error::Result,
-    models::{AutoConfigSinkType, PollerV2CommitIn, PollerV2PollOut, SinkInCommon, SubscribeIn},
+    models::{
+        AutoConfigSinkType, EndpointOut, PollerV2CommitIn, PollerV2PollOut, SinkInCommon,
+        SubscribeIn,
+    },
 };
 
 // Re-exported so callers can name and construct the `options` arguments of

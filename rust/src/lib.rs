@@ -20,7 +20,7 @@ pub mod autoconfig_consumer;
 mod connector;
 pub mod error;
 mod model_ext;
-mod models;
+pub mod models;
 mod request;
 pub mod webhooks;
 

@@ -1,8 +1,8 @@
 use js_option::JsOption;
 use std::{collections::HashSet, time::Duration};
 use svix::{
-    api::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn},
     error::Error,
+    models::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn},
 };
 use wiremock::{Mock, MockServer, ResponseTemplate};
 

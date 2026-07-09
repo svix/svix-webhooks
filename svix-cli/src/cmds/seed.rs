@@ -3,7 +3,12 @@ use clap::Args;
 use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use svix::api::*;
+use svix::{
+    api::{EventTypeDeleteOptions, Svix},
+    models::{
+        ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn, MessageIn, MessageOut,
+    },
+};
 
 #[derive(Args)]
 struct SeedOptions {

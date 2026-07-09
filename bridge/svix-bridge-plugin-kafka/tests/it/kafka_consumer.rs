@@ -14,7 +14,7 @@ use svix_bridge_plugin_kafka::{KafkaConsumer, KafkaInputOpts};
 use svix_bridge_types::{
     CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
     TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput, svix::api::MessageIn,
+    TransformerOutput, svix::models::MessageIn,
 };
 use tracing::info;
 use wiremock::{

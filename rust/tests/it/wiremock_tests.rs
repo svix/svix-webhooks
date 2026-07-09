@@ -1,5 +1,8 @@
 use serde_json::json;
-use svix::api::{MessageIn, MessageListOptions, Svix, SvixOptions};
+use svix::{
+    api::{MessageListOptions, Svix, SvixOptions},
+    models::{ApplicationIn, MessageIn},
+};
 
 use wiremock::{
     matchers::{method, path, query_param},
@@ -70,7 +73,7 @@ async fn test_idempotency_key_is_sent_for_create_request() {
     mock_server
         .svix_client()
         .application()
-        .create(svix::api::ApplicationIn::new("test app".to_string()), None)
+        .create(ApplicationIn::new("test app".to_string()), None)
         .await
         .unwrap();
 
@@ -106,7 +109,7 @@ async fn test_client_provided_idempotency_key_is_not_overridden() {
         .svix_client()
         .application()
         .create(
-            svix::api::ApplicationIn::new("test app".to_string()),
+            ApplicationIn::new("test app".to_string()),
             Some(svix::api::ApplicationCreateOptions {
                 idempotency_key: Some(client_provided_key.to_string()),
             }),

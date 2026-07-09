@@ -2,7 +2,7 @@ use std::{collections::HashMap, fmt::Debug};
 
 use serde::de::DeserializeOwned;
 use serde_json::json;
-use svix::api::{
+use svix::models::{
     CronConfig, IngestSourceIn, IngestSourceInConfig, IngestSourceOut, IngestSourceOutConfig,
     ListResponseApplicationOut, SegmentConfig, SegmentConfigOut, SvixConfig, SvixConfigOut,
 };

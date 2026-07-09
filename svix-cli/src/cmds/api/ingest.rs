@@ -1,6 +1,8 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 use super::{ingest_endpoint::IngestEndpointArgs, ingest_source::IngestSourceArgs};
 #[derive(Args, Clone)]
