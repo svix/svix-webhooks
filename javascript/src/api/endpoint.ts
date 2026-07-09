@@ -279,14 +279,6 @@ export class Endpoint {
     return await request.sendNoResponseBody(this.requestCtx);
   }
 
-  public headersUpdate(
-    appId: string,
-    endpointId: string,
-    endpointHeadersIn: EndpointHeadersIn
-  ): Promise<void> {
-    return this.updateHeaders(appId, endpointId, endpointHeadersIn);
-  }
-
   /** Partially set the additional headers to be sent with the webhook. */
   public async patchHeaders(
     appId: string,
@@ -305,14 +297,6 @@ export class Endpoint {
     );
 
     return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  public headersPatch(
-    appId: string,
-    endpointId: string,
-    endpointHeadersPatchIn: EndpointHeadersPatchIn
-  ): Promise<void> {
-    return this.patchHeaders(appId, endpointId, endpointHeadersPatchIn);
   }
 
   /** Get the transformation code associated with this endpoint. */
