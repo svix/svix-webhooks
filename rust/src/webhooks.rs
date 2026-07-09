@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
+
 #[derive(thiserror::Error, Debug)]
 pub enum WebhookError {
     #[error("failed to parse timestamp")]
@@ -54,7 +56,7 @@ const SIGNATURE_VERSION: &str = "v1";
 impl Webhook {
     pub fn new(secret: &str) -> Result<Self, WebhookError> {
         let secret = secret.strip_prefix(PREFIX).unwrap_or(secret);
-        let key = base64::decode(secret)?;
+        let key = BASE64_STANDARD.decode(secret)?;
 
         if key.is_empty() {
             return Err(WebhookError::EmptySecret);
@@ -143,7 +145,7 @@ impl Webhook {
         let payload = std::str::from_utf8(payload).map_err(|_| WebhookError::InvalidPayload)?;
         let to_sign = format!("{msg_id}.{timestamp}.{payload}",);
         let signed = hmac_sha256::HMAC::mac(to_sign.as_bytes(), &self.key);
-        let encoded = base64::encode(signed);
+        let encoded = BASE64_STANDARD.encode(signed);
 
         Ok(format!("{SIGNATURE_VERSION},{encoded}"))
     }
