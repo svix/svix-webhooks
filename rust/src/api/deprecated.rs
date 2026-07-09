@@ -5,7 +5,7 @@ pub type MessageAttemptListOptions = super::MessageAttemptListByMsgOptions;
 #[deprecated = "Use MessageAttemptListAttemptedDestinationsOptions instead"]
 pub type ListOptions = super::MessageAttemptListAttemptedDestinationsOptions;
 #[deprecated = "Use AppUsageStatsIn instead"]
-pub type AggregateAppStatsOptions = super::AppUsageStatsIn;
+pub type AggregateAppStatsOptions = crate::models::AppUsageStatsIn;
 
 #[deprecated]
 #[derive(Default)]

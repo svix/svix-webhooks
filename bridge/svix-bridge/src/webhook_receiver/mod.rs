@@ -10,8 +10,9 @@ use svix_bridge_types::{
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
     TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx, async_trait,
     svix::{
-        api::{MessagePollerConsumerPollOptions, PollingEndpointMessageOut, Svix},
+        api::{MessagePollerConsumerPollOptions, Svix},
         error::Error,
+        models::PollingEndpointMessageOut,
     },
 };
 use tracing::instrument;

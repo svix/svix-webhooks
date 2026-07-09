@@ -19,7 +19,7 @@ use svix_bridge_plugin_queue::{
 use svix_bridge_types::{
     CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
     TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput, svix::api::MessageIn,
+    TransformerOutput, svix::models::MessageIn,
 };
 use wiremock::{
     Mock, MockServer, ResponseTemplate,

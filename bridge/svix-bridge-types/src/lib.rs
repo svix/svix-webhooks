@@ -3,7 +3,7 @@ use std::time::Duration;
 pub use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 pub use svix;
-use svix::api::{MessageIn, SvixOptions as _SvixOptions};
+use svix::{api::SvixOptions as _SvixOptions, models::MessageIn};
 use tokio::sync::{mpsc, oneshot};
 
 #[derive(Deserialize, Default, Eq, PartialEq, Copy, Clone)]
