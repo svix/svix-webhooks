@@ -212,7 +212,7 @@ pub enum {{ resource_type_name }}Commands {
                 {% set body_schema_all_optional = body_schema.fields | selectattr("required") | length == 0 -%}
 
                 {{ op.request_body_schema_name | to_snake_case }}:
-                {% if body_schema_all_optional %}
+                {% if body_schema.kind == "struct" and body_schema_all_optional %}
                 Option<crate::json::JsonOf<{{ op.request_body_schema_name }}>>
                 {% else %}
                 crate::json::JsonOf<{{ op.request_body_schema_name }}>
@@ -293,7 +293,7 @@ impl {{ resource_type_name }}Commands {
                                     = body_schema.fields | selectattr("required") | length == 0 -%}
 
                                 {{ op.request_body_schema_name | to_snake_case }}
-                                {% if body_schema_all_optional -%}
+                                {% if body_schema.kind == "struct" and body_schema_all_optional -%}
                                     .unwrap_or_default()
                                 {% endif -%}
                                     .into_inner(),

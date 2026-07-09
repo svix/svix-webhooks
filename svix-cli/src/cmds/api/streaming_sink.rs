@@ -121,7 +121,7 @@ pub enum StreamingSinkCommands {
 }\n")]
     Create {
         stream_id: String,
-        stream_sink_in: Option<crate::json::JsonOf<StreamSinkIn>>,
+        stream_sink_in: crate::json::JsonOf<StreamSinkIn>,
         #[clap(flatten)]
         options: StreamingSinkCreateOptions,
     },
@@ -185,7 +185,7 @@ pub enum StreamingSinkCommands {
     Update {
         stream_id: String,
         sink_id: String,
-        stream_sink_in: Option<crate::json::JsonOf<StreamSinkIn>>,
+        stream_sink_in: crate::json::JsonOf<StreamSinkIn>,
     },
     /// Delete a sink.
     #[command(help_template = concat!(
@@ -232,7 +232,7 @@ pub enum StreamingSinkCommands {
     Patch {
         stream_id: String,
         sink_id: String,
-        stream_sink_patch: Option<crate::json::JsonOf<StreamSinkPatch>>,
+        stream_sink_patch: crate::json::JsonOf<StreamSinkPatch>,
     },
     /// Set or unset the transformation code associated with this sink.
     #[command(help_template = concat!(
@@ -320,11 +320,7 @@ impl StreamingSinkCommands {
                 let resp = client
                     .streaming()
                     .sink()
-                    .create(
-                        stream_id,
-                        stream_sink_in.unwrap_or_default().into_inner(),
-                        Some(options.into()),
-                    )
+                    .create(stream_id, stream_sink_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -340,11 +336,7 @@ impl StreamingSinkCommands {
                 let resp = client
                     .streaming()
                     .sink()
-                    .update(
-                        stream_id,
-                        sink_id,
-                        stream_sink_in.unwrap_or_default().into_inner(),
-                    )
+                    .update(stream_id, sink_id, stream_sink_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -359,11 +351,7 @@ impl StreamingSinkCommands {
                 let resp = client
                     .streaming()
                     .sink()
-                    .patch(
-                        stream_id,
-                        sink_id,
-                        stream_sink_patch.unwrap_or_default().into_inner(),
-                    )
+                    .patch(stream_id, sink_id, stream_sink_patch.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
