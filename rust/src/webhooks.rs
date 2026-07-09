@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
+use http::HeaderMap;
 
 #[derive(thiserror::Error, Debug)]
 pub enum WebhookError {
@@ -76,22 +77,22 @@ impl Webhook {
         })
     }
 
-    pub fn verify<HM: HeaderMap>(&self, payload: &[u8], headers: &HM) -> Result<(), WebhookError> {
+    pub fn verify(&self, payload: &[u8], headers: &HeaderMap) -> Result<(), WebhookError> {
         self.verify_inner(payload, headers, /* enforce_tolerance */ true)
     }
 
-    pub fn verify_ignoring_timestamp<HM: HeaderMap>(
+    pub fn verify_ignoring_timestamp(
         &self,
         payload: &[u8],
-        headers: &HM,
+        headers: &HeaderMap,
     ) -> Result<(), WebhookError> {
         self.verify_inner(payload, headers, /* enforce_tolerance */ false)
     }
 
-    fn verify_inner<HM: HeaderMap>(
+    fn verify_inner(
         &self,
         payload: &[u8],
-        headers: &HM,
+        headers: &HeaderMap,
         enforce_tolerance: bool,
     ) -> Result<(), WebhookError> {
         let msg_id = Self::get_header(headers, SVIX_MSG_ID_KEY, UNBRANDED_MSG_ID_KEY, "id")?;
@@ -150,20 +151,18 @@ impl Webhook {
         Ok(format!("{SIGNATURE_VERSION},{encoded}"))
     }
 
-    fn get_header<'a, HM: HeaderMap>(
-        headers: &'a HM,
+    fn get_header<'a>(
+        headers: &'a HeaderMap,
         svix_hdr: &'static str,
         unbranded_hdr: &'static str,
         err_name: &'static str,
     ) -> Result<&'a str, WebhookError> {
-        use private::HeaderValueSealed as _;
-
         headers
-            ._get(svix_hdr)
-            .or_else(|| headers._get(unbranded_hdr))
+            .get(svix_hdr)
+            .or_else(|| headers.get(unbranded_hdr))
             .ok_or(WebhookError::MissingHeader(err_name))?
-            ._to_str()
-            .ok_or(WebhookError::InvalidHeader(err_name))
+            .to_str()
+            .map_err(|_| WebhookError::InvalidHeader(err_name))
     }
 
     fn parse_timestamp(hdr: &str) -> Result<i64, WebhookError> {
@@ -190,55 +189,9 @@ impl Webhook {
     }
 }
 
-/// Trait to abstract over the `HeaderMap` types from both v0.2 and v1.0 of the
-/// `http` crate.
-pub trait HeaderMap: private::HeaderMapSealed {}
-
-impl HeaderMap for http02::HeaderMap {}
-impl HeaderMap for http1::HeaderMap {}
-
-// Intentional sealed-trait pattern: these traits are reachable as supertrait
-// bounds of the public `HeaderMap`/`HeaderValue` traits but must not be
-// nameable or implementable downstream
-#[allow(unnameable_types)]
-mod private {
-    pub trait HeaderMapSealed {
-        type HeaderValue: HeaderValueSealed;
-        fn _get(&self, name: &str) -> Option<&Self::HeaderValue>;
-    }
-
-    impl HeaderMapSealed for http02::HeaderMap {
-        type HeaderValue = http02::HeaderValue;
-        fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
-            self.get(name)
-        }
-    }
-    impl HeaderMapSealed for http1::HeaderMap {
-        type HeaderValue = http1::HeaderValue;
-        fn _get(&self, name: &str) -> Option<&Self::HeaderValue> {
-            self.get(name)
-        }
-    }
-
-    pub trait HeaderValueSealed {
-        fn _to_str(&self) -> Option<&str>;
-    }
-
-    impl HeaderValueSealed for http02::HeaderValue {
-        fn _to_str(&self) -> Option<&str> {
-            self.to_str().ok()
-        }
-    }
-    impl HeaderValueSealed for http1::HeaderValue {
-        fn _to_str(&self) -> Option<&str> {
-            self.to_str().ok()
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
-    use http02::HeaderMap;
+    use http::HeaderMap;
 
     use super::{
         Webhook, SVIX_MSG_ID_KEY, SVIX_MSG_SIGNATURE_KEY, SVIX_MSG_TIMESTAMP_KEY,

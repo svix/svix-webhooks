@@ -44,7 +44,7 @@ impl<'a> Integration<'a> {
             order,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/integration")
+        crate::request::Request::new(http::Method::GET, "/api/v1/app/{app_id}/integration")
             .with_path_param("app_id", app_id)
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
@@ -62,7 +62,7 @@ impl<'a> Integration<'a> {
     ) -> Result<IntegrationOut> {
         let IntegrationCreateOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/integration")
+        crate::request::Request::new(http::Method::POST, "/api/v1/app/{app_id}/integration")
             .with_path_param("app_id", app_id)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(integration_in)
@@ -73,7 +73,7 @@ impl<'a> Integration<'a> {
     /// Get an integration.
     pub async fn get(&self, app_id: String, integ_id: String) -> Result<IntegrationOut> {
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/integration/{integ_id}",
         )
         .with_path_param("app_id", app_id)
@@ -90,7 +90,7 @@ impl<'a> Integration<'a> {
         integration_update: IntegrationUpdate,
     ) -> Result<IntegrationOut> {
         crate::request::Request::new(
-            http1::Method::PUT,
+            http::Method::PUT,
             "/api/v1/app/{app_id}/integration/{integ_id}",
         )
         .with_path_param("app_id", app_id)
@@ -103,7 +103,7 @@ impl<'a> Integration<'a> {
     /// Delete an integration.
     pub async fn delete(&self, app_id: String, integ_id: String) -> Result<()> {
         crate::request::Request::new(
-            http1::Method::DELETE,
+            http::Method::DELETE,
             "/api/v1/app/{app_id}/integration/{integ_id}",
         )
         .with_path_param("app_id", app_id)
@@ -124,7 +124,7 @@ impl<'a> Integration<'a> {
         let IntegrationRotateKeyOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
         )
         .with_path_param("app_id", app_id)
@@ -138,7 +138,7 @@ impl<'a> Integration<'a> {
     #[deprecated]
     pub async fn get_key(&self, app_id: String, integ_id: String) -> Result<IntegrationKeyOut> {
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/integration/{integ_id}/key",
         )
         .with_path_param("app_id", app_id)

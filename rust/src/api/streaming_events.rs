@@ -42,7 +42,7 @@ impl<'a> StreamingEvents<'a> {
         } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/events",
         )
         .with_path_param("stream_id", stream_id)
@@ -63,7 +63,7 @@ impl<'a> StreamingEvents<'a> {
     ) -> Result<CreateStreamEventsOut> {
         let StreamingEventsCreateOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/{stream_id}/events")
+        crate::request::Request::new(http::Method::POST, "/api/v1/stream/{stream_id}/events")
             .with_path_param("stream_id", stream_id)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(create_stream_events_in)

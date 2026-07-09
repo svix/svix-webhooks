@@ -97,7 +97,7 @@ impl<'a> Message<'a> {
             event_types,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg")
+        crate::request::Request::new(http::Method::GET, "/api/v1/app/{app_id}/msg")
             .with_path_param("app_id", app_id)
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
@@ -141,7 +141,7 @@ impl<'a> Message<'a> {
             idempotency_key,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
+        crate::request::Request::new(http::Method::POST, "/api/v1/app/{app_id}/msg")
             .with_path_param("app_id", app_id)
             .with_optional_query_param("with_content", with_content)
             .with_optional_header_param("idempotency-key", idempotency_key)
@@ -165,7 +165,7 @@ impl<'a> Message<'a> {
         let MessagePrecheckOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/app/{app_id}/msg/precheck/active",
         )
         .with_path_param("app_id", app_id)
@@ -184,7 +184,7 @@ impl<'a> Message<'a> {
     ) -> Result<MessageOut> {
         let MessageGetOptions { with_content } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}")
+        crate::request::Request::new(http::Method::GET, "/api/v1/app/{app_id}/msg/{msg_id}")
             .with_path_param("app_id", app_id)
             .with_path_param("msg_id", msg_id)
             .with_optional_query_param("with_content", with_content)
@@ -199,7 +199,7 @@ impl<'a> Message<'a> {
     /// has been deleted or expired.
     pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
         crate::request::Request::new(
-            http1::Method::DELETE,
+            http::Method::DELETE,
             "/api/v1/app/{app_id}/msg/{msg_id}/content",
         )
         .with_path_param("app_id", app_id)
@@ -223,7 +223,7 @@ impl<'a> Message<'a> {
             after,
         } = params;
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/events")
+        crate::request::Request::new(http::Method::GET, "/api/v1/app/{app_id}/events")
             .with_path_param("app_id", app_id)
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
@@ -250,7 +250,7 @@ impl<'a> Message<'a> {
         } = params;
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/events/subscription/{subscription_id}",
         )
         .with_path_param("app_id", app_id.to_string())
@@ -287,7 +287,7 @@ impl<'a> Message<'a> {
         let MessageExpungeAllContentsOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/app/{app_id}/msg/expunge-all-contents",
         )
         .with_path_param("app_id", app_id)
