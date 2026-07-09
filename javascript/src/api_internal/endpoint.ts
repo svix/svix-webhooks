@@ -10,7 +10,7 @@ import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
-  public get auto_config() {
+  public get autoConfig() {
     return new EndpointAutoConfig(this.requestCtx);
   }
 

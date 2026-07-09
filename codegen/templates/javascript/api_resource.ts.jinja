@@ -43,7 +43,7 @@ export class {{ resource_type_name }} {
     public constructor(private readonly requestCtx: SvixRequestContext) {}
 
     {% for name, sub in resource.subresources | items -%}
-    public get {{ name | to_snake_case }}() {
+    public get {{ name | to_lower_camel_case }}() {
         return new {{ sub.name | to_upper_camel_case }}(this.requestCtx);
     }
 
