@@ -27,7 +27,10 @@ module Svix
           "with_msg" => options["with_msg"],
           "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseMessageAttemptOut.deserialize(res)
     end
@@ -50,7 +53,10 @@ module Svix
           "with_content" => options["with_content"],
           "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseMessageAttemptOut.deserialize(res)
     end
@@ -71,7 +77,10 @@ module Svix
           "with_content" => options["with_content"],
           "expanded_statuses" => options["expanded_statuses"],
           "event_types" => options["event_types"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseEndpointMessageOut.deserialize(res)
     end
@@ -84,7 +93,10 @@ module Svix
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseMessageEndpointOut.deserialize(res)
     end
@@ -96,15 +108,22 @@ module Svix
         "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}",
         query_params: {
           "expanded_statuses" => options["expanded_statuses"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       MessageAttemptOut.deserialize(res)
     end
 
-    def expunge_content(app_id, msg_id, attempt_id)
+    def expunge_content(app_id, msg_id, attempt_id, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "DELETE",
-        "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}/content"
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/attempt/#{attempt_id}/content",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 
@@ -114,8 +133,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/msg/#{msg_id}/endpoint/#{endpoint_id}/resend",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        }
+        }.compact
       )
       EmptyResponse.deserialize(res)
     end

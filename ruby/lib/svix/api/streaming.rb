@@ -17,26 +17,38 @@ module Svix
       @stream = StreamingStream.new(client)
     end
 
-    def sink_transformation_get(stream_id, sink_id)
+    def sink_transformation_get(stream_id, sink_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/transformation"
+        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/transformation",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       SinkTransformationOut.deserialize(res)
     end
 
-    def sink_headers_get(stream_id, sink_id)
+    def sink_headers_get(stream_id, sink_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/headers"
+        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EndpointHeadersOut.deserialize(res)
     end
 
-    def sink_headers_patch(stream_id, sink_id, http_sink_headers_patch_in)
+    def sink_headers_patch(stream_id, sink_id, http_sink_headers_patch_in, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PATCH",
         "/api/v1/stream/#{stream_id}/sink/#{sink_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: http_sink_headers_patch_in
       )
       EndpointHeadersOut.deserialize(res)

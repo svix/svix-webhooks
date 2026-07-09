@@ -18,7 +18,10 @@ module Svix
           "limit" => options["limit"],
           "lease_duration_ms" => options["lease_duration_ms"],
           "starting_position" => options["starting_position"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       PollerV2PollOut.deserialize(res)
     end
@@ -29,8 +32,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/polling-endpoint/#{sink_id}/consumer/#{consumer_id}/commit",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: poller_v2_commit_in
       )
     end

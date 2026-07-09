@@ -15,8 +15,9 @@ module Svix
         "POST",
         "/api/v1/auth/app-portal-access/#{app_id}",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: app_portal_access_in
       )
       AppPortalAccessOut.deserialize(res)
@@ -28,8 +29,9 @@ module Svix
         "POST",
         "/api/v1/auth/logout",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        }
+        }.compact
       )
     end
 
@@ -39,8 +41,9 @@ module Svix
         "POST",
         "/api/v1/auth/app/#{app_id}/expire-all",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: application_token_expire_in
       )
     end
@@ -51,8 +54,9 @@ module Svix
         "POST",
         "/api/v1/auth/dashboard-access/#{app_id}",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        }
+        }.compact
       )
       DashboardAccessOut.deserialize(res)
     end
@@ -63,8 +67,9 @@ module Svix
         "POST",
         "/api/v1/auth/stream-portal-access/#{stream_id}",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: stream_portal_access_in
       )
       AppPortalAccessOut.deserialize(res)
@@ -76,8 +81,9 @@ module Svix
         "POST",
         "/api/v1/auth/stream-logout",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        }
+        }.compact
       )
     end
 
@@ -87,8 +93,9 @@ module Svix
         "POST",
         "/api/v1/auth/stream/#{stream_id}/expire-all",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: stream_token_expire_in
       )
     end
@@ -99,17 +106,22 @@ module Svix
         "POST",
         "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token/rotate",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: rotate_poller_token_in
       )
       ApiTokenOut.deserialize(res)
     end
 
-    def get_stream_poller_token(stream_id, sink_id)
+    def get_stream_poller_token(stream_id, sink_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token"
+        "/api/v1/auth/stream/#{stream_id}/sink/#{sink_id}/poller/token",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ApiTokenOut.deserialize(res)
     end

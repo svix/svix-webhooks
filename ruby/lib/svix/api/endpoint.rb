@@ -18,7 +18,10 @@ module Svix
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "order" => options["order"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseEndpointOut.deserialize(res)
     end
@@ -29,50 +32,71 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/endpoint",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: endpoint_in
       )
       EndpointOut.deserialize(res)
     end
 
-    def get(app_id, endpoint_id)
+    def get(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EndpointOut.deserialize(res)
     end
 
-    def update(app_id, endpoint_id, endpoint_update)
+    def update(app_id, endpoint_id, endpoint_update, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: endpoint_update
       )
       EndpointOut.deserialize(res)
     end
 
-    def delete(app_id, endpoint_id)
+    def delete(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "DELETE",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}"
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 
-    def patch(app_id, endpoint_id, endpoint_patch)
+    def patch(app_id, endpoint_id, endpoint_patch, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PATCH",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: endpoint_patch
       )
       EndpointOut.deserialize(res)
     end
 
-    def get_secret(app_id, endpoint_id)
+    def get_secret(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret"
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EndpointSecretOut.deserialize(res)
     end
@@ -83,48 +107,69 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret/rotate",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: endpoint_secret_rotate_in
       )
     end
 
-    def get_headers(app_id, endpoint_id)
+    def get_headers(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers"
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EndpointHeadersOut.deserialize(res)
     end
 
-    def update_headers(app_id, endpoint_id, endpoint_headers_in)
+    def update_headers(app_id, endpoint_id, endpoint_headers_in, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: endpoint_headers_in
       )
     end
 
-    def patch_headers(app_id, endpoint_id, endpoint_headers_patch_in)
+    def patch_headers(app_id, endpoint_id, endpoint_headers_patch_in, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "PATCH",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: endpoint_headers_patch_in
       )
     end
 
-    def transformation_get(app_id, endpoint_id)
+    def transformation_get(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation"
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EndpointTransformationOut.deserialize(res)
     end
 
-    def patch_transformation(app_id, endpoint_id, endpoint_transformation_patch)
+    def patch_transformation(app_id, endpoint_id, endpoint_transformation_patch, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "PATCH",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: endpoint_transformation_patch
       )
     end
@@ -135,8 +180,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/replay-missing",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: replay_in
       )
       ReplayOut.deserialize(res)
@@ -148,8 +194,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/bulk-replay",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: bulk_replay_in
       )
       ReplayOut.deserialize(res)
@@ -163,7 +210,10 @@ module Svix
         query_params: {
           "since" => options["since"],
           "until" => options["until"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EndpointStats.deserialize(res)
     end
@@ -174,8 +224,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/recover",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: recover_in
       )
       RecoverOut.deserialize(res)
@@ -187,17 +238,22 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/send-example",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: event_example_in
       )
       MessageOut.deserialize(res)
     end
 
-    def transformation_partial_update(app_id, endpoint_id, endpoint_transformation_in)
+    def transformation_partial_update(app_id, endpoint_id, endpoint_transformation_in, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "PATCH",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: endpoint_transformation_in
       )
     end

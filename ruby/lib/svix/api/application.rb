@@ -21,7 +21,10 @@ module Svix
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "order" => options["order"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseApplicationOut.deserialize(res)
     end
@@ -32,8 +35,9 @@ module Svix
         "POST",
         "/api/v1/app",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: application_in
       )
       ApplicationOut.deserialize(res)
@@ -49,41 +53,58 @@ module Svix
           "get_if_exists" => "true"
         },
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: application_in
       )
       ApplicationOut.deserialize(res)
     end
 
-    def get(app_id)
+    def get(app_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/app/#{app_id}"
+        "/api/v1/app/#{app_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ApplicationOut.deserialize(res)
     end
 
-    def update(app_id, application_in)
+    def update(app_id, application_in, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: application_in
       )
       ApplicationOut.deserialize(res)
     end
 
-    def delete(app_id)
+    def delete(app_id, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "DELETE",
-        "/api/v1/app/#{app_id}"
+        "/api/v1/app/#{app_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 
-    def patch(app_id, application_patch)
+    def patch(app_id, application_patch, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PATCH",
         "/api/v1/app/#{app_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: application_patch
       )
       ApplicationOut.deserialize(res)
