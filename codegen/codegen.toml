@@ -76,6 +76,9 @@ extra_codegen_args = [
     "-e=v1.statistics.aggregate-app-stats",
     "--include-op-id=v1.authentication.whoami",
 ]
+[[rust.task]]
+template = "templates/svix-cli/api_summary.rs.jinja"
+output_dir = "svix-cli/src/cmds/api"
 [[cli.task]]
 template = "templates/svix-cli/api_resource.rs.jinja"
 output_dir = "svix-cli/src/cmds/api"

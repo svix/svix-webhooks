@@ -21,7 +21,7 @@ use self::{
     },
     config::Config,
 };
-use crate::cmds::api::connector::ConnectorArgs;
+use crate::cmds::api::{connector::ConnectorArgs, health::HealthArgs};
 
 mod cmds;
 mod config;
@@ -88,6 +88,8 @@ enum RootCommands {
     Environment(EnvironmentArgs),
     /// List, create & modify event types
     EventType(EventTypeArgs),
+    /// Check server healthiness
+    Health(HealthArgs),
     /// List, create & modify Svix Ingest sources and endpoints
     Ingest(IngestArgs),
     /// List integrations by app id
@@ -172,6 +174,10 @@ async fn main() -> Result<()> {
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::MessageAttempt(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::Health(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }

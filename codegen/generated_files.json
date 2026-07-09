@@ -2698,5 +2698,8 @@
         "svix-cli/src/cmds/api/streaming_events.rs",
         "svix-cli/src/cmds/api/streaming_sink.rs",
         "svix-cli/src/cmds/api/streaming_stream.rs"
+    ],
+    [
+        "svix-cli/src/cmds/api/mod.rs"
     ]
 ]
