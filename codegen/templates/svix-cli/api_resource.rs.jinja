@@ -230,7 +230,13 @@ pub enum {{ resource_type_name }}Commands {
 }
 
 impl {{ resource_type_name }}Commands {
-    pub async fn exec(self, client: &Svix, color_mode: colored_json::ColorMode) -> anyhow::Result<()> {
+    pub async fn exec(
+        self,
+        client: &Svix,
+        {#- HACK: this arg generates an unused warning in health #}
+        {%- if resource.name == "health" %}_{% endif -%}
+        color_mode: colored_json::ColorMode,
+    ) -> anyhow::Result<()> {
         match self {
             {% for name, _ in resource.subresources | items -%}
                 Self::{{ name | to_upper_camel_case }}(args) => {

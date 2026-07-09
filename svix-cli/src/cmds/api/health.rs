@@ -28,7 +28,7 @@ impl HealthCommands {
     pub async fn exec(
         self,
         client: &Svix,
-        color_mode: colored_json::ColorMode,
+        _color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
             Self::Get {} => {
