@@ -49,17 +49,6 @@ export class BackgroundTask {
     );
   }
 
-  /**
-   * List background tasks executed in the past 90 days.
-   *
-   * @deprecated Use list instead.
-   * */
-  public listByEndpoint(
-    options?: BackgroundTaskListOptions
-  ): Promise<ListResponseBackgroundTaskOut> {
-    return this.list(options);
-  }
-
   /** Get a background task by ID. */
   public async get(taskId: string): Promise<BackgroundTaskOut> {
     const request = new SvixRequest(HttpMethod.GET, "/api/v1/background-task/{task_id}");

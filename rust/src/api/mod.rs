@@ -2,7 +2,6 @@
 #![warn(unreachable_pub)]
 
 mod client;
-mod deprecated;
 
 pub use self::client::{Svix, SvixOptions};
 pub use crate::models::*;
@@ -43,7 +42,6 @@ pub use self::{
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
-    deprecated::*,
     endpoint::{
         Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
         EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
