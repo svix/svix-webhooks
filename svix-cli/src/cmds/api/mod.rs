@@ -9,6 +9,7 @@ pub(crate) mod environment;
 pub(crate) mod event_type;
 pub(crate) mod health;
 pub(crate) mod ingest;
+pub(crate) mod ingest_authentication;
 pub(crate) mod ingest_endpoint;
 pub(crate) mod ingest_endpoint_transformation;
 pub(crate) mod ingest_source;

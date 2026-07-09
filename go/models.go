@@ -41,7 +41,6 @@ type (
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
 	CronConfig                                = models.CronConfig
-	DashboardAccessOut                        = models.DashboardAccessOut
 	DocusignConfig                            = models.DocusignConfig
 	DocusignConfigOut                         = models.DocusignConfigOut
 	EasypostConfig                            = models.EasypostConfig

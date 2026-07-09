@@ -40,7 +40,6 @@ mod connector_update;
 mod create_stream_events_in;
 mod create_stream_events_out;
 mod cron_config;
-mod dashboard_access_out;
 mod docusign_config;
 mod docusign_config_out;
 mod easypost_config;
@@ -267,7 +266,6 @@ pub use self::{
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
     cron_config::CronConfig,
-    dashboard_access_out::DashboardAccessOut,
     docusign_config::DocusignConfig,
     docusign_config_out::DocusignConfigOut,
     easypost_config::EasypostConfig,

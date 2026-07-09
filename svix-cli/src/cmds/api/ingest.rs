@@ -4,19 +4,10 @@ use svix::api::Svix;
 #[allow(unused_imports)]
 use svix::models::*;
 
-use super::{ingest_endpoint::IngestEndpointArgs, ingest_source::IngestSourceArgs};
-#[derive(Args, Clone)]
-pub struct IngestDashboardOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<IngestDashboardOptions> for svix::api::IngestDashboardOptions {
-    fn from(value: IngestDashboardOptions) -> Self {
-        let IngestDashboardOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
+use super::{
+    ingest_authentication::IngestAuthenticationArgs, ingest_endpoint::IngestEndpointArgs,
+    ingest_source::IngestSourceArgs,
+};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true, flatten_help = true)]
@@ -28,33 +19,9 @@ pub struct IngestArgs {
 #[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum IngestCommands {
+    Authentication(IngestAuthenticationArgs),
     Endpoint(IngestEndpointArgs),
     Source(IngestSourceArgs),
-    /// Get access to the Ingest Source Consumer Portal.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix ingest dashboard src_abc000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"expiry\": 123,
-  \"readOnly\": true
-}\n\nExample response:
-{
-  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\",
-  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
-}\n")]
-    Dashboard {
-        source_id: String,
-        ingest_source_consumer_portal_access_in:
-            Option<crate::json::JsonOf<IngestSourceConsumerPortalAccessIn>>,
-        #[clap(flatten)]
-        options: IngestDashboardOptions,
-    },
 }
 
 impl IngestCommands {
@@ -64,28 +31,14 @@ impl IngestCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
+            Self::Authentication(args) => {
+                args.command.exec(client, color_mode).await?;
+            }
             Self::Endpoint(args) => {
                 args.command.exec(client, color_mode).await?;
             }
             Self::Source(args) => {
                 args.command.exec(client, color_mode).await?;
-            }
-            Self::Dashboard {
-                source_id,
-                ingest_source_consumer_portal_access_in,
-                options,
-            } => {
-                let resp = client
-                    .ingest()
-                    .dashboard(
-                        source_id,
-                        ingest_source_consumer_portal_access_in
-                            .unwrap_or_default()
-                            .into_inner(),
-                        Some(options.into()),
-                    )
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
             }
         }
 
