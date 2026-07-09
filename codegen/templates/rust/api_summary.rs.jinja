@@ -2,7 +2,6 @@
 #![warn(unreachable_pub)]
 
 mod client;
-mod deprecated;
 
 pub use self::client::{Svix, SvixOptions};
 pub use crate::models::*;
@@ -40,7 +39,6 @@ pub use self::{
         {{ resource_reexports(res) }}
     {% endfor -%}
 };
-pub use self::deprecated::*;
 
 impl Svix {
     {% for resource in api.resources -%}

@@ -223,8 +223,6 @@ pub mod zoom_config_out;
 // not currently generated
 pub mod http_error_out;
 pub mod http_validation_error;
-pub mod list_response_message_attempt_endpoint_out;
-pub mod message_attempt_endpoint_out;
 pub mod message_events_out;
 pub mod validation_error;
 
@@ -453,7 +451,5 @@ pub use self::{
 // not currently generated
 pub use self::{
     http_error_out::HttpErrorOut, http_validation_error::HttpValidationError,
-    list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
-    message_attempt_endpoint_out::MessageAttemptEndpointOut, message_events_out::MessageEventsOut,
-    validation_error::ValidationError,
+    message_events_out::MessageEventsOut, validation_error::ValidationError,
 };
