@@ -96,7 +96,7 @@ export class AutoConfig {
   }
 
   public subscribe(): Promise<EndpointOut> {
-    return new InternalEndpoint(this.requestCtx).auto_config.update(
+    return new InternalEndpoint(this.requestCtx).autoConfig.update(
       this.appId,
       this.endpointId,
       {
