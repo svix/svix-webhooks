@@ -4,7 +4,6 @@
 mod client;
 
 pub use self::client::{Svix, SvixOptions};
-pub use crate::models::*;
 
 mod application;
 mod authentication;

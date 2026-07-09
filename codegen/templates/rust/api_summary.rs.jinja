@@ -4,7 +4,6 @@
 mod client;
 
 pub use self::client::{Svix, SvixOptions};
-pub use crate::models::*;
 
 {% macro resource_mods(resource) -%}
 mod {{ resource.name | to_snake_case }};
