@@ -133,10 +133,6 @@ fn example_endpoint_url() -> &'static str {
     "https://example.com/webhook/"
 }
 
-fn example_endpoint_version() -> u16 {
-    1
-}
-
 fn default_endpoint_version() -> Option<u16> {
     Some(1)
 }
@@ -150,9 +146,9 @@ pub struct EndpointIn {
     pub description: String,
 
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(skip)]
     pub rate_limit: Option<u16>,
 
     /// Maximum messages per second to send to this endpoint.
@@ -174,10 +170,10 @@ pub struct EndpointIn {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[deprecated]
+    /// Deprecated, kept for backwards compatibility only.
     #[serde(default = "default_endpoint_version")]
     #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[schemars(skip)]
     pub version: Option<u16>,
 
     #[serde(default)]
@@ -226,11 +222,9 @@ impl EndpointIn {
 impl ModelIn for EndpointIn {
     type ActiveModel = endpoint::ActiveModel;
 
-    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointIn {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
@@ -263,9 +257,9 @@ struct EndpointUpdate {
     pub description: String,
 
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(skip)]
     pub rate_limit: Option<u16>,
 
     /// Maximum messages per second to send to this endpoint.
@@ -287,10 +281,10 @@ struct EndpointUpdate {
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[deprecated]
+    /// Deprecated, kept for backwards compatibility only.
     #[serde(default = "default_endpoint_version")]
     #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[schemars(skip)]
     pub version: Option<u16>,
 
     #[serde(default)]
@@ -316,11 +310,9 @@ struct EndpointUpdate {
 impl ModelIn for EndpointUpdate {
     type ActiveModel = endpoint::ActiveModel;
 
-    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointUpdate {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
@@ -344,11 +336,9 @@ impl ModelIn for EndpointUpdate {
 }
 
 impl EndpointUpdate {
-    #[allow(deprecated)]
     pub fn into_in_with_default_key(self) -> EndpointIn {
         let EndpointUpdate {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
@@ -362,7 +352,6 @@ impl EndpointUpdate {
 
         EndpointIn {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
@@ -387,9 +376,9 @@ pub struct EndpointPatch {
     pub description: UnrequiredField<String>,
 
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
     #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    #[schemars(skip)]
     pub rate_limit: UnrequiredNullableField<u16>,
 
     /// Maximum messages per second to send to this endpoint.
@@ -407,10 +396,9 @@ pub struct EndpointPatch {
     #[serde(default)]
     pub url: UnrequiredField<Url>,
 
-    #[deprecated]
     #[validate(custom(function = "validate_minimum_version_patch"))]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
     #[serde(default)]
+    #[schemars(skip)]
     pub version: UnrequiredField<u16>,
 
     #[serde(default)]
@@ -436,11 +424,9 @@ pub struct EndpointPatch {
 impl ModelIn for EndpointPatch {
     type ActiveModel = endpoint::ActiveModel;
 
-    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointPatch {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
@@ -512,7 +498,7 @@ pub struct EndpointOutCommon {
     /// An example endpoint name
     pub description: String,
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
+    #[schemars(skip)]
     pub rate_limit: Option<u16>,
     /// Maximum messages per second to send to this endpoint.
     ///
@@ -522,8 +508,7 @@ pub struct EndpointOutCommon {
     pub uid: Option<EndpointUid>,
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
-    #[deprecated]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[schemars(skip)]
     pub version: u16,
     #[schemars(
         example = "endpoint_disabled_default",
@@ -544,7 +529,6 @@ pub struct EndpointOutCommon {
 }
 
 impl From<endpoint::Model> for EndpointOutCommon {
-    #[allow(deprecated)]
     fn from(model: endpoint::Model) -> Self {
         Self {
             description: model.description,
@@ -999,7 +983,6 @@ mod tests {
     const ENDPOINT_ID_INVALID: &str = "$$invalid-endpoint";
     const ENDPOINT_ID_VALID: &str = "valid-endpoint";
 
-    #[allow(deprecated)]
     #[test]
     fn test_endpoint_in_validation() {
         let invalid_1: EndpointIn = serde_json::from_value(json!({
