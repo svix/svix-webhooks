@@ -30,7 +30,7 @@ export class Ingest {
   /** Get access to the Ingest Source Consumer Portal. */
   public async dashboard(
     sourceId: string,
-    ingestSourceConsumerPortalAccessIn: IngestSourceConsumerPortalAccessIn,
+    ingestSourceConsumerPortalAccessIn: IngestSourceConsumerPortalAccessIn = {},
     options?: IngestDashboardOptions
   ): Promise<DashboardAccessOut> {
     const request = new SvixRequest(

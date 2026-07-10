@@ -22,7 +22,7 @@ export class Endpoint {
   public async transformationPartialUpdate(
     appId: string,
     endpointId: string,
-    endpointTransformationIn: EndpointTransformationIn
+    endpointTransformationIn: EndpointTransformationIn = {}
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.PATCH,

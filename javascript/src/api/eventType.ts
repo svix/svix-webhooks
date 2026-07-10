@@ -96,7 +96,7 @@ export class EventType {
    * top-level.
    */
   public async importOpenapi(
-    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn = {},
     options?: EventTypeImportOpenapiOptions
   ): Promise<EventTypeImportOpenApiOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type/import/openapi");

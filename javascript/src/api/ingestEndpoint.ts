@@ -189,7 +189,7 @@ export class IngestEndpoint {
   public async rotateSecret(
     sourceId: string,
     endpointId: string,
-    ingestEndpointSecretIn: IngestEndpointSecretIn,
+    ingestEndpointSecretIn: IngestEndpointSecretIn = {},
     options?: IngestEndpointRotateSecretOptions
   ): Promise<void> {
     const request = new SvixRequest(
