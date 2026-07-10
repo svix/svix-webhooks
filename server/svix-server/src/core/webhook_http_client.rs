@@ -36,7 +36,7 @@ use ipnet::IpNet;
 use openssl::ssl::{SslConnector, SslConnectorBuilder, SslMethod, SslVerifyMode};
 use serde::Serialize;
 use thiserror::Error;
-use tokio::{net::TcpStream, sync::Mutex};
+use tokio::{net::TcpStream, sync::OnceCell};
 use tower::Service;
 
 use crate::{
@@ -561,21 +561,15 @@ type NonLocalHttpConnector = HttpConnector<NonLocalDnsResolver>;
 /// Specific private subnets or domain names may be whitelisted.
 #[derive(Clone, Debug)]
 struct NonLocalDnsResolver {
-    state: Arc<Mutex<DnsState>>,
+    resolver: Arc<OnceCell<TokioResolver>>,
     whitelist_nets: Arc<Vec<IpNet>>,
     whitelist_names: Arc<Vec<String>>,
-}
-
-#[derive(Clone, Debug)]
-enum DnsState {
-    Init,
-    Ready(Arc<TokioResolver>),
 }
 
 impl NonLocalDnsResolver {
     pub fn new(whitelist_nets: Arc<Vec<IpNet>>, whitelist_names: Arc<Vec<String>>) -> Self {
         NonLocalDnsResolver {
-            state: Arc::new(Mutex::new(DnsState::Init)),
+            resolver: Arc::new(OnceCell::new()),
             whitelist_nets,
             whitelist_names,
         }
@@ -592,24 +586,12 @@ impl Service<Name> for NonLocalDnsResolver {
     }
 
     fn call(&mut self, name: Name) -> Self::Future {
-        let resolver = self.clone();
+        let this = self.clone();
         let whitelist_nets = self.whitelist_nets.clone();
         let whitelist_names = self.whitelist_names.clone();
 
         Box::pin(async move {
-            let mut lock = resolver.state.lock().await;
-
-            let resolver = match &*lock {
-                DnsState::Init => {
-                    let resolver = new_resolver().await?;
-                    *lock = DnsState::Ready(resolver.clone());
-                    resolver
-                }
-
-                DnsState::Ready(resolver) => resolver.clone(),
-            };
-
-            drop(lock);
+            let resolver = this.resolver.get_or_try_init(new_resolver).await?;
 
             let whitelisted_name = whitelist_names
                 .iter()
@@ -653,10 +635,15 @@ impl Iterator for SocketAddrs {
     }
 }
 
-async fn new_resolver() -> Result<Arc<TokioResolver>, NetError> {
-    let mut builder = Resolver::builder_tokio()?;
-    builder.options_mut().ip_strategy = hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
-    Ok(Arc::new(builder.build()?))
+async fn new_resolver() -> Result<TokioResolver, NetError> {
+    tokio::task::spawn_blocking(|| {
+        let mut builder = Resolver::builder_tokio()?;
+        builder.options_mut().ip_strategy =
+            hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
+        builder.build()
+    })
+    .await
+    .unwrap_or_else(|e| std::panic::resume_unwind(e.into_panic()))
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
