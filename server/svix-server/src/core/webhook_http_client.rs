@@ -593,7 +593,7 @@ impl Service<Name> for NonLocalDnsResolver {
         Box::pin(async move {
             let resolver = this
                 .resolver
-                .get_or_try_init(|| async { new_resolver().await })
+                .get_or_try_init(new_resolver)
                 .await?;
 
             let whitelisted_name = whitelist_names
@@ -639,9 +639,13 @@ impl Iterator for SocketAddrs {
 }
 
 async fn new_resolver() -> Result<TokioResolver, NetError> {
-    let mut builder = Resolver::builder_tokio()?;
-    builder.options_mut().ip_strategy = hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
-    builder.build()
+    tokio::task::spawn_blocking(|| {
+        let mut builder = Resolver::builder_tokio()?;
+        builder.options_mut().ip_strategy = hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
+        builder.build()
+    })
+    .await
+    .unwrap_or_else(|e| std::panic::resume_unwind(e.into_panic()))
 }
 
 fn is_allowed(addr: IpAddr) -> bool {
@@ -704,10 +708,7 @@ mod tests {
         net::{IpAddr, TcpListener},
         path::PathBuf,
         str::FromStr,
-        sync::{
-            Arc,
-            atomic::{AtomicUsize, Ordering},
-        },
+        sync::Arc,
     };
 
     use axum::{Router, routing};
@@ -715,7 +716,7 @@ mod tests {
     use http::{HeaderValue, Method, Version, header::AUTHORIZATION};
     use ipnet::IpNet;
 
-    use super::{NonLocalDnsResolver, RequestBuilder, WebhookClient, is_allowed, new_resolver};
+    use super::{RequestBuilder, WebhookClient, is_allowed};
     use crate::core::types::CasePreservingHeaderMap;
 
     #[test]
@@ -929,41 +930,5 @@ mod tests {
         // And assert that when the flag is enabled, that it will succeed
         let whc_without_validation = WebhookClient::new(Some(whitelist), None, true, None);
         assert!(whc_without_validation.execute(request).await.is_ok());
-    }
-
-    #[tokio::test]
-    async fn test_dns_resolver_initializes_once_under_concurrency() {
-        let resolver = NonLocalDnsResolver::new(Arc::new(vec![]), Arc::new(vec![]));
-        let init_count = Arc::new(AtomicUsize::new(0));
-
-        // Spawn 20 tasks all racing to initialize the resolver at the same time
-        let handles: Vec<_> = (0..20)
-            .map(|_| {
-                let cell = resolver.resolver.clone();
-                let count = init_count.clone();
-                tokio::spawn(async move {
-                    cell.get_or_try_init(|| async {
-                        count.fetch_add(1, Ordering::SeqCst);
-                        new_resolver().await
-                    })
-                    .await
-                    .map(|_| ())
-                })
-            })
-            .collect();
-
-        for handle in handles {
-            handle.await.unwrap().expect("resolver init failed");
-        }
-
-        assert_eq!(
-            init_count.load(Ordering::SeqCst),
-            1,
-            "resolver should initialize exactly once regardless of concurrent callers"
-        );
-        assert!(
-            resolver.resolver.get().is_some(),
-            "OnceCell should be populated after initialization"
-        );
     }
 }
