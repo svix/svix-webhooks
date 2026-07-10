@@ -104,10 +104,9 @@ async fn app_portal_access(
     }))
 }
 
-/// DEPRECATED: Please use `app-portal-access` instead.
+/// Deprecated: Please use `app-portal-access` instead.
 ///
 /// Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-#[aide_annotate(op_id = "v1.authentication.dashboard-access")]
 async fn dashboard_access(
     state: State<AppState>,
     path: Path<ApplicationPath>,
