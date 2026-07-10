@@ -12,10 +12,8 @@ type EventType struct {
 	client *internal.SvixHttpClient
 }
 
-func newEventType(client *internal.SvixHttpClient) *EventType {
-	return &EventType{
-		client: client,
-	}
+func newEventType(client *internal.SvixHttpClient) EventType {
+	return EventType{client}
 }
 
 type EventTypeListOptions struct {
@@ -46,7 +44,7 @@ type EventTypeDeleteOptions struct {
 }
 
 // Return the list of event types.
-func (eventType *EventType) List(
+func (eventType EventType) List(
 	ctx context.Context,
 	o *EventTypeListOptions,
 ) (*models.ListResponseEventTypeOut, error) {
@@ -81,7 +79,7 @@ func (eventType *EventType) List(
 // Unarchiving an event type will allow endpoints to filter on it and messages to be sent with it.
 // Endpoints filtering on the event type before archival will continue to filter on it.
 // This operation does not preserve the description and schemas.
-func (eventType *EventType) Create(
+func (eventType EventType) Create(
 	ctx context.Context,
 	eventTypeIn models.EventTypeIn,
 	o *EventTypeCreateOptions,
@@ -113,7 +111,7 @@ func (eventType *EventType) Create(
 // If an existing `archived` event type is updated, it will be unarchived.
 // The importer will convert all webhooks found in the either the `webhooks` or `x-webhooks`
 // top-level.
-func (eventType *EventType) ImportOpenapi(
+func (eventType EventType) ImportOpenapi(
 	ctx context.Context,
 	eventTypeImportOpenApiIn models.EventTypeImportOpenApiIn,
 	o *EventTypeImportOpenapiOptions,
@@ -141,7 +139,7 @@ func (eventType *EventType) ImportOpenapi(
 }
 
 // Get an event type.
-func (eventType *EventType) Get(
+func (eventType EventType) Get(
 	ctx context.Context,
 	eventTypeName string,
 ) (*models.EventTypeOut, error) {
@@ -161,7 +159,7 @@ func (eventType *EventType) Get(
 }
 
 // Create or update an event type.
-func (eventType *EventType) Update(
+func (eventType EventType) Update(
 	ctx context.Context,
 	eventTypeName string,
 	eventTypeUpdate models.EventTypeUpdate,
@@ -187,7 +185,7 @@ func (eventType *EventType) Update(
 // However, new messages can not be sent with it and endpoints can not filter on it.
 // An event type can be unarchived with the
 // [create operation](#operation/create_event_type_api_v1_event_type__post).
-func (eventType *EventType) Delete(
+func (eventType EventType) Delete(
 	ctx context.Context,
 	eventTypeName string,
 	o *EventTypeDeleteOptions,
@@ -219,7 +217,7 @@ func (eventType *EventType) Delete(
 }
 
 // Partially update an event type.
-func (eventType *EventType) Patch(
+func (eventType EventType) Patch(
 	ctx context.Context,
 	eventTypeName string,
 	eventTypePatch models.EventTypePatch,

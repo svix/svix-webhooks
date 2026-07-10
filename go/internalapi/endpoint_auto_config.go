@@ -12,14 +12,12 @@ type EndpointAutoConfig struct {
 	client *internal.SvixHttpClient
 }
 
-func newEndpointAutoConfig(client *internal.SvixHttpClient) *EndpointAutoConfig {
-	return &EndpointAutoConfig{
-		client: client,
-	}
+func newEndpointAutoConfig(client *internal.SvixHttpClient) EndpointAutoConfig {
+	return EndpointAutoConfig{client}
 }
 
 // Update an auto-config endpoint by providing endpoint details.
-func (endpointAutoConfig *EndpointAutoConfig) Update(
+func (endpointAutoConfig EndpointAutoConfig) Update(
 	ctx context.Context,
 	appId string,
 	endpointId string,

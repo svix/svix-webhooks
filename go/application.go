@@ -12,10 +12,8 @@ type Application struct {
 	client *internal.SvixHttpClient
 }
 
-func newApplication(client *internal.SvixHttpClient) *Application {
-	return &Application{
-		client: client,
-	}
+func newApplication(client *internal.SvixHttpClient) Application {
+	return Application{client}
 }
 
 type ApplicationListOptions struct {
@@ -39,7 +37,7 @@ type ApplicationCreateOptions struct {
 }
 
 // List of all the organization's applications.
-func (application *Application) List(
+func (application Application) List(
 	ctx context.Context,
 	o *ApplicationListOptions,
 ) (*models.ListResponseApplicationOut, error) {
@@ -71,7 +69,7 @@ func (application *Application) List(
 }
 
 // Create a new application.
-func (application *Application) Create(
+func (application Application) Create(
 	ctx context.Context,
 	applicationIn models.ApplicationIn,
 	o *ApplicationCreateOptions,
@@ -136,7 +134,7 @@ func (application *Application) GetOrCreate(
 }
 
 // Get an application.
-func (application *Application) Get(
+func (application Application) Get(
 	ctx context.Context,
 	appId string,
 ) (*models.ApplicationOut, error) {
@@ -156,7 +154,7 @@ func (application *Application) Get(
 }
 
 // Create or update an application.
-func (application *Application) Update(
+func (application Application) Update(
 	ctx context.Context,
 	appId string,
 	applicationIn models.ApplicationIn,
@@ -177,7 +175,7 @@ func (application *Application) Update(
 }
 
 // Delete an application.
-func (application *Application) Delete(
+func (application Application) Delete(
 	ctx context.Context,
 	appId string,
 ) error {
@@ -199,7 +197,7 @@ func (application *Application) Delete(
 }
 
 // Partially update an application.
-func (application *Application) Patch(
+func (application Application) Patch(
 	ctx context.Context,
 	appId string,
 	applicationPatch models.ApplicationPatch,

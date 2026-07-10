@@ -12,10 +12,8 @@ type MessagePollerv2 struct {
 	client *internal.SvixHttpClient
 }
 
-func newMessagePollerv2(client *internal.SvixHttpClient) *MessagePollerv2 {
-	return &MessagePollerv2{
-		client: client,
-	}
+func newMessagePollerv2(client *internal.SvixHttpClient) MessagePollerv2 {
+	return MessagePollerv2{client}
 }
 
 type MessagePollerv2ConsumerPollOptions struct {
@@ -31,7 +29,7 @@ type MessagePollerv2ConsumerCommitOptions struct {
 }
 
 // Poll messages from a sink.
-func (messagePollerv2 *MessagePollerv2) ConsumerPoll(
+func (messagePollerv2 MessagePollerv2) ConsumerPoll(
 	ctx context.Context,
 	appId string,
 	sinkId string,
@@ -68,7 +66,7 @@ func (messagePollerv2 *MessagePollerv2) ConsumerPoll(
 }
 
 // Ack a message offset for a sink's consumer.
-func (messagePollerv2 *MessagePollerv2) ConsumerCommit(
+func (messagePollerv2 MessagePollerv2) ConsumerCommit(
 	ctx context.Context,
 	appId string,
 	sinkId string,

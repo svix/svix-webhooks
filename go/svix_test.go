@@ -161,7 +161,7 @@ func isNotConflict(err error) error {
 }
 
 func deleteApp(t *testing.T, ctx context.Context, client svix.Svix, app_id string) {
-	err := client.Application.Delete(ctx, app_id)
+	err := client.Application().Delete(ctx, app_id)
 	if err != nil {
 		t.Error(err)
 	}
@@ -173,7 +173,7 @@ func TestKitchenSink(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 
-	app, err := client.Application.Create(ctx, models.ApplicationIn{
+	app, err := client.Application().Create(ctx, models.ApplicationIn{
 		Name: "test",
 	}, nil)
 	if err != nil {
@@ -181,18 +181,18 @@ func TestKitchenSink(t *testing.T) {
 	}
 	defer deleteApp(t, ctx, *client, app.Id)
 
-	_, err = client.EventType.Create(ctx, models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
+	_, err = client.EventType().Create(ctx, models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
 
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
+	_, err = client.EventType().Create(ctx, models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	endp, err := client.Endpoint.Create(ctx, app.Id, models.EndpointIn{
+	endp, err := client.Endpoint().Create(ctx, app.Id, models.EndpointIn{
 		Url: "https://example.svix.com/",
 	}, nil)
 	if err != nil {
@@ -203,7 +203,7 @@ func TestKitchenSink(t *testing.T) {
 		FilterTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
 	}
 
-	patched, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, endpPatch)
+	patched, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, endpPatch)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -545,7 +545,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 	origUid := strconv.FormatUint(rand.Uint64(), 10)
-	app, err := client.Application.Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}, Uid: &origUid}, nil)
+	app, err := client.Application().Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}, Uid: &origUid}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -558,7 +558,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 			"key2": "val2",
 		},
 	}
-	patchRes1, err := client.Application.Patch(ctx, app.Id, appPatch1)
+	patchRes1, err := client.Application().Patch(ctx, app.Id, appPatch1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -573,7 +573,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	appPatch2 := models.ApplicationPatch{
 		Uid: utils.NewNullableFromPtr[string](nil),
 	}
-	patchRes2, err := client.Application.Patch(ctx, app.Id, appPatch2)
+	patchRes2, err := client.Application().Patch(ctx, app.Id, appPatch2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -586,7 +586,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	appPatch3 := models.ApplicationPatch{
 		Uid: utils.NewNullable(newUid),
 	}
-	patchRes3, err := client.Application.Patch(ctx, app.Id, appPatch3)
+	patchRes3, err := client.Application().Patch(ctx, app.Id, appPatch3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -601,12 +601,12 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 func TestEndpointPatchNullableAgainstServer(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
-	app, err := client.Application.Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}}, nil)
+	app, err := client.Application().Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer deleteApp(t, ctx, *client, app.Id)
-	endp, err := client.Endpoint.Create(ctx, app.Id, models.EndpointIn{
+	endp, err := client.Endpoint().Create(ctx, app.Id, models.EndpointIn{
 		Url: "https://play.svix.com",
 	}, nil)
 	if err != nil {
@@ -620,7 +620,7 @@ func TestEndpointPatchNullableAgainstServer(t *testing.T) {
 	patch1 := models.EndpointPatch{
 		Channels: utils.NewNullable([]string{"non-sorted-text", "ch2", "ch7"}),
 	}
-	endp2, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, patch1)
+	endp2, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, patch1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -634,7 +634,7 @@ func TestEndpointPatchNullableAgainstServer(t *testing.T) {
 	patch2 := models.EndpointPatch{
 		Channels: utils.NewNullable[[]string](nil),
 	}
-	endp3, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, patch2)
+	endp3, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, patch2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -668,7 +668,7 @@ func TestEndpointPatchSerialization(t *testing.T) {
 		Channels: utils.NewNullable[[]string](nil),
 	}
 
-	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
+	_, err := svx.Endpoint().Patch(ctx, "app1", "endp1", patch)
 	if err != nil {
 		t.Error(err)
 	}
@@ -700,7 +700,7 @@ func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
 		Channels: utils.NewUnsetNullable[[]string](),
 	}
 
-	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
+	_, err := svx.Endpoint().Patch(ctx, "app1", "endp1", patch)
 	if err != nil {
 		t.Error(err)
 	}
@@ -747,7 +747,7 @@ func TestTransportWrapperCanModifyRequests(t *testing.T) {
 		},
 	)
 
-	_, err = svx.Application.List(context.Background(), nil)
+	_, err = svx.Application().List(context.Background(), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -771,7 +771,7 @@ func TestListResponseOutModels(t *testing.T) {
 			return httpmock.NewStringResponse(200, `{"data":[],"done":true,"iterator":null,"prevIterator":null}`), nil
 		},
 	)
-	res, err := svx.Application.List(ctx, nil)
+	res, err := svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -874,7 +874,7 @@ func TestUnknownKeysAreIgnored(t *testing.T) {
 			return httpmock.NewStringResponse(200, `{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}`), nil
 		},
 	)
-	_, err := svx.Application.List(ctx, nil)
+	_, err := svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -903,7 +903,7 @@ func TestDatetimeInQueryParam(t *testing.T) {
 	opts := svix.MessageAttemptListByEndpointOptions{
 		Before: &expectedTime,
 	}
-	_, err := svx.MessageAttempt.ListByEndpoint(ctx, "app1", "endp", &opts)
+	_, err := svx.MessageAttempt().ListByEndpoint(ctx, "app1", "endp", &opts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -931,7 +931,7 @@ func TestMsgInRaw(t *testing.T) {
 	})
 
 	contentType := "custom/non-standard"
-	_, err := svx.Message.Create(ctx, "app1", *svix.NewMessageInRaw("ev-ty", "raw payload", &contentType), nil)
+	_, err := svx.Message().Create(ctx, "app1", *svix.NewMessageInRaw("ev-ty", "raw payload", &contentType), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -954,7 +954,7 @@ func TestUserAgent(t *testing.T) {
 		}
 		return httpmock.NewStringResponse(200, "{\"data\": [], \"iterator\": \"app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\", \"prevIterator\": \"-app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\"}"), nil
 	})
-	_, err := svx.Application.List(ctx, nil)
+	_, err := svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -981,7 +981,7 @@ func TestSetUserAgentSuffix(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = svx.Application.List(ctx, nil)
+	_, err = svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -1029,7 +1029,7 @@ func TestCmgWithContentDefault(t *testing.T) {
 		"email":    "test@example.com",
 		"username": "test_user",
 	}
-	out, err := svx.Message.Create(
+	out, err := svx.Message().Create(
 		ctx,
 		appId,
 		svix.MessageIn{

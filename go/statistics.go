@@ -12,10 +12,8 @@ type Statistics struct {
 	client *internal.SvixHttpClient
 }
 
-func newStatistics(client *internal.SvixHttpClient) *Statistics {
-	return &Statistics{
-		client: client,
-	}
+func newStatistics(client *internal.SvixHttpClient) Statistics {
+	return Statistics{client}
 }
 
 type StatisticsAggregateAppStatsOptions struct {
@@ -46,7 +44,7 @@ type StatisticsAggregateAppStatsOptions struct {
 //	}
 //
 // ```
-func (statistics *Statistics) AggregateEventTypes(
+func (statistics Statistics) AggregateEventTypes(
 	ctx context.Context,
 ) (*models.AggregateEventTypesOut, error) {
 	return internal.ExecuteRequest[any, models.AggregateEventTypesOut](
@@ -85,7 +83,7 @@ func (statistics *Statistics) AggregateEventTypes(
 //	}
 //
 // ```
-func (statistics *Statistics) AggregateAppStats(
+func (statistics Statistics) AggregateAppStats(
 	ctx context.Context,
 	appUsageStatsIn models.AppUsageStatsIn,
 	o *StatisticsAggregateAppStatsOptions,

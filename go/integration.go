@@ -12,10 +12,8 @@ type Integration struct {
 	client *internal.SvixHttpClient
 }
 
-func newIntegration(client *internal.SvixHttpClient) *Integration {
-	return &Integration{
-		client: client,
-	}
+func newIntegration(client *internal.SvixHttpClient) Integration {
+	return Integration{client}
 }
 
 type IntegrationListOptions struct {
@@ -37,7 +35,7 @@ type IntegrationRotateKeyOptions struct {
 }
 
 // List the application's integrations.
-func (integration *Integration) List(
+func (integration Integration) List(
 	ctx context.Context,
 	appId string,
 	o *IntegrationListOptions,
@@ -70,7 +68,7 @@ func (integration *Integration) List(
 }
 
 // Create an integration.
-func (integration *Integration) Create(
+func (integration Integration) Create(
 	ctx context.Context,
 	appId string,
 	integrationIn models.IntegrationIn,
@@ -102,7 +100,7 @@ func (integration *Integration) Create(
 }
 
 // Get an integration.
-func (integration *Integration) Get(
+func (integration Integration) Get(
 	ctx context.Context,
 	appId string,
 	integId string,
@@ -124,7 +122,7 @@ func (integration *Integration) Get(
 }
 
 // Update an integration.
-func (integration *Integration) Update(
+func (integration Integration) Update(
 	ctx context.Context,
 	appId string,
 	integId string,
@@ -147,7 +145,7 @@ func (integration *Integration) Update(
 }
 
 // Delete an integration.
-func (integration *Integration) Delete(
+func (integration Integration) Delete(
 	ctx context.Context,
 	appId string,
 	integId string,
@@ -171,7 +169,7 @@ func (integration *Integration) Delete(
 }
 
 // Rotate the integration's key. The previous key will be immediately revoked.
-func (integration *Integration) RotateKey(
+func (integration Integration) RotateKey(
 	ctx context.Context,
 	appId string,
 	integId string,
@@ -206,7 +204,7 @@ func (integration *Integration) RotateKey(
 // Get an integration's key.
 //
 // Deprecated: GetKey is deprecated.
-func (integration *Integration) GetKey(
+func (integration Integration) GetKey(
 	ctx context.Context,
 	appId string,
 	integId string,
