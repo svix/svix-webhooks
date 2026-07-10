@@ -591,10 +591,7 @@ impl Service<Name> for NonLocalDnsResolver {
         let whitelist_names = self.whitelist_names.clone();
 
         Box::pin(async move {
-            let resolver = this
-                .resolver
-                .get_or_try_init(new_resolver)
-                .await?;
+            let resolver = this.resolver.get_or_try_init(new_resolver).await?;
 
             let whitelisted_name = whitelist_names
                 .iter()
@@ -641,7 +638,8 @@ impl Iterator for SocketAddrs {
 async fn new_resolver() -> Result<TokioResolver, NetError> {
     tokio::task::spawn_blocking(|| {
         let mut builder = Resolver::builder_tokio()?;
-        builder.options_mut().ip_strategy = hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
+        builder.options_mut().ip_strategy =
+            hickory_resolver::config::LookupIpStrategy::Ipv4thenIpv6;
         builder.build()
     })
     .await
