@@ -15,24 +15,19 @@ import (
 
 
 type {{ resource_type_name }} struct {
-	{% if resource.operations | length > 0 -%}
 	client *internal.SvixHttpClient
-	{%- endif %}
-	{%- for name, sub in resource.subresources | items %}
-	{{ name | to_upper_camel_case }} *{{ sub.name | to_upper_camel_case }}
-	{%- endfor %}
 }
 
-func new{{ resource_type_name }}(client *internal.SvixHttpClient) *{{ resource_type_name }} {
-	return &{{ resource_type_name }}{
-		{% if resource.operations | length > 0 -%}
-		client: client,
-		{% endif -%}
-		{% for name, sub in resource.subresources | items -%}
-		{{ name | to_upper_camel_case }}: new{{ sub.name | to_upper_camel_case }}(client),
-		{% endfor -%}
-	}
+func new{{ resource_type_name }}(client *internal.SvixHttpClient) {{ resource_type_name }} {
+	return {{ resource_type_name }}{client}
 }
+
+{% for name, sub in resource.subresources | items %}
+{%- set sub_name = sub.name | to_upper_camel_case %}
+func ({{ resource_self_name }} {{ resource_type_name }}) {{ name | to_upper_camel_case }}() {{ sub_name }} {
+	return new{{ sub_name }}({{ resource_self_name }}.client)
+}
+{%- endfor %}
 
 {% for op in resource.operations -%}
 	{% if op | has_query_or_header_params -%}
@@ -82,7 +77,7 @@ type {{ opt_struct_name }} struct {
 	{% endif -%}
 // Deprecated: {{ op.name | to_upper_camel_case }} is deprecated.
 	{% endif -%}
-func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_camel_case }}(
+func ({{ resource_self_name }} {{ resource_type_name }}) {{ op.name | to_upper_camel_case }}(
 	ctx context.Context,
 
 	{#- path parameters #}

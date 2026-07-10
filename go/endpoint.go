@@ -13,10 +13,8 @@ type Endpoint struct {
 	client *internal.SvixHttpClient
 }
 
-func newEndpoint(client *internal.SvixHttpClient) *Endpoint {
-	return &Endpoint{
-		client: client,
-	}
+func newEndpoint(client *internal.SvixHttpClient) Endpoint {
+	return Endpoint{client}
 }
 
 type EndpointListOptions struct {
@@ -61,7 +59,7 @@ type EndpointSendExampleOptions struct {
 }
 
 // List the application's endpoints.
-func (endpoint *Endpoint) List(
+func (endpoint Endpoint) List(
 	ctx context.Context,
 	appId string,
 	o *EndpointListOptions,
@@ -96,7 +94,7 @@ func (endpoint *Endpoint) List(
 // Create a new endpoint for the application.
 //
 // When `secret` is `null` the secret is automatically generated (recommended).
-func (endpoint *Endpoint) Create(
+func (endpoint Endpoint) Create(
 	ctx context.Context,
 	appId string,
 	endpointIn models.EndpointIn,
@@ -128,7 +126,7 @@ func (endpoint *Endpoint) Create(
 }
 
 // Get an endpoint.
-func (endpoint *Endpoint) Get(
+func (endpoint Endpoint) Get(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -150,7 +148,7 @@ func (endpoint *Endpoint) Get(
 }
 
 // Create or update an endpoint.
-func (endpoint *Endpoint) Update(
+func (endpoint Endpoint) Update(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -173,7 +171,7 @@ func (endpoint *Endpoint) Update(
 }
 
 // Delete an endpoint.
-func (endpoint *Endpoint) Delete(
+func (endpoint Endpoint) Delete(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -197,7 +195,7 @@ func (endpoint *Endpoint) Delete(
 }
 
 // Partially update an endpoint.
-func (endpoint *Endpoint) Patch(
+func (endpoint Endpoint) Patch(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -223,7 +221,7 @@ func (endpoint *Endpoint) Patch(
 //
 // This is used to verify the authenticity of the webhook.
 // For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-func (endpoint *Endpoint) GetSecret(
+func (endpoint Endpoint) GetSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -247,7 +245,7 @@ func (endpoint *Endpoint) GetSecret(
 // Rotates the endpoint's signing secret.
 //
 // The previous secret will remain valid for the specified grace period (default 24 hours).
-func (endpoint *Endpoint) RotateSecret(
+func (endpoint Endpoint) RotateSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -282,7 +280,7 @@ func (endpoint *Endpoint) RotateSecret(
 }
 
 // Get the additional headers to be sent with the webhook.
-func (endpoint *Endpoint) GetHeaders(
+func (endpoint Endpoint) GetHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -304,7 +302,7 @@ func (endpoint *Endpoint) GetHeaders(
 }
 
 // Set the additional headers to be sent with the webhook.
-func (endpoint *Endpoint) UpdateHeaders(
+func (endpoint Endpoint) UpdateHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -329,7 +327,7 @@ func (endpoint *Endpoint) UpdateHeaders(
 }
 
 // Partially set the additional headers to be sent with the webhook.
-func (endpoint *Endpoint) PatchHeaders(
+func (endpoint Endpoint) PatchHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -354,7 +352,7 @@ func (endpoint *Endpoint) PatchHeaders(
 }
 
 // Get the transformation code associated with this endpoint.
-func (endpoint *Endpoint) TransformationGet(
+func (endpoint Endpoint) TransformationGet(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -376,7 +374,7 @@ func (endpoint *Endpoint) TransformationGet(
 }
 
 // Set or unset the transformation code associated with this endpoint.
-func (endpoint *Endpoint) PatchTransformation(
+func (endpoint Endpoint) PatchTransformation(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -418,7 +416,7 @@ func (endpoint *Endpoint) PatchTransformation(
 //	}
 //
 // ```
-func (endpoint *Endpoint) ReplayMissing(
+func (endpoint Endpoint) ReplayMissing(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -469,7 +467,7 @@ func (endpoint *Endpoint) ReplayMissing(
 //	}
 //
 // ```
-func (endpoint *Endpoint) BulkReplay(
+func (endpoint Endpoint) BulkReplay(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -503,7 +501,7 @@ func (endpoint *Endpoint) BulkReplay(
 }
 
 // Get basic statistics for the endpoint.
-func (endpoint *Endpoint) GetStats(
+func (endpoint Endpoint) GetStats(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -553,7 +551,7 @@ func (endpoint *Endpoint) GetStats(
 //	}
 //
 // ```
-func (endpoint *Endpoint) Recover(
+func (endpoint Endpoint) Recover(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -587,7 +585,7 @@ func (endpoint *Endpoint) Recover(
 }
 
 // Send an example message for an event.
-func (endpoint *Endpoint) SendExample(
+func (endpoint Endpoint) SendExample(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -623,7 +621,7 @@ func (endpoint *Endpoint) SendExample(
 // This operation was renamed to `set-transformation`.
 //
 // Deprecated: TransformationPartialUpdate is deprecated.
-func (endpoint *Endpoint) TransformationPartialUpdate(
+func (endpoint Endpoint) TransformationPartialUpdate(
 	ctx context.Context,
 	appId string,
 	endpointId string,

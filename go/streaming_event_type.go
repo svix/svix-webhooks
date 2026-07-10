@@ -12,10 +12,8 @@ type StreamingEventType struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingEventType(client *internal.SvixHttpClient) *StreamingEventType {
-	return &StreamingEventType{
-		client: client,
-	}
+func newStreamingEventType(client *internal.SvixHttpClient) StreamingEventType {
+	return StreamingEventType{client}
 }
 
 type StreamingEventTypeListOptions struct {
@@ -40,7 +38,7 @@ type StreamingEventTypeDeleteOptions struct {
 }
 
 // List of all the organization's event types for streaming.
-func (streamingEventType *StreamingEventType) List(
+func (streamingEventType StreamingEventType) List(
 	ctx context.Context,
 	o *StreamingEventTypeListOptions,
 ) (*models.ListResponseStreamEventTypeOut, error) {
@@ -70,7 +68,7 @@ func (streamingEventType *StreamingEventType) List(
 }
 
 // Create an event type for Streams.
-func (streamingEventType *StreamingEventType) Create(
+func (streamingEventType StreamingEventType) Create(
 	ctx context.Context,
 	streamEventTypeIn models.StreamEventTypeIn,
 	o *StreamingEventTypeCreateOptions,
@@ -98,7 +96,7 @@ func (streamingEventType *StreamingEventType) Create(
 }
 
 // Get an event type.
-func (streamingEventType *StreamingEventType) Get(
+func (streamingEventType StreamingEventType) Get(
 	ctx context.Context,
 	name string,
 ) (*models.StreamEventTypeOut, error) {
@@ -118,7 +116,7 @@ func (streamingEventType *StreamingEventType) Get(
 }
 
 // Create or update or create a event type for Streams.
-func (streamingEventType *StreamingEventType) Update(
+func (streamingEventType StreamingEventType) Update(
 	ctx context.Context,
 	name string,
 	streamEventTypeIn models.StreamEventTypeIn,
@@ -139,7 +137,7 @@ func (streamingEventType *StreamingEventType) Update(
 }
 
 // Delete an event type.
-func (streamingEventType *StreamingEventType) Delete(
+func (streamingEventType StreamingEventType) Delete(
 	ctx context.Context,
 	name string,
 	o *StreamingEventTypeDeleteOptions,
@@ -171,7 +169,7 @@ func (streamingEventType *StreamingEventType) Delete(
 }
 
 // Patch an event type for Streams.
-func (streamingEventType *StreamingEventType) Patch(
+func (streamingEventType StreamingEventType) Patch(
 	ctx context.Context,
 	name string,
 	streamEventTypePatch models.StreamEventTypePatch,

@@ -13,10 +13,8 @@ type StreamingEvents struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingEvents(client *internal.SvixHttpClient) *StreamingEvents {
-	return &StreamingEvents{
-		client: client,
-	}
+func newStreamingEvents(client *internal.SvixHttpClient) StreamingEvents {
+	return StreamingEvents{client}
 }
 
 type StreamingEventsGetOptions struct {
@@ -34,7 +32,7 @@ type StreamingEventsCreateOptions struct {
 // Iterate over a stream of events.
 //
 // The sink must be of type `poller` to use the poller endpoint.
-func (streamingEvents *StreamingEvents) Get(
+func (streamingEvents StreamingEvents) Get(
 	ctx context.Context,
 	streamId string,
 	sinkId string,
@@ -69,7 +67,7 @@ func (streamingEvents *StreamingEvents) Get(
 }
 
 // Creates events on the Stream.
-func (streamingEvents *StreamingEvents) Create(
+func (streamingEvents StreamingEvents) Create(
 	ctx context.Context,
 	streamId string,
 	createStreamEventsIn models.CreateStreamEventsIn,

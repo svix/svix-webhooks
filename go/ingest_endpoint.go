@@ -12,10 +12,8 @@ type IngestEndpoint struct {
 	client *internal.SvixHttpClient
 }
 
-func newIngestEndpoint(client *internal.SvixHttpClient) *IngestEndpoint {
-	return &IngestEndpoint{
-		client: client,
-	}
+func newIngestEndpoint(client *internal.SvixHttpClient) IngestEndpoint {
+	return IngestEndpoint{client}
 }
 
 type IngestEndpointListOptions struct {
@@ -37,7 +35,7 @@ type IngestEndpointRotateSecretOptions struct {
 }
 
 // List ingest endpoints.
-func (ingestEndpoint *IngestEndpoint) List(
+func (ingestEndpoint IngestEndpoint) List(
 	ctx context.Context,
 	sourceId string,
 	o *IngestEndpointListOptions,
@@ -70,7 +68,7 @@ func (ingestEndpoint *IngestEndpoint) List(
 }
 
 // Create an ingest endpoint.
-func (ingestEndpoint *IngestEndpoint) Create(
+func (ingestEndpoint IngestEndpoint) Create(
 	ctx context.Context,
 	sourceId string,
 	ingestEndpointIn models.IngestEndpointIn,
@@ -102,7 +100,7 @@ func (ingestEndpoint *IngestEndpoint) Create(
 }
 
 // Get an ingest endpoint.
-func (ingestEndpoint *IngestEndpoint) Get(
+func (ingestEndpoint IngestEndpoint) Get(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -124,7 +122,7 @@ func (ingestEndpoint *IngestEndpoint) Get(
 }
 
 // Create or update an ingest endpoint.
-func (ingestEndpoint *IngestEndpoint) Update(
+func (ingestEndpoint IngestEndpoint) Update(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -147,7 +145,7 @@ func (ingestEndpoint *IngestEndpoint) Update(
 }
 
 // Delete an ingest endpoint.
-func (ingestEndpoint *IngestEndpoint) Delete(
+func (ingestEndpoint IngestEndpoint) Delete(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -174,7 +172,7 @@ func (ingestEndpoint *IngestEndpoint) Delete(
 //
 // This is used to verify the authenticity of the webhook.
 // For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-func (ingestEndpoint *IngestEndpoint) GetSecret(
+func (ingestEndpoint IngestEndpoint) GetSecret(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -198,7 +196,7 @@ func (ingestEndpoint *IngestEndpoint) GetSecret(
 // Rotates an ingest endpoint's signing secret.
 //
 // The previous secret will remain valid for the next 24 hours.
-func (ingestEndpoint *IngestEndpoint) RotateSecret(
+func (ingestEndpoint IngestEndpoint) RotateSecret(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -233,7 +231,7 @@ func (ingestEndpoint *IngestEndpoint) RotateSecret(
 }
 
 // Get the additional headers to be sent with the ingest.
-func (ingestEndpoint *IngestEndpoint) GetHeaders(
+func (ingestEndpoint IngestEndpoint) GetHeaders(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -255,7 +253,7 @@ func (ingestEndpoint *IngestEndpoint) GetHeaders(
 }
 
 // Set the additional headers to be sent to the endpoint.
-func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
+func (ingestEndpoint IngestEndpoint) UpdateHeaders(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -280,7 +278,7 @@ func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
 }
 
 // Get the transformation code associated with this ingest endpoint.
-func (ingestEndpoint *IngestEndpoint) GetTransformation(
+func (ingestEndpoint IngestEndpoint) GetTransformation(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
@@ -302,7 +300,7 @@ func (ingestEndpoint *IngestEndpoint) GetTransformation(
 }
 
 // Set or unset the transformation code associated with this ingest endpoint.
-func (ingestEndpoint *IngestEndpoint) SetTransformation(
+func (ingestEndpoint IngestEndpoint) SetTransformation(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,

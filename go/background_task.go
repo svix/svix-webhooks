@@ -12,10 +12,8 @@ type BackgroundTask struct {
 	client *internal.SvixHttpClient
 }
 
-func newBackgroundTask(client *internal.SvixHttpClient) *BackgroundTask {
-	return &BackgroundTask{
-		client: client,
-	}
+func newBackgroundTask(client *internal.SvixHttpClient) BackgroundTask {
+	return BackgroundTask{client}
 }
 
 type BackgroundTaskListOptions struct {
@@ -35,7 +33,7 @@ type BackgroundTaskListOptions struct {
 }
 
 // List background tasks executed in the past 90 days.
-func (backgroundTask *BackgroundTask) List(
+func (backgroundTask BackgroundTask) List(
 	ctx context.Context,
 	o *BackgroundTaskListOptions,
 ) (*models.ListResponseBackgroundTaskOut, error) {
@@ -66,7 +64,7 @@ func (backgroundTask *BackgroundTask) List(
 }
 
 // Get a background task by ID.
-func (backgroundTask *BackgroundTask) Get(
+func (backgroundTask BackgroundTask) Get(
 	ctx context.Context,
 	taskId string,
 ) (*models.BackgroundTaskOut, error) {

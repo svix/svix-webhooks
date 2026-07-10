@@ -120,7 +120,7 @@ func TestReqIdHeaderIsSetCorrectly(t *testing.T) {
 		},
 	)
 
-	_, err := svx.Application.List(context.Background(), nil)
+	_, err := svx.Application().List(context.Background(), nil)
 	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
@@ -145,7 +145,7 @@ func TestRetryCountHeadersIsSetCorrectly(t *testing.T) {
 		},
 	)
 
-	_, err := svx.Application.List(context.Background(), nil)
+	_, err := svx.Application().List(context.Background(), nil)
 	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
@@ -184,7 +184,7 @@ func TestOptionsSerialization(t *testing.T) {
 		Order:    &order,
 		Iterator: &iter,
 	}
-	_, err := svx.Application.List(context.Background(), &listOpts)
+	_, err := svx.Application().List(context.Background(), &listOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -207,7 +207,7 @@ func TestQueryParamListSerialization(t *testing.T) {
 	listOpts := svix.MessageListOptions{
 		EventTypes: &[]string{"asd13", "123asd"},
 	}
-	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
+	_, err := svx.Message().List(context.Background(), "random_app_id", &listOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -231,7 +231,7 @@ func TestOctothorpeUrlParam(t *testing.T) {
 	listOpts := svix.MessageListOptions{
 		Tag: &tag,
 	}
-	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
+	_, err := svx.Message().List(context.Background(), "random_app_id", &listOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -258,7 +258,7 @@ func TestIdempotencyKeyIsSentForCreateRequest(t *testing.T) {
 	appIn := models.ApplicationIn{
 		Name: "test app",
 	}
-	_, err := svx.Application.Create(context.Background(), appIn, nil)
+	_, err := svx.Application().Create(context.Background(), appIn, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -294,7 +294,7 @@ func TestClientProvidedIdempotencyKeyIsNotOverridden(t *testing.T) {
 	createOpts := svix.ApplicationCreateOptions{
 		IdempotencyKey: &clientProvidedKey,
 	}
-	_, err := svx.Application.Create(context.Background(), appIn, &createOpts)
+	_, err := svx.Application().Create(context.Background(), appIn, &createOpts)
 	if err != nil {
 		t.Error(err)
 	}

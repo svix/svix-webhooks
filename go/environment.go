@@ -12,10 +12,8 @@ type Environment struct {
 	client *internal.SvixHttpClient
 }
 
-func newEnvironment(client *internal.SvixHttpClient) *Environment {
-	return &Environment{
-		client: client,
-	}
+func newEnvironment(client *internal.SvixHttpClient) Environment {
+	return Environment{client}
 }
 
 type EnvironmentExportOptions struct {
@@ -30,7 +28,7 @@ type EnvironmentImportOptions struct {
 //
 // Note that the schema for [`EnvironmentOut`] is subject to change. The fields
 // herein are provided for convenience but should be treated as JSON blobs.
-func (environment *Environment) Export(
+func (environment Environment) Export(
 	ctx context.Context,
 	o *EnvironmentExportOptions,
 ) (*models.EnvironmentOut, error) {
@@ -62,7 +60,7 @@ func (environment *Environment) Export(
 //
 // Note that the schema for [`EnvironmentIn`] is subject to change. The fields
 // herein are provided for convenience but should be treated as JSON blobs.
-func (environment *Environment) Import(
+func (environment Environment) Import(
 	ctx context.Context,
 	environmentIn models.EnvironmentIn,
 	o *EnvironmentImportOptions,

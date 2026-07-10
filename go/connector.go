@@ -12,10 +12,8 @@ type Connector struct {
 	client *internal.SvixHttpClient
 }
 
-func newConnector(client *internal.SvixHttpClient) *Connector {
-	return &Connector{
-		client: client,
-	}
+func newConnector(client *internal.SvixHttpClient) Connector {
+	return Connector{client}
 }
 
 type ConnectorListOptions struct {
@@ -35,7 +33,7 @@ type ConnectorCreateOptions struct {
 }
 
 // List all connectors for an application.
-func (connector *Connector) List(
+func (connector Connector) List(
 	ctx context.Context,
 	o *ConnectorListOptions,
 ) (*models.ListResponseConnectorOut, error) {
@@ -65,7 +63,7 @@ func (connector *Connector) List(
 }
 
 // Create a new connector.
-func (connector *Connector) Create(
+func (connector Connector) Create(
 	ctx context.Context,
 	connectorIn models.ConnectorIn,
 	o *ConnectorCreateOptions,
@@ -93,7 +91,7 @@ func (connector *Connector) Create(
 }
 
 // Get a connector.
-func (connector *Connector) Get(
+func (connector Connector) Get(
 	ctx context.Context,
 	connectorId string,
 ) (*models.ConnectorOut, error) {
@@ -113,7 +111,7 @@ func (connector *Connector) Get(
 }
 
 // Create or update a connector.
-func (connector *Connector) Update(
+func (connector Connector) Update(
 	ctx context.Context,
 	connectorId string,
 	connectorUpdate models.ConnectorUpdate,
@@ -134,7 +132,7 @@ func (connector *Connector) Update(
 }
 
 // Delete a connector.
-func (connector *Connector) Delete(
+func (connector Connector) Delete(
 	ctx context.Context,
 	connectorId string,
 ) error {
@@ -156,7 +154,7 @@ func (connector *Connector) Delete(
 }
 
 // Partially update a connector.
-func (connector *Connector) Patch(
+func (connector Connector) Patch(
 	ctx context.Context,
 	connectorId string,
 	connectorPatch models.ConnectorPatch,

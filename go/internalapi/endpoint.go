@@ -6,11 +6,13 @@ import (
 )
 
 type Endpoint struct {
-	AutoConfig *EndpointAutoConfig
+	client *internal.SvixHttpClient
 }
 
-func newEndpoint(client *internal.SvixHttpClient) *Endpoint {
-	return &Endpoint{
-		AutoConfig: newEndpointAutoConfig(client),
-	}
+func newEndpoint(client *internal.SvixHttpClient) Endpoint {
+	return Endpoint{client}
+}
+
+func (endpoint Endpoint) AutoConfig() EndpointAutoConfig {
+	return newEndpointAutoConfig(endpoint.client)
 }

@@ -12,10 +12,8 @@ type ManagementAuthentication struct {
 	client *internal.SvixHttpClient
 }
 
-func newManagementAuthentication(client *internal.SvixHttpClient) *ManagementAuthentication {
-	return &ManagementAuthentication{
-		client: client,
-	}
+func newManagementAuthentication(client *internal.SvixHttpClient) ManagementAuthentication {
+	return ManagementAuthentication{client}
 }
 
 type ManagementAuthenticationExpireApiTokenOptions struct {
@@ -27,7 +25,7 @@ type ManagementAuthenticationCreateApiTokenOptions struct {
 }
 
 // Expire the selected API Token.
-func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
+func (managementAuthentication ManagementAuthentication) ExpireApiToken(
 	ctx context.Context,
 	envId string,
 	keyId string,
@@ -62,7 +60,7 @@ func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 }
 
 // Patch an API token
-func (managementAuthentication *ManagementAuthentication) PatchApiToken(
+func (managementAuthentication ManagementAuthentication) PatchApiToken(
 	ctx context.Context,
 	envId string,
 	keyId string,
@@ -85,7 +83,7 @@ func (managementAuthentication *ManagementAuthentication) PatchApiToken(
 }
 
 // Create a new API Token.
-func (managementAuthentication *ManagementAuthentication) CreateApiToken(
+func (managementAuthentication ManagementAuthentication) CreateApiToken(
 	ctx context.Context,
 	envId string,
 	apiTokenIn models.ApiTokenIn,

@@ -12,11 +12,21 @@ import (
 type (
 	// THIS TYPE CAN AND WILL CHANGE WITHOUT WARNING
 	InternalSvix struct {
-		Management *Management
-		Endpoint   *Endpoint
-		Message    *Message
+		client *internal.SvixHttpClient
 	}
 )
+
+func (svix InternalSvix) Endpoint() Endpoint {
+	return newEndpoint(svix.client)
+}
+
+func (svix InternalSvix) Management() Management {
+	return newManagement(svix.client)
+}
+
+func (svix InternalSvix) Message() Message {
+	return newMessage(svix.client)
+}
 
 func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix *string) (*InternalSvix, error) {
 	svixHttpClient := internal.DefaultSvixHttpClient(serverUrl.String())
@@ -30,9 +40,7 @@ func New(token string, serverUrl *url.URL, debug bool, userAgentSuffix *string) 
 	svixHttpClient.DefaultHeaders["User-Agent"] = userAgent
 
 	svx := InternalSvix{
-		Management: newManagement(&svixHttpClient),
-		Endpoint:   newEndpoint(&svixHttpClient),
-		Message:    newMessage(&svixHttpClient),
+		client: &svixHttpClient,
 	}
 	return &svx, nil
 }

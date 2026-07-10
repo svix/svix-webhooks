@@ -12,10 +12,8 @@ type OperationalWebhookEndpoint struct {
 	client *internal.SvixHttpClient
 }
 
-func newOperationalWebhookEndpoint(client *internal.SvixHttpClient) *OperationalWebhookEndpoint {
-	return &OperationalWebhookEndpoint{
-		client: client,
-	}
+func newOperationalWebhookEndpoint(client *internal.SvixHttpClient) OperationalWebhookEndpoint {
+	return OperationalWebhookEndpoint{client}
 }
 
 type OperationalWebhookEndpointListOptions struct {
@@ -37,7 +35,7 @@ type OperationalWebhookEndpointRotateSecretOptions struct {
 }
 
 // List operational webhook endpoints.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) List(
 	ctx context.Context,
 	o *OperationalWebhookEndpointListOptions,
 ) (*models.ListResponseOperationalWebhookEndpointOut, error) {
@@ -66,7 +64,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) List(
 }
 
 // Create an operational webhook endpoint.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) Create(
 	ctx context.Context,
 	operationalWebhookEndpointIn models.OperationalWebhookEndpointIn,
 	o *OperationalWebhookEndpointCreateOptions,
@@ -94,7 +92,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Create(
 }
 
 // Get an operational webhook endpoint.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) Get(
 	ctx context.Context,
 	endpointId string,
 ) (*models.OperationalWebhookEndpointOut, error) {
@@ -114,7 +112,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Get(
 }
 
 // Create or update an operational webhook endpoint.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) Update(
 	ctx context.Context,
 	endpointId string,
 	operationalWebhookEndpointUpdate models.OperationalWebhookEndpointUpdate,
@@ -135,7 +133,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Update(
 }
 
 // Delete an operational webhook endpoint.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) Delete(
 	ctx context.Context,
 	endpointId string,
 ) error {
@@ -160,7 +158,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) Delete(
 //
 // This is used to verify the authenticity of the webhook.
 // For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) GetSecret(
 	ctx context.Context,
 	endpointId string,
 ) (*models.OperationalWebhookEndpointSecretOut, error) {
@@ -182,7 +180,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetSecret(
 // Rotates an operational webhook endpoint's signing secret.
 //
 // The previous secret will remain valid for the next 24 hours.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) RotateSecret(
 	ctx context.Context,
 	endpointId string,
 	operationalWebhookEndpointSecretIn models.OperationalWebhookEndpointSecretIn,
@@ -215,7 +213,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) RotateSecret(
 }
 
 // Get the additional headers to be sent with the operational webhook.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) GetHeaders(
 	ctx context.Context,
 	endpointId string,
 ) (*models.OperationalWebhookEndpointHeadersOut, error) {
@@ -235,7 +233,7 @@ func (operationalWebhookEndpoint *OperationalWebhookEndpoint) GetHeaders(
 }
 
 // Set the additional headers to be sent with the operational webhook.
-func (operationalWebhookEndpoint *OperationalWebhookEndpoint) UpdateHeaders(
+func (operationalWebhookEndpoint OperationalWebhookEndpoint) UpdateHeaders(
 	ctx context.Context,
 	endpointId string,
 	operationalWebhookEndpointHeadersIn models.OperationalWebhookEndpointHeadersIn,

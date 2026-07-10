@@ -6,15 +6,19 @@ import (
 )
 
 type Management struct {
-	Authentication      *ManagementAuthentication
-	Environment         *ManagementEnvironment
-	EnvironmentSettings *ManagementEnvironmentSettings
+	client *internal.SvixHttpClient
 }
 
-func newManagement(client *internal.SvixHttpClient) *Management {
-	return &Management{
-		Authentication:      newManagementAuthentication(client),
-		Environment:         newManagementEnvironment(client),
-		EnvironmentSettings: newManagementEnvironmentSettings(client),
-	}
+func newManagement(client *internal.SvixHttpClient) Management {
+	return Management{client}
+}
+
+func (management Management) Authentication() ManagementAuthentication {
+	return newManagementAuthentication(management.client)
+}
+func (management Management) Environment() ManagementEnvironment {
+	return newManagementEnvironment(management.client)
+}
+func (management Management) EnvironmentSettings() ManagementEnvironmentSettings {
+	return newManagementEnvironmentSettings(management.client)
 }
