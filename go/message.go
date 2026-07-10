@@ -11,14 +11,14 @@ import (
 
 type Message struct {
 	client *internal.SvixHttpClient
-	Poller *MessagePoller
 }
 
-func newMessage(client *internal.SvixHttpClient) *Message {
-	return &Message{
-		client: client,
-		Poller: newMessagePoller(client),
-	}
+func newMessage(client *internal.SvixHttpClient) Message {
+	return Message{client}
+}
+
+func (message Message) Poller() MessagePoller {
+	return newMessagePoller(message.client)
 }
 
 type MessageListOptions struct {
@@ -68,7 +68,7 @@ type MessageExpungeAllContentsOptions struct {
 // relative to now or, if an iterator is provided, 90 days before/after the time indicated
 // by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 // set the `before` or `after` parameter as appropriate.
-func (message *Message) List(
+func (message Message) List(
 	ctx context.Context,
 	appId string,
 	o *MessageListOptions,
@@ -114,7 +114,7 @@ func (message *Message) List(
 // Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 //
 // The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-func (message *Message) Create(
+func (message Message) Create(
 	ctx context.Context,
 	appId string,
 	messageIn models.MessageIn,
@@ -153,7 +153,7 @@ func (message *Message) Create(
 // Note: most people shouldn't be using this API. Svix doesn't bill you for
 // messages not actually sent, so using this API doesn't save money.
 // If unsure, please ask Svix support before using this API.
-func (message *Message) Precheck(
+func (message Message) Precheck(
 	ctx context.Context,
 	appId string,
 	messagePrecheckIn models.MessagePrecheckIn,
@@ -185,7 +185,7 @@ func (message *Message) Precheck(
 }
 
 // Get a message by its ID or eventID.
-func (message *Message) Get(
+func (message Message) Get(
 	ctx context.Context,
 	appId string,
 	msgId string,
@@ -221,7 +221,7 @@ func (message *Message) Get(
 //
 // Useful in cases when a message was accidentally sent with sensitive content.
 // The message can't be replayed or resent once its payload has been deleted or expired.
-func (message *Message) ExpungeContent(
+func (message Message) ExpungeContent(
 	ctx context.Context,
 	appId string,
 	msgId string,
@@ -261,7 +261,7 @@ func (message *Message) ExpungeContent(
 //	}
 //
 // ```
-func (message *Message) ExpungeAllContents(
+func (message Message) ExpungeAllContents(
 	ctx context.Context,
 	appId string,
 	o *MessageExpungeAllContentsOptions,

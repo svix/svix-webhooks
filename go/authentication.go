@@ -12,10 +12,8 @@ type Authentication struct {
 	client *internal.SvixHttpClient
 }
 
-func newAuthentication(client *internal.SvixHttpClient) *Authentication {
-	return &Authentication{
-		client: client,
-	}
+func newAuthentication(client *internal.SvixHttpClient) Authentication {
+	return Authentication{client}
 }
 
 type AuthenticationAppPortalAccessOptions struct {
@@ -47,7 +45,7 @@ type AuthenticationRotateStreamPollerTokenOptions struct {
 }
 
 // Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal.
-func (authentication *Authentication) AppPortalAccess(
+func (authentication Authentication) AppPortalAccess(
 	ctx context.Context,
 	appId string,
 	appPortalAccessIn models.AppPortalAccessIn,
@@ -81,7 +79,7 @@ func (authentication *Authentication) AppPortalAccess(
 // Logout an app token.
 //
 // Trying to log out other tokens will fail.
-func (authentication *Authentication) Logout(
+func (authentication Authentication) Logout(
 	ctx context.Context,
 	o *AuthenticationLogoutOptions,
 ) error {
@@ -109,7 +107,7 @@ func (authentication *Authentication) Logout(
 }
 
 // Expire all of the tokens associated with a specific application.
-func (authentication *Authentication) ExpireAll(
+func (authentication Authentication) ExpireAll(
 	ctx context.Context,
 	appId string,
 	applicationTokenExpireIn models.ApplicationTokenExpireIn,
@@ -142,7 +140,7 @@ func (authentication *Authentication) ExpireAll(
 }
 
 // Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
-func (authentication *Authentication) StreamPortalAccess(
+func (authentication Authentication) StreamPortalAccess(
 	ctx context.Context,
 	streamId string,
 	streamPortalAccessIn models.StreamPortalAccessIn,
@@ -176,7 +174,7 @@ func (authentication *Authentication) StreamPortalAccess(
 // Logout a stream token.
 //
 // Trying to log out other tokens will fail.
-func (authentication *Authentication) StreamLogout(
+func (authentication Authentication) StreamLogout(
 	ctx context.Context,
 	o *AuthenticationStreamLogoutOptions,
 ) error {
@@ -204,7 +202,7 @@ func (authentication *Authentication) StreamLogout(
 }
 
 // Expire all of the tokens associated with a specific stream.
-func (authentication *Authentication) StreamExpireAll(
+func (authentication Authentication) StreamExpireAll(
 	ctx context.Context,
 	streamId string,
 	streamTokenExpireIn models.StreamTokenExpireIn,
@@ -237,7 +235,7 @@ func (authentication *Authentication) StreamExpireAll(
 }
 
 // Create a new auth token for the stream poller API.
-func (authentication *Authentication) RotateStreamPollerToken(
+func (authentication Authentication) RotateStreamPollerToken(
 	ctx context.Context,
 	streamId string,
 	sinkId string,
@@ -271,7 +269,7 @@ func (authentication *Authentication) RotateStreamPollerToken(
 }
 
 // Get the current auth token for the stream poller.
-func (authentication *Authentication) GetStreamPollerToken(
+func (authentication Authentication) GetStreamPollerToken(
 	ctx context.Context,
 	streamId string,
 	sinkId string,

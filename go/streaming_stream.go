@@ -12,10 +12,8 @@ type StreamingStream struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingStream(client *internal.SvixHttpClient) *StreamingStream {
-	return &StreamingStream{
-		client: client,
-	}
+func newStreamingStream(client *internal.SvixHttpClient) StreamingStream {
+	return StreamingStream{client}
 }
 
 type StreamingStreamListOptions struct {
@@ -33,7 +31,7 @@ type StreamingStreamCreateOptions struct {
 }
 
 // List of all the organization's streams.
-func (streamingStream *StreamingStream) List(
+func (streamingStream StreamingStream) List(
 	ctx context.Context,
 	o *StreamingStreamListOptions,
 ) (*models.ListResponseStreamOut, error) {
@@ -62,7 +60,7 @@ func (streamingStream *StreamingStream) List(
 }
 
 // Creates a new stream.
-func (streamingStream *StreamingStream) Create(
+func (streamingStream StreamingStream) Create(
 	ctx context.Context,
 	streamIn models.StreamIn,
 	o *StreamingStreamCreateOptions,
@@ -90,7 +88,7 @@ func (streamingStream *StreamingStream) Create(
 }
 
 // Get a stream by id or uid.
-func (streamingStream *StreamingStream) Get(
+func (streamingStream StreamingStream) Get(
 	ctx context.Context,
 	streamId string,
 ) (*models.StreamOut, error) {
@@ -110,7 +108,7 @@ func (streamingStream *StreamingStream) Get(
 }
 
 // Create or update a stream.
-func (streamingStream *StreamingStream) Update(
+func (streamingStream StreamingStream) Update(
 	ctx context.Context,
 	streamId string,
 	streamIn models.StreamIn,
@@ -131,7 +129,7 @@ func (streamingStream *StreamingStream) Update(
 }
 
 // Delete a stream.
-func (streamingStream *StreamingStream) Delete(
+func (streamingStream StreamingStream) Delete(
 	ctx context.Context,
 	streamId string,
 ) error {
@@ -153,7 +151,7 @@ func (streamingStream *StreamingStream) Delete(
 }
 
 // Partially update a stream.
-func (streamingStream *StreamingStream) Patch(
+func (streamingStream StreamingStream) Patch(
 	ctx context.Context,
 	streamId string,
 	streamPatch models.StreamPatch,
