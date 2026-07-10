@@ -87,7 +87,6 @@ async fn delete_endpoint(client: &TestClient, app_id: &ApplicationId, ep_id: &st
         .await
 }
 
-#[allow(deprecated)]
 #[tokio::test]
 async fn test_create() {
     let (client, _jh) = start_svix_server().await;
@@ -125,7 +124,6 @@ async fn test_create() {
     assert_eq!(out.ep.channels, None);
 }
 
-#[allow(deprecated)]
 #[tokio::test]
 async fn test_patch() {
     let (client, _jh) = start_svix_server().await;
@@ -442,7 +440,6 @@ async fn test_patch() {
     assert_eq!(out.ep.event_types, None);
 }
 
-#[allow(deprecated)]
 #[tokio::test]
 async fn test_crud() {
     let (client, _jh) = start_svix_server().await;
@@ -1921,7 +1918,6 @@ async fn test_endpoint_filter_channels() {
     assert_eq!(updated_ep_with_channel.ep.channels.unwrap(), expected_ec);
 }
 
-#[allow(deprecated)]
 #[tokio::test]
 async fn test_rate_limit() {
     let (client, _jh) = start_svix_server().await;
