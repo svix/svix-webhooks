@@ -176,7 +176,7 @@ export class OperationalWebhookEndpoint {
    */
   public async rotateSecret(
     endpointId: string,
-    operationalWebhookEndpointSecretIn: OperationalWebhookEndpointSecretIn,
+    operationalWebhookEndpointSecretIn: OperationalWebhookEndpointSecretIn = {},
     options?: OperationalWebhookEndpointRotateSecretOptions
   ): Promise<void> {
     const request = new SvixRequest(

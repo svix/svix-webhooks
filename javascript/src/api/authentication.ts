@@ -70,7 +70,7 @@ export class Authentication {
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal. */
   public async appPortalAccess(
     appId: string,
-    appPortalAccessIn: AppPortalAccessIn,
+    appPortalAccessIn: AppPortalAccessIn = {},
     options?: AuthenticationAppPortalAccessOptions
   ): Promise<AppPortalAccessOut> {
     const request = new SvixRequest(
@@ -104,7 +104,7 @@ export class Authentication {
   /** Expire all of the tokens associated with a specific application. */
   public async expireAll(
     appId: string,
-    applicationTokenExpireIn: ApplicationTokenExpireIn,
+    applicationTokenExpireIn: ApplicationTokenExpireIn = {},
     options?: AuthenticationExpireAllOptions
   ): Promise<void> {
     const request = new SvixRequest(
@@ -140,7 +140,7 @@ export class Authentication {
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */
   public async streamPortalAccess(
     streamId: string,
-    streamPortalAccessIn: StreamPortalAccessIn,
+    streamPortalAccessIn: StreamPortalAccessIn = {},
     options?: AuthenticationStreamPortalAccessOptions
   ): Promise<AppPortalAccessOut> {
     const request = new SvixRequest(
@@ -174,7 +174,7 @@ export class Authentication {
   /** Expire all of the tokens associated with a specific stream. */
   public async streamExpireAll(
     streamId: string,
-    streamTokenExpireIn: StreamTokenExpireIn,
+    streamTokenExpireIn: StreamTokenExpireIn = {},
     options?: AuthenticationStreamExpireAllOptions
   ): Promise<void> {
     const request = new SvixRequest(
@@ -193,7 +193,7 @@ export class Authentication {
   public async rotateStreamPollerToken(
     streamId: string,
     sinkId: string,
-    rotatePollerTokenIn: RotatePollerTokenIn,
+    rotatePollerTokenIn: RotatePollerTokenIn = {},
     options?: AuthenticationRotateStreamPollerTokenOptions
   ): Promise<ApiTokenOut> {
     const request = new SvixRequest(

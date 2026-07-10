@@ -76,8 +76,17 @@ export class {{ resource_type_name }} {
 
             {# body parameter interface -#}
             {% if op.request_body_schema_name is defined -%}
+                {# could also default to an empty object for Patch types but an empty PATCH
+                   is nonsensical, so we don't -#}
+                {% if op.request_body_schema_name is not endingwith "Patch" -%}
+                    {% set body_schema = api.types[op.request_body_schema_name] -%}
+                    {% set default_empty_object
+                        = body_schema.kind == "struct"
+                            and body_schema.fields | selectattr("required") | length == 0 -%}
+                {% endif -%}
                 {% set field_name = op.request_body_schema_name | to_lower_camel_case -%}
-                {{ field_name }}: {{ op.request_body_schema_name }},
+                {{ field_name }}: {{ op.request_body_schema_name }}
+                    {%- if default_empty_object %} = {}{% endif %},
             {% endif -%}
 
             {# query parameters -#}

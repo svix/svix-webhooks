@@ -144,7 +144,7 @@ export class StreamingSink {
   public async transformationPartialUpdate(
     streamId: string,
     sinkId: string,
-    sinkTransformIn: SinkTransformIn
+    sinkTransformIn: SinkTransformIn = {}
   ): Promise<EmptyResponse> {
     const request = new SvixRequest(
       HttpMethod.PATCH,
@@ -181,7 +181,7 @@ export class StreamingSink {
   public async rotateSecret(
     streamId: string,
     sinkId: string,
-    endpointSecretRotateIn: EndpointSecretRotateIn,
+    endpointSecretRotateIn: EndpointSecretRotateIn = {},
     options?: StreamingSinkRotateSecretOptions
   ): Promise<EmptyResponse> {
     const request = new SvixRequest(

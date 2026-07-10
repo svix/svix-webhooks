@@ -224,7 +224,7 @@ export class Endpoint {
   public async rotateSecret(
     appId: string,
     endpointId: string,
-    endpointSecretRotateIn: EndpointSecretRotateIn,
+    endpointSecretRotateIn: EndpointSecretRotateIn = {},
     options?: EndpointRotateSecretOptions
   ): Promise<void> {
     const request = new SvixRequest(
@@ -513,7 +513,7 @@ export class Endpoint {
   public async transformationPartialUpdate(
     appId: string,
     endpointId: string,
-    endpointTransformationIn: EndpointTransformationIn
+    endpointTransformationIn: EndpointTransformationIn = {}
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.PATCH,
