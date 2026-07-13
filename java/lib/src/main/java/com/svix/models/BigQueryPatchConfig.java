@@ -16,30 +16,30 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class BigQueryPatchConfig {
-    @JsonProperty private String credentials;
-    @JsonProperty private String datasetId;
     @JsonProperty private String projectId;
+    @JsonProperty private String datasetId;
     @JsonProperty private String tableId;
+    @JsonProperty private String credentials;
 
     public BigQueryPatchConfig() {}
 
-    public BigQueryPatchConfig credentials(String credentials) {
-        this.credentials = credentials;
+    public BigQueryPatchConfig projectId(String projectId) {
+        this.projectId = projectId;
         return this;
     }
 
     /**
-     * Get credentials
+     * Get projectId
      *
-     * @return credentials
+     * @return projectId
      */
     @javax.annotation.Nullable
-    public String getCredentials() {
-        return credentials;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setCredentials(String credentials) {
-        this.credentials = credentials;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public BigQueryPatchConfig datasetId(String datasetId) {
@@ -61,25 +61,6 @@ public class BigQueryPatchConfig {
         this.datasetId = datasetId;
     }
 
-    public BigQueryPatchConfig projectId(String projectId) {
-        this.projectId = projectId;
-        return this;
-    }
-
-    /**
-     * Get projectId
-     *
-     * @return projectId
-     */
-    @javax.annotation.Nullable
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
     public BigQueryPatchConfig tableId(String tableId) {
         this.tableId = tableId;
         return this;
@@ -97,6 +78,25 @@ public class BigQueryPatchConfig {
 
     public void setTableId(String tableId) {
         this.tableId = tableId;
+    }
+
+    public BigQueryPatchConfig credentials(String credentials) {
+        this.credentials = credentials;
+        return this;
+    }
+
+    /**
+     * Get credentials
+     *
+     * @return credentials
+     */
+    @javax.annotation.Nullable
+    public String getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(String credentials) {
+        this.credentials = credentials;
     }
 
     /**

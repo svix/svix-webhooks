@@ -10,24 +10,24 @@ class IngestEndpointIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param array<string, string>|null $metadata
-     * @param string|null                $secret   The endpoint's verification secret.
-     *
-     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-     * It is recommended to not set this and let the server generate the secret.
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid optional unique identifier for the endpoint
+     * @param string|null $uid    optional unique identifier for the endpoint
+     * @param string|null $secret The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+     * It is recommended to not set this and let the server generate the secret.
+     * @param array<string, string>|null $metadata
      */
     private function __construct(
         public readonly string $url,
         public readonly ?string $description = null,
-        public readonly ?bool $disabled = null,
-        public readonly ?array $metadata = null,
-        public readonly ?string $secret = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
+        public readonly ?bool $disabled = null,
+        public readonly ?string $secret = null,
+        public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -41,12 +41,12 @@ class IngestEndpointIn implements \JsonSerializable
     ): self {
         return new self(
             description: null,
-            disabled: null,
-            metadata: null,
-            secret: null,
             throttleRate: null,
             uid: null,
             url: $url,
+            disabled: null,
+            secret: null,
+            metadata: null,
             setFields: ['url' => true]
         );
     }
@@ -58,63 +58,12 @@ class IngestEndpointIn implements \JsonSerializable
 
         return new self(
             description: $description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
             disabled: $this->disabled,
-            metadata: $this->metadata,
             secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withDisabled(?bool $disabled): self
-    {
-        $setFields = $this->setFields;
-        $setFields['disabled'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $disabled,
             metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $this->disabled,
-            metadata: $metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withSecret(?string $secret): self
-    {
-        $setFields = $this->setFields;
-        $setFields['secret'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $this->disabled,
-            metadata: $this->metadata,
-            secret: $secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
             setFields: $setFields
         );
     }
@@ -126,12 +75,12 @@ class IngestEndpointIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            disabled: $this->disabled,
-            metadata: $this->metadata,
-            secret: $this->secret,
             throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
+            disabled: $this->disabled,
+            secret: $this->secret,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -143,12 +92,63 @@ class IngestEndpointIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            disabled: $this->disabled,
-            metadata: $this->metadata,
-            secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
+            disabled: $this->disabled,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withDisabled(?bool $disabled): self
+    {
+        $setFields = $this->setFields;
+        $setFields['disabled'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $disabled,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withSecret(?string $secret): self
+    {
+        $setFields = $this->setFields;
+        $setFields['secret'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            secret: $secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            secret: $this->secret,
+            metadata: $metadata,
             setFields: $setFields
         );
     }
@@ -161,20 +161,20 @@ class IngestEndpointIn implements \JsonSerializable
         if (null !== $this->description) {
             $data['description'] = $this->description;
         }
-        if (null !== $this->disabled) {
-            $data['disabled'] = $this->disabled;
-        }
-        if (null !== $this->metadata) {
-            $data['metadata'] = $this->metadata;
-        }
-        if (isset($this->setFields['secret'])) {
-            $data['secret'] = $this->secret;
-        }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
+        }
+        if (null !== $this->disabled) {
+            $data['disabled'] = $this->disabled;
+        }
+        if (isset($this->setFields['secret'])) {
+            $data['secret'] = $this->secret;
+        }
+        if (null !== $this->metadata) {
+            $data['metadata'] = $this->metadata;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -187,12 +187,12 @@ class IngestEndpointIn implements \JsonSerializable
     {
         return new self(
             description: \Svix\Utils::deserializeString($data, 'description', false, 'IngestEndpointIn'),
-            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'IngestEndpointIn'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'IngestEndpointIn'),
-            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'IngestEndpointIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'IngestEndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'IngestEndpointIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointIn')
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointIn'),
+            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'IngestEndpointIn'),
+            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'IngestEndpointIn'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'IngestEndpointIn')
         );
     }
 

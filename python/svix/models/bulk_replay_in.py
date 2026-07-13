@@ -8,16 +8,16 @@ from .status_code_class import StatusCodeClass
 
 
 class BulkReplayIn(BaseModel):
-    channel: t.Optional[str] = None
+    since: datetime
+
+    until: t.Optional[datetime] = None
 
     event_types: t.Optional[t.List[str]] = None
 
-    since: datetime
+    channel: t.Optional[str] = None
+
+    tag: t.Optional[str] = None
 
     status: t.Optional[MessageStatus] = None
 
     status_code_class: t.Optional[StatusCodeClass] = None
-
-    tag: t.Optional[str] = None
-
-    until: t.Optional[datetime] = None

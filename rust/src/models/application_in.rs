@@ -3,9 +3,6 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ApplicationIn {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
     /// Application name for human consumption.
     pub name: String,
 
@@ -19,15 +16,18 @@ pub struct ApplicationIn {
     /// Optional unique identifier for the application.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 }
 
 impl ApplicationIn {
     pub fn new(name: String) -> Self {
         Self {
-            metadata: None,
             name,
             throttle_rate: None,
             uid: None,
+            metadata: None,
         }
     }
 }

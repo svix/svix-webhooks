@@ -4,16 +4,16 @@ require "json"
 
 module Svix
   class EventTypeFromOpenApi
-    attr_accessor :deprecated
-    attr_accessor :description
-    attr_accessor :feature_flags
-    # The event type group's name
-    attr_accessor :group_name
     # The event type's name
     attr_accessor :name
+    attr_accessor :description
     attr_accessor :schemas
+    attr_accessor :deprecated
+    # The event type group's name
+    attr_accessor :group_name
+    attr_accessor :feature_flags
 
-    ALL_FIELD ||= ["deprecated", "description", "feature_flags", "group_name", "name", "schemas"].freeze
+    ALL_FIELD ||= ["name", "description", "schemas", "deprecated", "group_name", "feature_flags"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,23 +34,23 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["deprecated"] = attributes["deprecated"]
-      attrs["description"] = attributes["description"]
-      attrs["feature_flags"] = attributes["featureFlags"]
-      attrs["group_name"] = attributes["groupName"]
       attrs["name"] = attributes["name"]
+      attrs["description"] = attributes["description"]
       attrs["schemas"] = attributes["schemas"]
+      attrs["deprecated"] = attributes["deprecated"]
+      attrs["group_name"] = attributes["groupName"]
+      attrs["feature_flags"] = attributes["featureFlags"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["groupName"] = Svix::serialize_primitive(@group_name) if @group_name
       out["name"] = Svix::serialize_primitive(@name) if @name
+      out["description"] = Svix::serialize_primitive(@description) if @description
       out["schemas"] = Svix::serialize_primitive(@schemas) if @schemas
+      out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
+      out["groupName"] = Svix::serialize_primitive(@group_name) if @group_name
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out
     end
 

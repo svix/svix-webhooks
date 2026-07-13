@@ -8,8 +8,8 @@ from .message_out import MessageOut
 class ListResponseMessageOut(BaseModel):
     data: t.List[MessageOut]
 
-    done: bool
-
     iterator: t.Optional[str]
 
     prev_iterator: t.Optional[str] = None
+
+    done: bool

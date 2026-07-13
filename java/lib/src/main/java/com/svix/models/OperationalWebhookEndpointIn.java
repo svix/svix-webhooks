@@ -23,13 +23,13 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointIn {
     @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private String secret;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private String secret;
+    @JsonProperty private Map<String, String> metadata;
 
     public OperationalWebhookEndpointIn() {}
 
@@ -50,103 +50,6 @@ public class OperationalWebhookEndpointIn {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public OperationalWebhookEndpointIn disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public OperationalWebhookEndpointIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public OperationalWebhookEndpointIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
-
-    public OperationalWebhookEndpointIn metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public OperationalWebhookEndpointIn putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
-
-    public OperationalWebhookEndpointIn secret(String secret) {
-        this.secret = secret;
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
     }
 
     public OperationalWebhookEndpointIn throttleRate(Long throttleRate) {
@@ -206,6 +109,103 @@ public class OperationalWebhookEndpointIn {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public OperationalWebhookEndpointIn disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public OperationalWebhookEndpointIn filterTypes(Set<String> filterTypes) {
+        this.filterTypes = filterTypes;
+        return this;
+    }
+
+    public OperationalWebhookEndpointIn addFilterTypesItem(String filterTypesItem) {
+        if (this.filterTypes == null) {
+            this.filterTypes = new LinkedHashSet<>();
+        }
+        this.filterTypes.add(filterTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get filterTypes
+     *
+     * @return filterTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFilterTypes() {
+        return filterTypes;
+    }
+
+    public void setFilterTypes(Set<String> filterTypes) {
+        this.filterTypes = filterTypes;
+    }
+
+    public OperationalWebhookEndpointIn secret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    /**
+     * The endpoint's verification secret.
+     *
+     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
+     * to not set this and let the server generate the secret.
+     *
+     * @return secret
+     */
+    @javax.annotation.Nullable
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public OperationalWebhookEndpointIn metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public OperationalWebhookEndpointIn putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

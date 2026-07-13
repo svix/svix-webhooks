@@ -4,13 +4,13 @@ require "json"
 
 module Svix
   class StreamIn
-    attr_accessor :metadata
     # The stream's name.
     attr_accessor :name
     # An optional unique identifier for the stream.
     attr_accessor :uid
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["metadata", "name", "uid"].freeze
+    ALL_FIELD ||= ["name", "uid", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -31,17 +31,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["metadata"] = attributes["metadata"]
       attrs["name"] = attributes["name"]
       attrs["uid"] = attributes["uid"]
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

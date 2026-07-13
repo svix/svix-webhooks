@@ -1,23 +1,23 @@
 // this file is @generated
 
 export interface MessagePrecheckIn {
-  channels?: string[] | null;
   /** The event type's name */
   eventType: string;
+  channels?: string[] | null;
 }
 
 export const MessagePrecheckInSerializer = {
   _fromJsonObject(object: any): MessagePrecheckIn {
     return {
-      channels: object["channels"],
       eventType: object["eventType"],
+      channels: object["channels"],
     };
   },
 
   _toJsonObject(self: MessagePrecheckIn): any {
     return {
-      channels: self.channels,
       eventType: self.eventType,
+      channels: self.channels,
     };
   },
 };

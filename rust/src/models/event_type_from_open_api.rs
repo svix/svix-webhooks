@@ -3,35 +3,35 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventTypeFromOpenApi {
-    pub deprecated: bool,
+    /// The event type's name
+    pub name: String,
 
     pub description: String,
 
-    #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub schemas: Option<serde_json::Value>,
+
+    pub deprecated: bool,
 
     /// The event type group's name
     #[serde(rename = "groupName")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub group_name: Option<String>,
 
-    /// The event type's name
-    pub name: String,
-
+    #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub schemas: Option<serde_json::Value>,
+    pub feature_flags: Option<Vec<String>>,
 }
 
 impl EventTypeFromOpenApi {
-    pub fn new(deprecated: bool, description: String, name: String) -> Self {
+    pub fn new(name: String, description: String, deprecated: bool) -> Self {
         Self {
-            deprecated,
-            description,
-            feature_flags: None,
-            group_name: None,
             name,
+            description,
             schemas: None,
+            deprecated,
+            group_name: None,
+            feature_flags: None,
         }
     }
 }

@@ -5,22 +5,7 @@ from .common import BaseModel
 
 
 class SinkInCommon(BaseModel):
-    channels: t.Optional[t.List[str]] = None
-    """List of message channels this sink listens to (omit for all)."""
-
     description: t.Optional[str] = None
-
-    disabled: t.Optional[bool] = None
-
-    filter_types: t.Optional[t.List[str]] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
-
-    secret: t.Optional[str] = None
-    """The endpoint's verification secret.
-
-    Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-    It is recommended to not set this and let the server generate the secret."""
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
@@ -29,3 +14,18 @@ class SinkInCommon(BaseModel):
 
     uid: t.Optional[str] = None
     """Optional unique identifier for the sink."""
+
+    secret: t.Optional[str] = None
+    """The endpoint's verification secret.
+
+    Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+    It is recommended to not set this and let the server generate the secret."""
+
+    disabled: t.Optional[bool] = None
+
+    filter_types: t.Optional[t.List[str]] = None
+
+    channels: t.Optional[t.List[str]] = None
+    """List of message channels this sink listens to (omit for all)."""
+
+    metadata: t.Optional[t.Dict[str, str]] = None

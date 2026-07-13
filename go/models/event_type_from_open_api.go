@@ -2,10 +2,10 @@
 package models
 
 type EventTypeFromOpenApi struct {
-	Deprecated   bool            `json:"deprecated"`
+	Name         string          `json:"name"` // The event type's name
 	Description  string          `json:"description"`
-	FeatureFlags []string        `json:"featureFlags,omitempty"`
-	GroupName    *string         `json:"groupName,omitempty"` // The event type group's name
-	Name         string          `json:"name"`                // The event type's name
 	Schemas      *map[string]any `json:"schemas,omitempty"`
+	Deprecated   bool            `json:"deprecated"`
+	GroupName    *string         `json:"groupName,omitempty"` // The event type group's name
+	FeatureFlags []string        `json:"featureFlags,omitempty"`
 }

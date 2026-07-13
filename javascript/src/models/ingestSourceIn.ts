@@ -27,10 +27,10 @@ import { type VgsConfig, VgsConfigSerializer } from "./vgsConfig";
 import { type ZoomConfig, ZoomConfigSerializer } from "./zoomConfig";
 
 interface _IngestSourceInFields {
-  metadata?: { [key: string]: string };
   name: string;
   /** The Source's UID. */
   uid?: string | null;
+  metadata?: { [key: string]: string };
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
@@ -398,9 +398,9 @@ export const IngestSourceInSerializer = {
     return {
       type,
       config: getConfig(type),
-      metadata: object["metadata"],
       name: object["name"],
       uid: object["uid"],
+      metadata: object["metadata"],
     };
   },
 
@@ -542,9 +542,9 @@ export const IngestSourceInSerializer = {
     return {
       type: self.type,
       config: config,
-      metadata: self.metadata,
       name: self.name,
       uid: self.uid,
+      metadata: self.metadata,
     };
   },
 };

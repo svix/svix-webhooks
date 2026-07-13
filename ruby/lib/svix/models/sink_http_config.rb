@@ -4,11 +4,11 @@ require "json"
 
 module Svix
   class SinkHttpConfig
+    attr_accessor :url
     attr_accessor :headers
     attr_accessor :key
-    attr_accessor :url
 
-    ALL_FIELD ||= ["headers", "key", "url"].freeze
+    ALL_FIELD ||= ["url", "headers", "key"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -29,17 +29,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["url"] = attributes["url"]
       attrs["headers"] = attributes["headers"]
       attrs["key"] = attributes["key"]
-      attrs["url"] = attributes["url"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
+      out["url"] = Svix::serialize_primitive(@url) if @url
       out["headers"] = Svix::serialize_primitive(@headers) if @headers
       out["key"] = Svix::serialize_primitive(@key) if @key
-      out["url"] = Svix::serialize_primitive(@url) if @url
       out
     end
 

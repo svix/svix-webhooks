@@ -1,11 +1,7 @@
 // this file is @generated
 
 export interface EndpointPatch {
-  channels?: string[] | null;
   description?: string;
-  disabled?: boolean;
-  filterTypes?: string[] | null;
-  metadata?: { [key: string]: string };
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -15,32 +11,36 @@ export interface EndpointPatch {
   /** The Endpoint's UID. */
   uid?: string | null;
   url?: string;
+  disabled?: boolean;
+  filterTypes?: string[] | null;
+  channels?: string[] | null;
+  metadata?: { [key: string]: string };
 }
 
 export const EndpointPatchSerializer = {
   _fromJsonObject(object: any): EndpointPatch {
     return {
-      channels: object["channels"],
       description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
+      disabled: object["disabled"],
+      filterTypes: object["filterTypes"],
+      channels: object["channels"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: EndpointPatch): any {
     return {
-      channels: self.channels,
       description: self.description,
-      disabled: self.disabled,
-      filterTypes: self.filterTypes,
-      metadata: self.metadata,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
+      disabled: self.disabled,
+      filterTypes: self.filterTypes,
+      channels: self.channels,
+      metadata: self.metadata,
     };
   },
 };

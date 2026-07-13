@@ -14,10 +14,10 @@ class BigQueryConfig implements \JsonSerializable
      * @param string $credentials google Cloud Credentials JSON Object as a string
      */
     private function __construct(
-        public readonly string $credentials,
-        public readonly string $datasetId,
         public readonly string $projectId,
+        public readonly string $datasetId,
         public readonly string $tableId,
+        public readonly string $credentials,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -27,27 +27,27 @@ class BigQueryConfig implements \JsonSerializable
      * Create an instance of BigQueryConfig with required fields.
      */
     public static function create(
-        string $credentials,
-        string $datasetId,
         string $projectId,
+        string $datasetId,
         string $tableId,
+        string $credentials,
     ): self {
         return new self(
-            credentials: $credentials,
-            datasetId: $datasetId,
             projectId: $projectId,
+            datasetId: $datasetId,
             tableId: $tableId,
-            setFields: ['credentials' => true, 'datasetId' => true, 'projectId' => true, 'tableId' => true]
+            credentials: $credentials,
+            setFields: ['projectId' => true, 'datasetId' => true, 'tableId' => true, 'credentials' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'credentials' => $this->credentials,
-            'datasetId' => $this->datasetId,
             'projectId' => $this->projectId,
-            'tableId' => $this->tableId];
+            'datasetId' => $this->datasetId,
+            'tableId' => $this->tableId,
+            'credentials' => $this->credentials];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -58,10 +58,10 @@ class BigQueryConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            credentials: \Svix\Utils::deserializeString($data, 'credentials', true, 'BigQueryConfig'),
-            datasetId: \Svix\Utils::deserializeString($data, 'datasetId', true, 'BigQueryConfig'),
             projectId: \Svix\Utils::deserializeString($data, 'projectId', true, 'BigQueryConfig'),
-            tableId: \Svix\Utils::deserializeString($data, 'tableId', true, 'BigQueryConfig')
+            datasetId: \Svix\Utils::deserializeString($data, 'datasetId', true, 'BigQueryConfig'),
+            tableId: \Svix\Utils::deserializeString($data, 'tableId', true, 'BigQueryConfig'),
+            credentials: \Svix\Utils::deserializeString($data, 'credentials', true, 'BigQueryConfig')
         );
     }
 

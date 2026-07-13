@@ -5,8 +5,8 @@ from .common import BaseModel
 
 
 class GoogleCloudPubSubPatchConfig(BaseModel):
-    credentials: t.Optional[str] = None
-
     project_id: t.Optional[str] = None
 
     topic_id: t.Optional[str] = None
+
+    credentials: t.Optional[str] = None

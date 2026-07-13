@@ -10,23 +10,23 @@ class EndpointPatch implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null          $channels
-     * @param list<string>|null          $filterTypes
-     * @param array<string, string>|null $metadata
-     * @param int|null                   $throttleRate Maximum messages per second to send to this endpoint.
+     * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid the Endpoint's UID
+     * @param string|null                $uid         the Endpoint's UID
+     * @param list<string>|null          $filterTypes
+     * @param list<string>|null          $channels
+     * @param array<string, string>|null $metadata
      */
     private function __construct(
-        public readonly ?array $channels = null,
         public readonly ?string $description = null,
-        public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
-        public readonly ?array $metadata = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?string $url = null,
+        public readonly ?bool $disabled = null,
+        public readonly ?array $filterTypes = null,
+        public readonly ?array $channels = null,
+        public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -38,33 +38,15 @@ class EndpointPatch implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            channels: null,
             description: null,
-            disabled: null,
-            filterTypes: null,
-            metadata: null,
             throttleRate: null,
             uid: null,
             url: null,
+            disabled: null,
+            filterTypes: null,
+            channels: null,
+            metadata: null,
             setFields: []
-        );
-    }
-
-    public function withChannels(?array $channels): self
-    {
-        $setFields = $this->setFields;
-        $setFields['channels'] = true;
-
-        return new self(
-            channels: $channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
         );
     }
 
@@ -74,68 +56,14 @@ class EndpointPatch implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withDisabled(?bool $disabled): self
-    {
-        $setFields = $this->setFields;
-        $setFields['disabled'] = true;
-
-        return new self(
             channels: $this->channels,
-            description: $this->description,
-            disabled: $disabled,
-            filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withFilterTypes(?array $filterTypes): self
-    {
-        $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $filterTypes,
-            metadata: $this->metadata,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $metadata,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
             setFields: $setFields
         );
     }
@@ -146,14 +74,14 @@ class EndpointPatch implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
             throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -164,14 +92,14 @@ class EndpointPatch implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
             throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -182,14 +110,86 @@ class EndpointPatch implements \JsonSerializable
         $setFields['url'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withDisabled(?bool $disabled): self
+    {
+        $setFields = $this->setFields;
+        $setFields['disabled'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withFilterTypes(?array $filterTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['filterTypes'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withChannels(?array $channels): self
+    {
+        $setFields = $this->setFields;
+        $setFields['channels'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $metadata,
             setFields: $setFields
         );
     }
@@ -199,20 +199,8 @@ class EndpointPatch implements \JsonSerializable
         $data = [
         ];
 
-        if (isset($this->setFields['channels'])) {
-            $data['channels'] = $this->channels;
-        }
         if (null !== $this->description) {
             $data['description'] = $this->description;
-        }
-        if (null !== $this->disabled) {
-            $data['disabled'] = $this->disabled;
-        }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
-        }
-        if (null !== $this->metadata) {
-            $data['metadata'] = $this->metadata;
         }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
@@ -222,6 +210,18 @@ class EndpointPatch implements \JsonSerializable
         }
         if (null !== $this->url) {
             $data['url'] = $this->url;
+        }
+        if (null !== $this->disabled) {
+            $data['disabled'] = $this->disabled;
+        }
+        if (isset($this->setFields['filterTypes'])) {
+            $data['filterTypes'] = $this->filterTypes;
+        }
+        if (isset($this->setFields['channels'])) {
+            $data['channels'] = $this->channels;
+        }
+        if (null !== $this->metadata) {
+            $data['metadata'] = $this->metadata;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -233,14 +233,14 @@ class EndpointPatch implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointPatch'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'EndpointPatch'),
-            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointPatch'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointPatch'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointPatch'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointPatch'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointPatch'),
-            url: \Svix\Utils::getValFromJson($data, 'url', false, 'EndpointPatch')
+            url: \Svix\Utils::getValFromJson($data, 'url', false, 'EndpointPatch'),
+            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointPatch'),
+            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointPatch'),
+            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointPatch'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointPatch')
         );
     }
 

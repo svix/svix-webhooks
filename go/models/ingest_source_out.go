@@ -36,13 +36,13 @@ import (
 //   - "vgs": Use VgsConfigOut
 //   - "zoom": Use ZoomConfigOut
 type IngestSourceOut struct {
-	CreatedAt time.Time             `json:"createdAt"`
-	Id        string                `json:"id"` // The Source's ID.
-	IngestUrl *string               `json:"ingestUrl,omitempty"`
-	Metadata  map[string]string     `json:"metadata"`
-	Name      string                `json:"name"`
+	Id        string                `json:"id"`            // The Source's ID.
 	Uid       *string               `json:"uid,omitempty"` // The Source's UID.
+	Name      string                `json:"name"`
+	IngestUrl *string               `json:"ingestUrl,omitempty"`
+	CreatedAt time.Time             `json:"createdAt"`
 	UpdatedAt time.Time             `json:"updatedAt"`
+	Metadata  map[string]string     `json:"metadata"`
 	Type      IngestSourceOutType   `json:"type"`
 	Config    IngestSourceOutConfig `json:"config"`
 }

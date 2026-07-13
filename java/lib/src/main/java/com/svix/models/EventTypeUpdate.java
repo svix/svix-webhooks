@@ -19,14 +19,33 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypeUpdate {
+    @JsonProperty private String description;
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
-    @JsonProperty private String description;
+    @JsonProperty private Object schemas;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String groupName;
-    @JsonProperty private Object schemas;
 
     public EventTypeUpdate() {}
+
+    public EventTypeUpdate description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nonnull
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public EventTypeUpdate archived(Boolean archived) {
         this.archived = archived;
@@ -66,23 +85,23 @@ public class EventTypeUpdate {
         this.deprecated = deprecated;
     }
 
-    public EventTypeUpdate description(String description) {
-        this.description = description;
+    public EventTypeUpdate schemas(Object schemas) {
+        this.schemas = schemas;
         return this;
     }
 
     /**
-     * Get description
+     * The schema for the event type for a specific version as a JSON schema.
      *
-     * @return description
+     * @return schemas
      */
-    @javax.annotation.Nonnull
-    public String getDescription() {
-        return description;
+    @javax.annotation.Nullable
+    public Object getSchemas() {
+        return schemas;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSchemas(Object schemas) {
+        this.schemas = schemas;
     }
 
     public EventTypeUpdate featureFlags(Set<String> featureFlags) {
@@ -130,25 +149,6 @@ public class EventTypeUpdate {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
-    }
-
-    public EventTypeUpdate schemas(Object schemas) {
-        this.schemas = schemas;
-        return this;
-    }
-
-    /**
-     * The schema for the event type for a specific version as a JSON schema.
-     *
-     * @return schemas
-     */
-    @javax.annotation.Nullable
-    public Object getSchemas() {
-        return schemas;
-    }
-
-    public void setSchemas(Object schemas) {
-        this.schemas = schemas;
     }
 
     /**

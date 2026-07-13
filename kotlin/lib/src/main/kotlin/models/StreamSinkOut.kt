@@ -14,20 +14,20 @@ import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = StreamSinkOutSerializer::class)
 data class StreamSinkOut(
-    val batchSize: Int,
-    val createdAt: Instant,
-    val currentIterator: String,
-    val eventTypes: List<String>? = null,
-    val failureReason: String? = null,
     /** The sink's ID. */
     val id: String,
-    val maxWaitSecs: Int,
-    val metadata: Map<String, String>,
-    val nextRetryAt: Instant? = null,
-    val status: SinkStatus,
     /** The sink's UID. */
     val uid: String? = null,
+    val status: SinkStatus,
+    val currentIterator: String,
+    val failureReason: String? = null,
+    val createdAt: Instant,
     val updatedAt: Instant,
+    val batchSize: Int,
+    val maxWaitSecs: Int,
+    val eventTypes: List<String>? = null,
+    val nextRetryAt: Instant? = null,
+    val metadata: Map<String, String>,
     val config: StreamSinkOutConfig,
 )
 
@@ -213,20 +213,20 @@ sealed class StreamSinkOutConfig {
 class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
     @Serializable
     private data class StreamSinkOutSurrogate(
-        val batchSize: Int,
-        val createdAt: Instant,
-        val currentIterator: String,
-        val eventTypes: List<String>? = null,
-        val failureReason: String? = null,
         /** The sink's ID. */
         val id: String,
-        val maxWaitSecs: Int,
-        val metadata: Map<String, String>,
-        val nextRetryAt: Instant? = null,
-        val status: SinkStatus,
         /** The sink's UID. */
         val uid: String? = null,
+        val status: SinkStatus,
+        val currentIterator: String,
+        val failureReason: String? = null,
+        val createdAt: Instant,
         val updatedAt: Instant,
+        val batchSize: Int,
+        val maxWaitSecs: Int,
+        val eventTypes: List<String>? = null,
+        val nextRetryAt: Instant? = null,
+        val metadata: Map<String, String>,
         val type: String,
         val config: JsonElement,
     )
@@ -236,18 +236,18 @@ class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
     override fun serialize(encoder: Encoder, value: StreamSinkOut) {
         val surrogate =
             StreamSinkOutSurrogate(
-                batchSize = value.batchSize,
-                createdAt = value.createdAt,
-                currentIterator = value.currentIterator,
-                eventTypes = value.eventTypes,
-                failureReason = value.failureReason,
                 id = value.id,
-                maxWaitSecs = value.maxWaitSecs,
-                metadata = value.metadata,
-                nextRetryAt = value.nextRetryAt,
-                status = value.status,
                 uid = value.uid,
+                status = value.status,
+                currentIterator = value.currentIterator,
+                failureReason = value.failureReason,
+                createdAt = value.createdAt,
                 updatedAt = value.updatedAt,
+                batchSize = value.batchSize,
+                maxWaitSecs = value.maxWaitSecs,
+                eventTypes = value.eventTypes,
+                nextRetryAt = value.nextRetryAt,
+                metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
             )
@@ -257,18 +257,18 @@ class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
     override fun deserialize(decoder: Decoder): StreamSinkOut {
         val surrogate = decoder.decodeSerializableValue(StreamSinkOutSurrogate.serializer())
         return StreamSinkOut(
-            batchSize = surrogate.batchSize,
-            createdAt = surrogate.createdAt,
-            currentIterator = surrogate.currentIterator,
-            eventTypes = surrogate.eventTypes,
-            failureReason = surrogate.failureReason,
             id = surrogate.id,
-            maxWaitSecs = surrogate.maxWaitSecs,
-            metadata = surrogate.metadata,
-            nextRetryAt = surrogate.nextRetryAt,
-            status = surrogate.status,
             uid = surrogate.uid,
+            status = surrogate.status,
+            currentIterator = surrogate.currentIterator,
+            failureReason = surrogate.failureReason,
+            createdAt = surrogate.createdAt,
             updatedAt = surrogate.updatedAt,
+            batchSize = surrogate.batchSize,
+            maxWaitSecs = surrogate.maxWaitSecs,
+            eventTypes = surrogate.eventTypes,
+            nextRetryAt = surrogate.nextRetryAt,
+            metadata = surrogate.metadata,
             config = StreamSinkOutConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )
     }

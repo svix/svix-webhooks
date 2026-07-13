@@ -175,18 +175,18 @@ module Svix
   end
 
   class IngestSourceOut
-    attr_accessor :created_at
     # The Source's ID.
     attr_accessor :id
-    attr_accessor :ingest_url
-    attr_accessor :metadata
-    attr_accessor :name
     # The Source's UID.
     attr_accessor :uid
+    attr_accessor :name
+    attr_accessor :ingest_url
+    attr_accessor :created_at
     attr_accessor :updated_at
+    attr_accessor :metadata
     attr_accessor :config
 
-    ALL_FIELD ||= ["created_at", "id", "ingest_url", "metadata", "name", "uid", "updated_at", "config"].freeze
+    ALL_FIELD ||= ["id", "uid", "name", "ingest_url", "created_at", "updated_at", "metadata", "config"].freeze
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       IngestSourceOutConfig::GenericWebhook => "generic-webhook",
@@ -270,13 +270,13 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["id"] = attributes["id"]
-      attrs["ingest_url"] = attributes["ingestUrl"]
-      attrs["metadata"] = attributes["metadata"]
-      attrs["name"] = attributes["name"]
       attrs["uid"] = attributes["uid"]
+      attrs["name"] = attributes["name"]
+      attrs["ingest_url"] = attributes["ingestUrl"]
+      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
+      attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
@@ -291,13 +291,13 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["id"] = Svix::serialize_primitive(@id) if @id
-      out["ingestUrl"] = Svix::serialize_primitive(@ingest_url) if @ingest_url
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["name"] = Svix::serialize_primitive(@name) if @name
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["name"] = Svix::serialize_primitive(@name) if @name
+      out["ingestUrl"] = Svix::serialize_primitive(@ingest_url) if @ingest_url
+      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

@@ -10,27 +10,27 @@ class SinkInCommon implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null          $channels    list of message channels this sink listens to (omit for all)
-     * @param list<string>|null          $filterTypes
-     * @param array<string, string>|null $metadata
-     * @param string|null                $secret      The endpoint's verification secret.
-     *
-     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-     * It is recommended to not set this and let the server generate the secret.
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid optional unique identifier for the sink
+     * @param string|null $uid    optional unique identifier for the sink
+     * @param string|null $secret The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+     * It is recommended to not set this and let the server generate the secret.
+     * @param list<string>|null          $filterTypes
+     * @param list<string>|null          $channels    list of message channels this sink listens to (omit for all)
+     * @param array<string, string>|null $metadata
      */
     private function __construct(
-        public readonly ?array $channels = null,
         public readonly ?string $description = null,
-        public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
-        public readonly ?array $metadata = null,
-        public readonly ?string $secret = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
+        public readonly ?string $secret = null,
+        public readonly ?bool $disabled = null,
+        public readonly ?array $filterTypes = null,
+        public readonly ?array $channels = null,
+        public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -42,33 +42,15 @@ class SinkInCommon implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            channels: null,
             description: null,
-            disabled: null,
-            filterTypes: null,
-            metadata: null,
-            secret: null,
             throttleRate: null,
             uid: null,
+            secret: null,
+            disabled: null,
+            filterTypes: null,
+            channels: null,
+            metadata: null,
             setFields: []
-        );
-    }
-
-    public function withChannels(?array $channels): self
-    {
-        $setFields = $this->setFields;
-        $setFields['channels'] = true;
-
-        return new self(
-            channels: $channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
         );
     }
 
@@ -78,86 +60,14 @@ class SinkInCommon implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            secret: $this->secret,
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
-        );
-    }
-
-    public function withDisabled(?bool $disabled): self
-    {
-        $setFields = $this->setFields;
-        $setFields['disabled'] = true;
-
-        return new self(
             channels: $this->channels,
-            description: $this->description,
-            disabled: $disabled,
-            filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
-        );
-    }
-
-    public function withFilterTypes(?array $filterTypes): self
-    {
-        $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
-        );
-    }
-
-    public function withSecret(?string $secret): self
-    {
-        $setFields = $this->setFields;
-        $setFields['secret'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -168,14 +78,14 @@ class SinkInCommon implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
             throttleRate: $throttleRate,
             uid: $this->uid,
+            secret: $this->secret,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -186,14 +96,104 @@ class SinkInCommon implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            channels: $this->channels,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $uid,
+            secret: $this->secret,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withSecret(?string $secret): self
+    {
+        $setFields = $this->setFields;
+        $setFields['secret'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            secret: $secret,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withDisabled(?bool $disabled): self
+    {
+        $setFields = $this->setFields;
+        $setFields['disabled'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            secret: $this->secret,
+            disabled: $disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withFilterTypes(?array $filterTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['filterTypes'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            secret: $this->secret,
+            disabled: $this->disabled,
+            filterTypes: $filterTypes,
+            channels: $this->channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withChannels(?array $channels): self
+    {
+        $setFields = $this->setFields;
+        $setFields['channels'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            secret: $this->secret,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $channels,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            secret: $this->secret,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            metadata: $metadata,
             setFields: $setFields
         );
     }
@@ -203,11 +203,17 @@ class SinkInCommon implements \JsonSerializable
         $data = [
         ];
 
-        if (isset($this->setFields['channels'])) {
-            $data['channels'] = $this->channels;
-        }
         if (null !== $this->description) {
             $data['description'] = $this->description;
+        }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
+        if (isset($this->setFields['uid'])) {
+            $data['uid'] = $this->uid;
+        }
+        if (isset($this->setFields['secret'])) {
+            $data['secret'] = $this->secret;
         }
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
@@ -215,17 +221,11 @@ class SinkInCommon implements \JsonSerializable
         if (isset($this->setFields['filterTypes'])) {
             $data['filterTypes'] = $this->filterTypes;
         }
+        if (isset($this->setFields['channels'])) {
+            $data['channels'] = $this->channels;
+        }
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;
-        }
-        if (isset($this->setFields['secret'])) {
-            $data['secret'] = $this->secret;
-        }
-        if (isset($this->setFields['throttleRate'])) {
-            $data['throttleRate'] = $this->throttleRate;
-        }
-        if (isset($this->setFields['uid'])) {
-            $data['uid'] = $this->uid;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -237,14 +237,14 @@ class SinkInCommon implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'SinkInCommon'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'SinkInCommon'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'SinkInCommon'),
+            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'SinkInCommon'),
+            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'SinkInCommon'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'SinkInCommon'),
             filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'SinkInCommon'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'SinkInCommon'),
-            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'SinkInCommon'),
-            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'SinkInCommon'),
-            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'SinkInCommon')
+            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'SinkInCommon'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'SinkInCommon')
         );
     }
 

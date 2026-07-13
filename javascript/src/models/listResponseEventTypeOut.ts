@@ -3,9 +3,9 @@ import { type EventTypeOut, EventTypeOutSerializer } from "./eventTypeOut";
 
 export interface ListResponseEventTypeOut {
   data: EventTypeOut[];
-  done: boolean;
   iterator: string | null;
   prevIterator?: string | null;
+  done: boolean;
 }
 
 export const ListResponseEventTypeOutSerializer = {
@@ -14,18 +14,18 @@ export const ListResponseEventTypeOutSerializer = {
       data: object["data"].map((item: EventTypeOut) =>
         EventTypeOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
       iterator: object["iterator"],
       prevIterator: object["prevIterator"],
+      done: object["done"],
     };
   },
 
   _toJsonObject(self: ListResponseEventTypeOut): any {
     return {
       data: self.data.map((item) => EventTypeOutSerializer._toJsonObject(item)),
-      done: self.done,
       iterator: self.iterator,
       prevIterator: self.prevIterator,
+      done: self.done,
     };
   },
 };

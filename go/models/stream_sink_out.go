@@ -24,18 +24,18 @@ import (
 //   - "sns": Use SnsConfig
 //   - "sqs": Use SqsConfig
 type StreamSinkOut struct {
-	BatchSize       int32               `json:"batchSize"`
-	CreatedAt       time.Time           `json:"createdAt"`
-	CurrentIterator string              `json:"currentIterator"`
-	EventTypes      []string            `json:"eventTypes,omitempty"`
-	FailureReason   *string             `json:"failureReason,omitempty"`
-	Id              string              `json:"id"` // The sink's ID.
-	MaxWaitSecs     int32               `json:"maxWaitSecs"`
-	Metadata        map[string]string   `json:"metadata"`
-	NextRetryAt     *time.Time          `json:"nextRetryAt,omitempty"`
-	Status          SinkStatus          `json:"status"`
+	Id              string              `json:"id"`            // The sink's ID.
 	Uid             *string             `json:"uid,omitempty"` // The sink's UID.
+	Status          SinkStatus          `json:"status"`
+	CurrentIterator string              `json:"currentIterator"`
+	FailureReason   *string             `json:"failureReason,omitempty"`
+	CreatedAt       time.Time           `json:"createdAt"`
 	UpdatedAt       time.Time           `json:"updatedAt"`
+	BatchSize       int32               `json:"batchSize"`
+	MaxWaitSecs     int32               `json:"maxWaitSecs"`
+	EventTypes      []string            `json:"eventTypes,omitempty"`
+	NextRetryAt     *time.Time          `json:"nextRetryAt,omitempty"`
+	Metadata        map[string]string   `json:"metadata"`
 	Type            StreamSinkOutType   `json:"type"`
 	Config          StreamSinkOutConfig `json:"config"`
 }

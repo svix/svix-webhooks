@@ -7,10 +7,6 @@ from .common import BaseModel
 class IngestEndpointUpdate(BaseModel):
     description: t.Optional[str] = None
 
-    disabled: t.Optional[bool] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
-
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
 
@@ -20,3 +16,7 @@ class IngestEndpointUpdate(BaseModel):
     """Optional unique identifier for the endpoint."""
 
     url: str
+
+    disabled: t.Optional[bool] = None
+
+    metadata: t.Optional[t.Dict[str, str]] = None

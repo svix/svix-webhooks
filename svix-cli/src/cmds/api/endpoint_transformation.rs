@@ -27,8 +27,8 @@ pub enum EndpointTransformationCommands {
 {
   \"code\": \"...\",
   \"enabled\": true,
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"variables\": {\"key\": \"...\"}
+  \"variables\": {\"key\": \"...\"},
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get { app_id: String, endpoint_id: String },
     /// Set or unset the transformation code associated with this endpoint.

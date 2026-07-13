@@ -22,44 +22,16 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointUpdate {
-    @JsonProperty private Set<String> channels;
     @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private Map<String, String> metadata;
 
     public EndpointUpdate() {}
-
-    public EndpointUpdate channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public EndpointUpdate addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of message channels this endpoint listens to (omit for all).
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
 
     public EndpointUpdate description(String description) {
         this.description = description;
@@ -78,81 +50,6 @@ public class EndpointUpdate {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public EndpointUpdate disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public EndpointUpdate filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public EndpointUpdate addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
-
-    public EndpointUpdate metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public EndpointUpdate putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
     }
 
     public EndpointUpdate throttleRate(Long throttleRate) {
@@ -212,6 +109,109 @@ public class EndpointUpdate {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public EndpointUpdate disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public EndpointUpdate filterTypes(Set<String> filterTypes) {
+        this.filterTypes = filterTypes;
+        return this;
+    }
+
+    public EndpointUpdate addFilterTypesItem(String filterTypesItem) {
+        if (this.filterTypes == null) {
+            this.filterTypes = new LinkedHashSet<>();
+        }
+        this.filterTypes.add(filterTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get filterTypes
+     *
+     * @return filterTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFilterTypes() {
+        return filterTypes;
+    }
+
+    public void setFilterTypes(Set<String> filterTypes) {
+        this.filterTypes = filterTypes;
+    }
+
+    public EndpointUpdate channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public EndpointUpdate addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
+        return this;
+    }
+
+    /**
+     * List of message channels this endpoint listens to (omit for all).
+     *
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
+
+    public EndpointUpdate metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public EndpointUpdate putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

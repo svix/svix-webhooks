@@ -3,13 +3,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct DashboardAccessOut {
-    pub token: String,
-
     pub url: String,
+
+    pub token: String,
 }
 
 impl DashboardAccessOut {
-    pub fn new(token: String, url: String) -> Self {
-        Self { token, url }
+    pub fn new(url: String, token: String) -> Self {
+        Self { url, token }
     }
 }

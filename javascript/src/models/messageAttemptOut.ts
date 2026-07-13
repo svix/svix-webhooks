@@ -8,61 +8,61 @@ import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
 import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
 export interface MessageAttemptOut {
+  url: string;
+  response: string;
+  responseStatusCode: number;
+  /** Response duration in milliseconds. */
+  responseDurationMs: number;
+  status: MessageStatus;
+  statusText: MessageStatusText;
+  triggerType: MessageAttemptTriggerType;
+  /** The Message's ID. */
+  msgId: string;
   /** The Endpoint's ID. */
   endpointId: string;
   /** The MessageAttempt's ID. */
   id: string;
-  msg?: MessageOut | null;
-  /** The Message's ID. */
-  msgId: string;
-  response: string;
-  /** Response duration in milliseconds. */
-  responseDurationMs: number;
-  responseStatusCode: number;
-  status: MessageStatus;
-  statusText: MessageStatusText;
   timestamp: Date;
-  triggerType: MessageAttemptTriggerType;
-  url: string;
+  msg?: MessageOut | null;
 }
 
 export const MessageAttemptOutSerializer = {
   _fromJsonObject(object: any): MessageAttemptOut {
     return {
+      url: object["url"],
+      response: object["response"],
+      responseStatusCode: object["responseStatusCode"],
+      responseDurationMs: object["responseDurationMs"],
+      status: MessageStatusSerializer._fromJsonObject(object["status"]),
+      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
+      triggerType: MessageAttemptTriggerTypeSerializer._fromJsonObject(
+        object["triggerType"]
+      ),
+      msgId: object["msgId"],
       endpointId: object["endpointId"],
       id: object["id"],
+      timestamp: new Date(object["timestamp"]),
       msg:
         object["msg"] != null
           ? MessageOutSerializer._fromJsonObject(object["msg"])
           : undefined,
-      msgId: object["msgId"],
-      response: object["response"],
-      responseDurationMs: object["responseDurationMs"],
-      responseStatusCode: object["responseStatusCode"],
-      status: MessageStatusSerializer._fromJsonObject(object["status"]),
-      statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
-      timestamp: new Date(object["timestamp"]),
-      triggerType: MessageAttemptTriggerTypeSerializer._fromJsonObject(
-        object["triggerType"]
-      ),
-      url: object["url"],
     };
   },
 
   _toJsonObject(self: MessageAttemptOut): any {
     return {
-      endpointId: self.endpointId,
-      id: self.id,
-      msg: self.msg != null ? MessageOutSerializer._toJsonObject(self.msg) : undefined,
-      msgId: self.msgId,
+      url: self.url,
       response: self.response,
-      responseDurationMs: self.responseDurationMs,
       responseStatusCode: self.responseStatusCode,
+      responseDurationMs: self.responseDurationMs,
       status: MessageStatusSerializer._toJsonObject(self.status),
       statusText: MessageStatusTextSerializer._toJsonObject(self.statusText),
-      timestamp: self.timestamp,
       triggerType: MessageAttemptTriggerTypeSerializer._toJsonObject(self.triggerType),
-      url: self.url,
+      msgId: self.msgId,
+      endpointId: self.endpointId,
+      id: self.id,
+      timestamp: self.timestamp,
+      msg: self.msg != null ? MessageOutSerializer._toJsonObject(self.msg) : undefined,
     };
   },
 };

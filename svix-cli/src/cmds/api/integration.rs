@@ -80,15 +80,15 @@ pub enum IntegrationCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"featureFlags\": [],
-    \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"name\": \"Example Integration\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"featureFlags\": []
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         app_id: String,
@@ -106,15 +106,15 @@ pub enum IntegrationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"featureFlags\": [],
-  \"name\": \"Example Integration\"
+  \"name\": \"Example Integration\",
+  \"featureFlags\": []
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"featureFlags\": [],
-  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"name\": \"Example Integration\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": []
 }\n")]
     Create {
         app_id: String,
@@ -133,11 +133,11 @@ pub enum IntegrationCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"featureFlags\": [],
-  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"name\": \"Example Integration\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": []
 }\n")]
     Get { app_id: String, id: String },
     /// Update an integration.
@@ -151,15 +151,15 @@ pub enum IntegrationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"featureFlags\": [],
-  \"name\": \"Example Integration\"
+  \"name\": \"Example Integration\",
+  \"featureFlags\": []
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"featureFlags\": [],
-  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"name\": \"Example Integration\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": []
 }\n")]
     Update {
         app_id: String,

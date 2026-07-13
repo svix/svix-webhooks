@@ -5,16 +5,16 @@ from .common import BaseModel
 
 
 class EventTypeFromOpenApi(BaseModel):
-    deprecated: bool
+    name: str
+    """The event type's name"""
 
     description: str
 
-    feature_flags: t.Optional[t.List[str]] = None
+    schemas: t.Optional[t.Dict[str, t.Any]] = None
+
+    deprecated: bool
 
     group_name: t.Optional[str] = None
     """The event type group's name"""
 
-    name: str
-    """The event type's name"""
-
-    schemas: t.Optional[t.Dict[str, t.Any]] = None
+    feature_flags: t.Optional[t.List[str]] = None

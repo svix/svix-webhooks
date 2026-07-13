@@ -5,14 +5,14 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StreamPortalAccessIn(
+    /** The set of feature flags the created token will have access to. */
+    val featureFlags: Set<String>? = null,
     /**
      * How long the token will be valid for, in seconds.
      *
      * Valid values are between 1 hour and 7 days. The default is 7 days.
      */
     val expiry: ULong? = null,
-    /** The set of feature flags the created token will have access to. */
-    val featureFlags: Set<String>? = null,
     /**
      * An optional session ID to attach to the token.
      *

@@ -3,13 +3,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventTypeUpdate {
+    pub description: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archived: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deprecated: Option<bool>,
 
-    pub description: String,
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub schemas: Option<serde_json::Value>,
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -19,21 +23,17 @@ pub struct EventTypeUpdate {
     #[serde(rename = "groupName")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub group_name: Option<String>,
-
-    /// The schema for the event type for a specific version as a JSON schema.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub schemas: Option<serde_json::Value>,
 }
 
 impl EventTypeUpdate {
     pub fn new(description: String) -> Self {
         Self {
+            description,
             archived: None,
             deprecated: None,
-            description,
+            schemas: None,
             feature_flags: None,
             group_name: None,
-            schemas: None,
         }
     }
 }

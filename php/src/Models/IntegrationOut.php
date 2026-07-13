@@ -10,13 +10,13 @@ class IntegrationOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null $featureFlags the set of feature flags the integration has access to
      * @param string            $id           the Integration's ID
+     * @param list<string>|null $featureFlags the set of feature flags the integration has access to
      */
     private function __construct(
-        public readonly \DateTimeImmutable $createdAt,
-        public readonly string $id,
         public readonly string $name,
+        public readonly string $id,
+        public readonly \DateTimeImmutable $createdAt,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly ?array $featureFlags = null,
         array $setFields = [],
@@ -28,18 +28,18 @@ class IntegrationOut implements \JsonSerializable
      * Create an instance of IntegrationOut with required fields.
      */
     public static function create(
-        \DateTimeImmutable $createdAt,
-        string $id,
         string $name,
+        string $id,
+        \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
-            createdAt: $createdAt,
-            featureFlags: null,
-            id: $id,
             name: $name,
+            id: $id,
+            createdAt: $createdAt,
             updatedAt: $updatedAt,
-            setFields: ['createdAt' => true, 'id' => true, 'name' => true, 'updatedAt' => true]
+            featureFlags: null,
+            setFields: ['name' => true, 'id' => true, 'createdAt' => true, 'updatedAt' => true]
         );
     }
 
@@ -49,11 +49,11 @@ class IntegrationOut implements \JsonSerializable
         $setFields['featureFlags'] = true;
 
         return new self(
-            createdAt: $this->createdAt,
-            featureFlags: $featureFlags,
-            id: $this->id,
             name: $this->name,
+            id: $this->id,
+            createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            featureFlags: $featureFlags,
             setFields: $setFields
         );
     }
@@ -61,9 +61,9 @@ class IntegrationOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'createdAt' => $this->createdAt->format('c'),
-            'id' => $this->id,
             'name' => $this->name,
+            'id' => $this->id,
+            'createdAt' => $this->createdAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c')];
 
         if (null !== $this->featureFlags) {
@@ -79,11 +79,11 @@ class IntegrationOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'IntegrationOut'),
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'IntegrationOut'),
-            id: \Svix\Utils::deserializeString($data, 'id', true, 'IntegrationOut'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'IntegrationOut'),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'IntegrationOut')
+            id: \Svix\Utils::deserializeString($data, 'id', true, 'IntegrationOut'),
+            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'IntegrationOut'),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'IntegrationOut'),
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'IntegrationOut')
         );
     }
 

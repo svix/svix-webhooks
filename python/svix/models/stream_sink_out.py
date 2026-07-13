@@ -24,31 +24,31 @@ from .sqs_config import SqsConfig
 
 
 class StreamSinkOut(BaseModel):
-    batch_size: int
-
-    created_at: datetime
-
-    current_iterator: str
-
-    event_types: t.Optional[t.List[str]] = None
-
-    failure_reason: t.Optional[str] = None
-
     id: str
     """The sink's ID."""
-
-    max_wait_secs: int
-
-    metadata: t.Dict[str, str]
-
-    next_retry_at: t.Optional[datetime] = None
-
-    status: SinkStatus
 
     uid: t.Optional[str] = None
     """The sink's UID."""
 
+    status: SinkStatus
+
+    current_iterator: str
+
+    failure_reason: t.Optional[str] = None
+
+    created_at: datetime
+
     updated_at: datetime
+
+    batch_size: int
+
+    max_wait_secs: int
+
+    event_types: t.Optional[t.List[str]] = None
+
+    next_retry_at: t.Optional[datetime] = None
+
+    metadata: t.Dict[str, str]
 
     type: t.Union[
         t.Literal["poller"],

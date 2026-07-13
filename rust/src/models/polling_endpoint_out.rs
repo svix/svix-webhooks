@@ -7,17 +7,17 @@ use super::polling_endpoint_message_out::PollingEndpointMessageOut;
 pub struct PollingEndpointOut {
     pub data: Vec<PollingEndpointMessageOut>,
 
-    pub done: bool,
-
     pub iterator: String,
+
+    pub done: bool,
 }
 
 impl PollingEndpointOut {
-    pub fn new(data: Vec<PollingEndpointMessageOut>, done: bool, iterator: String) -> Self {
+    pub fn new(data: Vec<PollingEndpointMessageOut>, iterator: String, done: bool) -> Self {
         Self {
             data,
-            done,
             iterator,
+            done,
         }
     }
 }

@@ -4,10 +4,21 @@ use serde::{Deserialize, Serialize};
 /// Configuration parameters for defining a Snowflake sink.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct SnowflakeConfig {
+    /// PEM-encoded private key used for signing token-based requests to the
+    /// Snowflake API.
+    ///
+    /// Beginning/end delimiters are not required.
+    #[serde(rename = "privateKey")]
+    pub private_key: String,
+
     /// Snowflake account identifier, which includes both the organization and
     /// account IDs separated by a hyphen.
     #[serde(rename = "accountIdentifier")]
     pub account_identifier: String,
+
+    /// The Snowflake user id.
+    #[serde(rename = "userId")]
+    pub user_id: String,
 
     /// Database name.
     ///
@@ -15,13 +26,6 @@ pub struct SnowflakeConfig {
     #[serde(rename = "dbName")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub db_name: Option<String>,
-
-    /// PEM-encoded private key used for signing token-based requests to the
-    /// Snowflake API.
-    ///
-    /// Beginning/end delimiters are not required.
-    #[serde(rename = "privateKey")]
-    pub private_key: String,
 
     /// Schema name.
     ///
@@ -36,21 +40,17 @@ pub struct SnowflakeConfig {
     #[serde(rename = "tableName")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub table_name: Option<String>,
-
-    /// The Snowflake user id.
-    #[serde(rename = "userId")]
-    pub user_id: String,
 }
 
 impl SnowflakeConfig {
-    pub fn new(account_identifier: String, private_key: String, user_id: String) -> Self {
+    pub fn new(private_key: String, account_identifier: String, user_id: String) -> Self {
         Self {
-            account_identifier,
-            db_name: None,
             private_key,
+            account_identifier,
+            user_id,
+            db_name: None,
             schema_name: None,
             table_name: None,
-            user_id,
         }
     }
 }

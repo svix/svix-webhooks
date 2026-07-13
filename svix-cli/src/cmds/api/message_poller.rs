@@ -93,22 +93,22 @@ pub enum MessagePollerCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
+    \"headers\": {\"key\": \"...\"},
     \"eventId\": \"unique-identifier\",
     \"eventType\": \"user.signup\",
-    \"headers\": {\"key\": \"...\"},
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"payload\": {
       \"email\": \"test@example.com\",
       \"type\": \"user.created\",
       \"username\": \"test_user\"
     },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
-  \"iterator\": \"...\"
+  \"iterator\": \"...\",
+  \"done\": true
 }\n")]
     Poll {
         app_id: String,
@@ -153,22 +153,22 @@ pub enum MessagePollerCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
+    \"headers\": {\"key\": \"...\"},
     \"eventId\": \"unique-identifier\",
     \"eventType\": \"user.signup\",
-    \"headers\": {\"key\": \"...\"},
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"payload\": {
       \"email\": \"test@example.com\",
       \"type\": \"user.created\",
       \"username\": \"test_user\"
     },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
-  \"iterator\": \"...\"
+  \"iterator\": \"...\",
+  \"done\": true
 }\n")]
     ConsumerPoll {
         app_id: String,

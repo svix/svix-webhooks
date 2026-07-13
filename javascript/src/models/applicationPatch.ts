@@ -1,7 +1,6 @@
 // this file is @generated
 
 export interface ApplicationPatch {
-  metadata?: { [key: string]: string };
   name?: string;
   /**
    * Maximum messages per second to send to this application.
@@ -11,24 +10,25 @@ export interface ApplicationPatch {
   throttleRate?: number | null;
   /** The Application's UID. */
   uid?: string | null;
+  metadata?: { [key: string]: string };
 }
 
 export const ApplicationPatchSerializer = {
   _fromJsonObject(object: any): ApplicationPatch {
     return {
-      metadata: object["metadata"],
       name: object["name"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: ApplicationPatch): any {
     return {
-      metadata: self.metadata,
       name: self.name,
       throttleRate: self.throttleRate,
       uid: self.uid,
+      metadata: self.metadata,
     };
   },
 };

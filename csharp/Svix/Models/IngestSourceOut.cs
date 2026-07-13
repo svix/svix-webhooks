@@ -9,26 +9,26 @@ namespace Svix.Models
     [JsonConverter(typeof(IngestSourceOutConverter))]
     public class IngestSourceOut
     {
-        [JsonProperty("createdAt", Required = Required.Always)]
-        public required DateTime CreatedAt { get; set; }
-
         [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
-
-        [JsonProperty("ingestUrl")]
-        public string? IngestUrl { get; set; } = null;
-
-        [JsonProperty("metadata", Required = Required.Always)]
-        public required Dictionary<string, string> Metadata { get; set; }
-
-        [JsonProperty("name", Required = Required.Always)]
-        public required string Name { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
+        [JsonProperty("name", Required = Required.Always)]
+        public required string Name { get; set; }
+
+        [JsonProperty("ingestUrl")]
+        public string? IngestUrl { get; set; } = null;
+
+        [JsonProperty("createdAt", Required = Required.Always)]
+        public required DateTime CreatedAt { get; set; }
+
         [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
+
+        [JsonProperty("metadata", Required = Required.Always)]
+        public required Dictionary<string, string> Metadata { get; set; }
 
         [JsonIgnore]
         public required IngestSourceOutConfig Config { get; set; }
@@ -48,13 +48,13 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class IngestSourceOut {\n");
-            sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
-            sb.Append("  IngestUrl: ").Append(IngestUrl).Append('\n');
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
-            sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Name: ").Append(Name).Append('\n');
+            sb.Append("  IngestUrl: ").Append(IngestUrl).Append('\n');
+            sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
@@ -635,26 +635,26 @@ namespace Svix.Models
 
     internal class IngestSourceOutSurrogate
     {
-        [JsonProperty("createdAt", Required = Required.Always)]
-        public required DateTime CreatedAt { get; set; }
-
         [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
-
-        [JsonProperty("ingestUrl")]
-        public string? IngestUrl { get; set; } = null;
-
-        [JsonProperty("metadata", Required = Required.Always)]
-        public required Dictionary<string, string> Metadata { get; set; }
-
-        [JsonProperty("name", Required = Required.Always)]
-        public required string Name { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
+        [JsonProperty("name", Required = Required.Always)]
+        public required string Name { get; set; }
+
+        [JsonProperty("ingestUrl")]
+        public string? IngestUrl { get; set; } = null;
+
+        [JsonProperty("createdAt", Required = Required.Always)]
+        public required DateTime CreatedAt { get; set; }
+
         [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
+
+        [JsonProperty("metadata", Required = Required.Always)]
+        public required Dictionary<string, string> Metadata { get; set; }
 
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
@@ -709,13 +709,13 @@ namespace Svix.Models
 
             return new IngestSourceOut
             {
-                CreatedAt = surrogate.CreatedAt,
                 Id = surrogate.Id,
-                IngestUrl = surrogate.IngestUrl,
-                Metadata = surrogate.Metadata,
-                Name = surrogate.Name,
                 Uid = surrogate.Uid,
+                Name = surrogate.Name,
+                IngestUrl = surrogate.IngestUrl,
+                CreatedAt = surrogate.CreatedAt,
                 UpdatedAt = surrogate.UpdatedAt,
+                Metadata = surrogate.Metadata,
                 Config = config,
             };
         }

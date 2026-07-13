@@ -19,10 +19,29 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IntegrationUpdate {
-    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String name;
+    @JsonProperty private Set<String> featureFlags;
 
     public IntegrationUpdate() {}
+
+    public IntegrationUpdate name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return name
+     */
+    @javax.annotation.Nonnull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public IntegrationUpdate featureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
@@ -50,25 +69,6 @@ public class IntegrationUpdate {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public IntegrationUpdate name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return name
-     */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**

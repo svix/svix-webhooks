@@ -5,10 +5,10 @@ require "json"
 module Svix
   class EventStreamOut
     attr_accessor :data
-    attr_accessor :done
     attr_accessor :iterator
+    attr_accessor :done
 
-    ALL_FIELD ||= ["data", "done", "iterator"].freeze
+    ALL_FIELD ||= ["data", "iterator", "done"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -30,16 +30,16 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["data"] = attributes["data"].map { |v| Svix::EventOut.deserialize(v) }
-      attrs["done"] = attributes["done"]
       attrs["iterator"] = attributes["iterator"]
+      attrs["done"] = attributes["done"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["data"] = @data.map { |v| v.serialize } if @data
-      out["done"] = Svix::serialize_primitive(@done) if @done
       out["iterator"] = Svix::serialize_primitive(@iterator) if @iterator
+      out["done"] = Svix::serialize_primitive(@done) if @done
       out
     end
 

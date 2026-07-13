@@ -9,14 +9,14 @@ namespace Svix.Models
     [JsonConverter(typeof(IngestSourceInConverter))]
     public class IngestSourceIn
     {
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
         [JsonIgnore]
         public required IngestSourceInConfig Config { get; set; }
@@ -36,9 +36,9 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class IngestSourceIn {\n");
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
@@ -619,14 +619,14 @@ namespace Svix.Models
 
     internal class IngestSourceInSurrogate
     {
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
@@ -681,9 +681,9 @@ namespace Svix.Models
 
             return new IngestSourceIn
             {
-                Metadata = surrogate.Metadata,
                 Name = surrogate.Name,
                 Uid = surrogate.Uid,
+                Metadata = surrogate.Metadata,
                 Config = config,
             };
         }

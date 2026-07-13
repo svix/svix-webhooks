@@ -80,28 +80,28 @@ module Svix
   end
 
   class StreamSinkIn
-    # How many events will be batched in a request to the Sink.
-    attr_accessor :batch_size
-    # A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
-    attr_accessor :event_types
-    # How long to wait before a batch of events is sent, if the `batchSize` is not reached.
-    #
-    # For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
-    #
-    # Note that we will never send an empty batch of events to the Sink.
-    attr_accessor :max_wait_secs
-    attr_accessor :metadata
+    # An optional unique identifier for the sink.
+    attr_accessor :uid
     # Whether the sink will receive events.
     #
     # If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
     #
     # If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
     attr_accessor :status
-    # An optional unique identifier for the sink.
-    attr_accessor :uid
+    # How many events will be batched in a request to the Sink.
+    attr_accessor :batch_size
+    # How long to wait before a batch of events is sent, if the `batchSize` is not reached.
+    #
+    # For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
+    #
+    # Note that we will never send an empty batch of events to the Sink.
+    attr_accessor :max_wait_secs
+    # A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
+    attr_accessor :event_types
+    attr_accessor :metadata
     attr_accessor :config
 
-    ALL_FIELD ||= ["batch_size", "event_types", "max_wait_secs", "metadata", "status", "uid", "config"].freeze
+    ALL_FIELD ||= ["uid", "status", "batch_size", "max_wait_secs", "event_types", "metadata", "config"].freeze
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       StreamSinkInConfig::Poller => "poller",
@@ -157,12 +157,12 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["batch_size"] = attributes["batchSize"]
-      attrs["event_types"] = attributes["eventTypes"]
-      attrs["max_wait_secs"] = attributes["maxWaitSecs"]
-      attrs["metadata"] = attributes["metadata"]
-      attrs["status"] = Svix::SinkStatusIn.deserialize(attributes["status"]) if attributes["status"]
       attrs["uid"] = attributes["uid"]
+      attrs["status"] = Svix::SinkStatusIn.deserialize(attributes["status"]) if attributes["status"]
+      attrs["batch_size"] = attributes["batchSize"]
+      attrs["max_wait_secs"] = attributes["maxWaitSecs"]
+      attrs["event_types"] = attributes["eventTypes"]
+      attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
@@ -177,12 +177,12 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
+      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

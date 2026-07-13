@@ -71,25 +71,25 @@ pub enum ConnectorCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"featureFlags\": [\"cool-new-feature\"],
     \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"instructions\": \"...\",
-    \"kind\": \"Custom\",
-    \"logo\": \"...\",
-    \"name\": \"...\",
     \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"productType\": \"Dispatch\",
-    \"transformation\": \"...\",
-    \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"kind\": \"Custom\",
+    \"name\": \"...\",
+    \"logo\": \"...\",
+    \"description\": \"...\",
+    \"instructions\": \"...\",
+    \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+    \"transformation\": \"...\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
+    \"featureFlags\": [\"cool-new-feature\"],
+    \"productType\": \"Dispatch\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -106,33 +106,33 @@ pub enum ConnectorCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"description\": \"Example connector description\",
-  \"featureFlags\": [\"...\"],
-  \"instructions\": \"Markdown-formatted instructions\",
-  \"kind\": \"Slack\",
-  \"logo\": \"https://example.com/logo.png\",
   \"name\": \"My first connector\",
-  \"productType\": \"Dispatch\",
+  \"uid\": \"unique-identifier\",
+  \"logo\": \"https://example.com/logo.png\",
+  \"description\": \"Example connector description\",
+  \"kind\": \"Slack\",
+  \"instructions\": \"Markdown-formatted instructions\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
   \"transformation\": \"function handler(webhook) { /* ... */ }\",
-  \"uid\": \"unique-identifier\"
+  \"featureFlags\": [\"...\"],
+  \"productType\": \"Dispatch\"
 }\n\nExample response:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"instructions\": \"...\",
-  \"kind\": \"Custom\",
-  \"logo\": \"...\",
-  \"name\": \"...\",
   \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"productType\": \"Dispatch\",
-  \"transformation\": \"...\",
-  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"kind\": \"Custom\",
+  \"name\": \"...\",
+  \"logo\": \"...\",
+  \"description\": \"...\",
+  \"instructions\": \"...\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"transformation\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"productType\": \"Dispatch\"
 }\n")]
     Create {
         connector_in: crate::json::JsonOf<ConnectorIn>,
@@ -150,21 +150,21 @@ pub enum ConnectorCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"instructions\": \"...\",
-  \"kind\": \"Custom\",
-  \"logo\": \"...\",
-  \"name\": \"...\",
   \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"productType\": \"Dispatch\",
-  \"transformation\": \"...\",
-  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"kind\": \"Custom\",
+  \"name\": \"...\",
+  \"logo\": \"...\",
+  \"description\": \"...\",
+  \"instructions\": \"...\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"transformation\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"productType\": \"Dispatch\"
 }\n")]
     Get { id: String },
     /// Create or update a connector.
@@ -178,31 +178,31 @@ pub enum ConnectorCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"description\": \"Example connector description\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"instructions\": \"Markdown-formatted instructions\",
-  \"kind\": \"Slack\",
-  \"logo\": \"https://example.com/logo.png\",
   \"name\": \"My first connector\",
-  \"transformation\": \"function handler(webhook) { /* ... */ }\"
+  \"logo\": \"https://example.com/logo.png\",
+  \"description\": \"Example connector description\",
+  \"kind\": \"Slack\",
+  \"instructions\": \"Markdown-formatted instructions\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"transformation\": \"function handler(webhook) { /* ... */ }\",
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n\nExample response:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"instructions\": \"...\",
-  \"kind\": \"Custom\",
-  \"logo\": \"...\",
-  \"name\": \"...\",
   \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"productType\": \"Dispatch\",
-  \"transformation\": \"...\",
-  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"kind\": \"Custom\",
+  \"name\": \"...\",
+  \"logo\": \"...\",
+  \"description\": \"...\",
+  \"instructions\": \"...\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"transformation\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"productType\": \"Dispatch\"
 }\n")]
     Upsert {
         id: String,
@@ -229,31 +229,31 @@ pub enum ConnectorCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"instructions\": \"...\",
-  \"kind\": \"Custom\",
-  \"logo\": \"...\",
   \"name\": \"...\",
-  \"transformation\": \"...\"
+  \"logo\": \"...\",
+  \"description\": \"...\",
+  \"kind\": \"Custom\",
+  \"instructions\": \"...\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"transformation\": \"...\",
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n\nExample response:
 {
-  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"instructions\": \"...\",
-  \"kind\": \"Custom\",
-  \"logo\": \"...\",
-  \"name\": \"...\",
   \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"productType\": \"Dispatch\",
-  \"transformation\": \"...\",
-  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"kind\": \"Custom\",
+  \"name\": \"...\",
+  \"logo\": \"...\",
+  \"description\": \"...\",
+  \"instructions\": \"...\",
+  \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"transformation\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"productType\": \"Dispatch\"
 }\n")]
     Patch {
         id: String,

@@ -4,12 +4,12 @@ require "json"
 
 module Svix
   class BigQueryPatchConfig
-    attr_accessor :credentials
-    attr_accessor :dataset_id
     attr_accessor :project_id
+    attr_accessor :dataset_id
     attr_accessor :table_id
+    attr_accessor :credentials
 
-    ALL_FIELD ||= ["credentials", "dataset_id", "project_id", "table_id"].freeze
+    ALL_FIELD ||= ["project_id", "dataset_id", "table_id", "credentials"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -30,19 +30,19 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["credentials"] = attributes["credentials"]
-      attrs["dataset_id"] = attributes["datasetId"]
       attrs["project_id"] = attributes["projectId"]
+      attrs["dataset_id"] = attributes["datasetId"]
       attrs["table_id"] = attributes["tableId"]
+      attrs["credentials"] = attributes["credentials"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["credentials"] = Svix::serialize_primitive(@credentials) if @credentials
-      out["datasetId"] = Svix::serialize_primitive(@dataset_id) if @dataset_id
       out["projectId"] = Svix::serialize_primitive(@project_id) if @project_id
+      out["datasetId"] = Svix::serialize_primitive(@dataset_id) if @dataset_id
       out["tableId"] = Svix::serialize_primitive(@table_id) if @table_id
+      out["credentials"] = Svix::serialize_primitive(@credentials) if @credentials
       out
     end
 

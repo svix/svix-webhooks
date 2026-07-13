@@ -10,29 +10,29 @@ class MessageEndpointOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null $channels     list of message channels this endpoint listens to (omit for all)
-     * @param string            $description  an example endpoint name
-     * @param list<string>|null $filterTypes
-     * @param string            $id           the Endpoint's ID
-     * @param int|null          $throttleRate Maximum messages per second to send to this endpoint.
+     * @param string   $id           the Endpoint's ID
+     * @param string   $description  an example endpoint name
+     * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid optional unique identifier for the endpoint
+     * @param string|null       $uid         optional unique identifier for the endpoint
+     * @param list<string>|null $filterTypes
+     * @param list<string>|null $channels    list of message channels this endpoint listens to (omit for all)
      */
     private function __construct(
-        public readonly \DateTimeImmutable $createdAt,
-        public readonly string $description,
         public readonly string $id,
         public readonly MessageStatus $status,
         public readonly MessageStatusText $statusText,
-        public readonly \DateTimeImmutable $updatedAt,
+        public readonly string $description,
         public readonly string $url,
-        public readonly ?array $channels = null,
-        public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly \DateTimeImmutable $createdAt,
+        public readonly \DateTimeImmutable $updatedAt,
         public readonly ?\DateTimeImmutable $nextAttempt = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
+        public readonly ?bool $disabled = null,
+        public readonly ?array $filterTypes = null,
+        public readonly ?array $channels = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -42,98 +42,29 @@ class MessageEndpointOut implements \JsonSerializable
      * Create an instance of MessageEndpointOut with required fields.
      */
     public static function create(
-        \DateTimeImmutable $createdAt,
-        string $description,
         string $id,
         MessageStatus $status,
         MessageStatusText $statusText,
-        \DateTimeImmutable $updatedAt,
+        string $description,
         string $url,
+        \DateTimeImmutable $createdAt,
+        \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
-            channels: null,
-            createdAt: $createdAt,
-            description: $description,
-            disabled: null,
-            filterTypes: null,
             id: $id,
-            nextAttempt: null,
             status: $status,
             statusText: $statusText,
+            nextAttempt: null,
+            description: $description,
             throttleRate: null,
             uid: null,
-            updatedAt: $updatedAt,
             url: $url,
-            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'status' => true, 'statusText' => true, 'updatedAt' => true, 'url' => true]
-        );
-    }
-
-    public function withChannels(?array $channels): self
-    {
-        $setFields = $this->setFields;
-        $setFields['channels'] = true;
-
-        return new self(
-            channels: $channels,
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            id: $this->id,
-            nextAttempt: $this->nextAttempt,
-            status: $this->status,
-            statusText: $this->statusText,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            updatedAt: $this->updatedAt,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withDisabled(?bool $disabled): self
-    {
-        $setFields = $this->setFields;
-        $setFields['disabled'] = true;
-
-        return new self(
-            channels: $this->channels,
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $disabled,
-            filterTypes: $this->filterTypes,
-            id: $this->id,
-            nextAttempt: $this->nextAttempt,
-            status: $this->status,
-            statusText: $this->statusText,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            updatedAt: $this->updatedAt,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withFilterTypes(?array $filterTypes): self
-    {
-        $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
-
-        return new self(
-            channels: $this->channels,
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $filterTypes,
-            id: $this->id,
-            nextAttempt: $this->nextAttempt,
-            status: $this->status,
-            statusText: $this->statusText,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            updatedAt: $this->updatedAt,
-            url: $this->url,
-            setFields: $setFields
+            disabled: null,
+            filterTypes: null,
+            channels: null,
+            createdAt: $createdAt,
+            updatedAt: $updatedAt,
+            setFields: ['id' => true, 'status' => true, 'statusText' => true, 'description' => true, 'url' => true, 'createdAt' => true, 'updatedAt' => true]
         );
     }
 
@@ -143,19 +74,19 @@ class MessageEndpointOut implements \JsonSerializable
         $setFields['nextAttempt'] = true;
 
         return new self(
-            channels: $this->channels,
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
             id: $this->id,
-            nextAttempt: $nextAttempt,
             status: $this->status,
             statusText: $this->statusText,
+            nextAttempt: $nextAttempt,
+            description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            updatedAt: $this->updatedAt,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
             setFields: $setFields
         );
     }
@@ -166,19 +97,19 @@ class MessageEndpointOut implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
-            channels: $this->channels,
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
             id: $this->id,
-            nextAttempt: $this->nextAttempt,
             status: $this->status,
             statusText: $this->statusText,
+            nextAttempt: $this->nextAttempt,
+            description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            updatedAt: $this->updatedAt,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
             setFields: $setFields
         );
     }
@@ -189,19 +120,88 @@ class MessageEndpointOut implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            channels: $this->channels,
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
             id: $this->id,
-            nextAttempt: $this->nextAttempt,
             status: $this->status,
             statusText: $this->statusText,
+            nextAttempt: $this->nextAttempt,
+            description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            updatedAt: $this->updatedAt,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withDisabled(?bool $disabled): self
+    {
+        $setFields = $this->setFields;
+        $setFields['disabled'] = true;
+
+        return new self(
+            id: $this->id,
+            status: $this->status,
+            statusText: $this->statusText,
+            nextAttempt: $this->nextAttempt,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $disabled,
+            filterTypes: $this->filterTypes,
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withFilterTypes(?array $filterTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['filterTypes'] = true;
+
+        return new self(
+            id: $this->id,
+            status: $this->status,
+            statusText: $this->statusText,
+            nextAttempt: $this->nextAttempt,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $filterTypes,
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withChannels(?array $channels): self
+    {
+        $setFields = $this->setFields;
+        $setFields['channels'] = true;
+
+        return new self(
+            id: $this->id,
+            status: $this->status,
+            statusText: $this->statusText,
+            nextAttempt: $this->nextAttempt,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            channels: $channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
             setFields: $setFields
         );
     }
@@ -209,23 +209,14 @@ class MessageEndpointOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'createdAt' => $this->createdAt->format('c'),
-            'description' => $this->description,
             'id' => $this->id,
             'status' => $this->status,
             'statusText' => $this->statusText,
-            'updatedAt' => $this->updatedAt->format('c'),
-            'url' => $this->url];
+            'description' => $this->description,
+            'url' => $this->url,
+            'createdAt' => $this->createdAt->format('c'),
+            'updatedAt' => $this->updatedAt->format('c')];
 
-        if (isset($this->setFields['channels'])) {
-            $data['channels'] = $this->channels;
-        }
-        if (null !== $this->disabled) {
-            $data['disabled'] = $this->disabled;
-        }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
-        }
         if (isset($this->setFields['nextAttempt'])) {
             $data['nextAttempt'] = $this->nextAttempt->format('c');
         }
@@ -234,6 +225,15 @@ class MessageEndpointOut implements \JsonSerializable
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
+        }
+        if (null !== $this->disabled) {
+            $data['disabled'] = $this->disabled;
+        }
+        if (isset($this->setFields['filterTypes'])) {
+            $data['filterTypes'] = $this->filterTypes;
+        }
+        if (isset($this->setFields['channels'])) {
+            $data['channels'] = $this->channels;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -245,19 +245,19 @@ class MessageEndpointOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'MessageEndpointOut'),
-            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'MessageEndpointOut'),
-            description: \Svix\Utils::deserializeString($data, 'description', true, 'MessageEndpointOut'),
-            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'MessageEndpointOut'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'MessageEndpointOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'MessageEndpointOut'),
-            nextAttempt: \Svix\Utils::deserializeDt($data, 'nextAttempt', false, 'MessageEndpointOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'MessageEndpointOut', [MessageStatus::class, 'fromMixed']),
             statusText: \Svix\Utils::deserializeObject($data, 'statusText', true, 'MessageEndpointOut', [MessageStatusText::class, 'fromMixed']),
+            nextAttempt: \Svix\Utils::deserializeDt($data, 'nextAttempt', false, 'MessageEndpointOut'),
+            description: \Svix\Utils::deserializeString($data, 'description', true, 'MessageEndpointOut'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'MessageEndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'MessageEndpointOut'),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'MessageEndpointOut'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'MessageEndpointOut')
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'MessageEndpointOut'),
+            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'MessageEndpointOut'),
+            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'MessageEndpointOut'),
+            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'MessageEndpointOut'),
+            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'MessageEndpointOut'),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'MessageEndpointOut')
         );
     }
 

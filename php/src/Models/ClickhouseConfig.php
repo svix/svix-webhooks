@@ -10,17 +10,17 @@ class ClickhouseConfig implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null $database  The Clickhouse database to connect to
-     * @param string      $password  Password to access Clickhouse
-     * @param string      $tableName The Clickhouse table to write to
      * @param string      $url       The HTTP URL of the ClickHouse server (e.g. `https://my_clickhouse:8443`).
      * @param string      $username  Username to access Clickhouse
+     * @param string      $password  Password to access Clickhouse
+     * @param string|null $database  The Clickhouse database to connect to
+     * @param string      $tableName The Clickhouse table to write to
      */
     private function __construct(
-        public readonly string $password,
-        public readonly string $tableName,
         public readonly string $url,
         public readonly string $username,
+        public readonly string $password,
+        public readonly string $tableName,
         public readonly ?string $database = null,
         array $setFields = [],
     ) {
@@ -31,18 +31,18 @@ class ClickhouseConfig implements \JsonSerializable
      * Create an instance of ClickhouseConfig with required fields.
      */
     public static function create(
-        string $password,
-        string $tableName,
         string $url,
         string $username,
+        string $password,
+        string $tableName,
     ): self {
         return new self(
-            database: null,
-            password: $password,
-            tableName: $tableName,
             url: $url,
             username: $username,
-            setFields: ['password' => true, 'tableName' => true, 'url' => true, 'username' => true]
+            password: $password,
+            database: null,
+            tableName: $tableName,
+            setFields: ['url' => true, 'username' => true, 'password' => true, 'tableName' => true]
         );
     }
 
@@ -52,11 +52,11 @@ class ClickhouseConfig implements \JsonSerializable
         $setFields['database'] = true;
 
         return new self(
-            database: $database,
-            password: $this->password,
-            tableName: $this->tableName,
             url: $this->url,
             username: $this->username,
+            password: $this->password,
+            database: $database,
+            tableName: $this->tableName,
             setFields: $setFields
         );
     }
@@ -64,10 +64,10 @@ class ClickhouseConfig implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'password' => $this->password,
-            'tableName' => $this->tableName,
             'url' => $this->url,
-            'username' => $this->username];
+            'username' => $this->username,
+            'password' => $this->password,
+            'tableName' => $this->tableName];
 
         if (null !== $this->database) {
             $data['database'] = $this->database;
@@ -82,11 +82,11 @@ class ClickhouseConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            database: \Svix\Utils::deserializeString($data, 'database', false, 'ClickhouseConfig'),
-            password: \Svix\Utils::deserializeString($data, 'password', true, 'ClickhouseConfig'),
-            tableName: \Svix\Utils::deserializeString($data, 'tableName', true, 'ClickhouseConfig'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'ClickhouseConfig'),
-            username: \Svix\Utils::deserializeString($data, 'username', true, 'ClickhouseConfig')
+            username: \Svix\Utils::deserializeString($data, 'username', true, 'ClickhouseConfig'),
+            password: \Svix\Utils::deserializeString($data, 'password', true, 'ClickhouseConfig'),
+            database: \Svix\Utils::deserializeString($data, 'database', false, 'ClickhouseConfig'),
+            tableName: \Svix\Utils::deserializeString($data, 'tableName', true, 'ClickhouseConfig')
         );
     }
 

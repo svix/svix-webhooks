@@ -22,46 +22,18 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointIn {
-    @JsonProperty private Set<String> channels;
     @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> headers;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private String secret;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private String secret;
+    @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private Map<String, String> headers;
 
     public EndpointIn() {}
-
-    public EndpointIn channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public EndpointIn addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of message channels this endpoint listens to (omit for all).
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
 
     public EndpointIn description(String description) {
         this.description = description;
@@ -80,131 +52,6 @@ public class EndpointIn {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public EndpointIn disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public EndpointIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public EndpointIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
-
-    public EndpointIn headers(Map<String, String> headers) {
-        this.headers = headers;
-        return this;
-    }
-
-    public EndpointIn putHeadersItem(String key, String headersItem) {
-        if (this.headers == null) {
-            this.headers = new HashMap<>();
-        }
-        this.headers.put(key, headersItem);
-
-        return this;
-    }
-
-    /**
-     * Get headers
-     *
-     * @return headers
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
-    }
-
-    public EndpointIn metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public EndpointIn putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
-
-    public EndpointIn secret(String secret) {
-        this.secret = secret;
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
     }
 
     public EndpointIn throttleRate(Long throttleRate) {
@@ -264,6 +111,159 @@ public class EndpointIn {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public EndpointIn disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public EndpointIn filterTypes(Set<String> filterTypes) {
+        this.filterTypes = filterTypes;
+        return this;
+    }
+
+    public EndpointIn addFilterTypesItem(String filterTypesItem) {
+        if (this.filterTypes == null) {
+            this.filterTypes = new LinkedHashSet<>();
+        }
+        this.filterTypes.add(filterTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get filterTypes
+     *
+     * @return filterTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFilterTypes() {
+        return filterTypes;
+    }
+
+    public void setFilterTypes(Set<String> filterTypes) {
+        this.filterTypes = filterTypes;
+    }
+
+    public EndpointIn channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public EndpointIn addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
+        return this;
+    }
+
+    /**
+     * List of message channels this endpoint listens to (omit for all).
+     *
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
+
+    public EndpointIn secret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    /**
+     * The endpoint's verification secret.
+     *
+     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
+     * to not set this and let the server generate the secret.
+     *
+     * @return secret
+     */
+    @javax.annotation.Nullable
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public EndpointIn metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public EndpointIn putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+    }
+
+    public EndpointIn headers(Map<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public EndpointIn putHeadersItem(String key, String headersItem) {
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
+        this.headers.put(key, headersItem);
+
+        return this;
+    }
+
+    /**
+     * Get headers
+     *
+     * @return headers
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     /**

@@ -8,6 +8,29 @@ use super::{
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct MessageAttemptOut {
+    pub url: String,
+
+    pub response: String,
+
+    #[serde(rename = "responseStatusCode")]
+    pub response_status_code: i16,
+
+    /// Response duration in milliseconds.
+    #[serde(rename = "responseDurationMs")]
+    pub response_duration_ms: i32,
+
+    pub status: MessageStatus,
+
+    #[serde(rename = "statusText")]
+    pub status_text: MessageStatusText,
+
+    #[serde(rename = "triggerType")]
+    pub trigger_type: MessageAttemptTriggerType,
+
+    /// The Message's ID.
+    #[serde(rename = "msgId")]
+    pub msg_id: String,
+
     /// The Endpoint's ID.
     #[serde(rename = "endpointId")]
     pub endpoint_id: String,
@@ -15,62 +38,39 @@ pub struct MessageAttemptOut {
     /// The MessageAttempt's ID.
     pub id: String,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub msg: Option<MessageOut>,
-
-    /// The Message's ID.
-    #[serde(rename = "msgId")]
-    pub msg_id: String,
-
-    pub response: String,
-
-    /// Response duration in milliseconds.
-    #[serde(rename = "responseDurationMs")]
-    pub response_duration_ms: i32,
-
-    #[serde(rename = "responseStatusCode")]
-    pub response_status_code: i16,
-
-    pub status: MessageStatus,
-
-    #[serde(rename = "statusText")]
-    pub status_text: MessageStatusText,
-
     pub timestamp: String,
 
-    #[serde(rename = "triggerType")]
-    pub trigger_type: MessageAttemptTriggerType,
-
-    pub url: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub msg: Option<MessageOut>,
 }
 
 impl MessageAttemptOut {
     pub fn new(
-        endpoint_id: String,
-        id: String,
-        msg_id: String,
+        url: String,
         response: String,
-        response_duration_ms: i32,
         response_status_code: i16,
+        response_duration_ms: i32,
         status: MessageStatus,
         status_text: MessageStatusText,
-        timestamp: String,
         trigger_type: MessageAttemptTriggerType,
-        url: String,
+        msg_id: String,
+        endpoint_id: String,
+        id: String,
+        timestamp: String,
     ) -> Self {
         Self {
-            endpoint_id,
-            id,
-            msg: None,
-            msg_id,
+            url,
             response,
-            response_duration_ms,
             response_status_code,
+            response_duration_ms,
             status,
             status_text,
-            timestamp,
             trigger_type,
-            url,
+            msg_id,
+            endpoint_id,
+            id,
+            timestamp,
+            msg: None,
         }
     }
 }

@@ -154,21 +154,21 @@ pub enum EndpointCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"disabled\": false,
-    \"filterTypes\": [\"user.signup\",\"user.deleted\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"metadata\": {\"key\": \"...\"},
+    \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\"
+    \"url\": \"https://example.com/webhook/\",
+    \"disabled\": false,
+    \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         app_id: String,
@@ -188,32 +188,32 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
   \"description\": \"An example endpoint name\",
+  \"throttleRate\": 123,
+  \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
   \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"metadata\": {\"key\": \"...\"},
   \"headers\": {
     \"X-Example\": \"123\",
     \"X-Foobar\": \"Bar\"
-  },
-  \"metadata\": {\"key\": \"...\"},
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  }
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Create {
         app_id: String,
@@ -232,17 +232,17 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get {
         app_id: String,
@@ -259,27 +259,27 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
-  \"metadata\": {\"key\": \"...\"},
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Upsert {
         app_id: String,
@@ -310,27 +310,27 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"...\"],
   \"description\": \"...\",
+  \"throttleRate\": 123,
+  \"uid\": \"unique-identifier\",
+  \"url\": \"...\",
   \"disabled\": true,
   \"filterTypes\": [\"...\"],
-  \"metadata\": {\"key\": \"...\"},
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\",
-  \"url\": \"...\"
+  \"channels\": [\"...\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Patch {
         app_id: String,
@@ -370,8 +370,8 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"gracePeriodSeconds\": 123,
-  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"gracePeriodSeconds\": 123
 }\n")]
     RotateSecret {
         app_id: String,
@@ -433,11 +433,11 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"deleteHeaders\": [\"...\"],
   \"headers\": {
     \"X-Example\": \"123\",
     \"X-Foobar\": \"Bar\"
-  }
+  },
+  \"deleteHeaders\": [\"...\"]
 }\n")]
     PatchHeaders {
         app_id: String,
@@ -512,13 +512,13 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channel\": \"project_1337\",
-  \"eventTypes\": [\"...\"],
   \"since\": \"2030-01-01T00:00:00Z\",
-  \"status\": 0,
-  \"statusCodeClass\": 0,
+  \"until\": \"2030-01-01T00:00:00Z\",
+  \"eventTypes\": [\"...\"],
+  \"channel\": \"project_1337\",
   \"tag\": \"project_1337\",
-  \"until\": \"2030-01-01T00:00:00Z\"
+  \"status\": 0,
+  \"statusCodeClass\": 0
 }\n\nExample response:
 {
   \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
@@ -544,11 +544,11 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"canceled\": 123,
-  \"fail\": 123,
+  \"success\": 123,
   \"pending\": 123,
   \"sending\": 123,
-  \"success\": 123
+  \"fail\": 123,
+  \"canceled\": 123
 }\n")]
     GetStats {
         app_id: String,
@@ -612,18 +612,18 @@ pub enum EndpointCommands {
   \"exampleIndex\": 123
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"deliverAt\": \"2030-01-01T00:00:00Z\",
   \"eventId\": \"unique-identifier\",
   \"eventType\": \"user.signup\",
-  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"payload\": {
     \"email\": \"test@example.com\",
     \"type\": \"user.created\",
     \"username\": \"test_user\"
   },
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"timestamp\": \"2030-01-01T00:00:00Z\",
   \"tags\": [\"...\"],
-  \"timestamp\": \"2030-01-01T00:00:00Z\"
+  \"deliverAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     SendExample {
         app_id: String,

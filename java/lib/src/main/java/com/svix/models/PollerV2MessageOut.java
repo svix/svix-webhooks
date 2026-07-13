@@ -22,64 +22,64 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class PollerV2MessageOut {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime deliverAt;
+    @JsonProperty private Long offset;
+    @JsonProperty private Map<String, String> headers;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
-    @JsonProperty private Map<String, String> headers;
-    @JsonProperty private String id;
-    @JsonProperty private Long offset;
     @JsonProperty private Object payload;
-    @JsonProperty private Set<String> tags;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private String id;
     @JsonProperty private OffsetDateTime timestamp;
+    @JsonProperty private Set<String> tags;
+    @JsonProperty private OffsetDateTime deliverAt;
 
     public PollerV2MessageOut() {}
 
-    public PollerV2MessageOut channels(Set<String> channels) {
-        this.channels = channels;
+    public PollerV2MessageOut offset(Long offset) {
+        this.offset = offset;
         return this;
     }
 
-    public PollerV2MessageOut addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
+    /**
+     * Get offset
+     *
+     * @return offset
+     */
+    @javax.annotation.Nonnull
+    public Long getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Long offset) {
+        this.offset = offset;
+    }
+
+    public PollerV2MessageOut headers(Map<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public PollerV2MessageOut putHeadersItem(String key, String headersItem) {
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
         }
-        this.channels.add(channelsItem);
+        this.headers.put(key, headersItem);
 
         return this;
     }
 
     /**
-     * List of free-form identifiers that endpoints can filter by
+     * Get headers
      *
-     * @return channels
+     * @return headers
      */
     @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
-
-    public PollerV2MessageOut deliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
-        return this;
-    }
-
-    /**
-     * Get deliverAt
-     *
-     * @return deliverAt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getDeliverAt() {
-        return deliverAt;
-    }
-
-    public void setDeliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     public PollerV2MessageOut eventId(String eventId) {
@@ -120,32 +120,51 @@ public class PollerV2MessageOut {
         this.eventType = eventType;
     }
 
-    public PollerV2MessageOut headers(Map<String, String> headers) {
-        this.headers = headers;
+    public PollerV2MessageOut payload(Object payload) {
+        this.payload = payload;
         return this;
     }
 
-    public PollerV2MessageOut putHeadersItem(String key, String headersItem) {
-        if (this.headers == null) {
-            this.headers = new HashMap<>();
+    /**
+     * Get payload
+     *
+     * @return payload
+     */
+    @javax.annotation.Nonnull
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
+    }
+
+    public PollerV2MessageOut channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public PollerV2MessageOut addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
         }
-        this.headers.put(key, headersItem);
+        this.channels.add(channelsItem);
 
         return this;
     }
 
     /**
-     * Get headers
+     * List of free-form identifiers that endpoints can filter by
      *
-     * @return headers
+     * @return channels
      */
     @javax.annotation.Nullable
-    public Map<String, String> getHeaders() {
-        return headers;
+    public Set<String> getChannels() {
+        return channels;
     }
 
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
     }
 
     public PollerV2MessageOut id(String id) {
@@ -167,42 +186,23 @@ public class PollerV2MessageOut {
         this.id = id;
     }
 
-    public PollerV2MessageOut offset(Long offset) {
-        this.offset = offset;
+    public PollerV2MessageOut timestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
         return this;
     }
 
     /**
-     * Get offset
+     * Get timestamp
      *
-     * @return offset
+     * @return timestamp
      */
     @javax.annotation.Nonnull
-    public Long getOffset() {
-        return offset;
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setOffset(Long offset) {
-        this.offset = offset;
-    }
-
-    public PollerV2MessageOut payload(Object payload) {
-        this.payload = payload;
-        return this;
-    }
-
-    /**
-     * Get payload
-     *
-     * @return payload
-     */
-    @javax.annotation.Nonnull
-    public Object getPayload() {
-        return payload;
-    }
-
-    public void setPayload(Object payload) {
-        this.payload = payload;
+    public void setTimestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public PollerV2MessageOut tags(Set<String> tags) {
@@ -233,23 +233,23 @@ public class PollerV2MessageOut {
         this.tags = tags;
     }
 
-    public PollerV2MessageOut timestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+    public PollerV2MessageOut deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
         return this;
     }
 
     /**
-     * Get timestamp
+     * Get deliverAt
      *
-     * @return timestamp
+     * @return deliverAt
      */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
     }
 
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
     }
 
     /**

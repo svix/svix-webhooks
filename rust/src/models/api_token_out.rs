@@ -3,6 +3,13 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ApiTokenOut {
+    pub token: String,
+
+    pub id: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+
     #[serde(rename = "createdAt")]
     pub created_at: String,
 
@@ -10,26 +17,19 @@ pub struct ApiTokenOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_at: Option<String>,
 
-    pub id: String,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
-
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scopes: Option<Vec<String>>,
-
-    pub token: String,
 }
 
 impl ApiTokenOut {
-    pub fn new(created_at: String, id: String, token: String) -> Self {
+    pub fn new(token: String, id: String, created_at: String) -> Self {
         Self {
-            created_at,
-            expires_at: None,
+            token,
             id,
             name: None,
+            created_at,
+            expires_at: None,
             scopes: None,
-            token,
         }
     }
 }

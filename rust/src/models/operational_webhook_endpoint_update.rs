@@ -6,16 +6,6 @@ pub struct OperationalWebhookEndpointUpdate {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub disabled: Option<bool>,
-
-    #[serde(rename = "filterTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
     /// Maximum messages per second to send to this endpoint.
     ///
     /// Outgoing messages will be throttled to this rate.
@@ -28,18 +18,28 @@ pub struct OperationalWebhookEndpointUpdate {
     pub uid: Option<String>,
 
     pub url: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled: Option<bool>,
+
+    #[serde(rename = "filterTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter_types: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 }
 
 impl OperationalWebhookEndpointUpdate {
     pub fn new(url: String) -> Self {
         Self {
             description: None,
-            disabled: None,
-            filter_types: None,
-            metadata: None,
             throttle_rate: None,
             uid: None,
             url,
+            disabled: None,
+            filter_types: None,
+            metadata: None,
         }
     }
 }

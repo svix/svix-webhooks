@@ -298,35 +298,35 @@ pub enum MessageAttemptCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
+    \"url\": \"https://example.com/webhook/\",
+    \"response\": \"{}\",
+    \"responseStatusCode\": 200,
+    \"responseDurationMs\": 123,
+    \"status\": 0,
+    \"statusText\": \"success\",
+    \"triggerType\": 0,
+    \"msgId\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"endpointId\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"id\": \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"msg\": {
-      \"channels\": [\"project_123\",\"group_2\"],
-      \"deliverAt\": \"2030-01-01T00:00:00Z\",
       \"eventId\": \"unique-identifier\",
       \"eventType\": \"user.signup\",
-      \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
       \"payload\": {
         \"email\": \"test@example.com\",
         \"type\": \"user.created\",
         \"username\": \"test_user\"
       },
+      \"channels\": [\"project_123\",\"group_2\"],
+      \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+      \"timestamp\": \"2030-01-01T00:00:00Z\",
       \"tags\": [\"...\"],
-      \"timestamp\": \"2030-01-01T00:00:00Z\"
-    },
-    \"msgId\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"response\": \"{}\",
-    \"responseDurationMs\": 123,
-    \"responseStatusCode\": 200,
-    \"status\": 0,
-    \"statusText\": \"success\",
-    \"timestamp\": \"2030-01-01T00:00:00Z\",
-    \"triggerType\": 0,
-    \"url\": \"https://example.com/webhook/\"
+      \"deliverAt\": \"2030-01-01T00:00:00Z\"
+    }
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     ListByEndpoint {
         app_id: String,
@@ -351,35 +351,35 @@ pub enum MessageAttemptCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
+    \"url\": \"https://example.com/webhook/\",
+    \"response\": \"{}\",
+    \"responseStatusCode\": 200,
+    \"responseDurationMs\": 123,
+    \"status\": 0,
+    \"statusText\": \"success\",
+    \"triggerType\": 0,
+    \"msgId\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"endpointId\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"id\": \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"msg\": {
-      \"channels\": [\"project_123\",\"group_2\"],
-      \"deliverAt\": \"2030-01-01T00:00:00Z\",
       \"eventId\": \"unique-identifier\",
       \"eventType\": \"user.signup\",
-      \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
       \"payload\": {
         \"email\": \"test@example.com\",
         \"type\": \"user.created\",
         \"username\": \"test_user\"
       },
+      \"channels\": [\"project_123\",\"group_2\"],
+      \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+      \"timestamp\": \"2030-01-01T00:00:00Z\",
       \"tags\": [\"...\"],
-      \"timestamp\": \"2030-01-01T00:00:00Z\"
-    },
-    \"msgId\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"response\": \"{}\",
-    \"responseDurationMs\": 123,
-    \"responseStatusCode\": 200,
-    \"status\": 0,
-    \"statusText\": \"success\",
-    \"timestamp\": \"2030-01-01T00:00:00Z\",
-    \"triggerType\": 0,
-    \"url\": \"https://example.com/webhook/\"
+      \"deliverAt\": \"2030-01-01T00:00:00Z\"
+    }
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     ListByMsg {
         app_id: String,
@@ -407,25 +407,25 @@ pub enum MessageAttemptCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
+    \"status\": 0,
+    \"statusText\": \"success\",
+    \"nextAttempt\": \"2030-01-01T00:00:00Z\",
     \"eventId\": \"unique-identifier\",
     \"eventType\": \"user.signup\",
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"nextAttempt\": \"2030-01-01T00:00:00Z\",
     \"payload\": {
       \"email\": \"test@example.com\",
       \"type\": \"user.created\",
       \"username\": \"test_user\"
     },
-    \"status\": 0,
-    \"statusText\": \"success\",
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     ListAttemptedMessages {
         app_id: String,
@@ -448,23 +448,23 @@ pub enum MessageAttemptCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"disabled\": false,
-    \"filterTypes\": [\"user.signup\",\"user.deleted\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"nextAttempt\": \"2030-01-01T00:00:00Z\",
     \"status\": 0,
     \"statusText\": \"success\",
+    \"nextAttempt\": \"2030-01-01T00:00:00Z\",
+    \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\"
+    \"url\": \"https://example.com/webhook/\",
+    \"disabled\": false,
+    \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     ListAttemptedDestinations {
         app_id: String,
@@ -483,31 +483,31 @@ pub enum MessageAttemptCommands {
         ))]
     #[command(after_help = "Example response:
 {
+  \"url\": \"https://example.com/webhook/\",
+  \"response\": \"{}\",
+  \"responseStatusCode\": 200,
+  \"responseDurationMs\": 123,
+  \"status\": 0,
+  \"statusText\": \"success\",
+  \"triggerType\": 0,
+  \"msgId\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"endpointId\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"id\": \"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"timestamp\": \"2030-01-01T00:00:00Z\",
   \"msg\": {
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
     \"eventId\": \"unique-identifier\",
     \"eventType\": \"user.signup\",
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"payload\": {
       \"email\": \"test@example.com\",
       \"type\": \"user.created\",
       \"username\": \"test_user\"
     },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
-  },
-  \"msgId\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"response\": \"{}\",
-  \"responseDurationMs\": 123,
-  \"responseStatusCode\": 200,
-  \"status\": 0,
-  \"statusText\": \"success\",
-  \"timestamp\": \"2030-01-01T00:00:00Z\",
-  \"triggerType\": 0,
-  \"url\": \"https://example.com/webhook/\"
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
+  }
 }\n")]
     Get {
         app_id: String,

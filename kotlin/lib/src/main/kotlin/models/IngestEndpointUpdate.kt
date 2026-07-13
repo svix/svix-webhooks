@@ -6,8 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IngestEndpointUpdate(
     val description: String? = null,
-    val disabled: Boolean? = null,
-    val metadata: Map<String, String>? = null,
     /**
      * Maximum messages per second to send to this endpoint.
      *
@@ -17,4 +15,6 @@ data class IngestEndpointUpdate(
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
+    val disabled: Boolean? = null,
+    val metadata: Map<String, String>? = null,
 )
