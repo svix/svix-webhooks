@@ -29,12 +29,12 @@ class OperationalWebhookEndpoint
      * @throws ApiException
      */
     public function list(
-        ?OperationalWebhookEndpointListOptions $options = null,
+        OperationalWebhookEndpointListOptions $options = new OperationalWebhookEndpointListOptions(),
     ): ListResponseOperationalWebhookEndpointOut {
         $request = $this->client->newReq('GET', '/api/v1/operational-webhook/endpoint');
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseOperationalWebhookEndpointOut::fromJson($res);
@@ -47,10 +47,10 @@ class OperationalWebhookEndpoint
      */
     public function create(
         OperationalWebhookEndpointIn $operationalWebhookEndpointIn,
-        ?OperationalWebhookEndpointCreateOptions $options = null,
+        OperationalWebhookEndpointCreateOptions $options = new OperationalWebhookEndpointCreateOptions(),
     ): OperationalWebhookEndpointOut {
         $request = $this->client->newReq('POST', '/api/v1/operational-webhook/endpoint');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointIn));
         $res = $this->client->send($request);
 
@@ -126,10 +126,10 @@ class OperationalWebhookEndpoint
     public function rotateSecret(
         string $endpointId,
         OperationalWebhookEndpointSecretIn $operationalWebhookEndpointSecretIn,
-        ?OperationalWebhookEndpointRotateSecretOptions $options = null,
+        OperationalWebhookEndpointRotateSecretOptions $options = new OperationalWebhookEndpointRotateSecretOptions(),
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/operational-webhook/endpoint/{$endpointId}/secret/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointSecretIn));
         $res = $this->client->sendNoResponseBody($request);
     }

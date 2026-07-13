@@ -30,10 +30,10 @@ class Ingest
     public function dashboard(
         string $sourceId,
         IngestSourceConsumerPortalAccessIn $ingestSourceConsumerPortalAccessIn,
-        ?IngestDashboardOptions $options = null,
+        IngestDashboardOptions $options = new IngestDashboardOptions(),
     ): DashboardAccessOut {
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/dashboard");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($ingestSourceConsumerPortalAccessIn));
         $res = $this->client->send($request);
 

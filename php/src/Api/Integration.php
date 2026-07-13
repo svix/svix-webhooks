@@ -27,12 +27,12 @@ class Integration
      */
     public function list(
         string $appId,
-        ?IntegrationListOptions $options = null,
+        IntegrationListOptions $options = new IntegrationListOptions(),
     ): ListResponseIntegrationOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/integration");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseIntegrationOut::fromJson($res);
@@ -46,10 +46,10 @@ class Integration
     public function create(
         string $appId,
         IntegrationIn $integrationIn,
-        ?IntegrationCreateOptions $options = null,
+        IntegrationCreateOptions $options = new IntegrationCreateOptions(),
     ): IntegrationOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/integration");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($integrationIn));
         $res = $this->client->send($request);
 
@@ -109,10 +109,10 @@ class Integration
     public function rotateKey(
         string $appId,
         string $integId,
-        ?IntegrationRotateKeyOptions $options = null,
+        IntegrationRotateKeyOptions $options = new IntegrationRotateKeyOptions(),
     ): IntegrationKeyOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/integration/{$integId}/key/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->send($request);
 
         return IntegrationKeyOut::fromJson($res);

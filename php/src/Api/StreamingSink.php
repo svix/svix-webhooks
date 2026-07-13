@@ -30,12 +30,12 @@ class StreamingSink
      */
     public function list(
         string $streamId,
-        ?StreamingSinkListOptions $options = null,
+        StreamingSinkListOptions $options = new StreamingSinkListOptions(),
     ): ListResponseStreamSinkOut {
         $request = $this->client->newReq('GET', "/api/v1/stream/{$streamId}/sink");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseStreamSinkOut::fromJson($res);
@@ -49,10 +49,10 @@ class StreamingSink
     public function create(
         string $streamId,
         StreamSinkIn $streamSinkIn,
-        ?StreamingSinkCreateOptions $options = null,
+        StreamingSinkCreateOptions $options = new StreamingSinkCreateOptions(),
     ): StreamSinkOut {
         $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/sink");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($streamSinkIn));
         $res = $this->client->send($request);
 
@@ -166,10 +166,10 @@ class StreamingSink
         string $streamId,
         string $sinkId,
         EndpointSecretRotateIn $endpointSecretRotateIn,
-        ?StreamingSinkRotateSecretOptions $options = null,
+        StreamingSinkRotateSecretOptions $options = new StreamingSinkRotateSecretOptions(),
     ): EmptyResponse {
         $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/sink/{$sinkId}/secret/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($endpointSecretRotateIn));
         $res = $this->client->send($request);
 
