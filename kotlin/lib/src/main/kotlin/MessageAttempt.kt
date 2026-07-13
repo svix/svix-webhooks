@@ -8,7 +8,7 @@ import com.svix.kotlin.models.ListResponseMessageEndpointOut
 import com.svix.kotlin.models.MessageAttemptOut
 import com.svix.kotlin.models.MessageStatus
 import com.svix.kotlin.models.StatusCodeClass
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import okhttp3.Headers
 
 data class MessageAttemptListByEndpointOptions(

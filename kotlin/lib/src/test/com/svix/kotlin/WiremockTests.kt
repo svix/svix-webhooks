@@ -7,9 +7,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.svix.kotlin.SvixOptions
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.models.*
+import kotlin.time.Instant
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
 import org.junit.jupiter.api.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

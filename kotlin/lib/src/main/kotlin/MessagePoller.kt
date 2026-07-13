@@ -4,7 +4,7 @@ package com.svix.kotlin
 import com.svix.kotlin.models.PollingEndpointConsumerSeekIn
 import com.svix.kotlin.models.PollingEndpointConsumerSeekOut
 import com.svix.kotlin.models.PollingEndpointOut
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import okhttp3.Headers
 
 data class MessagePollerPollOptions(

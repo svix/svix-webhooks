@@ -8,7 +8,7 @@ import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 import com.svix.kotlin.models.MessagePrecheckIn
 import com.svix.kotlin.models.MessagePrecheckOut
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject

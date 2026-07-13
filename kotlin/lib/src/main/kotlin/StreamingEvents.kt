@@ -4,7 +4,7 @@ package com.svix.kotlin
 import com.svix.kotlin.models.CreateStreamEventsIn
 import com.svix.kotlin.models.CreateStreamEventsOut
 import com.svix.kotlin.models.EventStreamOut
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import okhttp3.Headers
 
 data class StreamingEventsGetOptions(
