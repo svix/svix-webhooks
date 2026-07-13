@@ -25,13 +25,13 @@ class StreamingEventType
      * @throws ApiException
      */
     public function list(
-        ?StreamingEventTypeListOptions $options = null,
+        StreamingEventTypeListOptions $options = new StreamingEventTypeListOptions(),
     ): ListResponseStreamEventTypeOut {
         $request = $this->client->newReq('GET', '/api/v1/stream/event-type');
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
-        $request->setQueryParam('include_archived', $options?->includeArchived);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
+        $request->setQueryParam('include_archived', $options->includeArchived);
         $res = $this->client->send($request);
 
         return ListResponseStreamEventTypeOut::fromJson($res);
@@ -44,10 +44,10 @@ class StreamingEventType
      */
     public function create(
         StreamEventTypeIn $streamEventTypeIn,
-        ?StreamingEventTypeCreateOptions $options = null,
+        StreamingEventTypeCreateOptions $options = new StreamingEventTypeCreateOptions(),
     ): StreamEventTypeOut {
         $request = $this->client->newReq('POST', '/api/v1/stream/event-type');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($streamEventTypeIn));
         $res = $this->client->send($request);
 
@@ -91,10 +91,10 @@ class StreamingEventType
      */
     public function delete(
         string $name,
-        ?StreamingEventTypeDeleteOptions $options = null,
+        StreamingEventTypeDeleteOptions $options = new StreamingEventTypeDeleteOptions(),
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/stream/event-type/{$name}");
-        $request->setQueryParam('expunge', $options?->expunge);
+        $request->setQueryParam('expunge', $options->expunge);
         $res = $this->client->sendNoResponseBody($request);
     }
 

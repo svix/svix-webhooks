@@ -30,10 +30,10 @@ class Authentication
     public function appPortalAccess(
         string $appId,
         AppPortalAccessIn $appPortalAccessIn,
-        ?AuthenticationAppPortalAccessOptions $options = null,
+        AuthenticationAppPortalAccessOptions $options = new AuthenticationAppPortalAccessOptions(),
     ): AppPortalAccessOut {
         $request = $this->client->newReq('POST', "/api/v1/auth/app-portal-access/{$appId}");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($appPortalAccessIn));
         $res = $this->client->send($request);
 
@@ -48,10 +48,10 @@ class Authentication
      * @throws ApiException
      */
     public function logout(
-        ?AuthenticationLogoutOptions $options = null,
+        AuthenticationLogoutOptions $options = new AuthenticationLogoutOptions(),
     ): void {
         $request = $this->client->newReq('POST', '/api/v1/auth/logout');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->sendNoResponseBody($request);
     }
 
@@ -63,10 +63,10 @@ class Authentication
     public function expireAll(
         string $appId,
         ApplicationTokenExpireIn $applicationTokenExpireIn,
-        ?AuthenticationExpireAllOptions $options = null,
+        AuthenticationExpireAllOptions $options = new AuthenticationExpireAllOptions(),
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/auth/app/{$appId}/expire-all");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($applicationTokenExpireIn));
         $res = $this->client->sendNoResponseBody($request);
     }
@@ -79,10 +79,10 @@ class Authentication
     public function streamPortalAccess(
         string $streamId,
         StreamPortalAccessIn $streamPortalAccessIn,
-        ?AuthenticationStreamPortalAccessOptions $options = null,
+        AuthenticationStreamPortalAccessOptions $options = new AuthenticationStreamPortalAccessOptions(),
     ): AppPortalAccessOut {
         $request = $this->client->newReq('POST', "/api/v1/auth/stream-portal-access/{$streamId}");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($streamPortalAccessIn));
         $res = $this->client->send($request);
 
@@ -97,10 +97,10 @@ class Authentication
      * @throws ApiException
      */
     public function streamLogout(
-        ?AuthenticationStreamLogoutOptions $options = null,
+        AuthenticationStreamLogoutOptions $options = new AuthenticationStreamLogoutOptions(),
     ): void {
         $request = $this->client->newReq('POST', '/api/v1/auth/stream-logout');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->sendNoResponseBody($request);
     }
 
@@ -112,10 +112,10 @@ class Authentication
     public function streamExpireAll(
         string $streamId,
         StreamTokenExpireIn $streamTokenExpireIn,
-        ?AuthenticationStreamExpireAllOptions $options = null,
+        AuthenticationStreamExpireAllOptions $options = new AuthenticationStreamExpireAllOptions(),
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/auth/stream/{$streamId}/expire-all");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($streamTokenExpireIn));
         $res = $this->client->sendNoResponseBody($request);
     }
@@ -129,10 +129,10 @@ class Authentication
         string $streamId,
         string $sinkId,
         RotatePollerTokenIn $rotatePollerTokenIn,
-        ?AuthenticationRotateStreamPollerTokenOptions $options = null,
+        AuthenticationRotateStreamPollerTokenOptions $options = new AuthenticationRotateStreamPollerTokenOptions(),
     ): ApiTokenOut {
         $request = $this->client->newReq('POST', "/api/v1/auth/stream/{$streamId}/sink/{$sinkId}/poller/token/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($rotatePollerTokenIn));
         $res = $this->client->send($request);
 

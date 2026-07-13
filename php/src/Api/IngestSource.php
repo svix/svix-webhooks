@@ -28,10 +28,10 @@ class IngestSource
      */
     public function rotateToken(
         string $sourceId,
-        ?IngestSourceRotateTokenOptions $options = null,
+        IngestSourceRotateTokenOptions $options = new IngestSourceRotateTokenOptions(),
     ): RotateTokenOut {
         $request = $this->client->newReq('POST', "/ingest/api/v1/source/{$sourceId}/token/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->send($request);
 
         return RotateTokenOut::fromJson($res);

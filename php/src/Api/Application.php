@@ -25,15 +25,15 @@ class Application
      * @throws ApiException
      */
     public function list(
-        ?ApplicationListOptions $options = null,
+        ApplicationListOptions $options = new ApplicationListOptions(),
     ): ListResponseApplicationOut {
         $request = $this->client->newReq('GET', '/api/v1/app');
-        $request->setQueryParam('exclude_apps_with_no_endpoints', $options?->excludeAppsWithNoEndpoints);
-        $request->setQueryParam('exclude_apps_with_disabled_endpoints', $options?->excludeAppsWithDisabledEndpoints);
-        $request->setQueryParam('exclude_apps_with_svix_play_endpoints', $options?->excludeAppsWithSvixPlayEndpoints);
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('exclude_apps_with_no_endpoints', $options->excludeAppsWithNoEndpoints);
+        $request->setQueryParam('exclude_apps_with_disabled_endpoints', $options->excludeAppsWithDisabledEndpoints);
+        $request->setQueryParam('exclude_apps_with_svix_play_endpoints', $options->excludeAppsWithSvixPlayEndpoints);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseApplicationOut::fromJson($res);
@@ -46,10 +46,10 @@ class Application
      */
     public function create(
         ApplicationIn $applicationIn,
-        ?ApplicationCreateOptions $options = null,
+        ApplicationCreateOptions $options = new ApplicationCreateOptions(),
     ): ApplicationOut {
         $request = $this->client->newReq('POST', '/api/v1/app');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($applicationIn));
         $res = $this->client->send($request);
 
@@ -63,12 +63,10 @@ class Application
      */
     public function getOrCreate(
         ApplicationIn $applicationIn,
-        ?ApplicationCreateOptions $options = null,
+        ApplicationCreateOptions $options = new ApplicationCreateOptions(),
     ): ApplicationOut {
         $request = $this->client->newReq('POST', '/api/v1/app');
-        if (null !== $options) {
-            $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
-        }
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setQueryParam('get_if_exists', 'true');
         $request->setBody(json_encode($applicationIn));
         $res = $this->client->send($request);
