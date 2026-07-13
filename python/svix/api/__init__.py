@@ -329,13 +329,12 @@ from .streaming_stream import (
     StreamingStreamCreateOptions,
     StreamingStreamListOptions,
 )
-from .svix import DEFAULT_SERVER_URL, Svix, SvixAsync, SvixOptions
+from .svix import Svix, SvixAsync, SvixOptions
 
 __all__ = [
     "Svix",
     "SvixAsync",
     "SvixOptions",
-    "DEFAULT_SERVER_URL",
     "Application",
     "ApplicationAsync",
     "ApplicationListOptions",
