@@ -10,14 +10,14 @@ import org.junit.Test;
 public class ModelTests {
   @Test
   public void toJsonWorks() throws JsonProcessingException {
-    DashboardAccessOut model = new DashboardAccessOut().token("asd");
+    AppPortalAccessOut model = new AppPortalAccessOut().token("asd");
     assertEquals("{\"token\":\"asd\"}", model.toJson());
   }
 
   @Test
   public void fromJsonWorks() throws JsonProcessingException {
-    DashboardAccessOut expectedModel = new DashboardAccessOut().token("asd");
-    DashboardAccessOut model = DashboardAccessOut.fromJson("{\"token\":\"asd\"}");
+    AppPortalAccessOut expectedModel = new AppPortalAccessOut().token("asd");
+    AppPortalAccessOut model = AppPortalAccessOut.fromJson("{\"token\":\"asd\"}");
     assertEquals(expectedModel, model);
   }
 
