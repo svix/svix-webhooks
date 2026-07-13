@@ -28,12 +28,12 @@ class StreamingEvents
     public function get(
         string $streamId,
         string $sinkId,
-        ?StreamingEventsGetOptions $options = null,
+        StreamingEventsGetOptions $options = new StreamingEventsGetOptions(),
     ): EventStreamOut {
         $request = $this->client->newReq('GET', "/api/v1/stream/{$streamId}/sink/{$sinkId}/events");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('after', $options?->after);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('after', $options->after);
         $res = $this->client->send($request);
 
         return EventStreamOut::fromJson($res);
@@ -47,10 +47,10 @@ class StreamingEvents
     public function create(
         string $streamId,
         CreateStreamEventsIn $createStreamEventsIn,
-        ?StreamingEventsCreateOptions $options = null,
+        StreamingEventsCreateOptions $options = new StreamingEventsCreateOptions(),
     ): CreateStreamEventsOut {
         $request = $this->client->newReq('POST', "/api/v1/stream/{$streamId}/events");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($createStreamEventsIn));
         $res = $this->client->send($request);
 

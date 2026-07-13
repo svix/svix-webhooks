@@ -25,12 +25,12 @@ class StreamingStream
      * @throws ApiException
      */
     public function list(
-        ?StreamingStreamListOptions $options = null,
+        StreamingStreamListOptions $options = new StreamingStreamListOptions(),
     ): ListResponseStreamOut {
         $request = $this->client->newReq('GET', '/api/v1/stream');
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseStreamOut::fromJson($res);
@@ -43,10 +43,10 @@ class StreamingStream
      */
     public function create(
         StreamIn $streamIn,
-        ?StreamingStreamCreateOptions $options = null,
+        StreamingStreamCreateOptions $options = new StreamingStreamCreateOptions(),
     ): StreamOut {
         $request = $this->client->newReq('POST', '/api/v1/stream');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($streamIn));
         $res = $this->client->send($request);
 

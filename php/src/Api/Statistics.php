@@ -80,10 +80,10 @@ class Statistics
      */
     public function aggregateAppStats(
         AppUsageStatsIn $appUsageStatsIn,
-        ?StatisticsAggregateAppStatsOptions $options = null,
+        StatisticsAggregateAppStatsOptions $options = new StatisticsAggregateAppStatsOptions(),
     ): AppUsageStatsOut {
         $request = $this->client->newReq('POST', '/api/v1/stats/usage/app');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($appUsageStatsIn));
         $res = $this->client->send($request);
 

@@ -43,12 +43,12 @@ class Endpoint
      */
     public function list(
         string $appId,
-        ?EndpointListOptions $options = null,
+        EndpointListOptions $options = new EndpointListOptions(),
     ): ListResponseEndpointOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseEndpointOut::fromJson($res);
@@ -64,10 +64,10 @@ class Endpoint
     public function create(
         string $appId,
         EndpointIn $endpointIn,
-        ?EndpointCreateOptions $options = null,
+        EndpointCreateOptions $options = new EndpointCreateOptions(),
     ): EndpointOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($endpointIn));
         $res = $this->client->send($request);
 
@@ -165,10 +165,10 @@ class Endpoint
         string $appId,
         string $endpointId,
         EndpointSecretRotateIn $endpointSecretRotateIn,
-        ?EndpointRotateSecretOptions $options = null,
+        EndpointRotateSecretOptions $options = new EndpointRotateSecretOptions(),
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($endpointSecretRotateIn));
         $res = $this->client->sendNoResponseBody($request);
     }
@@ -272,10 +272,10 @@ class Endpoint
         string $appId,
         string $endpointId,
         ReplayIn $replayIn,
-        ?EndpointReplayMissingOptions $options = null,
+        EndpointReplayMissingOptions $options = new EndpointReplayMissingOptions(),
     ): ReplayOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/replay-missing");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($replayIn));
         $res = $this->client->send($request);
 
@@ -306,10 +306,10 @@ class Endpoint
         string $appId,
         string $endpointId,
         BulkReplayIn $bulkReplayIn,
-        ?EndpointBulkReplayOptions $options = null,
+        EndpointBulkReplayOptions $options = new EndpointBulkReplayOptions(),
     ): ReplayOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/bulk-replay");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($bulkReplayIn));
         $res = $this->client->send($request);
 
@@ -324,11 +324,11 @@ class Endpoint
     public function getStats(
         string $appId,
         string $endpointId,
-        ?EndpointGetStatsOptions $options = null,
+        EndpointGetStatsOptions $options = new EndpointGetStatsOptions(),
     ): EndpointStats {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/stats");
-        $request->setQueryParam('since', $options?->since);
-        $request->setQueryParam('until', $options?->until);
+        $request->setQueryParam('since', $options->since);
+        $request->setQueryParam('until', $options->until);
         $res = $this->client->send($request);
 
         return EndpointStats::fromJson($res);
@@ -357,10 +357,10 @@ class Endpoint
         string $appId,
         string $endpointId,
         RecoverIn $recoverIn,
-        ?EndpointRecoverOptions $options = null,
+        EndpointRecoverOptions $options = new EndpointRecoverOptions(),
     ): RecoverOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/recover");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($recoverIn));
         $res = $this->client->send($request);
 
@@ -376,10 +376,10 @@ class Endpoint
         string $appId,
         string $endpointId,
         EventExampleIn $eventExampleIn,
-        ?EndpointSendExampleOptions $options = null,
+        EndpointSendExampleOptions $options = new EndpointSendExampleOptions(),
     ): MessageOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/send-example");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($eventExampleIn));
         $res = $this->client->send($request);
 
