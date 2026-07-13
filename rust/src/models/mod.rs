@@ -223,6 +223,7 @@ mod zoom_config_out;
 // not currently generated
 mod http_error_out;
 mod http_validation_error;
+#[cfg(feature = "svix_beta")]
 mod message_events_out;
 mod validation_error;
 
@@ -449,7 +450,9 @@ pub use self::{
 };
 
 // not currently generated
+#[cfg(feature = "svix_beta")]
+pub use self::message_events_out::MessageEventsOut;
 pub use self::{
     http_error_out::HttpErrorOut, http_validation_error::HttpValidationError,
-    message_events_out::MessageEventsOut, validation_error::ValidationError,
+    validation_error::ValidationError,
 };
