@@ -10,7 +10,7 @@ import com.svix.models.IngestEndpointIn;
 import com.svix.models.IngestEndpointOut;
 import com.svix.models.IngestEndpointSecretIn;
 import com.svix.models.IngestEndpointSecretOut;
-import com.svix.models.IngestEndpointUpdate;
+import com.svix.models.IngestEndpointUpsertIn;
 import com.svix.models.ListResponseIngestEndpointOut;
 
 import lombok.Getter;
@@ -104,7 +104,7 @@ public class IngestEndpoint {
     public IngestEndpointOut upsert(
             final String sourceId,
             final String endpointId,
-            final IngestEndpointUpdate ingestEndpointUpdate)
+            final IngestEndpointUpsertIn ingestEndpointUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
@@ -114,7 +114,7 @@ public class IngestEndpoint {
                                         "/ingest/api/v1/source/%s/endpoint/%s",
                                         sourceId, endpointId));
         return this.client.executeRequest(
-                "PUT", url.build(), null, ingestEndpointUpdate, IngestEndpointOut.class);
+                "PUT", url.build(), null, ingestEndpointUpsertIn, IngestEndpointOut.class);
     }
 
     /** Delete an ingest endpoint. */

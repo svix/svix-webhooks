@@ -206,7 +206,7 @@ pub enum ConnectorCommands {
 }\n")]
     Upsert {
         id: String,
-        connector_update: crate::json::JsonOf<ConnectorUpdate>,
+        connector_upsert_in: crate::json::JsonOf<ConnectorUpsertIn>,
     },
     /// Delete a connector.
     #[command(help_template = concat!(
@@ -288,11 +288,11 @@ impl ConnectorCommands {
             }
             Self::Upsert {
                 id,
-                connector_update,
+                connector_upsert_in,
             } => {
                 let resp = client
                     .connector()
-                    .upsert(id, connector_update.into_inner())
+                    .upsert(id, connector_upsert_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

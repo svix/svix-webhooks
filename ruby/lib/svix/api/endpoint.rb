@@ -46,11 +46,11 @@ module Svix
       EndpointOut.deserialize(res)
     end
 
-    def upsert(app_id, endpoint_id, endpoint_update)
+    def upsert(app_id, endpoint_id, endpoint_upsert_in)
       res = @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
-        body: endpoint_update
+        body: endpoint_upsert_in
       )
       EndpointOut.deserialize(res)
     end

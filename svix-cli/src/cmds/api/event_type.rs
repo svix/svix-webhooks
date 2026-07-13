@@ -412,7 +412,7 @@ pub enum EventTypeCommands {
 }\n")]
     Upsert {
         event_type_name: String,
-        event_type_update: crate::json::JsonOf<EventTypeUpdate>,
+        event_type_upsert_in: crate::json::JsonOf<EventTypeUpsertIn>,
     },
     /// Archive an event type.
     ///
@@ -543,11 +543,11 @@ impl EventTypeCommands {
             }
             Self::Upsert {
                 event_type_name,
-                event_type_update,
+                event_type_upsert_in,
             } => {
                 let resp = client
                     .event_type()
-                    .upsert(event_type_name, event_type_update.into_inner())
+                    .upsert(event_type_name, event_type_upsert_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

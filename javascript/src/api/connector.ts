@@ -5,9 +5,9 @@ import { type ConnectorOut, ConnectorOutSerializer } from "../models/connectorOu
 import { type ConnectorPatch, ConnectorPatchSerializer } from "../models/connectorPatch";
 import type { ConnectorProduct } from "../models/connectorProduct";
 import {
-  type ConnectorUpdate,
-  ConnectorUpdateSerializer,
-} from "../models/connectorUpdate";
+  type ConnectorUpsertIn,
+  ConnectorUpsertInSerializer,
+} from "../models/connectorUpsertIn";
 import {
   type ListResponseConnectorOut,
   ListResponseConnectorOutSerializer,
@@ -74,12 +74,12 @@ export class Connector {
   /** Create or update a connector. */
   public async upsert(
     connectorId: string,
-    connectorUpdate: ConnectorUpdate
+    connectorUpsertIn: ConnectorUpsertIn
   ): Promise<ConnectorOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/connector/{connector_id}");
 
     request.setPathParam("connector_id", connectorId);
-    request.setBody(ConnectorUpdateSerializer._toJsonObject(connectorUpdate));
+    request.setBody(ConnectorUpsertInSerializer._toJsonObject(connectorUpsertIn));
 
     return await request.send(this.requestCtx, ConnectorOutSerializer._fromJsonObject);
   }

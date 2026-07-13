@@ -77,11 +77,11 @@ impl<'a> Connector<'a> {
     pub async fn upsert(
         &self,
         connector_id: String,
-        connector_update: ConnectorUpdate,
+        connector_upsert_in: ConnectorUpsertIn,
     ) -> Result<ConnectorOut> {
         crate::request::Request::new(http::Method::PUT, "/api/v1/connector/{connector_id}")
             .with_path_param("connector_id", connector_id)
-            .with_body_param(connector_update)
+            .with_body_param(connector_upsert_in)
             .execute(self.cfg)
             .await
     }

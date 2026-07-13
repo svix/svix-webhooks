@@ -334,12 +334,12 @@ namespace Svix
         /// </summary>
         public async Task<EventTypeOut> UpsertAsync(
             string eventTypeName,
-            EventTypeUpdate eventTypeUpdate,
+            EventTypeUpsertIn eventTypeUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            eventTypeUpdate =
-                eventTypeUpdate ?? throw new ArgumentNullException(nameof(eventTypeUpdate));
+            eventTypeUpsertIn =
+                eventTypeUpsertIn ?? throw new ArgumentNullException(nameof(eventTypeUpsertIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
@@ -349,7 +349,7 @@ namespace Svix
                     {
                         { "event_type_name", eventTypeName },
                     },
-                    content: eventTypeUpdate,
+                    content: eventTypeUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -365,10 +365,10 @@ namespace Svix
         /// <summary>
         /// Create or update an event type.
         /// </summary>
-        public EventTypeOut Upsert(string eventTypeName, EventTypeUpdate eventTypeUpdate)
+        public EventTypeOut Upsert(string eventTypeName, EventTypeUpsertIn eventTypeUpsertIn)
         {
-            eventTypeUpdate =
-                eventTypeUpdate ?? throw new ArgumentNullException(nameof(eventTypeUpdate));
+            eventTypeUpsertIn =
+                eventTypeUpsertIn ?? throw new ArgumentNullException(nameof(eventTypeUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EventTypeOut>(
@@ -378,7 +378,7 @@ namespace Svix
                     {
                         { "event_type_name", eventTypeName },
                     },
-                    content: eventTypeUpdate
+                    content: eventTypeUpsertIn
                 );
                 return response.Data;
             }

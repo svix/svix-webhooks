@@ -114,12 +114,12 @@ func (connector Connector) Get(
 func (connector Connector) Upsert(
 	ctx context.Context,
 	connectorId string,
-	connectorUpdate models.ConnectorUpdate,
+	connectorUpsertIn models.ConnectorUpsertIn,
 ) (*models.ConnectorOut, error) {
 	pathMap := map[string]string{
 		"connector_id": connectorId,
 	}
-	return internal.ExecuteRequest[models.ConnectorUpdate, models.ConnectorOut](
+	return internal.ExecuteRequest[models.ConnectorUpsertIn, models.ConnectorOut](
 		ctx,
 		connector.client,
 		"PUT",
@@ -127,7 +127,7 @@ func (connector Connector) Upsert(
 		pathMap,
 		nil,
 		nil,
-		&connectorUpdate,
+		&connectorUpsertIn,
 	)
 }
 

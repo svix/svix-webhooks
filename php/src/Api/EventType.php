@@ -11,7 +11,7 @@ use Svix\Models\EventTypeImportOpenApiOut;
 use Svix\Models\EventTypeIn;
 use Svix\Models\EventTypeOut;
 use Svix\Models\EventTypePatch;
-use Svix\Models\EventTypeUpdate;
+use Svix\Models\EventTypeUpsertIn;
 use Svix\Models\ListResponseEventTypeOut;
 use Svix\Request\SvixHttpClient;
 
@@ -104,10 +104,10 @@ class EventType
      */
     public function upsert(
         string $eventTypeName,
-        EventTypeUpdate $eventTypeUpdate,
+        EventTypeUpsertIn $eventTypeUpsertIn,
     ): EventTypeOut {
         $request = $this->client->newReq('PUT', "/api/v1/event-type/{$eventTypeName}");
-        $request->setBody(json_encode($eventTypeUpdate));
+        $request->setBody(json_encode($eventTypeUpsertIn));
         $res = $this->client->send($request);
 
         return EventTypeOut::fromJson($res);
