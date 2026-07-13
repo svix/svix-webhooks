@@ -60,13 +60,6 @@ impl Error {
     }
 }
 
-// TODO: Remove for v2.0 of the library (very uncommon impl for an error type)
-impl From<Error> for String {
-    fn from(err: Error) -> Self {
-        err.to_string()
-    }
-}
-
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
