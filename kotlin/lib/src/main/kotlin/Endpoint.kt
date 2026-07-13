@@ -23,7 +23,7 @@ import com.svix.kotlin.models.RecoverIn
 import com.svix.kotlin.models.RecoverOut
 import com.svix.kotlin.models.ReplayIn
 import com.svix.kotlin.models.ReplayOut
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import okhttp3.Headers
 
 data class EndpointListOptions(
