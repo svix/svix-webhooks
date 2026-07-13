@@ -25,9 +25,9 @@ import {
   IngestEndpointSecretOutSerializer,
 } from "../models/ingestEndpointSecretOut";
 import {
-  type IngestEndpointUpdate,
-  IngestEndpointUpdateSerializer,
-} from "../models/ingestEndpointUpdate";
+  type IngestEndpointUpsertIn,
+  IngestEndpointUpsertInSerializer,
+} from "../models/ingestEndpointUpsertIn";
 import {
   type ListResponseIngestEndpointOut,
   ListResponseIngestEndpointOutSerializer,
@@ -124,7 +124,7 @@ export class IngestEndpoint {
   public async upsert(
     sourceId: string,
     endpointId: string,
-    ingestEndpointUpdate: IngestEndpointUpdate
+    ingestEndpointUpsertIn: IngestEndpointUpsertIn
   ): Promise<IngestEndpointOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -133,7 +133,9 @@ export class IngestEndpoint {
 
     request.setPathParam("source_id", sourceId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setBody(IngestEndpointUpdateSerializer._toJsonObject(ingestEndpointUpdate));
+    request.setBody(
+      IngestEndpointUpsertInSerializer._toJsonObject(ingestEndpointUpsertIn)
+    );
 
     return await request.send(
       this.requestCtx,

@@ -198,7 +198,8 @@ pub enum OperationalWebhookEndpointCommands {
 }\n")]
     Upsert {
         endpoint_id: String,
-        operational_webhook_endpoint_update: crate::json::JsonOf<OperationalWebhookEndpointUpdate>,
+        operational_webhook_endpoint_upsert_in:
+            crate::json::JsonOf<OperationalWebhookEndpointUpsertIn>,
     },
     /// Delete an operational webhook endpoint.
     #[command(help_template = concat!(
@@ -329,14 +330,14 @@ impl OperationalWebhookEndpointCommands {
             }
             Self::Upsert {
                 endpoint_id,
-                operational_webhook_endpoint_update,
+                operational_webhook_endpoint_upsert_in,
             } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
                     .upsert(
                         endpoint_id,
-                        operational_webhook_endpoint_update.into_inner(),
+                        operational_webhook_endpoint_upsert_in.into_inner(),
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;

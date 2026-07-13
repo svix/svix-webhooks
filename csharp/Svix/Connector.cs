@@ -217,19 +217,19 @@ namespace Svix
         /// </summary>
         public async Task<ConnectorOut> UpsertAsync(
             string connectorId,
-            ConnectorUpdate connectorUpdate,
+            ConnectorUpsertIn connectorUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            connectorUpdate =
-                connectorUpdate ?? throw new ArgumentNullException(nameof(connectorUpdate));
+            connectorUpsertIn =
+                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Put,
                     path: "/api/v1/connector/{connector_id}",
                     pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorUpdate,
+                    content: connectorUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -245,17 +245,17 @@ namespace Svix
         /// <summary>
         /// Create or update a connector.
         /// </summary>
-        public ConnectorOut Upsert(string connectorId, ConnectorUpdate connectorUpdate)
+        public ConnectorOut Upsert(string connectorId, ConnectorUpsertIn connectorUpsertIn)
         {
-            connectorUpdate =
-                connectorUpdate ?? throw new ArgumentNullException(nameof(connectorUpdate));
+            connectorUpsertIn =
+                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Put,
                     path: "/api/v1/connector/{connector_id}",
                     pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorUpdate
+                    content: connectorUpsertIn
                 );
                 return response.Data;
             }

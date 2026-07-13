@@ -9,7 +9,7 @@ import com.svix.models.EventTypeImportOpenApiOut;
 import com.svix.models.EventTypeIn;
 import com.svix.models.EventTypeOut;
 import com.svix.models.EventTypePatch;
-import com.svix.models.EventTypeUpdate;
+import com.svix.models.EventTypeUpsertIn;
 import com.svix.models.ListResponseEventTypeOut;
 
 import okhttp3.Headers;
@@ -133,14 +133,15 @@ public class EventType {
     }
 
     /** Create or update an event type. */
-    public EventTypeOut upsert(final String eventTypeName, final EventTypeUpdate eventTypeUpdate)
+    public EventTypeOut upsert(
+            final String eventTypeName, final EventTypeUpsertIn eventTypeUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
                         .newUrlBuilder()
                         .encodedPath(String.format("/api/v1/event-type/%s", eventTypeName));
         return this.client.executeRequest(
-                "PUT", url.build(), null, eventTypeUpdate, EventTypeOut.class);
+                "PUT", url.build(), null, eventTypeUpsertIn, EventTypeOut.class);
     }
 
     /**

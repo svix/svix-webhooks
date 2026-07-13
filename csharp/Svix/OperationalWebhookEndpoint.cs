@@ -242,13 +242,13 @@ namespace Svix
         /// </summary>
         public async Task<OperationalWebhookEndpointOut> UpsertAsync(
             string endpointId,
-            OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate,
+            OperationalWebhookEndpointUpsertIn operationalWebhookEndpointUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            operationalWebhookEndpointUpdate =
-                operationalWebhookEndpointUpdate
-                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointUpdate));
+            operationalWebhookEndpointUpsertIn =
+                operationalWebhookEndpointUpsertIn
+                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointUpsertIn));
             try
             {
                 var response =
@@ -259,7 +259,7 @@ namespace Svix
                         {
                             { "endpoint_id", endpointId },
                         },
-                        content: operationalWebhookEndpointUpdate,
+                        content: operationalWebhookEndpointUpsertIn,
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -277,19 +277,19 @@ namespace Svix
         /// </summary>
         public OperationalWebhookEndpointOut Upsert(
             string endpointId,
-            OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate
+            OperationalWebhookEndpointUpsertIn operationalWebhookEndpointUpsertIn
         )
         {
-            operationalWebhookEndpointUpdate =
-                operationalWebhookEndpointUpdate
-                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointUpdate));
+            operationalWebhookEndpointUpsertIn =
+                operationalWebhookEndpointUpsertIn
+                ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
                     method: HttpMethod.Put,
                     path: "/api/v1/operational-webhook/endpoint/{endpoint_id}",
                     pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    content: operationalWebhookEndpointUpdate
+                    content: operationalWebhookEndpointUpsertIn
                 );
                 return response.Data;
             }

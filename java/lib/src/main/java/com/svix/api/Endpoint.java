@@ -15,7 +15,7 @@ import com.svix.models.EndpointSecretOut;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.EndpointStats;
 import com.svix.models.EndpointTransformationIn;
-import com.svix.models.EndpointUpdate;
+import com.svix.models.EndpointUpsertIn;
 import com.svix.models.EventExampleIn;
 import com.svix.models.ListResponseEndpointOut;
 import com.svix.models.MessageOut;
@@ -111,7 +111,7 @@ public class Endpoint {
 
     /** Create or update an endpoint. */
     public EndpointOut upsert(
-            final String appId, final String endpointId, final EndpointUpdate endpointUpdate)
+            final String appId, final String endpointId, final EndpointUpsertIn endpointUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
@@ -119,7 +119,7 @@ public class Endpoint {
                         .encodedPath(
                                 String.format("/api/v1/app/%s/endpoint/%s", appId, endpointId));
         return this.client.executeRequest(
-                "PUT", url.build(), null, endpointUpdate, EndpointOut.class);
+                "PUT", url.build(), null, endpointUpsertIn, EndpointOut.class);
     }
 
     /** Delete an endpoint. */

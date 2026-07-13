@@ -156,13 +156,13 @@ func (endpoint Endpoint) Upsert(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointUpdate models.EndpointUpdate,
+	endpointUpsertIn models.EndpointUpsertIn,
 ) (*models.EndpointOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	return internal.ExecuteRequest[models.EndpointUpdate, models.EndpointOut](
+	return internal.ExecuteRequest[models.EndpointUpsertIn, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PUT",
@@ -170,7 +170,7 @@ func (endpoint Endpoint) Upsert(
 		pathMap,
 		nil,
 		nil,
-		&endpointUpdate,
+		&endpointUpsertIn,
 	)
 }
 

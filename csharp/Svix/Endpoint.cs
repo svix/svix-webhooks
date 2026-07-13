@@ -317,12 +317,12 @@ namespace Svix
         public async Task<EndpointOut> UpsertAsync(
             string appId,
             string endpointId,
-            EndpointUpdate endpointUpdate,
+            EndpointUpsertIn endpointUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            endpointUpdate =
-                endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
+            endpointUpsertIn =
+                endpointUpsertIn ?? throw new ArgumentNullException(nameof(endpointUpsertIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EndpointOut>(
@@ -333,7 +333,7 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    content: endpointUpdate,
+                    content: endpointUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -349,10 +349,14 @@ namespace Svix
         /// <summary>
         /// Create or update an endpoint.
         /// </summary>
-        public EndpointOut Upsert(string appId, string endpointId, EndpointUpdate endpointUpdate)
+        public EndpointOut Upsert(
+            string appId,
+            string endpointId,
+            EndpointUpsertIn endpointUpsertIn
+        )
         {
-            endpointUpdate =
-                endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
+            endpointUpsertIn =
+                endpointUpsertIn ?? throw new ArgumentNullException(nameof(endpointUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EndpointOut>(
@@ -363,7 +367,7 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    content: endpointUpdate
+                    content: endpointUpsertIn
                 );
                 return response.Data;
             }

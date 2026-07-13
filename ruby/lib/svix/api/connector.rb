@@ -45,11 +45,11 @@ module Svix
       ConnectorOut.deserialize(res)
     end
 
-    def upsert(connector_id, connector_update)
+    def upsert(connector_id, connector_upsert_in)
       res = @client.execute_request(
         "PUT",
         "/api/v1/connector/#{connector_id}",
-        body: connector_update
+        body: connector_upsert_in
       )
       ConnectorOut.deserialize(res)
     end

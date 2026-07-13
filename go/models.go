@@ -37,7 +37,7 @@ type (
 	ConnectorOut                              = models.ConnectorOut
 	ConnectorPatch                            = models.ConnectorPatch
 	ConnectorProduct                          = models.ConnectorProduct
-	ConnectorUpdate                           = models.ConnectorUpdate
+	ConnectorUpsertIn                         = models.ConnectorUpsertIn
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
 	CronConfig                                = models.CronConfig
@@ -59,7 +59,7 @@ type (
 	EndpointTransformationIn                  = models.EndpointTransformationIn
 	EndpointTransformationOut                 = models.EndpointTransformationOut
 	EndpointTransformationPatch               = models.EndpointTransformationPatch
-	EndpointUpdate                            = models.EndpointUpdate
+	EndpointUpsertIn                          = models.EndpointUpsertIn
 	EnvironmentIn                             = models.EnvironmentIn
 	EnvironmentOut                            = models.EnvironmentOut
 	EventBridgeConfig                         = models.EventBridgeConfig
@@ -75,7 +75,7 @@ type (
 	EventTypeIn                               = models.EventTypeIn
 	EventTypeOut                              = models.EventTypeOut
 	EventTypePatch                            = models.EventTypePatch
-	EventTypeUpdate                           = models.EventTypeUpdate
+	EventTypeUpsertIn                         = models.EventTypeUpsertIn
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
 	GithubConfig                              = models.GithubConfig
 	GithubConfigOut                           = models.GithubConfigOut
@@ -95,7 +95,7 @@ type (
 	IngestEndpointSecretOut                   = models.IngestEndpointSecretOut
 	IngestEndpointTransformationOut           = models.IngestEndpointTransformationOut
 	IngestEndpointTransformationPatch         = models.IngestEndpointTransformationPatch
-	IngestEndpointUpdate                      = models.IngestEndpointUpdate
+	IngestEndpointUpsertIn                    = models.IngestEndpointUpsertIn
 	IngestSourceConsumerPortalAccessIn        = models.IngestSourceConsumerPortalAccessIn
 	IngestSourceIn                            = models.IngestSourceIn
 	IngestSourceOut                           = models.IngestSourceOut
@@ -140,7 +140,7 @@ type (
 	OperationalWebhookEndpointOut             = models.OperationalWebhookEndpointOut
 	OperationalWebhookEndpointSecretIn        = models.OperationalWebhookEndpointSecretIn
 	OperationalWebhookEndpointSecretOut       = models.OperationalWebhookEndpointSecretOut
-	OperationalWebhookEndpointUpdate          = models.OperationalWebhookEndpointUpdate
+	OperationalWebhookEndpointUpsertIn        = models.OperationalWebhookEndpointUpsertIn
 	Ordering                                  = models.Ordering
 	OrumIoConfig                              = models.OrumIoConfig
 	OrumIoConfigOut                           = models.OrumIoConfigOut

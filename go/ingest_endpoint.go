@@ -130,13 +130,13 @@ func (ingestEndpoint IngestEndpoint) Upsert(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,
-	ingestEndpointUpdate models.IngestEndpointUpdate,
+	ingestEndpointUpsertIn models.IngestEndpointUpsertIn,
 ) (*models.IngestEndpointOut, error) {
 	pathMap := map[string]string{
 		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
-	return internal.ExecuteRequest[models.IngestEndpointUpdate, models.IngestEndpointOut](
+	return internal.ExecuteRequest[models.IngestEndpointUpsertIn, models.IngestEndpointOut](
 		ctx,
 		ingestEndpoint.client,
 		"PUT",
@@ -144,7 +144,7 @@ func (ingestEndpoint IngestEndpoint) Upsert(
 		pathMap,
 		nil,
 		nil,
-		&ingestEndpointUpdate,
+		&ingestEndpointUpsertIn,
 	)
 }
 

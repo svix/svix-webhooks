@@ -12,9 +12,9 @@ import { type EventTypeIn, EventTypeInSerializer } from "../models/eventTypeIn";
 import { type EventTypeOut, EventTypeOutSerializer } from "../models/eventTypeOut";
 import { type EventTypePatch, EventTypePatchSerializer } from "../models/eventTypePatch";
 import {
-  type EventTypeUpdate,
-  EventTypeUpdateSerializer,
-} from "../models/eventTypeUpdate";
+  type EventTypeUpsertIn,
+  EventTypeUpsertInSerializer,
+} from "../models/eventTypeUpsertIn";
 import {
   type ListResponseEventTypeOut,
   ListResponseEventTypeOutSerializer,
@@ -127,7 +127,7 @@ export class EventType {
   /** Create or update an event type. */
   public async upsert(
     eventTypeName: string,
-    eventTypeUpdate: EventTypeUpdate
+    eventTypeUpsertIn: EventTypeUpsertIn
   ): Promise<EventTypeOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -135,7 +135,7 @@ export class EventType {
     );
 
     request.setPathParam("event_type_name", eventTypeName);
-    request.setBody(EventTypeUpdateSerializer._toJsonObject(eventTypeUpdate));
+    request.setBody(EventTypeUpsertInSerializer._toJsonObject(eventTypeUpsertIn));
 
     return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }

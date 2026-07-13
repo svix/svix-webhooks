@@ -7,7 +7,7 @@ import com.svix.kotlin.models.IngestEndpointIn
 import com.svix.kotlin.models.IngestEndpointOut
 import com.svix.kotlin.models.IngestEndpointSecretIn
 import com.svix.kotlin.models.IngestEndpointSecretOut
-import com.svix.kotlin.models.IngestEndpointUpdate
+import com.svix.kotlin.models.IngestEndpointUpsertIn
 import com.svix.kotlin.models.ListResponseIngestEndpointOut
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
@@ -71,17 +71,17 @@ class IngestEndpoint(private val client: SvixHttpClient) {
     suspend fun upsert(
         sourceId: String,
         endpointId: String,
-        ingestEndpointUpdate: IngestEndpointUpdate,
+        ingestEndpointUpsertIn: IngestEndpointUpsertIn,
     ): IngestEndpointOut {
         val url =
             client
                 .newUrlBuilder()
                 .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId")
 
-        return client.executeRequest<IngestEndpointUpdate, IngestEndpointOut>(
+        return client.executeRequest<IngestEndpointUpsertIn, IngestEndpointOut>(
             "PUT",
             url.build(),
-            reqBody = ingestEndpointUpdate,
+            reqBody = ingestEndpointUpsertIn,
         )
     }
 

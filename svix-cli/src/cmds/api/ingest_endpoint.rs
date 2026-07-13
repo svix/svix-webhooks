@@ -194,7 +194,7 @@ pub enum IngestEndpointCommands {
     Upsert {
         source_id: String,
         endpoint_id: String,
-        ingest_endpoint_update: crate::json::JsonOf<IngestEndpointUpdate>,
+        ingest_endpoint_upsert_in: crate::json::JsonOf<IngestEndpointUpsertIn>,
     },
     /// Delete an ingest endpoint.
     #[command(help_template = concat!(
@@ -343,12 +343,16 @@ impl IngestEndpointCommands {
             Self::Upsert {
                 source_id,
                 endpoint_id,
-                ingest_endpoint_update,
+                ingest_endpoint_upsert_in,
             } => {
                 let resp = client
                     .ingest()
                     .endpoint()
-                    .upsert(source_id, endpoint_id, ingest_endpoint_update.into_inner())
+                    .upsert(
+                        source_id,
+                        endpoint_id,
+                        ingest_endpoint_upsert_in.into_inner(),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

@@ -12,7 +12,7 @@ use Svix\Models\IngestEndpointIn;
 use Svix\Models\IngestEndpointOut;
 use Svix\Models\IngestEndpointSecretIn;
 use Svix\Models\IngestEndpointSecretOut;
-use Svix\Models\IngestEndpointUpdate;
+use Svix\Models\IngestEndpointUpsertIn;
 use Svix\Models\ListResponseIngestEndpointOut;
 use Svix\Request\SvixHttpClient;
 
@@ -85,10 +85,10 @@ class IngestEndpoint
     public function upsert(
         string $sourceId,
         string $endpointId,
-        IngestEndpointUpdate $ingestEndpointUpdate,
+        IngestEndpointUpsertIn $ingestEndpointUpsertIn,
     ): IngestEndpointOut {
         $request = $this->client->newReq('PUT', "/ingest/api/v1/source/{$sourceId}/endpoint/{$endpointId}");
-        $request->setBody(json_encode($ingestEndpointUpdate));
+        $request->setBody(json_encode($ingestEndpointUpsertIn));
         $res = $this->client->send($request);
 
         return IngestEndpointOut::fromJson($res);

@@ -13,7 +13,7 @@ use Svix\Models\OperationalWebhookEndpointIn;
 use Svix\Models\OperationalWebhookEndpointOut;
 use Svix\Models\OperationalWebhookEndpointSecretIn;
 use Svix\Models\OperationalWebhookEndpointSecretOut;
-use Svix\Models\OperationalWebhookEndpointUpdate;
+use Svix\Models\OperationalWebhookEndpointUpsertIn;
 use Svix\Request\SvixHttpClient;
 
 class OperationalWebhookEndpoint
@@ -78,10 +78,10 @@ class OperationalWebhookEndpoint
      */
     public function upsert(
         string $endpointId,
-        OperationalWebhookEndpointUpdate $operationalWebhookEndpointUpdate,
+        OperationalWebhookEndpointUpsertIn $operationalWebhookEndpointUpsertIn,
     ): OperationalWebhookEndpointOut {
         $request = $this->client->newReq('PUT', "/api/v1/operational-webhook/endpoint/{$endpointId}");
-        $request->setBody(json_encode($operationalWebhookEndpointUpdate));
+        $request->setBody(json_encode($operationalWebhookEndpointUpsertIn));
         $res = $this->client->send($request);
 
         return OperationalWebhookEndpointOut::fromJson($res);

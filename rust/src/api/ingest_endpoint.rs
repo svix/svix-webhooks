@@ -98,7 +98,7 @@ impl<'a> IngestEndpoint<'a> {
         &self,
         source_id: String,
         endpoint_id: String,
-        ingest_endpoint_update: IngestEndpointUpdate,
+        ingest_endpoint_upsert_in: IngestEndpointUpsertIn,
     ) -> Result<IngestEndpointOut> {
         crate::request::Request::new(
             http::Method::PUT,
@@ -106,7 +106,7 @@ impl<'a> IngestEndpoint<'a> {
         )
         .with_path_param("source_id", source_id)
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(ingest_endpoint_update)
+        .with_body_param(ingest_endpoint_upsert_in)
         .execute(self.cfg)
         .await
     }
