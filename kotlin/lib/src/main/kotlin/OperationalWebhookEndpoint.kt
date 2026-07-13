@@ -8,7 +8,7 @@ import com.svix.kotlin.models.OperationalWebhookEndpointIn
 import com.svix.kotlin.models.OperationalWebhookEndpointOut
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretIn
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretOut
-import com.svix.kotlin.models.OperationalWebhookEndpointUpdate
+import com.svix.kotlin.models.OperationalWebhookEndpointUpsertIn
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
 
@@ -67,18 +67,18 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
     /** Create or update an operational webhook endpoint. */
     suspend fun upsert(
         endpointId: String,
-        operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate,
+        operationalWebhookEndpointUpsertIn: OperationalWebhookEndpointUpsertIn,
     ): OperationalWebhookEndpointOut {
         val url =
             client.newUrlBuilder().encodedPath("/api/v1/operational-webhook/endpoint/$endpointId")
 
         return client.executeRequest<
-            OperationalWebhookEndpointUpdate,
+            OperationalWebhookEndpointUpsertIn,
             OperationalWebhookEndpointOut,
         >(
             "PUT",
             url.build(),
-            reqBody = operationalWebhookEndpointUpdate,
+            reqBody = operationalWebhookEndpointUpsertIn,
         )
     }
 

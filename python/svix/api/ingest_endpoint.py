@@ -10,7 +10,7 @@ from ..models import (
     IngestEndpointOut,
     IngestEndpointSecretIn,
     IngestEndpointSecretOut,
-    IngestEndpointUpdate,
+    IngestEndpointUpsertIn,
     ListResponseIngestEndpointOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
@@ -122,7 +122,7 @@ class IngestEndpointAsync(ApiBaseAsync):
         self,
         source_id: str,
         endpoint_id: str,
-        ingest_endpoint_update: IngestEndpointUpdate,
+        ingest_endpoint_upsert_in: IngestEndpointUpsertIn,
     ) -> IngestEndpointOut:
         """Create or update an ingest endpoint."""
         response = await self._request_asyncio(
@@ -132,7 +132,7 @@ class IngestEndpointAsync(ApiBaseAsync):
                 "source_id": source_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=ingest_endpoint_update.model_dump_json(
+            json_body=ingest_endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -285,7 +285,7 @@ class IngestEndpoint(ApiBaseSync):
         self,
         source_id: str,
         endpoint_id: str,
-        ingest_endpoint_update: IngestEndpointUpdate,
+        ingest_endpoint_upsert_in: IngestEndpointUpsertIn,
     ) -> IngestEndpointOut:
         """Create or update an ingest endpoint."""
         response = self._request_sync(
@@ -295,7 +295,7 @@ class IngestEndpoint(ApiBaseSync):
                 "source_id": source_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=ingest_endpoint_update.model_dump_json(
+            json_body=ingest_endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

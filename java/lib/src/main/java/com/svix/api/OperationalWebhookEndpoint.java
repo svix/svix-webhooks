@@ -11,7 +11,7 @@ import com.svix.models.OperationalWebhookEndpointIn;
 import com.svix.models.OperationalWebhookEndpointOut;
 import com.svix.models.OperationalWebhookEndpointSecretIn;
 import com.svix.models.OperationalWebhookEndpointSecretOut;
-import com.svix.models.OperationalWebhookEndpointUpdate;
+import com.svix.models.OperationalWebhookEndpointUpsertIn;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -94,7 +94,7 @@ public class OperationalWebhookEndpoint {
     /** Create or update an operational webhook endpoint. */
     public OperationalWebhookEndpointOut upsert(
             final String endpointId,
-            final OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate)
+            final OperationalWebhookEndpointUpsertIn operationalWebhookEndpointUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
@@ -106,7 +106,7 @@ public class OperationalWebhookEndpoint {
                 "PUT",
                 url.build(),
                 null,
-                operationalWebhookEndpointUpdate,
+                operationalWebhookEndpointUpsertIn,
                 OperationalWebhookEndpointOut.class);
     }
 

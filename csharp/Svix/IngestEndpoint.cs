@@ -257,13 +257,13 @@ namespace Svix
         public async Task<IngestEndpointOut> UpsertAsync(
             string sourceId,
             string endpointId,
-            IngestEndpointUpdate ingestEndpointUpdate,
+            IngestEndpointUpsertIn ingestEndpointUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            ingestEndpointUpdate =
-                ingestEndpointUpdate
-                ?? throw new ArgumentNullException(nameof(ingestEndpointUpdate));
+            ingestEndpointUpsertIn =
+                ingestEndpointUpsertIn
+                ?? throw new ArgumentNullException(nameof(ingestEndpointUpsertIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<IngestEndpointOut>(
@@ -274,7 +274,7 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    content: ingestEndpointUpdate,
+                    content: ingestEndpointUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -293,12 +293,12 @@ namespace Svix
         public IngestEndpointOut Upsert(
             string sourceId,
             string endpointId,
-            IngestEndpointUpdate ingestEndpointUpdate
+            IngestEndpointUpsertIn ingestEndpointUpsertIn
         )
         {
-            ingestEndpointUpdate =
-                ingestEndpointUpdate
-                ?? throw new ArgumentNullException(nameof(ingestEndpointUpdate));
+            ingestEndpointUpsertIn =
+                ingestEndpointUpsertIn
+                ?? throw new ArgumentNullException(nameof(ingestEndpointUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointOut>(
@@ -309,7 +309,7 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    content: ingestEndpointUpdate
+                    content: ingestEndpointUpsertIn
                 );
                 return response.Data;
             }

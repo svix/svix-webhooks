@@ -6,7 +6,7 @@ import com.svix.kotlin.models.EventTypeImportOpenApiOut
 import com.svix.kotlin.models.EventTypeIn
 import com.svix.kotlin.models.EventTypeOut
 import com.svix.kotlin.models.EventTypePatch
-import com.svix.kotlin.models.EventTypeUpdate
+import com.svix.kotlin.models.EventTypeUpsertIn
 import com.svix.kotlin.models.ListResponseEventTypeOut
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
@@ -108,13 +108,13 @@ class EventType(private val client: SvixHttpClient) {
     }
 
     /** Create or update an event type. */
-    suspend fun upsert(eventTypeName: String, eventTypeUpdate: EventTypeUpdate): EventTypeOut {
+    suspend fun upsert(eventTypeName: String, eventTypeUpsertIn: EventTypeUpsertIn): EventTypeOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/event-type/$eventTypeName")
 
-        return client.executeRequest<EventTypeUpdate, EventTypeOut>(
+        return client.executeRequest<EventTypeUpsertIn, EventTypeOut>(
             "PUT",
             url.build(),
-            reqBody = eventTypeUpdate,
+            reqBody = eventTypeUpsertIn,
         )
     }
 

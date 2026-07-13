@@ -29,9 +29,9 @@ import {
   OperationalWebhookEndpointSecretOutSerializer,
 } from "../models/operationalWebhookEndpointSecretOut";
 import {
-  type OperationalWebhookEndpointUpdate,
-  OperationalWebhookEndpointUpdateSerializer,
-} from "../models/operationalWebhookEndpointUpdate";
+  type OperationalWebhookEndpointUpsertIn,
+  OperationalWebhookEndpointUpsertInSerializer,
+} from "../models/operationalWebhookEndpointUpsertIn";
 import type { Ordering } from "../models/ordering";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
@@ -115,7 +115,7 @@ export class OperationalWebhookEndpoint {
   /** Create or update an operational webhook endpoint. */
   public async upsert(
     endpointId: string,
-    operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate
+    operationalWebhookEndpointUpsertIn: OperationalWebhookEndpointUpsertIn
   ): Promise<OperationalWebhookEndpointOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -124,8 +124,8 @@ export class OperationalWebhookEndpoint {
 
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(
-      OperationalWebhookEndpointUpdateSerializer._toJsonObject(
-        operationalWebhookEndpointUpdate
+      OperationalWebhookEndpointUpsertInSerializer._toJsonObject(
+        operationalWebhookEndpointUpsertIn
       )
     );
 

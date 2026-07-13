@@ -9,7 +9,7 @@ from ..models import (
     EventTypeIn,
     EventTypeOut,
     EventTypePatch,
-    EventTypeUpdate,
+    EventTypeUpsertIn,
     ListResponseEventTypeOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
@@ -145,7 +145,7 @@ class EventTypeAsync(ApiBaseAsync):
         return EventTypeOut.model_validate(response.json())
 
     async def upsert(
-        self, event_type_name: str, event_type_update: EventTypeUpdate
+        self, event_type_name: str, event_type_upsert_in: EventTypeUpsertIn
     ) -> EventTypeOut:
         """Create or update an event type."""
         response = await self._request_asyncio(
@@ -154,7 +154,7 @@ class EventTypeAsync(ApiBaseAsync):
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_update.model_dump_json(
+            json_body=event_type_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -266,7 +266,7 @@ class EventType(ApiBaseSync):
         return EventTypeOut.model_validate(response.json())
 
     def upsert(
-        self, event_type_name: str, event_type_update: EventTypeUpdate
+        self, event_type_name: str, event_type_upsert_in: EventTypeUpsertIn
     ) -> EventTypeOut:
         """Create or update an event type."""
         response = self._request_sync(
@@ -275,7 +275,7 @@ class EventType(ApiBaseSync):
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_update.model_dump_json(
+            json_body=event_type_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
