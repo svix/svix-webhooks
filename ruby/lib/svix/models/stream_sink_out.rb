@@ -80,35 +80,35 @@ module Svix
   end
 
   class StreamSinkOut
-    attr_accessor :batch_size
-    attr_accessor :created_at
-    attr_accessor :current_iterator
-    attr_accessor :event_types
-    attr_accessor :failure_reason
     # The sink's ID.
     attr_accessor :id
-    attr_accessor :max_wait_secs
-    attr_accessor :metadata
-    attr_accessor :next_retry_at
-    attr_accessor :status
     # The sink's UID.
     attr_accessor :uid
+    attr_accessor :status
+    attr_accessor :current_iterator
+    attr_accessor :failure_reason
+    attr_accessor :created_at
     attr_accessor :updated_at
+    attr_accessor :batch_size
+    attr_accessor :max_wait_secs
+    attr_accessor :event_types
+    attr_accessor :next_retry_at
+    attr_accessor :metadata
     attr_accessor :config
 
     ALL_FIELD ||= [
-      "batch_size",
-      "created_at",
-      "current_iterator",
-      "event_types",
-      "failure_reason",
       "id",
-      "max_wait_secs",
-      "metadata",
-      "next_retry_at",
-      "status",
       "uid",
+      "status",
+      "current_iterator",
+      "failure_reason",
+      "created_at",
       "updated_at",
+      "batch_size",
+      "max_wait_secs",
+      "event_types",
+      "next_retry_at",
+      "metadata",
       "config"
     ].freeze
     private_constant :ALL_FIELD
@@ -166,18 +166,18 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["batch_size"] = attributes["batchSize"]
-      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
-      attrs["current_iterator"] = attributes["currentIterator"]
-      attrs["event_types"] = attributes["eventTypes"]
-      attrs["failure_reason"] = attributes["failureReason"]
       attrs["id"] = attributes["id"]
-      attrs["max_wait_secs"] = attributes["maxWaitSecs"]
-      attrs["metadata"] = attributes["metadata"]
-      attrs["next_retry_at"] = DateTime.rfc3339(attributes["nextRetryAt"]).to_time if attributes["nextRetryAt"]
-      attrs["status"] = Svix::SinkStatus.deserialize(attributes["status"])
       attrs["uid"] = attributes["uid"]
+      attrs["status"] = Svix::SinkStatus.deserialize(attributes["status"])
+      attrs["current_iterator"] = attributes["currentIterator"]
+      attrs["failure_reason"] = attributes["failureReason"]
+      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
+      attrs["batch_size"] = attributes["batchSize"]
+      attrs["max_wait_secs"] = attributes["maxWaitSecs"]
+      attrs["event_types"] = attributes["eventTypes"]
+      attrs["next_retry_at"] = DateTime.rfc3339(attributes["nextRetryAt"]).to_time if attributes["nextRetryAt"]
+      attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
@@ -192,18 +192,18 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["currentIterator"] = Svix::serialize_primitive(@current_iterator) if @current_iterator
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["failureReason"] = Svix::serialize_primitive(@failure_reason) if @failure_reason
       out["id"] = Svix::serialize_primitive(@id) if @id
-      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) if @next_retry_at
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["status"] = Svix::serialize_schema_ref(@status) if @status
+      out["currentIterator"] = Svix::serialize_primitive(@current_iterator) if @current_iterator
+      out["failureReason"] = Svix::serialize_primitive(@failure_reason) if @failure_reason
+      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
+      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) if @next_retry_at
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

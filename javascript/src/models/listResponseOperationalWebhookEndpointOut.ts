@@ -6,9 +6,9 @@ import {
 
 export interface ListResponseOperationalWebhookEndpointOut {
   data: OperationalWebhookEndpointOut[];
-  done: boolean;
   iterator: string | null;
   prevIterator?: string | null;
+  done: boolean;
 }
 
 export const ListResponseOperationalWebhookEndpointOutSerializer = {
@@ -17,9 +17,9 @@ export const ListResponseOperationalWebhookEndpointOutSerializer = {
       data: object["data"].map((item: OperationalWebhookEndpointOut) =>
         OperationalWebhookEndpointOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
       iterator: object["iterator"],
       prevIterator: object["prevIterator"],
+      done: object["done"],
     };
   },
 
@@ -28,9 +28,9 @@ export const ListResponseOperationalWebhookEndpointOutSerializer = {
       data: self.data.map((item) =>
         OperationalWebhookEndpointOutSerializer._toJsonObject(item)
       ),
-      done: self.done,
       iterator: self.iterator,
       prevIterator: self.prevIterator,
+      done: self.done,
     };
   },
 };

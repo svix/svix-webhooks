@@ -3,4 +3,4 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class RabbitMqConfig(val routingKey: String, val uri: String)
+@Serializable data class RabbitMqConfig(val uri: String, val routingKey: String)

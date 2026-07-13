@@ -35,37 +35,17 @@ import java.util.Map;
 @JsonSerialize(using = IngestSourceOutSerializer.class)
 @JsonDeserialize(using = IngestSourceOutDeserializer.class)
 public class IngestSourceOut {
-    private OffsetDateTime createdAt;
     private String id;
-    private URI ingestUrl;
-    private Map<String, String> metadata;
-    private String name;
     private String uid;
+    private String name;
+    private URI ingestUrl;
+    private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private Map<String, String> metadata;
     private IngestSourceOutConfig config;
-
-    public IngestSourceOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
 
     public IngestSourceOut id(String id) {
         this.id = id;
-        return this;
-    }
-
-    public IngestSourceOut ingestUrl(URI ingestUrl) {
-        this.ingestUrl = ingestUrl;
-        return this;
-    }
-
-    public IngestSourceOut metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public IngestSourceOut name(String name) {
-        this.name = name;
         return this;
     }
 
@@ -74,8 +54,28 @@ public class IngestSourceOut {
         return this;
     }
 
+    public IngestSourceOut name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    public IngestSourceOut ingestUrl(URI ingestUrl) {
+        this.ingestUrl = ingestUrl;
+        return this;
+    }
+
+    public IngestSourceOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
     public IngestSourceOut updatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
+    }
+
+    public IngestSourceOut metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -96,26 +96,26 @@ public class IngestSourceOut {
 @Getter
 @NoArgsConstructor
 class IngestSourceOutSurrogate {
-    @JsonProperty("createdAt")
-    OffsetDateTime createdAt;
-
     @JsonProperty("id")
     String id;
-
-    @JsonProperty("ingestUrl")
-    URI ingestUrl;
-
-    @JsonProperty("metadata")
-    Map<String, String> metadata;
-
-    @JsonProperty("name")
-    String name;
 
     @JsonProperty("uid")
     String uid;
 
+    @JsonProperty("name")
+    String name;
+
+    @JsonProperty("ingestUrl")
+    URI ingestUrl;
+
+    @JsonProperty("createdAt")
+    OffsetDateTime createdAt;
+
     @JsonProperty("updatedAt")
     OffsetDateTime updatedAt;
+
+    @JsonProperty("metadata")
+    Map<String, String> metadata;
 
     @JsonProperty("type")
     String type;
@@ -124,13 +124,13 @@ class IngestSourceOutSurrogate {
     JsonNode config;
 
     IngestSourceOutSurrogate(IngestSourceOut o, String type, JsonNode config) {
-        this.createdAt = o.getCreatedAt();
         this.id = o.getId();
-        this.ingestUrl = o.getIngestUrl();
-        this.metadata = o.getMetadata();
-        this.name = o.getName();
         this.uid = o.getUid();
+        this.name = o.getName();
+        this.ingestUrl = o.getIngestUrl();
+        this.createdAt = o.getCreatedAt();
         this.updatedAt = o.getUpdatedAt();
+        this.metadata = o.getMetadata();
         this.type = type;
         this.config = config;
     }
@@ -169,17 +169,17 @@ class IngestSourceOutDeserializer extends StdDeserializer<IngestSourceOut> {
             throws IOException {
         IngestSourceOutSurrogate surrogate =
                 p.getCodec().readValue(p, IngestSourceOutSurrogate.class);
-        OffsetDateTime createdAt = surrogate.getCreatedAt();
         String id = surrogate.getId();
-        URI ingestUrl = surrogate.getIngestUrl();
-        Map<String, String> metadata = surrogate.getMetadata();
-        String name = surrogate.getName();
         String uid = surrogate.getUid();
+        String name = surrogate.getName();
+        URI ingestUrl = surrogate.getIngestUrl();
+        OffsetDateTime createdAt = surrogate.getCreatedAt();
         OffsetDateTime updatedAt = surrogate.getUpdatedAt();
+        Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         IngestSourceOutConfig sourceType = IngestSourceOutConfig.fromTypeAndConfig(type, config);
         return new IngestSourceOut(
-                createdAt, id, ingestUrl, metadata, name, uid, updatedAt, sourceType);
+                id, uid, name, ingestUrl, createdAt, updatedAt, metadata, sourceType);
     }
 }

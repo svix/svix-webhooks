@@ -19,14 +19,71 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypeFromOpenApi {
-    @JsonProperty private Boolean deprecated;
-    @JsonProperty private String description;
-    @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private String groupName;
     @JsonProperty private String name;
+    @JsonProperty private String description;
     @JsonProperty private Object schemas;
+    @JsonProperty private Boolean deprecated;
+    @JsonProperty private String groupName;
+    @JsonProperty private Set<String> featureFlags;
 
     public EventTypeFromOpenApi() {}
+
+    public EventTypeFromOpenApi name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * The event type's name
+     *
+     * @return name
+     */
+    @javax.annotation.Nonnull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public EventTypeFromOpenApi description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nonnull
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public EventTypeFromOpenApi schemas(Object schemas) {
+        this.schemas = schemas;
+        return this;
+    }
+
+    /**
+     * Get schemas
+     *
+     * @return schemas
+     */
+    @javax.annotation.Nullable
+    public Object getSchemas() {
+        return schemas;
+    }
+
+    public void setSchemas(Object schemas) {
+        this.schemas = schemas;
+    }
 
     public EventTypeFromOpenApi deprecated(Boolean deprecated) {
         this.deprecated = deprecated;
@@ -47,23 +104,23 @@ public class EventTypeFromOpenApi {
         this.deprecated = deprecated;
     }
 
-    public EventTypeFromOpenApi description(String description) {
-        this.description = description;
+    public EventTypeFromOpenApi groupName(String groupName) {
+        this.groupName = groupName;
         return this;
     }
 
     /**
-     * Get description
+     * The event type group's name
      *
-     * @return description
+     * @return groupName
      */
-    @javax.annotation.Nonnull
-    public String getDescription() {
-        return description;
+    @javax.annotation.Nullable
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public EventTypeFromOpenApi featureFlags(Set<String> featureFlags) {
@@ -92,63 +149,6 @@ public class EventTypeFromOpenApi {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public EventTypeFromOpenApi groupName(String groupName) {
-        this.groupName = groupName;
-        return this;
-    }
-
-    /**
-     * The event type group's name
-     *
-     * @return groupName
-     */
-    @javax.annotation.Nullable
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public EventTypeFromOpenApi name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * The event type's name
-     *
-     * @return name
-     */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public EventTypeFromOpenApi schemas(Object schemas) {
-        this.schemas = schemas;
-        return this;
-    }
-
-    /**
-     * Get schemas
-     *
-     * @return schemas
-     */
-    @javax.annotation.Nullable
-    public Object getSchemas() {
-        return schemas;
-    }
-
-    public void setSchemas(Object schemas) {
-        this.schemas = schemas;
     }
 
     /**

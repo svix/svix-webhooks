@@ -15,14 +15,14 @@ use super::{
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestSourceIn {
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
     pub name: String,
 
     /// The Source's UID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 
     #[serde(flatten)]
     pub config: IngestSourceInConfig,

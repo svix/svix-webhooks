@@ -17,14 +17,14 @@ import lombok.ToString;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class RedshiftConfig {
     @JsonProperty private String accessKeyId;
-    @JsonProperty private String clusterIdentifier;
-    @JsonProperty private String dbName;
-    @JsonProperty private String dbUser;
-    @JsonProperty private String region;
-    @JsonProperty private String schemaName;
     @JsonProperty private String secretAccessKey;
-    @JsonProperty private String tableName;
+    @JsonProperty private String region;
+    @JsonProperty private String clusterIdentifier;
+    @JsonProperty private String dbUser;
     @JsonProperty private String workgroupName;
+    @JsonProperty private String dbName;
+    @JsonProperty private String schemaName;
+    @JsonProperty private String tableName;
 
     public RedshiftConfig() {}
 
@@ -47,6 +47,44 @@ public class RedshiftConfig {
         this.accessKeyId = accessKeyId;
     }
 
+    public RedshiftConfig secretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
+        return this;
+    }
+
+    /**
+     * Get secretAccessKey
+     *
+     * @return secretAccessKey
+     */
+    @javax.annotation.Nonnull
+    public String getSecretAccessKey() {
+        return secretAccessKey;
+    }
+
+    public void setSecretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
+    }
+
+    public RedshiftConfig region(String region) {
+        this.region = region;
+        return this;
+    }
+
+    /**
+     * Get region
+     *
+     * @return region
+     */
+    @javax.annotation.Nonnull
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
     public RedshiftConfig clusterIdentifier(String clusterIdentifier) {
         this.clusterIdentifier = clusterIdentifier;
         return this;
@@ -64,6 +102,44 @@ public class RedshiftConfig {
 
     public void setClusterIdentifier(String clusterIdentifier) {
         this.clusterIdentifier = clusterIdentifier;
+    }
+
+    public RedshiftConfig dbUser(String dbUser) {
+        this.dbUser = dbUser;
+        return this;
+    }
+
+    /**
+     * Required for provisioned clusters.
+     *
+     * @return dbUser
+     */
+    @javax.annotation.Nullable
+    public String getDbUser() {
+        return dbUser;
+    }
+
+    public void setDbUser(String dbUser) {
+        this.dbUser = dbUser;
+    }
+
+    public RedshiftConfig workgroupName(String workgroupName) {
+        this.workgroupName = workgroupName;
+        return this;
+    }
+
+    /**
+     * Required for Redshift Serverless.
+     *
+     * @return workgroupName
+     */
+    @javax.annotation.Nullable
+    public String getWorkgroupName() {
+        return workgroupName;
+    }
+
+    public void setWorkgroupName(String workgroupName) {
+        this.workgroupName = workgroupName;
     }
 
     public RedshiftConfig dbName(String dbName) {
@@ -87,44 +163,6 @@ public class RedshiftConfig {
         this.dbName = dbName;
     }
 
-    public RedshiftConfig dbUser(String dbUser) {
-        this.dbUser = dbUser;
-        return this;
-    }
-
-    /**
-     * Required for provisioned clusters.
-     *
-     * @return dbUser
-     */
-    @javax.annotation.Nullable
-    public String getDbUser() {
-        return dbUser;
-    }
-
-    public void setDbUser(String dbUser) {
-        this.dbUser = dbUser;
-    }
-
-    public RedshiftConfig region(String region) {
-        this.region = region;
-        return this;
-    }
-
-    /**
-     * Get region
-     *
-     * @return region
-     */
-    @javax.annotation.Nonnull
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
-    }
-
     public RedshiftConfig schemaName(String schemaName) {
         this.schemaName = schemaName;
         return this;
@@ -146,25 +184,6 @@ public class RedshiftConfig {
         this.schemaName = schemaName;
     }
 
-    public RedshiftConfig secretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
-        return this;
-    }
-
-    /**
-     * Get secretAccessKey
-     *
-     * @return secretAccessKey
-     */
-    @javax.annotation.Nonnull
-    public String getSecretAccessKey() {
-        return secretAccessKey;
-    }
-
-    public void setSecretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
-    }
-
     public RedshiftConfig tableName(String tableName) {
         this.tableName = tableName;
         return this;
@@ -184,25 +203,6 @@ public class RedshiftConfig {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
-    }
-
-    public RedshiftConfig workgroupName(String workgroupName) {
-        this.workgroupName = workgroupName;
-        return this;
-    }
-
-    /**
-     * Required for Redshift Serverless.
-     *
-     * @return workgroupName
-     */
-    @javax.annotation.Nullable
-    public String getWorkgroupName() {
-        return workgroupName;
-    }
-
-    public void setWorkgroupName(String workgroupName) {
-        this.workgroupName = workgroupName;
     }
 
     /**

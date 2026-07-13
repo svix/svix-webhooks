@@ -9,12 +9,6 @@ namespace Svix.Models
         [JsonProperty("description")]
         public string? Description { get; set; } = null;
 
-        [JsonProperty("disabled")]
-        public bool? Disabled { get; set; } = null;
-
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
         [JsonProperty("throttleRate")]
         public ushort? ThrottleRate { get; set; } = null;
 
@@ -24,17 +18,23 @@ namespace Svix.Models
         [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
 
+        [JsonProperty("disabled")]
+        public bool? Disabled { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class IngestEndpointUpdate {\n");
             sb.Append("  Description: ").Append(Description).Append('\n');
-            sb.Append("  Disabled: ").Append(Disabled).Append('\n');
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
+            sb.Append("  Disabled: ").Append(Disabled).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

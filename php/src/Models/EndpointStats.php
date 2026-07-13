@@ -10,11 +10,11 @@ class EndpointStats implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly int $canceled,
-        public readonly int $fail,
+        public readonly int $success,
         public readonly int $pending,
         public readonly int $sending,
-        public readonly int $success,
+        public readonly int $fail,
+        public readonly int $canceled,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -24,30 +24,30 @@ class EndpointStats implements \JsonSerializable
      * Create an instance of EndpointStats with required fields.
      */
     public static function create(
-        int $canceled,
-        int $fail,
+        int $success,
         int $pending,
         int $sending,
-        int $success,
+        int $fail,
+        int $canceled,
     ): self {
         return new self(
-            canceled: $canceled,
-            fail: $fail,
+            success: $success,
             pending: $pending,
             sending: $sending,
-            success: $success,
-            setFields: ['canceled' => true, 'fail' => true, 'pending' => true, 'sending' => true, 'success' => true]
+            fail: $fail,
+            canceled: $canceled,
+            setFields: ['success' => true, 'pending' => true, 'sending' => true, 'fail' => true, 'canceled' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'canceled' => $this->canceled,
-            'fail' => $this->fail,
+            'success' => $this->success,
             'pending' => $this->pending,
             'sending' => $this->sending,
-            'success' => $this->success];
+            'fail' => $this->fail,
+            'canceled' => $this->canceled];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -58,11 +58,11 @@ class EndpointStats implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            canceled: \Svix\Utils::deserializeInt($data, 'canceled', true, 'EndpointStats'),
-            fail: \Svix\Utils::deserializeInt($data, 'fail', true, 'EndpointStats'),
+            success: \Svix\Utils::deserializeInt($data, 'success', true, 'EndpointStats'),
             pending: \Svix\Utils::deserializeInt($data, 'pending', true, 'EndpointStats'),
             sending: \Svix\Utils::deserializeInt($data, 'sending', true, 'EndpointStats'),
-            success: \Svix\Utils::deserializeInt($data, 'success', true, 'EndpointStats')
+            fail: \Svix\Utils::deserializeInt($data, 'fail', true, 'EndpointStats'),
+            canceled: \Svix\Utils::deserializeInt($data, 'canceled', true, 'EndpointStats')
         );
     }
 

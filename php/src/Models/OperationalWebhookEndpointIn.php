@@ -10,26 +10,26 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null          $filterTypes
-     * @param array<string, string>|null $metadata
-     * @param string|null                $secret      The endpoint's verification secret.
-     *
-     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-     * It is recommended to not set this and let the server generate the secret.
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid optional unique identifier for the endpoint
+     * @param string|null       $uid         optional unique identifier for the endpoint
+     * @param list<string>|null $filterTypes
+     * @param string|null       $secret      The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+     * It is recommended to not set this and let the server generate the secret.
+     * @param array<string, string>|null $metadata
      */
     private function __construct(
         public readonly string $url,
         public readonly ?string $description = null,
-        public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
-        public readonly ?array $metadata = null,
-        public readonly ?string $secret = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
+        public readonly ?bool $disabled = null,
+        public readonly ?array $filterTypes = null,
+        public readonly ?string $secret = null,
+        public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -43,13 +43,13 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
     ): self {
         return new self(
             description: null,
-            disabled: null,
-            filterTypes: null,
-            metadata: null,
-            secret: null,
             throttleRate: null,
             uid: null,
             url: $url,
+            disabled: null,
+            filterTypes: null,
+            secret: null,
+            metadata: null,
             setFields: ['url' => true]
         );
     }
@@ -61,85 +61,13 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
 
         return new self(
             description: $description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
             disabled: $this->disabled,
             filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
             secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withDisabled(?bool $disabled): self
-    {
-        $setFields = $this->setFields;
-        $setFields['disabled'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $disabled,
-            filterTypes: $this->filterTypes,
             metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withFilterTypes(?array $filterTypes): self
-    {
-        $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $metadata,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withSecret(?string $secret): self
-    {
-        $setFields = $this->setFields;
-        $setFields['secret'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
             setFields: $setFields
         );
     }
@@ -151,13 +79,13 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
             throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            secret: $this->secret,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -169,13 +97,85 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            metadata: $this->metadata,
-            secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withDisabled(?bool $disabled): self
+    {
+        $setFields = $this->setFields;
+        $setFields['disabled'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $disabled,
+            filterTypes: $this->filterTypes,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withFilterTypes(?array $filterTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['filterTypes'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $filterTypes,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withSecret(?string $secret): self
+    {
+        $setFields = $this->setFields;
+        $setFields['secret'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            secret: $secret,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            disabled: $this->disabled,
+            filterTypes: $this->filterTypes,
+            secret: $this->secret,
+            metadata: $metadata,
             setFields: $setFields
         );
     }
@@ -188,23 +188,23 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         if (null !== $this->description) {
             $data['description'] = $this->description;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
+        if (isset($this->setFields['uid'])) {
+            $data['uid'] = $this->uid;
+        }
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
         if (isset($this->setFields['filterTypes'])) {
             $data['filterTypes'] = $this->filterTypes;
         }
-        if (null !== $this->metadata) {
-            $data['metadata'] = $this->metadata;
-        }
         if (isset($this->setFields['secret'])) {
             $data['secret'] = $this->secret;
         }
-        if (isset($this->setFields['throttleRate'])) {
-            $data['throttleRate'] = $this->throttleRate;
-        }
-        if (isset($this->setFields['uid'])) {
-            $data['uid'] = $this->uid;
+        if (null !== $this->metadata) {
+            $data['metadata'] = $this->metadata;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -217,13 +217,13 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
     {
         return new self(
             description: \Svix\Utils::deserializeString($data, 'description', false, 'OperationalWebhookEndpointIn'),
-            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointIn'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointIn'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'OperationalWebhookEndpointIn'),
-            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'OperationalWebhookEndpointIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'OperationalWebhookEndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointIn')
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointIn'),
+            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointIn'),
+            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointIn'),
+            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'OperationalWebhookEndpointIn'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'OperationalWebhookEndpointIn')
         );
     }
 

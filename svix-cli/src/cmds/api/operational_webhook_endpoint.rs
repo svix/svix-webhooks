@@ -86,20 +86,20 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"disabled\": false,
-    \"filterTypes\": [\"message.attempt.failing\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"metadata\": {\"key\": \"...\"},
+    \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
+    \"url\": \"https://example.com/webhook/\",
+    \"disabled\": false,
+    \"filterTypes\": [\"message.attempt.failing\"],
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\"
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -117,25 +117,25 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
-  \"metadata\": {\"key\": \"...\"},
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"message.attempt.failing\"],
+  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"message.attempt.failing\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         operational_webhook_endpoint_in: crate::json::JsonOf<OperationalWebhookEndpointIn>,
@@ -153,16 +153,16 @@ pub enum OperationalWebhookEndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"message.attempt.failing\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { endpoint_id: String },
     /// Create or update an operational webhook endpoint.
@@ -177,24 +177,24 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
-  \"metadata\": {\"key\": \"...\"},
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"message.attempt.failing\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"filterTypes\": [\"message.attempt.failing\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Upsert {
         endpoint_id: String,

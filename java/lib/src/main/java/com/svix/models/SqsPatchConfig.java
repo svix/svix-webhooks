@@ -18,51 +18,13 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SqsPatchConfig {
-    @JsonProperty private String accessKeyId;
-    @JsonProperty private URI endpointUrl;
     @JsonProperty private URI queueUrl;
     @JsonProperty private String region;
+    @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private URI endpointUrl;
 
     public SqsPatchConfig() {}
-
-    public SqsPatchConfig accessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-        return this;
-    }
-
-    /**
-     * Get accessKeyId
-     *
-     * @return accessKeyId
-     */
-    @javax.annotation.Nullable
-    public String getAccessKeyId() {
-        return accessKeyId;
-    }
-
-    public void setAccessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-    }
-
-    public SqsPatchConfig endpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
-        return this;
-    }
-
-    /**
-     * Get endpointUrl
-     *
-     * @return endpointUrl
-     */
-    @javax.annotation.Nullable
-    public URI getEndpointUrl() {
-        return endpointUrl;
-    }
-
-    public void setEndpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
-    }
 
     public SqsPatchConfig queueUrl(URI queueUrl) {
         this.queueUrl = queueUrl;
@@ -102,6 +64,25 @@ public class SqsPatchConfig {
         this.region = region;
     }
 
+    public SqsPatchConfig accessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+        return this;
+    }
+
+    /**
+     * Get accessKeyId
+     *
+     * @return accessKeyId
+     */
+    @javax.annotation.Nullable
+    public String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+    }
+
     public SqsPatchConfig secretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
         return this;
@@ -119,6 +100,25 @@ public class SqsPatchConfig {
 
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+
+    public SqsPatchConfig endpointUrl(URI endpointUrl) {
+        this.endpointUrl = endpointUrl;
+        return this;
+    }
+
+    /**
+     * Get endpointUrl
+     *
+     * @return endpointUrl
+     */
+    @javax.annotation.Nullable
+    public URI getEndpointUrl() {
+        return endpointUrl;
+    }
+
+    public void setEndpointUrl(URI endpointUrl) {
+        this.endpointUrl = endpointUrl;
     }
 
     /**

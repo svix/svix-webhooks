@@ -5,22 +5,22 @@ require "json"
 module Svix
   class RedshiftPatchConfig
     attr_accessor :access_key_id
+    attr_accessor :secret_access_key
+    attr_accessor :region
     # Database name.
     #
     # Only required if not using transformations.
     attr_accessor :db_name
-    attr_accessor :region
     # Schema name.
     #
     # Only used if not using transformations.
     attr_accessor :schema_name
-    attr_accessor :secret_access_key
     # Table name.
     #
     # Only required if not using transformations.
     attr_accessor :table_name
 
-    ALL_FIELD ||= ["access_key_id", "db_name", "region", "schema_name", "secret_access_key", "table_name"].freeze
+    ALL_FIELD ||= ["access_key_id", "secret_access_key", "region", "db_name", "schema_name", "table_name"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -42,10 +42,10 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["access_key_id"] = attributes["accessKeyId"]
-      attrs["db_name"] = attributes["dbName"]
-      attrs["region"] = attributes["region"]
-      attrs["schema_name"] = attributes["schemaName"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["region"] = attributes["region"]
+      attrs["db_name"] = attributes["dbName"]
+      attrs["schema_name"] = attributes["schemaName"]
       attrs["table_name"] = attributes["tableName"]
       new(attrs)
     end
@@ -53,10 +53,10 @@ module Svix
     def serialize
       out = Hash.new
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
+      out["region"] = Svix::serialize_primitive(@region) if @region
+      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
+      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
       out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
       out
     end

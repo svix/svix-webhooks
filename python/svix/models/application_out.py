@@ -6,12 +6,8 @@ from .common import BaseModel
 
 
 class ApplicationOut(BaseModel):
-    created_at: datetime
-
-    id: str
-    """The Application's ID."""
-
-    metadata: t.Dict[str, str]
+    uid: t.Optional[str] = None
+    """Optional unique identifier for the application."""
 
     name: str
     """Application name for human consumption."""
@@ -21,7 +17,11 @@ class ApplicationOut(BaseModel):
 
     Outgoing messages will be throttled to this rate."""
 
-    uid: t.Optional[str] = None
-    """Optional unique identifier for the application."""
+    id: str
+    """The Application's ID."""
+
+    created_at: datetime
 
     updated_at: datetime
+
+    metadata: t.Dict[str, str]

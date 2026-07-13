@@ -20,16 +20,111 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ConnectorUpdate {
-    @JsonProperty private Set<String> allowedEventTypes;
-    @JsonProperty private String description;
-    @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private String instructions;
-    @JsonProperty private ConnectorKind kind;
-    @JsonProperty private URI logo;
     @JsonProperty private String name;
+    @JsonProperty private URI logo;
+    @JsonProperty private String description;
+    @JsonProperty private ConnectorKind kind;
+    @JsonProperty private String instructions;
+    @JsonProperty private Set<String> allowedEventTypes;
     @JsonProperty private String transformation;
+    @JsonProperty private Set<String> featureFlags;
 
     public ConnectorUpdate() {}
+
+    public ConnectorUpdate name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return name
+     */
+    @javax.annotation.Nullable
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ConnectorUpdate logo(URI logo) {
+        this.logo = logo;
+        return this;
+    }
+
+    /**
+     * Get logo
+     *
+     * @return logo
+     */
+    @javax.annotation.Nullable
+    public URI getLogo() {
+        return logo;
+    }
+
+    public void setLogo(URI logo) {
+        this.logo = logo;
+    }
+
+    public ConnectorUpdate description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ConnectorUpdate kind(ConnectorKind kind) {
+        this.kind = kind;
+        return this;
+    }
+
+    /**
+     * Get kind
+     *
+     * @return kind
+     */
+    @javax.annotation.Nullable
+    public ConnectorKind getKind() {
+        return kind;
+    }
+
+    public void setKind(ConnectorKind kind) {
+        this.kind = kind;
+    }
+
+    public ConnectorUpdate instructions(String instructions) {
+        this.instructions = instructions;
+        return this;
+    }
+
+    /**
+     * Get instructions
+     *
+     * @return instructions
+     */
+    @javax.annotation.Nullable
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
 
     public ConnectorUpdate allowedEventTypes(Set<String> allowedEventTypes) {
         this.allowedEventTypes = allowedEventTypes;
@@ -59,23 +154,23 @@ public class ConnectorUpdate {
         this.allowedEventTypes = allowedEventTypes;
     }
 
-    public ConnectorUpdate description(String description) {
-        this.description = description;
+    public ConnectorUpdate transformation(String transformation) {
+        this.transformation = transformation;
         return this;
     }
 
     /**
-     * Get description
+     * Get transformation
      *
-     * @return description
+     * @return transformation
      */
-    @javax.annotation.Nullable
-    public String getDescription() {
-        return description;
+    @javax.annotation.Nonnull
+    public String getTransformation() {
+        return transformation;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTransformation(String transformation) {
+        this.transformation = transformation;
     }
 
     public ConnectorUpdate featureFlags(Set<String> featureFlags) {
@@ -104,101 +199,6 @@ public class ConnectorUpdate {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public ConnectorUpdate instructions(String instructions) {
-        this.instructions = instructions;
-        return this;
-    }
-
-    /**
-     * Get instructions
-     *
-     * @return instructions
-     */
-    @javax.annotation.Nullable
-    public String getInstructions() {
-        return instructions;
-    }
-
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
-    }
-
-    public ConnectorUpdate kind(ConnectorKind kind) {
-        this.kind = kind;
-        return this;
-    }
-
-    /**
-     * Get kind
-     *
-     * @return kind
-     */
-    @javax.annotation.Nullable
-    public ConnectorKind getKind() {
-        return kind;
-    }
-
-    public void setKind(ConnectorKind kind) {
-        this.kind = kind;
-    }
-
-    public ConnectorUpdate logo(URI logo) {
-        this.logo = logo;
-        return this;
-    }
-
-    /**
-     * Get logo
-     *
-     * @return logo
-     */
-    @javax.annotation.Nullable
-    public URI getLogo() {
-        return logo;
-    }
-
-    public void setLogo(URI logo) {
-        this.logo = logo;
-    }
-
-    public ConnectorUpdate name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return name
-     */
-    @javax.annotation.Nullable
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ConnectorUpdate transformation(String transformation) {
-        this.transformation = transformation;
-        return this;
-    }
-
-    /**
-     * Get transformation
-     *
-     * @return transformation
-     */
-    @javax.annotation.Nonnull
-    public String getTransformation() {
-        return transformation;
-    }
-
-    public void setTransformation(String transformation) {
-        this.transformation = transformation;
     }
 
     /**

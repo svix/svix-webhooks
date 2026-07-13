@@ -6,22 +6,24 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SnowflakeConfig(
     /**
+     * PEM-encoded private key used for signing token-based requests to the Snowflake API.
+     *
+     * Beginning/end delimiters are not required.
+     */
+    val privateKey: String,
+    /**
      * Snowflake account identifier, which includes both the organization and account IDs separated
      * by a hyphen.
      */
     val accountIdentifier: String,
+    /** The Snowflake user id. */
+    val userId: String,
     /**
      * Database name.
      *
      * Only required if not using transformations.
      */
     val dbName: String? = null,
-    /**
-     * PEM-encoded private key used for signing token-based requests to the Snowflake API.
-     *
-     * Beginning/end delimiters are not required.
-     */
-    val privateKey: String,
     /**
      * Schema name.
      *
@@ -34,6 +36,4 @@ data class SnowflakeConfig(
      * Only required if not using transformations.
      */
     val tableName: String? = null,
-    /** The Snowflake user id. */
-    val userId: String,
 )

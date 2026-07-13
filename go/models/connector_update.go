@@ -2,12 +2,12 @@
 package models
 
 type ConnectorUpdate struct {
-	AllowedEventTypes []string       `json:"allowedEventTypes,omitempty"`
-	Description       *string        `json:"description,omitempty"`
-	FeatureFlags      []string       `json:"featureFlags,omitempty"`
-	Instructions      *string        `json:"instructions,omitempty"`
-	Kind              *ConnectorKind `json:"kind,omitempty"`
-	Logo              *string        `json:"logo,omitempty"`
 	Name              *string        `json:"name,omitempty"`
+	Logo              *string        `json:"logo,omitempty"`
+	Description       *string        `json:"description,omitempty"`
+	Kind              *ConnectorKind `json:"kind,omitempty"`
+	Instructions      *string        `json:"instructions,omitempty"`
+	AllowedEventTypes []string       `json:"allowedEventTypes,omitempty"`
 	Transformation    string         `json:"transformation"`
+	FeatureFlags      []string       `json:"featureFlags,omitempty"`
 }

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AzureBlobStoragePatchConfig(
-    val accessKey: String? = null,
-    val account: String? = null,
     val container: String? = null,
+    val account: String? = null,
+    val accessKey: String? = null,
 )

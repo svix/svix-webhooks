@@ -5,8 +5,6 @@ from .common import BaseModel
 
 
 class ApplicationPatch(BaseModel):
-    metadata: t.Optional[t.Dict[str, str]] = None
-
     name: t.Optional[str] = None
 
     throttle_rate: t.Optional[int] = None
@@ -16,3 +14,5 @@ class ApplicationPatch(BaseModel):
 
     uid: t.Optional[str] = None
     """The Application's UID."""
+
+    metadata: t.Optional[t.Dict[str, str]] = None

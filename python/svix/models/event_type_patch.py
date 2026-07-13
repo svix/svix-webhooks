@@ -5,15 +5,15 @@ from .common import BaseModel
 
 
 class EventTypePatch(BaseModel):
+    description: t.Optional[str] = None
+
     archived: t.Optional[bool] = None
 
     deprecated: t.Optional[bool] = None
 
-    description: t.Optional[str] = None
+    schemas: t.Optional[t.Dict[str, t.Any]] = None
 
     feature_flags: t.Optional[t.List[str]] = None
 
     group_name: t.Optional[str] = None
     """The event type group's name"""
-
-    schemas: t.Optional[t.Dict[str, t.Any]] = None

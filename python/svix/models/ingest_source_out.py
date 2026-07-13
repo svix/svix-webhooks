@@ -35,21 +35,21 @@ from .zoom_config_out import ZoomConfigOut
 
 
 class IngestSourceOut(BaseModel):
-    created_at: datetime
-
     id: str
     """The Source's ID."""
-
-    ingest_url: t.Optional[str] = None
-
-    metadata: t.Dict[str, str]
-
-    name: str
 
     uid: t.Optional[str] = None
     """The Source's UID."""
 
+    name: str
+
+    ingest_url: t.Optional[str] = None
+
+    created_at: datetime
+
     updated_at: datetime
+
+    metadata: t.Dict[str, str]
 
     type: t.Union[
         t.Literal["generic-webhook"],

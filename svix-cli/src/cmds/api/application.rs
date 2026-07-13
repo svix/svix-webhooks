@@ -82,17 +82,17 @@ pub enum ApplicationCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"metadata\": {\"key\": \"...\"},
+    \"uid\": \"unique-identifier\",
     \"name\": \"My first application\",
     \"throttleRate\": 123,
-    \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -109,19 +109,19 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"My first application\",
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"uid\": \"unique-identifier\",
+  \"name\": \"My first application\",
+  \"throttleRate\": 123,
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         application_in: crate::json::JsonOf<ApplicationIn>,
@@ -139,13 +139,13 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"uid\": \"unique-identifier\",
   \"name\": \"My first application\",
   \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { id: String },
     /// Create or update an application.
@@ -159,19 +159,19 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"My first application\",
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"uid\": \"unique-identifier\",
+  \"name\": \"My first application\",
+  \"throttleRate\": 123,
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Upsert {
         id: String,
@@ -198,19 +198,19 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\"
+  \"uid\": \"unique-identifier\",
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"uid\": \"unique-identifier\",
   \"name\": \"My first application\",
   \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Patch {
         id: String,

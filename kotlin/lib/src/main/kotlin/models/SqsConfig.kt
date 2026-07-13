@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SqsConfig(
-    val accessKeyId: String,
-    val endpointUrl: String? = null,
     val queueUrl: String,
     val region: String,
+    val accessKeyId: String,
     val secretAccessKey: String,
+    val endpointUrl: String? = null,
 )

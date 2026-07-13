@@ -21,90 +21,18 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MessageIn {
-    @JsonProperty private ApplicationIn application;
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime deliverAt;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
     @JsonProperty private String payload;
-    @JsonProperty private Long payloadRetentionHours;
-    @JsonProperty private Long payloadRetentionPeriod;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private ApplicationIn application;
     @JsonProperty private Set<String> tags;
     @JsonProperty private Map<String, Object> transformationsParams;
+    @JsonProperty private OffsetDateTime deliverAt;
+    @JsonProperty private Long payloadRetentionPeriod;
+    @JsonProperty private Long payloadRetentionHours;
 
     public MessageIn() {}
-
-    public MessageIn application(ApplicationIn application) {
-        this.application = application;
-        return this;
-    }
-
-    /**
-     * Optionally creates a new application alongside the message.
-     *
-     * <p>If the application id or uid that is used in the path already exists, this argument is
-     * ignored.
-     *
-     * @return application
-     */
-    @javax.annotation.Nullable
-    public ApplicationIn getApplication() {
-        return application;
-    }
-
-    public void setApplication(ApplicationIn application) {
-        this.application = application;
-    }
-
-    public MessageIn channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public MessageIn addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of free-form identifiers that endpoints can filter by
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
-
-    public MessageIn deliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
-        return this;
-    }
-
-    /**
-     * The date and time at which the message will be delivered.
-     *
-     * <p>Note that this time is best-effort-only. Must be at least one minute and no more than 24
-     * hours in the future.
-     *
-     * @return deliverAt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getDeliverAt() {
-        return deliverAt;
-    }
-
-    public void setDeliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
-    }
 
     public MessageIn eventId(String eventId) {
         this.eventId = eventId;
@@ -165,44 +93,54 @@ public class MessageIn {
         this.payload = payload;
     }
 
-    public MessageIn payloadRetentionHours(Long payloadRetentionHours) {
-        this.payloadRetentionHours = payloadRetentionHours;
+    public MessageIn channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public MessageIn addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
         return this;
     }
 
     /**
-     * Optional number of hours to retain the message payload. Note that this is mutually exclusive
-     * with `payloadRetentionPeriod`.
+     * List of free-form identifiers that endpoints can filter by
      *
-     * @return payloadRetentionHours
+     * @return channels
      */
     @javax.annotation.Nullable
-    public Long getPayloadRetentionHours() {
-        return payloadRetentionHours;
+    public Set<String> getChannels() {
+        return channels;
     }
 
-    public void setPayloadRetentionHours(Long payloadRetentionHours) {
-        this.payloadRetentionHours = payloadRetentionHours;
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
     }
 
-    public MessageIn payloadRetentionPeriod(Long payloadRetentionPeriod) {
-        this.payloadRetentionPeriod = payloadRetentionPeriod;
+    public MessageIn application(ApplicationIn application) {
+        this.application = application;
         return this;
     }
 
     /**
-     * Optional number of days to retain the message payload. Defaults to 90. Note that this is
-     * mutually exclusive with `payloadRetentionHours`.
+     * Optionally creates a new application alongside the message.
      *
-     * @return payloadRetentionPeriod
+     * <p>If the application id or uid that is used in the path already exists, this argument is
+     * ignored.
+     *
+     * @return application
      */
     @javax.annotation.Nullable
-    public Long getPayloadRetentionPeriod() {
-        return payloadRetentionPeriod;
+    public ApplicationIn getApplication() {
+        return application;
     }
 
-    public void setPayloadRetentionPeriod(Long payloadRetentionPeriod) {
-        this.payloadRetentionPeriod = payloadRetentionPeriod;
+    public void setApplication(ApplicationIn application) {
+        this.application = application;
     }
 
     public MessageIn tags(Set<String> tags) {
@@ -250,6 +188,68 @@ public class MessageIn {
 
     public void setTransformationsParams(Map<String, Object> transformationsParams) {
         this.transformationsParams = transformationsParams;
+    }
+
+    public MessageIn deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
+        return this;
+    }
+
+    /**
+     * The date and time at which the message will be delivered.
+     *
+     * <p>Note that this time is best-effort-only. Must be at least one minute and no more than 24
+     * hours in the future.
+     *
+     * @return deliverAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
+    }
+
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
+    }
+
+    public MessageIn payloadRetentionPeriod(Long payloadRetentionPeriod) {
+        this.payloadRetentionPeriod = payloadRetentionPeriod;
+        return this;
+    }
+
+    /**
+     * Optional number of days to retain the message payload. Defaults to 90. Note that this is
+     * mutually exclusive with `payloadRetentionHours`.
+     *
+     * @return payloadRetentionPeriod
+     */
+    @javax.annotation.Nullable
+    public Long getPayloadRetentionPeriod() {
+        return payloadRetentionPeriod;
+    }
+
+    public void setPayloadRetentionPeriod(Long payloadRetentionPeriod) {
+        this.payloadRetentionPeriod = payloadRetentionPeriod;
+    }
+
+    public MessageIn payloadRetentionHours(Long payloadRetentionHours) {
+        this.payloadRetentionHours = payloadRetentionHours;
+        return this;
+    }
+
+    /**
+     * Optional number of hours to retain the message payload. Note that this is mutually exclusive
+     * with `payloadRetentionPeriod`.
+     *
+     * @return payloadRetentionHours
+     */
+    @javax.annotation.Nullable
+    public Long getPayloadRetentionHours() {
+        return payloadRetentionHours;
+    }
+
+    public void setPayloadRetentionHours(Long payloadRetentionHours) {
+        this.payloadRetentionHours = payloadRetentionHours;
     }
 
     /**

@@ -25,20 +25,20 @@ import { type SnsConfig, SnsConfigSerializer } from "./snsConfig";
 import { type SqsConfig, SqsConfigSerializer } from "./sqsConfig";
 
 interface _StreamSinkOutFields {
-  batchSize: number;
-  createdAt: Date;
-  currentIterator: string;
-  eventTypes?: string[];
-  failureReason?: string | null;
   /** The sink's ID. */
   id: string;
-  maxWaitSecs: number;
-  metadata: { [key: string]: string };
-  nextRetryAt?: Date | null;
-  status: SinkStatus;
   /** The sink's UID. */
   uid?: string | null;
+  status: SinkStatus;
+  currentIterator: string;
+  failureReason?: string | null;
+  createdAt: Date;
   updatedAt: Date;
+  batchSize: number;
+  maxWaitSecs: number;
+  eventTypes?: string[];
+  nextRetryAt?: Date | null;
+  metadata: { [key: string]: string };
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
@@ -182,18 +182,18 @@ export const StreamSinkOutSerializer = {
     return {
       type,
       config: getConfig(type),
-      batchSize: object["batchSize"],
-      createdAt: new Date(object["createdAt"]),
-      currentIterator: object["currentIterator"],
-      eventTypes: object["eventTypes"],
-      failureReason: object["failureReason"],
       id: object["id"],
-      maxWaitSecs: object["maxWaitSecs"],
-      metadata: object["metadata"],
-      nextRetryAt: object["nextRetryAt"] ? new Date(object["nextRetryAt"]) : null,
-      status: SinkStatusSerializer._fromJsonObject(object["status"]),
       uid: object["uid"],
+      status: SinkStatusSerializer._fromJsonObject(object["status"]),
+      currentIterator: object["currentIterator"],
+      failureReason: object["failureReason"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
+      batchSize: object["batchSize"],
+      maxWaitSecs: object["maxWaitSecs"],
+      eventTypes: object["eventTypes"],
+      nextRetryAt: object["nextRetryAt"] ? new Date(object["nextRetryAt"]) : null,
+      metadata: object["metadata"],
     };
   },
 
@@ -251,18 +251,18 @@ export const StreamSinkOutSerializer = {
     return {
       type: self.type,
       config: config,
-      batchSize: self.batchSize,
-      createdAt: self.createdAt,
-      currentIterator: self.currentIterator,
-      eventTypes: self.eventTypes,
-      failureReason: self.failureReason,
       id: self.id,
-      maxWaitSecs: self.maxWaitSecs,
-      metadata: self.metadata,
-      nextRetryAt: self.nextRetryAt,
-      status: SinkStatusSerializer._toJsonObject(self.status),
       uid: self.uid,
+      status: SinkStatusSerializer._toJsonObject(self.status),
+      currentIterator: self.currentIterator,
+      failureReason: self.failureReason,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
+      batchSize: self.batchSize,
+      maxWaitSecs: self.maxWaitSecs,
+      eventTypes: self.eventTypes,
+      nextRetryAt: self.nextRetryAt,
+      metadata: self.metadata,
     };
   },
 };

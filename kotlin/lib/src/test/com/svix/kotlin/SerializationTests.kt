@@ -13,7 +13,7 @@ class SerializationTests {
     @Test
     fun structEnumWithFields() {
         val jsonSource =
-            """{"name":"name","uid":"uuiidd","type":"cron","config":{"contentType":"web-app/json","payload":"totally json fr fr","schedule":"* * * * *"}}"""
+            """{"name":"name","uid":"uuiidd","type":"cron","config":{"schedule":"* * * * *","payload":"totally json fr fr","contentType":"web-app/json"}}"""
         val sourceIn =
             IngestSourceIn(
                 name = "name",

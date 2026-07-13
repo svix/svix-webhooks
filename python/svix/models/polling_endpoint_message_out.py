@@ -8,10 +8,7 @@ from .common import BaseModel
 class PollingEndpointMessageOut(BaseModel):
     """The MessageOut equivalent of polling endpoint"""
 
-    channels: t.Optional[t.List[str]] = None
-    """List of free-form identifiers that endpoints can filter by"""
-
-    deliver_at: t.Optional[datetime] = None
+    headers: t.Optional[t.Dict[str, str]] = None
 
     event_id: t.Optional[str] = None
     """Optional unique identifier for the message"""
@@ -19,13 +16,16 @@ class PollingEndpointMessageOut(BaseModel):
     event_type: str
     """The event type's name"""
 
-    headers: t.Optional[t.Dict[str, str]] = None
+    payload: t.Dict[str, t.Any]
+
+    channels: t.Optional[t.List[str]] = None
+    """List of free-form identifiers that endpoints can filter by"""
 
     id: str
     """The Message's ID."""
 
-    payload: t.Dict[str, t.Any]
+    timestamp: datetime
 
     tags: t.Optional[t.List[str]] = None
 
-    timestamp: datetime
+    deliver_at: t.Optional[datetime] = None

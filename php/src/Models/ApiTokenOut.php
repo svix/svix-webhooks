@@ -13,11 +13,11 @@ class ApiTokenOut implements \JsonSerializable
      * @param list<string>|null $scopes
      */
     private function __construct(
-        public readonly \DateTimeImmutable $createdAt,
-        public readonly string $id,
         public readonly string $token,
-        public readonly ?\DateTimeImmutable $expiresAt = null,
+        public readonly string $id,
+        public readonly \DateTimeImmutable $createdAt,
         public readonly ?string $name = null,
+        public readonly ?\DateTimeImmutable $expiresAt = null,
         public readonly ?array $scopes = null,
         array $setFields = [],
     ) {
@@ -28,34 +28,18 @@ class ApiTokenOut implements \JsonSerializable
      * Create an instance of ApiTokenOut with required fields.
      */
     public static function create(
-        \DateTimeImmutable $createdAt,
-        string $id,
         string $token,
+        string $id,
+        \DateTimeImmutable $createdAt,
     ): self {
         return new self(
-            createdAt: $createdAt,
-            expiresAt: null,
+            token: $token,
             id: $id,
             name: null,
+            createdAt: $createdAt,
+            expiresAt: null,
             scopes: null,
-            token: $token,
-            setFields: ['createdAt' => true, 'id' => true, 'token' => true]
-        );
-    }
-
-    public function withExpiresAt(?\DateTimeImmutable $expiresAt): self
-    {
-        $setFields = $this->setFields;
-        $setFields['expiresAt'] = true;
-
-        return new self(
-            createdAt: $this->createdAt,
-            expiresAt: $expiresAt,
-            id: $this->id,
-            name: $this->name,
-            scopes: $this->scopes,
-            token: $this->token,
-            setFields: $setFields
+            setFields: ['token' => true, 'id' => true, 'createdAt' => true]
         );
     }
 
@@ -65,12 +49,28 @@ class ApiTokenOut implements \JsonSerializable
         $setFields['name'] = true;
 
         return new self(
-            createdAt: $this->createdAt,
-            expiresAt: $this->expiresAt,
+            token: $this->token,
             id: $this->id,
             name: $name,
+            createdAt: $this->createdAt,
+            expiresAt: $this->expiresAt,
             scopes: $this->scopes,
+            setFields: $setFields
+        );
+    }
+
+    public function withExpiresAt(?\DateTimeImmutable $expiresAt): self
+    {
+        $setFields = $this->setFields;
+        $setFields['expiresAt'] = true;
+
+        return new self(
             token: $this->token,
+            id: $this->id,
+            name: $this->name,
+            createdAt: $this->createdAt,
+            expiresAt: $expiresAt,
+            scopes: $this->scopes,
             setFields: $setFields
         );
     }
@@ -81,12 +81,12 @@ class ApiTokenOut implements \JsonSerializable
         $setFields['scopes'] = true;
 
         return new self(
-            createdAt: $this->createdAt,
-            expiresAt: $this->expiresAt,
+            token: $this->token,
             id: $this->id,
             name: $this->name,
+            createdAt: $this->createdAt,
+            expiresAt: $this->expiresAt,
             scopes: $scopes,
-            token: $this->token,
             setFields: $setFields
         );
     }
@@ -94,15 +94,15 @@ class ApiTokenOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'createdAt' => $this->createdAt->format('c'),
+            'token' => $this->token,
             'id' => $this->id,
-            'token' => $this->token];
+            'createdAt' => $this->createdAt->format('c')];
 
-        if (isset($this->setFields['expiresAt'])) {
-            $data['expiresAt'] = $this->expiresAt->format('c');
-        }
         if (isset($this->setFields['name'])) {
             $data['name'] = $this->name;
+        }
+        if (isset($this->setFields['expiresAt'])) {
+            $data['expiresAt'] = $this->expiresAt->format('c');
         }
         if (isset($this->setFields['scopes'])) {
             $data['scopes'] = $this->scopes;
@@ -117,12 +117,12 @@ class ApiTokenOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'ApiTokenOut'),
-            expiresAt: \Svix\Utils::deserializeDt($data, 'expiresAt', false, 'ApiTokenOut'),
+            token: \Svix\Utils::deserializeString($data, 'token', true, 'ApiTokenOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'ApiTokenOut'),
             name: \Svix\Utils::deserializeString($data, 'name', false, 'ApiTokenOut'),
-            scopes: \Svix\Utils::getValFromJson($data, 'scopes', false, 'ApiTokenOut'),
-            token: \Svix\Utils::deserializeString($data, 'token', true, 'ApiTokenOut')
+            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'ApiTokenOut'),
+            expiresAt: \Svix\Utils::deserializeDt($data, 'expiresAt', false, 'ApiTokenOut'),
+            scopes: \Svix\Utils::getValFromJson($data, 'scopes', false, 'ApiTokenOut')
         );
     }
 

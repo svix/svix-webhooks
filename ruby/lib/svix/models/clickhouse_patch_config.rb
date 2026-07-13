@@ -4,13 +4,13 @@ require "json"
 
 module Svix
   class ClickhousePatchConfig
-    attr_accessor :database
-    attr_accessor :password
-    attr_accessor :table_name
     attr_accessor :url
     attr_accessor :username
+    attr_accessor :password
+    attr_accessor :database
+    attr_accessor :table_name
 
-    ALL_FIELD ||= ["database", "password", "table_name", "url", "username"].freeze
+    ALL_FIELD ||= ["url", "username", "password", "database", "table_name"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,21 +34,21 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["database"] = attributes["database"]
-      attrs["password"] = attributes["password"]
-      attrs["table_name"] = attributes["tableName"]
       attrs["url"] = attributes["url"]
       attrs["username"] = attributes["username"]
+      attrs["password"] = attributes["password"]
+      attrs["database"] = attributes["database"]
+      attrs["table_name"] = attributes["tableName"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["database"] = Svix::serialize_primitive(@database) if @database
-      out["password"] = Svix::serialize_primitive(@password) if @password
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["username"] = Svix::serialize_primitive(@username) if @username
+      out["password"] = Svix::serialize_primitive(@password) if @password
+      out["database"] = Svix::serialize_primitive(@database) if @database
+      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
       out
     end
 

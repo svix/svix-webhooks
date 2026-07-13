@@ -10,30 +10,30 @@ from .message_status_text import MessageStatusText
 
 
 class MessageAttemptOut(BaseModel):
+    url: str
+
+    response: str
+
+    response_status_code: int
+
+    response_duration_ms: int
+    """Response duration in milliseconds."""
+
+    status: MessageStatus
+
+    status_text: MessageStatusText
+
+    trigger_type: MessageAttemptTriggerType
+
+    msg_id: str
+    """The Message's ID."""
+
     endpoint_id: str
     """The Endpoint's ID."""
 
     id: str
     """The MessageAttempt's ID."""
 
-    msg: t.Optional[MessageOut] = None
-
-    msg_id: str
-    """The Message's ID."""
-
-    response: str
-
-    response_duration_ms: int
-    """Response duration in milliseconds."""
-
-    response_status_code: int
-
-    status: MessageStatus
-
-    status_text: MessageStatusText
-
     timestamp: datetime
 
-    trigger_type: MessageAttemptTriggerType
-
-    url: str
+    msg: t.Optional[MessageOut] = None

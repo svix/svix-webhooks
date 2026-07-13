@@ -10,9 +10,9 @@ class GoogleCloudPubSubPatchConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly ?string $credentials = null,
         public readonly ?string $projectId = null,
         public readonly ?string $topicId = null,
+        public readonly ?string $credentials = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -24,23 +24,10 @@ class GoogleCloudPubSubPatchConfig implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            credentials: null,
             projectId: null,
             topicId: null,
+            credentials: null,
             setFields: []
-        );
-    }
-
-    public function withCredentials(?string $credentials): self
-    {
-        $setFields = $this->setFields;
-        $setFields['credentials'] = true;
-
-        return new self(
-            credentials: $credentials,
-            projectId: $this->projectId,
-            topicId: $this->topicId,
-            setFields: $setFields
         );
     }
 
@@ -50,9 +37,9 @@ class GoogleCloudPubSubPatchConfig implements \JsonSerializable
         $setFields['projectId'] = true;
 
         return new self(
-            credentials: $this->credentials,
             projectId: $projectId,
             topicId: $this->topicId,
+            credentials: $this->credentials,
             setFields: $setFields
         );
     }
@@ -63,9 +50,22 @@ class GoogleCloudPubSubPatchConfig implements \JsonSerializable
         $setFields['topicId'] = true;
 
         return new self(
-            credentials: $this->credentials,
             projectId: $this->projectId,
             topicId: $topicId,
+            credentials: $this->credentials,
+            setFields: $setFields
+        );
+    }
+
+    public function withCredentials(?string $credentials): self
+    {
+        $setFields = $this->setFields;
+        $setFields['credentials'] = true;
+
+        return new self(
+            projectId: $this->projectId,
+            topicId: $this->topicId,
+            credentials: $credentials,
             setFields: $setFields
         );
     }
@@ -75,14 +75,14 @@ class GoogleCloudPubSubPatchConfig implements \JsonSerializable
         $data = [
         ];
 
-        if (null !== $this->credentials) {
-            $data['credentials'] = $this->credentials;
-        }
         if (null !== $this->projectId) {
             $data['projectId'] = $this->projectId;
         }
         if (null !== $this->topicId) {
             $data['topicId'] = $this->topicId;
+        }
+        if (null !== $this->credentials) {
+            $data['credentials'] = $this->credentials;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -94,9 +94,9 @@ class GoogleCloudPubSubPatchConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            credentials: \Svix\Utils::deserializeString($data, 'credentials', false, 'GoogleCloudPubSubPatchConfig'),
             projectId: \Svix\Utils::deserializeString($data, 'projectId', false, 'GoogleCloudPubSubPatchConfig'),
-            topicId: \Svix\Utils::deserializeString($data, 'topicId', false, 'GoogleCloudPubSubPatchConfig')
+            topicId: \Svix\Utils::deserializeString($data, 'topicId', false, 'GoogleCloudPubSubPatchConfig'),
+            credentials: \Svix\Utils::deserializeString($data, 'credentials', false, 'GoogleCloudPubSubPatchConfig')
         );
     }
 

@@ -20,40 +20,12 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApplicationPatch {
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
     @JsonProperty private MaybeUnset<Long> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
+    @JsonProperty private Map<String, String> metadata;
 
     public ApplicationPatch() {}
-
-    public ApplicationPatch metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public ApplicationPatch putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
 
     public ApplicationPatch name(String name) {
         this.name = name;
@@ -118,6 +90,34 @@ public class ApplicationPatch {
 
     public void setUid(String uid) {
         this.uid = new MaybeUnset<>(uid);
+    }
+
+    public ApplicationPatch metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public ApplicationPatch putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

@@ -4,25 +4,25 @@ require "json"
 
 module Svix
   class SinkInCommon
-    # List of message channels this sink listens to (omit for all).
-    attr_accessor :channels
     attr_accessor :description
-    attr_accessor :disabled
-    attr_accessor :filter_types
-    attr_accessor :metadata
-    # The endpoint's verification secret.
-    #
-    # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-    # It is recommended to not set this and let the server generate the secret.
-    attr_accessor :secret
     # Maximum messages per second to send to this endpoint.
     #
     # Outgoing messages will be throttled to this rate.
     attr_accessor :throttle_rate
     # Optional unique identifier for the sink.
     attr_accessor :uid
+    # The endpoint's verification secret.
+    #
+    # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+    # It is recommended to not set this and let the server generate the secret.
+    attr_accessor :secret
+    attr_accessor :disabled
+    attr_accessor :filter_types
+    # List of message channels this sink listens to (omit for all).
+    attr_accessor :channels
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["channels", "description", "disabled", "filter_types", "metadata", "secret", "throttle_rate", "uid"].freeze
+    ALL_FIELD ||= ["description", "throttle_rate", "uid", "secret", "disabled", "filter_types", "channels", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -43,27 +43,27 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["channels"] = attributes["channels"]
       attrs["description"] = attributes["description"]
-      attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
-      attrs["metadata"] = attributes["metadata"]
-      attrs["secret"] = attributes["secret"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
+      attrs["secret"] = attributes["secret"]
+      attrs["disabled"] = attributes["disabled"]
+      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["channels"] = attributes["channels"]
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["description"] = Svix::serialize_primitive(@description) if @description
-      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["secret"] = Svix::serialize_primitive(@secret) if @secret
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["secret"] = Svix::serialize_primitive(@secret) if @secret
+      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
+      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["channels"] = Svix::serialize_primitive(@channels) if @channels
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

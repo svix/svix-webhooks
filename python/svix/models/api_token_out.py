@@ -6,14 +6,14 @@ from .common import BaseModel
 
 
 class ApiTokenOut(BaseModel):
-    created_at: datetime
-
-    expires_at: t.Optional[datetime] = None
+    token: str
 
     id: str
 
     name: t.Optional[str] = None
 
-    scopes: t.Optional[t.List[str]] = None
+    created_at: datetime
 
-    token: str
+    expires_at: t.Optional[datetime] = None
+
+    scopes: t.Optional[t.List[str]] = None

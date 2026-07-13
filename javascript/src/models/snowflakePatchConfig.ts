@@ -1,14 +1,15 @@
 // this file is @generated
 
 export interface SnowflakePatchConfig {
+  privateKey?: string;
   accountIdentifier?: string;
+  userId?: string;
   /**
    * Database name.
    *
    * Only required if not using transformations.
    */
   dbName?: string;
-  privateKey?: string;
   /**
    * Schema name.
    *
@@ -21,29 +22,28 @@ export interface SnowflakePatchConfig {
    * Only required if not using transformations.
    */
   tableName?: string;
-  userId?: string;
 }
 
 export const SnowflakePatchConfigSerializer = {
   _fromJsonObject(object: any): SnowflakePatchConfig {
     return {
-      accountIdentifier: object["accountIdentifier"],
-      dbName: object["dbName"],
       privateKey: object["privateKey"],
+      accountIdentifier: object["accountIdentifier"],
+      userId: object["userId"],
+      dbName: object["dbName"],
       schemaName: object["schemaName"],
       tableName: object["tableName"],
-      userId: object["userId"],
     };
   },
 
   _toJsonObject(self: SnowflakePatchConfig): any {
     return {
-      accountIdentifier: self.accountIdentifier,
-      dbName: self.dbName,
       privateKey: self.privateKey,
+      accountIdentifier: self.accountIdentifier,
+      userId: self.userId,
+      dbName: self.dbName,
       schemaName: self.schemaName,
       tableName: self.tableName,
-      userId: self.userId,
     };
   },
 };

@@ -4,11 +4,11 @@ require "json"
 
 module Svix
   class AzureBlobStorageConfig
-    attr_accessor :access_key
-    attr_accessor :account
     attr_accessor :container
+    attr_accessor :account
+    attr_accessor :access_key
 
-    ALL_FIELD ||= ["access_key", "account", "container"].freeze
+    ALL_FIELD ||= ["container", "account", "access_key"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,17 +32,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["access_key"] = attributes["accessKey"]
-      attrs["account"] = attributes["account"]
       attrs["container"] = attributes["container"]
+      attrs["account"] = attributes["account"]
+      attrs["access_key"] = attributes["accessKey"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["accessKey"] = Svix::serialize_primitive(@access_key) if @access_key
-      out["account"] = Svix::serialize_primitive(@account) if @account
       out["container"] = Svix::serialize_primitive(@container) if @container
+      out["account"] = Svix::serialize_primitive(@account) if @account
+      out["accessKey"] = Svix::serialize_primitive(@access_key) if @access_key
       out
     end
 

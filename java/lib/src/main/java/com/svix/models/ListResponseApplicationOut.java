@@ -20,9 +20,9 @@ import java.util.List;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ListResponseApplicationOut {
     @JsonProperty private List<ApplicationOut> data;
-    @JsonProperty private Boolean done;
     @JsonProperty private String iterator;
     @JsonProperty private String prevIterator;
+    @JsonProperty private Boolean done;
 
     public ListResponseApplicationOut() {}
 
@@ -52,25 +52,6 @@ public class ListResponseApplicationOut {
 
     public void setData(List<ApplicationOut> data) {
         this.data = data;
-    }
-
-    public ListResponseApplicationOut done(Boolean done) {
-        this.done = done;
-        return this;
-    }
-
-    /**
-     * Get done
-     *
-     * @return done
-     */
-    @javax.annotation.Nonnull
-    public Boolean getDone() {
-        return done;
-    }
-
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     public ListResponseApplicationOut iterator(String iterator) {
@@ -109,6 +90,25 @@ public class ListResponseApplicationOut {
 
     public void setPrevIterator(String prevIterator) {
         this.prevIterator = prevIterator;
+    }
+
+    public ListResponseApplicationOut done(Boolean done) {
+        this.done = done;
+        return this;
+    }
+
+    /**
+     * Get done
+     *
+     * @return done
+     */
+    @javax.annotation.Nonnull
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
     }
 
     /**

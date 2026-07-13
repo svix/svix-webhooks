@@ -16,14 +16,33 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SnowflakePatchConfig {
-    @JsonProperty private String accountIdentifier;
-    @JsonProperty private String dbName;
     @JsonProperty private String privateKey;
+    @JsonProperty private String accountIdentifier;
+    @JsonProperty private String userId;
+    @JsonProperty private String dbName;
     @JsonProperty private String schemaName;
     @JsonProperty private String tableName;
-    @JsonProperty private String userId;
 
     public SnowflakePatchConfig() {}
+
+    public SnowflakePatchConfig privateKey(String privateKey) {
+        this.privateKey = privateKey;
+        return this;
+    }
+
+    /**
+     * Get privateKey
+     *
+     * @return privateKey
+     */
+    @javax.annotation.Nullable
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
 
     public SnowflakePatchConfig accountIdentifier(String accountIdentifier) {
         this.accountIdentifier = accountIdentifier;
@@ -42,6 +61,25 @@ public class SnowflakePatchConfig {
 
     public void setAccountIdentifier(String accountIdentifier) {
         this.accountIdentifier = accountIdentifier;
+    }
+
+    public SnowflakePatchConfig userId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    /**
+     * Get userId
+     *
+     * @return userId
+     */
+    @javax.annotation.Nullable
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public SnowflakePatchConfig dbName(String dbName) {
@@ -63,25 +101,6 @@ public class SnowflakePatchConfig {
 
     public void setDbName(String dbName) {
         this.dbName = dbName;
-    }
-
-    public SnowflakePatchConfig privateKey(String privateKey) {
-        this.privateKey = privateKey;
-        return this;
-    }
-
-    /**
-     * Get privateKey
-     *
-     * @return privateKey
-     */
-    @javax.annotation.Nullable
-    public String getPrivateKey() {
-        return privateKey;
-    }
-
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
     }
 
     public SnowflakePatchConfig schemaName(String schemaName) {
@@ -124,25 +143,6 @@ public class SnowflakePatchConfig {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
-    }
-
-    public SnowflakePatchConfig userId(String userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    /**
-     * Get userId
-     *
-     * @return userId
-     */
-    @javax.annotation.Nullable
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     /**

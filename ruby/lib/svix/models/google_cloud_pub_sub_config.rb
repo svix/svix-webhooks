@@ -4,12 +4,12 @@ require "json"
 
 module Svix
   class GoogleCloudPubSubConfig
-    # Google Cloud Credentials JSON Object as a string.
-    attr_accessor :credentials
     attr_accessor :project_id
     attr_accessor :topic_id
+    # Google Cloud Credentials JSON Object as a string.
+    attr_accessor :credentials
 
-    ALL_FIELD ||= ["credentials", "project_id", "topic_id"].freeze
+    ALL_FIELD ||= ["project_id", "topic_id", "credentials"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -33,17 +33,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["credentials"] = attributes["credentials"]
       attrs["project_id"] = attributes["projectId"]
       attrs["topic_id"] = attributes["topicId"]
+      attrs["credentials"] = attributes["credentials"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["credentials"] = Svix::serialize_primitive(@credentials) if @credentials
       out["projectId"] = Svix::serialize_primitive(@project_id) if @project_id
       out["topicId"] = Svix::serialize_primitive(@topic_id) if @topic_id
+      out["credentials"] = Svix::serialize_primitive(@credentials) if @credentials
       out
     end
 

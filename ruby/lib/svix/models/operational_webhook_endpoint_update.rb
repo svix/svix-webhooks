@@ -5,9 +5,6 @@ require "json"
 module Svix
   class OperationalWebhookEndpointUpdate
     attr_accessor :description
-    attr_accessor :disabled
-    attr_accessor :filter_types
-    attr_accessor :metadata
     # Maximum messages per second to send to this endpoint.
     #
     # Outgoing messages will be throttled to this rate.
@@ -15,8 +12,11 @@ module Svix
     # Optional unique identifier for the endpoint.
     attr_accessor :uid
     attr_accessor :url
+    attr_accessor :disabled
+    attr_accessor :filter_types
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["description", "disabled", "filter_types", "metadata", "throttle_rate", "uid", "url"].freeze
+    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "filter_types", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -41,24 +41,24 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["description"] = attributes["description"]
-      attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
-      attrs["metadata"] = attributes["metadata"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
+      attrs["disabled"] = attributes["disabled"]
+      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["description"] = Svix::serialize_primitive(@description) if @description
-      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url
+      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
+      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

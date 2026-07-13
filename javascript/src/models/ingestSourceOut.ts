@@ -39,15 +39,15 @@ import { type VgsConfigOut, VgsConfigOutSerializer } from "./vgsConfigOut";
 import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 
 interface _IngestSourceOutFields {
-  createdAt: Date;
   /** The Source's ID. */
   id: string;
-  ingestUrl?: string | null;
-  metadata: { [key: string]: string };
-  name: string;
   /** The Source's UID. */
   uid?: string | null;
+  name: string;
+  ingestUrl?: string | null;
+  createdAt: Date;
   updatedAt: Date;
+  metadata: { [key: string]: string };
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
@@ -415,13 +415,13 @@ export const IngestSourceOutSerializer = {
     return {
       type,
       config: getConfig(type),
-      createdAt: new Date(object["createdAt"]),
       id: object["id"],
-      ingestUrl: object["ingestUrl"],
-      metadata: object["metadata"],
-      name: object["name"],
       uid: object["uid"],
+      name: object["name"],
+      ingestUrl: object["ingestUrl"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
+      metadata: object["metadata"],
     };
   },
 
@@ -563,13 +563,13 @@ export const IngestSourceOutSerializer = {
     return {
       type: self.type,
       config: config,
-      createdAt: self.createdAt,
       id: self.id,
-      ingestUrl: self.ingestUrl,
-      metadata: self.metadata,
-      name: self.name,
       uid: self.uid,
+      name: self.name,
+      ingestUrl: self.ingestUrl,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
+      metadata: self.metadata,
     };
   },
 };

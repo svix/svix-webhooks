@@ -4,7 +4,6 @@ require "json"
 
 module Svix
   class ApplicationIn
-    attr_accessor :metadata
     # Application name for human consumption.
     attr_accessor :name
     # Maximum messages per second to send to this application.
@@ -13,8 +12,9 @@ module Svix
     attr_accessor :throttle_rate
     # Optional unique identifier for the application.
     attr_accessor :uid
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["metadata", "name", "throttle_rate", "uid"].freeze
+    ALL_FIELD ||= ["name", "throttle_rate", "uid", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -35,19 +35,19 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["metadata"] = attributes["metadata"]
       attrs["name"] = attributes["name"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

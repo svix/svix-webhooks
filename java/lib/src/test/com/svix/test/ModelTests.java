@@ -24,8 +24,8 @@ public class ModelTests {
   @Test
   public void structEnumWithNoExtraFields() throws JsonProcessingException {
     String jsonString =
-        "{\"metadata\":{},\"name\":\"mendy\",\"uid\":\"very"
-            + " unique\",\"type\":\"generic-webhook\",\"config\":{}}";
+        "{\"name\":\"mendy\",\"uid\":\"very unique\",\"metadata\":{},"
+            + "\"type\":\"generic-webhook\",\"config\":{}}";
     IngestSourceIn sourceIn =
         new IngestSourceIn()
             .name("mendy")
@@ -40,8 +40,8 @@ public class ModelTests {
   @Test
   public void structEnumWithFields() throws JsonProcessingException {
     String jsonString =
-        "{\"metadata\":{},\"name\":\"name\",\"uid\":\"uuiidd\",\"type\":\"cron\",\"config\":{\"contentType\":\"asd\",\"payload\":\"cool\",\"schedule\":\"*"
-            + " * * * *\"}}";
+        "{\"name\":\"name\",\"uid\":\"uuiidd\",\"metadata\":{},"
+            + "\"type\":\"cron\",\"config\":{\"schedule\":\"* * * * *\",\"payload\":\"cool\",\"contentType\":\"asd\"}}";
     IngestSourceIn sourceIn =
         new IngestSourceIn()
             .name("name")

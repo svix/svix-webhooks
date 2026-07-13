@@ -27,8 +27,8 @@ class IntegrationIn implements \JsonSerializable
         string $name,
     ): self {
         return new self(
-            featureFlags: null,
             name: $name,
+            featureFlags: null,
             setFields: ['name' => true]
         );
     }
@@ -39,8 +39,8 @@ class IntegrationIn implements \JsonSerializable
         $setFields['featureFlags'] = true;
 
         return new self(
-            featureFlags: $featureFlags,
             name: $this->name,
+            featureFlags: $featureFlags,
             setFields: $setFields
         );
     }
@@ -63,8 +63,8 @@ class IntegrationIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'IntegrationIn'),
-            name: \Svix\Utils::deserializeString($data, 'name', true, 'IntegrationIn')
+            name: \Svix\Utils::deserializeString($data, 'name', true, 'IntegrationIn'),
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'IntegrationIn')
         );
     }
 

@@ -3,8 +3,8 @@ package models
 
 // Configuration for a Google Cloud BigQuery sink.
 type BigQueryConfig struct {
-	Credentials string `json:"credentials"` // Google Cloud Credentials JSON Object as a string.
-	DatasetId   string `json:"datasetId"`
 	ProjectId   string `json:"projectId"`
+	DatasetId   string `json:"datasetId"`
 	TableId     string `json:"tableId"`
+	Credentials string `json:"credentials"` // Google Cloud Credentials JSON Object as a string.
 }

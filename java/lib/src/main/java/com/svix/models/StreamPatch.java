@@ -21,8 +21,8 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class StreamPatch {
     @JsonProperty private String description;
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private MaybeUnset<String> uid;
+    @JsonProperty private Map<String, String> metadata;
 
     public StreamPatch() {}
 
@@ -43,6 +43,28 @@ public class StreamPatch {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public StreamPatch uid(String uid) {
+        this.uid = new MaybeUnset<>(uid);
+        return this;
+    }
+
+    /**
+     * An optional unique identifier for the stream.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        if (uid == null) {
+            return null;
+        }
+        return uid.getValue();
+    }
+
+    public void setUid(String uid) {
+        this.uid = new MaybeUnset<>(uid);
     }
 
     public StreamPatch metadata(Map<String, String> metadata) {
@@ -71,28 +93,6 @@ public class StreamPatch {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public StreamPatch uid(String uid) {
-        this.uid = new MaybeUnset<>(uid);
-        return this;
-    }
-
-    /**
-     * An optional unique identifier for the stream.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        if (uid == null) {
-            return null;
-        }
-        return uid.getValue();
-    }
-
-    public void setUid(String uid) {
-        this.uid = new MaybeUnset<>(uid);
     }
 
     /**

@@ -5,9 +5,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ApplicationPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
 
     /// Maximum messages per second to send to this application.
@@ -20,15 +17,18 @@ pub struct ApplicationPatch {
     /// The Application's UID.
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub uid: JsOption<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 }
 
 impl ApplicationPatch {
     pub fn new() -> Self {
         Self {
-            metadata: None,
             name: None,
             throttle_rate: JsOption::Undefined,
             uid: JsOption::Undefined,
+            metadata: None,
         }
     }
 }

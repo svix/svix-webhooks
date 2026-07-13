@@ -6,9 +6,9 @@ import {
 
 export interface ListResponseMessageEndpointOut {
   data: MessageEndpointOut[];
-  done: boolean;
   iterator: string | null;
   prevIterator?: string | null;
+  done: boolean;
 }
 
 export const ListResponseMessageEndpointOutSerializer = {
@@ -17,18 +17,18 @@ export const ListResponseMessageEndpointOutSerializer = {
       data: object["data"].map((item: MessageEndpointOut) =>
         MessageEndpointOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
       iterator: object["iterator"],
       prevIterator: object["prevIterator"],
+      done: object["done"],
     };
   },
 
   _toJsonObject(self: ListResponseMessageEndpointOut): any {
     return {
       data: self.data.map((item) => MessageEndpointOutSerializer._toJsonObject(item)),
-      done: self.done,
       iterator: self.iterator,
       prevIterator: self.prevIterator,
+      done: self.done,
     };
   },
 };

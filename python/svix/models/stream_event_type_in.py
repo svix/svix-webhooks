@@ -5,13 +5,13 @@ from .common import BaseModel
 
 
 class StreamEventTypeIn(BaseModel):
-    archived: t.Optional[bool] = None
-
-    deprecated: t.Optional[bool] = None
+    name: str
+    """The event type's name"""
 
     description: t.Optional[str] = None
 
     feature_flags: t.Optional[t.List[str]] = None
 
-    name: str
-    """The event type's name"""
+    deprecated: t.Optional[bool] = None
+
+    archived: t.Optional[bool] = None

@@ -54,33 +54,13 @@ pub enum EnvironmentCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"connectors\": [{
-    \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"featureFlags\": [\"cool-new-feature\"],
-    \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"instructions\": \"...\",
-    \"kind\": \"Custom\",
-    \"logo\": \"...\",
-    \"name\": \"...\",
-    \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"productType\": \"Dispatch\",
-    \"transformation\": \"...\",
-    \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
-    \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
-  }],
+  \"version\": 123,
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"eventTypes\": [{
-    \"archived\": false,
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"deprecated\": true,
-    \"description\": \"A user has signed up\",
-    \"featureFlag\": \"...\",
-    \"featureFlags\": [\"cool-new-feature\"],
-    \"groupName\": \"user\",
     \"name\": \"user.signup\",
+    \"description\": \"A user has signed up\",
+    \"archived\": false,
+    \"deprecated\": true,
     \"schemas\": {
       \"1\": {
         \"description\": \"An invoice was paid by a user\",
@@ -99,10 +79,30 @@ pub enum EnvironmentCommands {
         \"type\": \"object\"
       }
     },
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"groupName\": \"user\",
+    \"featureFlags\": [\"cool-new-feature\"],
+    \"featureFlag\": \"...\"
   }],
   \"settings\": {\"key\": \"...\"},
-  \"version\": 123
+  \"connectors\": [{
+    \"id\": \"trtmpl_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"orgId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"uid\": \"unique-identifier\",
+    \"kind\": \"Custom\",
+    \"name\": \"...\",
+    \"logo\": \"...\",
+    \"description\": \"...\",
+    \"instructions\": \"...\",
+    \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+    \"transformation\": \"...\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"transformationUpdatedAt\": \"2030-01-01T00:00:00Z\",
+    \"featureFlags\": [\"cool-new-feature\"],
+    \"productType\": \"Dispatch\"
+  }]
 }\n")]
     Export {
         #[clap(flatten)]
@@ -124,25 +124,11 @@ pub enum EnvironmentCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"connectors\": [{
-    \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
-    \"description\": \"Example connector description\",
-    \"featureFlags\": [\"...\"],
-    \"instructions\": \"Markdown-formatted instructions\",
-    \"kind\": \"Slack\",
-    \"logo\": \"https://example.com/logo.png\",
-    \"name\": \"My first connector\",
-    \"productType\": \"Dispatch\",
-    \"transformation\": \"function handler(webhook) { /* ... */ }\",
-    \"uid\": \"unique-identifier\"
-  }],
   \"eventTypes\": [{
+    \"name\": \"user.signup\",
+    \"description\": \"A user has signed up\",
     \"archived\": false,
     \"deprecated\": true,
-    \"description\": \"A user has signed up\",
-    \"featureFlags\": [\"cool-new-feature\"],
-    \"groupName\": \"user\",
-    \"name\": \"user.signup\",
     \"schemas\": {
       \"1\": {
         \"description\": \"An invoice was paid by a user\",
@@ -160,9 +146,23 @@ pub enum EnvironmentCommands {
         \"title\": \"Invoice Paid Event\",
         \"type\": \"object\"
       }
-    }
+    },
+    \"groupName\": \"user\",
+    \"featureFlags\": [\"cool-new-feature\"]
   }],
-  \"settings\": {\"key\": \"...\"}
+  \"settings\": {\"key\": \"...\"},
+  \"connectors\": [{
+    \"name\": \"My first connector\",
+    \"uid\": \"unique-identifier\",
+    \"logo\": \"https://example.com/logo.png\",
+    \"description\": \"Example connector description\",
+    \"kind\": \"Slack\",
+    \"instructions\": \"Markdown-formatted instructions\",
+    \"allowedEventTypes\": [\"user.signup\",\"user.deleted\"],
+    \"transformation\": \"function handler(webhook) { /* ... */ }\",
+    \"featureFlags\": [\"...\"],
+    \"productType\": \"Dispatch\"
+  }]
 }\n")]
     Import {
         environment_in: Option<crate::json::JsonOf<EnvironmentIn>>,

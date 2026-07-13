@@ -1,31 +1,31 @@
 // this file is @generated
 
 export interface AmazonS3PatchConfig {
-  accessKeyId?: string;
   bucket?: string;
-  endpointUrl?: string;
-  region?: string;
+  accessKeyId?: string;
   secretAccessKey?: string;
+  region?: string;
+  endpointUrl?: string;
 }
 
 export const AmazonS3PatchConfigSerializer = {
   _fromJsonObject(object: any): AmazonS3PatchConfig {
     return {
-      accessKeyId: object["accessKeyId"],
       bucket: object["bucket"],
-      endpointUrl: object["endpointUrl"],
-      region: object["region"],
+      accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      region: object["region"],
+      endpointUrl: object["endpointUrl"],
     };
   },
 
   _toJsonObject(self: AmazonS3PatchConfig): any {
     return {
-      accessKeyId: self.accessKeyId,
       bucket: self.bucket,
-      endpointUrl: self.endpointUrl,
-      region: self.region,
+      accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      region: self.region,
+      endpointUrl: self.endpointUrl,
     };
   },
 };
