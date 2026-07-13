@@ -11,23 +11,23 @@ class PollingEndpointMessageOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null          $channels  List of free-form identifiers that endpoints can filter by
+     * @param array<string, string>|null $headers
      * @param string|null                $eventId   Optional unique identifier for the message
      * @param string                     $eventType The event type's name
-     * @param array<string, string>|null $headers
+     * @param list<string>|null          $channels  List of free-form identifiers that endpoints can filter by
      * @param string                     $id        the Message's ID
      * @param list<string>|null          $tags
      */
     private function __construct(
         public readonly string $eventType,
-        public readonly string $id,
         public readonly array $payload,
+        public readonly string $id,
         public readonly \DateTimeImmutable $timestamp,
-        public readonly ?array $channels = null,
-        public readonly ?\DateTimeImmutable $deliverAt = null,
-        public readonly ?string $eventId = null,
         public readonly ?array $headers = null,
+        public readonly ?string $eventId = null,
+        public readonly ?array $channels = null,
         public readonly ?array $tags = null,
+        public readonly ?\DateTimeImmutable $deliverAt = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -38,58 +38,39 @@ class PollingEndpointMessageOut implements \JsonSerializable
      */
     public static function create(
         string $eventType,
-        string $id,
         array $payload,
+        string $id,
         \DateTimeImmutable $timestamp,
     ): self {
         return new self(
-            channels: null,
-            deliverAt: null,
+            headers: null,
             eventId: null,
             eventType: $eventType,
-            headers: null,
-            id: $id,
             payload: $payload,
-            tags: null,
+            channels: null,
+            id: $id,
             timestamp: $timestamp,
-            setFields: ['eventType' => true, 'id' => true, 'payload' => true, 'timestamp' => true]
+            tags: null,
+            deliverAt: null,
+            setFields: ['eventType' => true, 'payload' => true, 'id' => true, 'timestamp' => true]
         );
     }
 
-    public function withChannels(?array $channels): self
+    public function withHeaders(?array $headers): self
     {
         $setFields = $this->setFields;
-        $setFields['channels'] = true;
+        $setFields['headers'] = true;
 
         return new self(
-            channels: $channels,
-            deliverAt: $this->deliverAt,
+            headers: $headers,
             eventId: $this->eventId,
             eventType: $this->eventType,
-            headers: $this->headers,
-            id: $this->id,
             payload: $this->payload,
-            tags: $this->tags,
-            timestamp: $this->timestamp,
-            setFields: $setFields
-        );
-    }
-
-    public function withDeliverAt(?\DateTimeImmutable $deliverAt): self
-    {
-        $setFields = $this->setFields;
-        $setFields['deliverAt'] = true;
-
-        return new self(
             channels: $this->channels,
-            deliverAt: $deliverAt,
-            eventId: $this->eventId,
-            eventType: $this->eventType,
-            headers: $this->headers,
             id: $this->id,
-            payload: $this->payload,
-            tags: $this->tags,
             timestamp: $this->timestamp,
+            tags: $this->tags,
+            deliverAt: $this->deliverAt,
             setFields: $setFields
         );
     }
@@ -100,34 +81,34 @@ class PollingEndpointMessageOut implements \JsonSerializable
         $setFields['eventId'] = true;
 
         return new self(
-            channels: $this->channels,
-            deliverAt: $this->deliverAt,
+            headers: $this->headers,
             eventId: $eventId,
             eventType: $this->eventType,
-            headers: $this->headers,
-            id: $this->id,
             payload: $this->payload,
-            tags: $this->tags,
+            channels: $this->channels,
+            id: $this->id,
             timestamp: $this->timestamp,
+            tags: $this->tags,
+            deliverAt: $this->deliverAt,
             setFields: $setFields
         );
     }
 
-    public function withHeaders(?array $headers): self
+    public function withChannels(?array $channels): self
     {
         $setFields = $this->setFields;
-        $setFields['headers'] = true;
+        $setFields['channels'] = true;
 
         return new self(
-            channels: $this->channels,
-            deliverAt: $this->deliverAt,
+            headers: $this->headers,
             eventId: $this->eventId,
             eventType: $this->eventType,
-            headers: $headers,
-            id: $this->id,
             payload: $this->payload,
-            tags: $this->tags,
+            channels: $channels,
+            id: $this->id,
             timestamp: $this->timestamp,
+            tags: $this->tags,
+            deliverAt: $this->deliverAt,
             setFields: $setFields
         );
     }
@@ -138,15 +119,34 @@ class PollingEndpointMessageOut implements \JsonSerializable
         $setFields['tags'] = true;
 
         return new self(
-            channels: $this->channels,
-            deliverAt: $this->deliverAt,
+            headers: $this->headers,
             eventId: $this->eventId,
             eventType: $this->eventType,
-            headers: $this->headers,
-            id: $this->id,
             payload: $this->payload,
-            tags: $tags,
+            channels: $this->channels,
+            id: $this->id,
             timestamp: $this->timestamp,
+            tags: $tags,
+            deliverAt: $this->deliverAt,
+            setFields: $setFields
+        );
+    }
+
+    public function withDeliverAt(?\DateTimeImmutable $deliverAt): self
+    {
+        $setFields = $this->setFields;
+        $setFields['deliverAt'] = true;
+
+        return new self(
+            headers: $this->headers,
+            eventId: $this->eventId,
+            eventType: $this->eventType,
+            payload: $this->payload,
+            channels: $this->channels,
+            id: $this->id,
+            timestamp: $this->timestamp,
+            tags: $this->tags,
+            deliverAt: $deliverAt,
             setFields: $setFields
         );
     }
@@ -155,24 +155,24 @@ class PollingEndpointMessageOut implements \JsonSerializable
     {
         $data = [
             'eventType' => $this->eventType,
-            'id' => $this->id,
             'payload' => $this->payload,
+            'id' => $this->id,
             'timestamp' => $this->timestamp->format('c')];
 
-        if (isset($this->setFields['channels'])) {
-            $data['channels'] = $this->channels;
-        }
-        if (isset($this->setFields['deliverAt'])) {
-            $data['deliverAt'] = $this->deliverAt->format('c');
+        if (isset($this->setFields['headers'])) {
+            $data['headers'] = $this->headers;
         }
         if (isset($this->setFields['eventId'])) {
             $data['eventId'] = $this->eventId;
         }
-        if (isset($this->setFields['headers'])) {
-            $data['headers'] = $this->headers;
+        if (isset($this->setFields['channels'])) {
+            $data['channels'] = $this->channels;
         }
         if (isset($this->setFields['tags'])) {
             $data['tags'] = $this->tags;
+        }
+        if (isset($this->setFields['deliverAt'])) {
+            $data['deliverAt'] = $this->deliverAt->format('c');
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -184,15 +184,15 @@ class PollingEndpointMessageOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'PollingEndpointMessageOut'),
-            deliverAt: \Svix\Utils::deserializeDt($data, 'deliverAt', false, 'PollingEndpointMessageOut'),
+            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'PollingEndpointMessageOut'),
             eventId: \Svix\Utils::deserializeString($data, 'eventId', false, 'PollingEndpointMessageOut'),
             eventType: \Svix\Utils::deserializeString($data, 'eventType', true, 'PollingEndpointMessageOut'),
-            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'PollingEndpointMessageOut'),
-            id: \Svix\Utils::deserializeString($data, 'id', true, 'PollingEndpointMessageOut'),
             payload: \Svix\Utils::getValFromJson($data, 'payload', true, 'PollingEndpointMessageOut'),
+            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'PollingEndpointMessageOut'),
+            id: \Svix\Utils::deserializeString($data, 'id', true, 'PollingEndpointMessageOut'),
+            timestamp: \Svix\Utils::deserializeDt($data, 'timestamp', true, 'PollingEndpointMessageOut'),
             tags: \Svix\Utils::getValFromJson($data, 'tags', false, 'PollingEndpointMessageOut'),
-            timestamp: \Svix\Utils::deserializeDt($data, 'timestamp', true, 'PollingEndpointMessageOut')
+            deliverAt: \Svix\Utils::deserializeDt($data, 'deliverAt', false, 'PollingEndpointMessageOut')
         );
     }
 

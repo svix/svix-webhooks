@@ -2,9 +2,6 @@
 
 export interface OperationalWebhookEndpointUpdate {
   description?: string;
-  disabled?: boolean;
-  filterTypes?: string[] | null;
-  metadata?: { [key: string]: string };
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -14,30 +11,33 @@ export interface OperationalWebhookEndpointUpdate {
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   url: string;
+  disabled?: boolean;
+  filterTypes?: string[] | null;
+  metadata?: { [key: string]: string };
 }
 
 export const OperationalWebhookEndpointUpdateSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointUpdate {
     return {
       description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
+      disabled: object["disabled"],
+      filterTypes: object["filterTypes"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: OperationalWebhookEndpointUpdate): any {
     return {
       description: self.description,
-      disabled: self.disabled,
-      filterTypes: self.filterTypes,
-      metadata: self.metadata,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
+      disabled: self.disabled,
+      filterTypes: self.filterTypes,
+      metadata: self.metadata,
     };
   },
 };

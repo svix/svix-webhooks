@@ -23,24 +23,24 @@ import (
 //   - "sns": Use SnsConfig
 //   - "sqs": Use SqsConfig
 type StreamSinkIn struct {
-	BatchSize  *uint16  `json:"batchSize,omitempty"`  // How many events will be batched in a request to the Sink.
-	EventTypes []string `json:"eventTypes,omitempty"` // A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
+	Uid *string `json:"uid,omitempty"` // An optional unique identifier for the sink.
+	// Whether the sink will receive events.
+	//
+	// If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+	//
+	// If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
+	Status    *SinkStatusIn `json:"status,omitempty"`
+	BatchSize *uint16       `json:"batchSize,omitempty"` // How many events will be batched in a request to the Sink.
 	// How long to wait before a batch of events is sent, if the `batchSize` is not reached.
 	//
 	// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
 	//
 	// Note that we will never send an empty batch of events to the Sink.
 	MaxWaitSecs *uint16            `json:"maxWaitSecs,omitempty"`
+	EventTypes  []string           `json:"eventTypes,omitempty"` // A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
 	Metadata    *map[string]string `json:"metadata,omitempty"`
-	// Whether the sink will receive events.
-	//
-	// If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
-	//
-	// If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
-	Status *SinkStatusIn      `json:"status,omitempty"`
-	Uid    *string            `json:"uid,omitempty"` // An optional unique identifier for the sink.
-	Type   StreamSinkInType   `json:"type"`
-	Config StreamSinkInConfig `json:"config"`
+	Type        StreamSinkInType   `json:"type"`
+	Config      StreamSinkInConfig `json:"config"`
 }
 
 type StreamSinkInType string

@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SinkHttpConfig(
+    val url: String,
     val headers: Map<String, String>? = null,
     val key: String? = null,
-    val url: String,
 )

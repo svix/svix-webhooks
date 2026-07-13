@@ -4,18 +4,18 @@ require "json"
 
 module Svix
   class StreamPortalAccessIn
+    # The set of feature flags the created token will have access to.
+    attr_accessor :feature_flags
     # How long the token will be valid for, in seconds.
     #
     # Valid values are between 1 hour and 7 days. The default is 7 days.
     attr_accessor :expiry
-    # The set of feature flags the created token will have access to.
-    attr_accessor :feature_flags
     # An optional session ID to attach to the token.
     #
     # When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
     attr_accessor :session_id
 
-    ALL_FIELD ||= ["expiry", "feature_flags", "session_id"].freeze
+    ALL_FIELD ||= ["feature_flags", "expiry", "session_id"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -36,16 +36,16 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["expiry"] = attributes["expiry"]
       attrs["feature_flags"] = attributes["featureFlags"]
+      attrs["expiry"] = attributes["expiry"]
       attrs["session_id"] = attributes["sessionId"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
+      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
       out["sessionId"] = Svix::serialize_primitive(@session_id) if @session_id
       out
     end

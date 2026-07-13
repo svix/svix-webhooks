@@ -13,10 +13,10 @@ import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = IngestSourceInSerializer::class)
 data class IngestSourceIn(
-    val metadata: Map<String, String>? = null,
     val name: String,
     /** The Source's UID. */
     val uid: String? = null,
+    val metadata: Map<String, String>? = null,
     val config: IngestSourceInConfig,
 )
 
@@ -434,10 +434,10 @@ sealed class IngestSourceInConfig {
 class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     @Serializable
     private data class IngestSourceInSurrogate(
-        val metadata: Map<String, String>? = null,
         val name: String,
         /** The Source's UID. */
         val uid: String? = null,
+        val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
     )
@@ -447,9 +447,9 @@ class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     override fun serialize(encoder: Encoder, value: IngestSourceIn) {
         val surrogate =
             IngestSourceInSurrogate(
-                metadata = value.metadata,
                 name = value.name,
                 uid = value.uid,
+                metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
             )
@@ -459,9 +459,9 @@ class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     override fun deserialize(decoder: Decoder): IngestSourceIn {
         val surrogate = decoder.decodeSerializableValue(IngestSourceInSurrogate.serializer())
         return IngestSourceIn(
-            metadata = surrogate.metadata,
             name = surrogate.name,
             uid = surrogate.uid,
+            metadata = surrogate.metadata,
             config = IngestSourceInConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )
     }

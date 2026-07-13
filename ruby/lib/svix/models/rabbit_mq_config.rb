@@ -5,10 +5,10 @@ require "json"
 module Svix
   # Configuration for a RabbitMq sink.
   class RabbitMqConfig
-    attr_accessor :routing_key
     attr_accessor :uri
+    attr_accessor :routing_key
 
-    ALL_FIELD ||= ["routing_key", "uri"].freeze
+    ALL_FIELD ||= ["uri", "routing_key"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -29,15 +29,15 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["routing_key"] = attributes["routingKey"]
       attrs["uri"] = attributes["uri"]
+      attrs["routing_key"] = attributes["routingKey"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["routingKey"] = Svix::serialize_primitive(@routing_key) if @routing_key
       out["uri"] = Svix::serialize_primitive(@uri) if @uri
+      out["routingKey"] = Svix::serialize_primitive(@routing_key) if @routing_key
       out
     end
 

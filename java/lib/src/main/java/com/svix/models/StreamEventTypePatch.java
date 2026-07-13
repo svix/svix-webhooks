@@ -20,50 +20,12 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class StreamEventTypePatch {
-    @JsonProperty private Boolean archived;
-    @JsonProperty private Boolean deprecated;
     @JsonProperty private MaybeUnset<String> description;
     @JsonProperty private MaybeUnset<Set<String>> featureFlags;
+    @JsonProperty private Boolean deprecated;
+    @JsonProperty private Boolean archived;
 
     public StreamEventTypePatch() {}
-
-    public StreamEventTypePatch archived(Boolean archived) {
-        this.archived = archived;
-        return this;
-    }
-
-    /**
-     * Get archived
-     *
-     * @return archived
-     */
-    @javax.annotation.Nullable
-    public Boolean getArchived() {
-        return archived;
-    }
-
-    public void setArchived(Boolean archived) {
-        this.archived = archived;
-    }
-
-    public StreamEventTypePatch deprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
-        return this;
-    }
-
-    /**
-     * Get deprecated
-     *
-     * @return deprecated
-     */
-    @javax.annotation.Nullable
-    public Boolean getDeprecated() {
-        return deprecated;
-    }
-
-    public void setDeprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
-    }
 
     public StreamEventTypePatch description(String description) {
         this.description = new MaybeUnset<>(description);
@@ -116,6 +78,44 @@ public class StreamEventTypePatch {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = new MaybeUnset<>(featureFlags);
+    }
+
+    public StreamEventTypePatch deprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
+        return this;
+    }
+
+    /**
+     * Get deprecated
+     *
+     * @return deprecated
+     */
+    @javax.annotation.Nullable
+    public Boolean getDeprecated() {
+        return deprecated;
+    }
+
+    public void setDeprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
+    }
+
+    public StreamEventTypePatch archived(Boolean archived) {
+        this.archived = archived;
+        return this;
+    }
+
+    /**
+     * Get archived
+     *
+     * @return archived
+     */
+    @javax.annotation.Nullable
+    public Boolean getArchived() {
+        return archived;
+    }
+
+    public void setArchived(Boolean archived) {
+        this.archived = archived;
     }
 
     /**

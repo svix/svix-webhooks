@@ -3,33 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointIn {
-    /// List of message channels this endpoint listens to (omit for all).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
-
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub disabled: Option<bool>,
-
-    #[serde(rename = "filterTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub headers: Option<std::collections::HashMap<String, String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
-    /// The endpoint's verification secret.
-    ///
-    /// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-    /// It is recommended to not set this and let the server generate the
-    /// secret.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub secret: Option<String>,
 
     /// Maximum messages per second to send to this endpoint.
     ///
@@ -43,21 +18,46 @@ pub struct EndpointIn {
     pub uid: Option<String>,
 
     pub url: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled: Option<bool>,
+
+    #[serde(rename = "filterTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter_types: Option<Vec<String>>,
+
+    /// List of message channels this endpoint listens to (omit for all).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<Vec<String>>,
+
+    /// The endpoint's verification secret.
+    ///
+    /// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+    /// It is recommended to not set this and let the server generate the
+    /// secret.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub secret: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub headers: Option<std::collections::HashMap<String, String>>,
 }
 
 impl EndpointIn {
     pub fn new(url: String) -> Self {
         Self {
-            channels: None,
             description: None,
-            disabled: None,
-            filter_types: None,
-            headers: None,
-            metadata: None,
-            secret: None,
             throttle_rate: None,
             uid: None,
             url,
+            disabled: None,
+            filter_types: None,
+            channels: None,
+            secret: None,
+            metadata: None,
+            headers: None,
         }
     }
 }

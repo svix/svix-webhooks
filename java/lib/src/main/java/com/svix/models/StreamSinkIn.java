@@ -34,31 +34,16 @@ import java.util.Map;
 @JsonSerialize(using = StreamSinkInSerializer.class)
 @JsonDeserialize(using = StreamSinkInDeserializer.class)
 public class StreamSinkIn {
-    private Long batchSize;
-    private List<String> eventTypes;
-    private Long maxWaitSecs;
-    private Map<String, String> metadata;
-    private SinkStatusIn status;
     private String uid;
+    private SinkStatusIn status;
+    private Long batchSize;
+    private Long maxWaitSecs;
+    private List<String> eventTypes;
+    private Map<String, String> metadata;
     private StreamSinkInConfig config;
 
-    public StreamSinkIn batchSize(Long batchSize) {
-        this.batchSize = batchSize;
-        return this;
-    }
-
-    public StreamSinkIn eventTypes(List<String> eventTypes) {
-        this.eventTypes = eventTypes;
-        return this;
-    }
-
-    public StreamSinkIn maxWaitSecs(Long maxWaitSecs) {
-        this.maxWaitSecs = maxWaitSecs;
-        return this;
-    }
-
-    public StreamSinkIn metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+    public StreamSinkIn uid(String uid) {
+        this.uid = uid;
         return this;
     }
 
@@ -67,8 +52,23 @@ public class StreamSinkIn {
         return this;
     }
 
-    public StreamSinkIn uid(String uid) {
-        this.uid = uid;
+    public StreamSinkIn batchSize(Long batchSize) {
+        this.batchSize = batchSize;
+        return this;
+    }
+
+    public StreamSinkIn maxWaitSecs(Long maxWaitSecs) {
+        this.maxWaitSecs = maxWaitSecs;
+        return this;
+    }
+
+    public StreamSinkIn eventTypes(List<String> eventTypes) {
+        this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public StreamSinkIn metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -89,23 +89,23 @@ public class StreamSinkIn {
 @Getter
 @NoArgsConstructor
 class StreamSinkInSurrogate {
-    @JsonProperty("batchSize")
-    Long batchSize;
-
-    @JsonProperty("eventTypes")
-    List<String> eventTypes;
-
-    @JsonProperty("maxWaitSecs")
-    Long maxWaitSecs;
-
-    @JsonProperty("metadata")
-    Map<String, String> metadata;
+    @JsonProperty("uid")
+    String uid;
 
     @JsonProperty("status")
     SinkStatusIn status;
 
-    @JsonProperty("uid")
-    String uid;
+    @JsonProperty("batchSize")
+    Long batchSize;
+
+    @JsonProperty("maxWaitSecs")
+    Long maxWaitSecs;
+
+    @JsonProperty("eventTypes")
+    List<String> eventTypes;
+
+    @JsonProperty("metadata")
+    Map<String, String> metadata;
 
     @JsonProperty("type")
     String type;
@@ -114,12 +114,12 @@ class StreamSinkInSurrogate {
     JsonNode config;
 
     StreamSinkInSurrogate(StreamSinkIn o, String type, JsonNode config) {
-        this.batchSize = o.getBatchSize();
-        this.eventTypes = o.getEventTypes();
-        this.maxWaitSecs = o.getMaxWaitSecs();
-        this.metadata = o.getMetadata();
-        this.status = o.getStatus();
         this.uid = o.getUid();
+        this.status = o.getStatus();
+        this.batchSize = o.getBatchSize();
+        this.maxWaitSecs = o.getMaxWaitSecs();
+        this.eventTypes = o.getEventTypes();
+        this.metadata = o.getMetadata();
         this.type = type;
         this.config = config;
     }
@@ -156,16 +156,16 @@ class StreamSinkInDeserializer extends StdDeserializer<StreamSinkIn> {
     @Override
     public StreamSinkIn deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         StreamSinkInSurrogate surrogate = p.getCodec().readValue(p, StreamSinkInSurrogate.class);
-        Long batchSize = surrogate.getBatchSize();
-        List<String> eventTypes = surrogate.getEventTypes();
-        Long maxWaitSecs = surrogate.getMaxWaitSecs();
-        Map<String, String> metadata = surrogate.getMetadata();
-        SinkStatusIn status = surrogate.getStatus();
         String uid = surrogate.getUid();
+        SinkStatusIn status = surrogate.getStatus();
+        Long batchSize = surrogate.getBatchSize();
+        Long maxWaitSecs = surrogate.getMaxWaitSecs();
+        List<String> eventTypes = surrogate.getEventTypes();
+        Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         StreamSinkInConfig sourceType = StreamSinkInConfig.fromTypeAndConfig(type, config);
         return new StreamSinkIn(
-                batchSize, eventTypes, maxWaitSecs, metadata, status, uid, sourceType);
+                uid, status, batchSize, maxWaitSecs, eventTypes, metadata, sourceType);
     }
 }

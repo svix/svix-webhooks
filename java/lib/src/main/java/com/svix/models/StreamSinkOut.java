@@ -35,67 +35,22 @@ import java.util.Map;
 @JsonSerialize(using = StreamSinkOutSerializer.class)
 @JsonDeserialize(using = StreamSinkOutDeserializer.class)
 public class StreamSinkOut {
-    private Integer batchSize;
-    private OffsetDateTime createdAt;
-    private String currentIterator;
-    private List<String> eventTypes;
-    private String failureReason;
     private String id;
-    private Integer maxWaitSecs;
-    private Map<String, String> metadata;
-    private OffsetDateTime nextRetryAt;
-    private SinkStatus status;
     private String uid;
+    private SinkStatus status;
+    private String currentIterator;
+    private String failureReason;
+    private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private Integer batchSize;
+    private Integer maxWaitSecs;
+    private List<String> eventTypes;
+    private OffsetDateTime nextRetryAt;
+    private Map<String, String> metadata;
     private StreamSinkOutConfig config;
-
-    public StreamSinkOut batchSize(Integer batchSize) {
-        this.batchSize = batchSize;
-        return this;
-    }
-
-    public StreamSinkOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public StreamSinkOut currentIterator(String currentIterator) {
-        this.currentIterator = currentIterator;
-        return this;
-    }
-
-    public StreamSinkOut eventTypes(List<String> eventTypes) {
-        this.eventTypes = eventTypes;
-        return this;
-    }
-
-    public StreamSinkOut failureReason(String failureReason) {
-        this.failureReason = failureReason;
-        return this;
-    }
 
     public StreamSinkOut id(String id) {
         this.id = id;
-        return this;
-    }
-
-    public StreamSinkOut maxWaitSecs(Integer maxWaitSecs) {
-        this.maxWaitSecs = maxWaitSecs;
-        return this;
-    }
-
-    public StreamSinkOut metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public StreamSinkOut nextRetryAt(OffsetDateTime nextRetryAt) {
-        this.nextRetryAt = nextRetryAt;
-        return this;
-    }
-
-    public StreamSinkOut status(SinkStatus status) {
-        this.status = status;
         return this;
     }
 
@@ -104,8 +59,53 @@ public class StreamSinkOut {
         return this;
     }
 
+    public StreamSinkOut status(SinkStatus status) {
+        this.status = status;
+        return this;
+    }
+
+    public StreamSinkOut currentIterator(String currentIterator) {
+        this.currentIterator = currentIterator;
+        return this;
+    }
+
+    public StreamSinkOut failureReason(String failureReason) {
+        this.failureReason = failureReason;
+        return this;
+    }
+
+    public StreamSinkOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
     public StreamSinkOut updatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
+    }
+
+    public StreamSinkOut batchSize(Integer batchSize) {
+        this.batchSize = batchSize;
+        return this;
+    }
+
+    public StreamSinkOut maxWaitSecs(Integer maxWaitSecs) {
+        this.maxWaitSecs = maxWaitSecs;
+        return this;
+    }
+
+    public StreamSinkOut eventTypes(List<String> eventTypes) {
+        this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public StreamSinkOut nextRetryAt(OffsetDateTime nextRetryAt) {
+        this.nextRetryAt = nextRetryAt;
+        return this;
+    }
+
+    public StreamSinkOut metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -126,41 +126,41 @@ public class StreamSinkOut {
 @Getter
 @NoArgsConstructor
 class StreamSinkOutSurrogate {
-    @JsonProperty("batchSize")
-    Integer batchSize;
-
-    @JsonProperty("createdAt")
-    OffsetDateTime createdAt;
-
-    @JsonProperty("currentIterator")
-    String currentIterator;
-
-    @JsonProperty("eventTypes")
-    List<String> eventTypes;
-
-    @JsonProperty("failureReason")
-    String failureReason;
-
     @JsonProperty("id")
     String id;
-
-    @JsonProperty("maxWaitSecs")
-    Integer maxWaitSecs;
-
-    @JsonProperty("metadata")
-    Map<String, String> metadata;
-
-    @JsonProperty("nextRetryAt")
-    OffsetDateTime nextRetryAt;
-
-    @JsonProperty("status")
-    SinkStatus status;
 
     @JsonProperty("uid")
     String uid;
 
+    @JsonProperty("status")
+    SinkStatus status;
+
+    @JsonProperty("currentIterator")
+    String currentIterator;
+
+    @JsonProperty("failureReason")
+    String failureReason;
+
+    @JsonProperty("createdAt")
+    OffsetDateTime createdAt;
+
     @JsonProperty("updatedAt")
     OffsetDateTime updatedAt;
+
+    @JsonProperty("batchSize")
+    Integer batchSize;
+
+    @JsonProperty("maxWaitSecs")
+    Integer maxWaitSecs;
+
+    @JsonProperty("eventTypes")
+    List<String> eventTypes;
+
+    @JsonProperty("nextRetryAt")
+    OffsetDateTime nextRetryAt;
+
+    @JsonProperty("metadata")
+    Map<String, String> metadata;
 
     @JsonProperty("type")
     String type;
@@ -169,18 +169,18 @@ class StreamSinkOutSurrogate {
     JsonNode config;
 
     StreamSinkOutSurrogate(StreamSinkOut o, String type, JsonNode config) {
-        this.batchSize = o.getBatchSize();
-        this.createdAt = o.getCreatedAt();
-        this.currentIterator = o.getCurrentIterator();
-        this.eventTypes = o.getEventTypes();
-        this.failureReason = o.getFailureReason();
         this.id = o.getId();
-        this.maxWaitSecs = o.getMaxWaitSecs();
-        this.metadata = o.getMetadata();
-        this.nextRetryAt = o.getNextRetryAt();
-        this.status = o.getStatus();
         this.uid = o.getUid();
+        this.status = o.getStatus();
+        this.currentIterator = o.getCurrentIterator();
+        this.failureReason = o.getFailureReason();
+        this.createdAt = o.getCreatedAt();
         this.updatedAt = o.getUpdatedAt();
+        this.batchSize = o.getBatchSize();
+        this.maxWaitSecs = o.getMaxWaitSecs();
+        this.eventTypes = o.getEventTypes();
+        this.nextRetryAt = o.getNextRetryAt();
+        this.metadata = o.getMetadata();
         this.type = type;
         this.config = config;
     }
@@ -217,34 +217,34 @@ class StreamSinkOutDeserializer extends StdDeserializer<StreamSinkOut> {
     @Override
     public StreamSinkOut deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         StreamSinkOutSurrogate surrogate = p.getCodec().readValue(p, StreamSinkOutSurrogate.class);
-        Integer batchSize = surrogate.getBatchSize();
-        OffsetDateTime createdAt = surrogate.getCreatedAt();
-        String currentIterator = surrogate.getCurrentIterator();
-        List<String> eventTypes = surrogate.getEventTypes();
-        String failureReason = surrogate.getFailureReason();
         String id = surrogate.getId();
-        Integer maxWaitSecs = surrogate.getMaxWaitSecs();
-        Map<String, String> metadata = surrogate.getMetadata();
-        OffsetDateTime nextRetryAt = surrogate.getNextRetryAt();
-        SinkStatus status = surrogate.getStatus();
         String uid = surrogate.getUid();
+        SinkStatus status = surrogate.getStatus();
+        String currentIterator = surrogate.getCurrentIterator();
+        String failureReason = surrogate.getFailureReason();
+        OffsetDateTime createdAt = surrogate.getCreatedAt();
         OffsetDateTime updatedAt = surrogate.getUpdatedAt();
+        Integer batchSize = surrogate.getBatchSize();
+        Integer maxWaitSecs = surrogate.getMaxWaitSecs();
+        List<String> eventTypes = surrogate.getEventTypes();
+        OffsetDateTime nextRetryAt = surrogate.getNextRetryAt();
+        Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         StreamSinkOutConfig sourceType = StreamSinkOutConfig.fromTypeAndConfig(type, config);
         return new StreamSinkOut(
-                batchSize,
-                createdAt,
-                currentIterator,
-                eventTypes,
-                failureReason,
                 id,
-                maxWaitSecs,
-                metadata,
-                nextRetryAt,
-                status,
                 uid,
+                status,
+                currentIterator,
+                failureReason,
+                createdAt,
                 updatedAt,
+                batchSize,
+                maxWaitSecs,
+                eventTypes,
+                nextRetryAt,
+                metadata,
                 sourceType);
     }
 }

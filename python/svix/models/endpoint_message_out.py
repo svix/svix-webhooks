@@ -10,10 +10,11 @@ from .message_status_text import MessageStatusText
 class EndpointMessageOut(BaseModel):
     """A model containing information on a given message plus additional fields on the last attempt for that message."""
 
-    channels: t.Optional[t.List[str]] = None
-    """List of free-form identifiers that endpoints can filter by"""
+    status: MessageStatus
 
-    deliver_at: t.Optional[datetime] = None
+    status_text: MessageStatusText
+
+    next_attempt: t.Optional[datetime] = None
 
     event_id: t.Optional[str] = None
     """Optional unique identifier for the message"""
@@ -21,17 +22,16 @@ class EndpointMessageOut(BaseModel):
     event_type: str
     """The event type's name"""
 
+    payload: t.Dict[str, t.Any]
+
+    channels: t.Optional[t.List[str]] = None
+    """List of free-form identifiers that endpoints can filter by"""
+
     id: str
     """The Message's ID."""
 
-    next_attempt: t.Optional[datetime] = None
-
-    payload: t.Dict[str, t.Any]
-
-    status: MessageStatus
-
-    status_text: MessageStatusText
+    timestamp: datetime
 
     tags: t.Optional[t.List[str]] = None
 
-    timestamp: datetime
+    deliver_at: t.Optional[datetime] = None

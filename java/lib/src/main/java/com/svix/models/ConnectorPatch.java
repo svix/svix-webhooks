@@ -21,16 +21,114 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ConnectorPatch {
-    @JsonProperty private MaybeUnset<Set<String>> allowedEventTypes;
-    @JsonProperty private String description;
-    @JsonProperty private MaybeUnset<Set<String>> featureFlags;
-    @JsonProperty private String instructions;
-    @JsonProperty private ConnectorKind kind;
-    @JsonProperty private MaybeUnset<URI> logo;
     @JsonProperty private String name;
+    @JsonProperty private MaybeUnset<URI> logo;
+    @JsonProperty private String description;
+    @JsonProperty private ConnectorKind kind;
+    @JsonProperty private String instructions;
+    @JsonProperty private MaybeUnset<Set<String>> allowedEventTypes;
     @JsonProperty private String transformation;
+    @JsonProperty private MaybeUnset<Set<String>> featureFlags;
 
     public ConnectorPatch() {}
+
+    public ConnectorPatch name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return name
+     */
+    @javax.annotation.Nullable
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ConnectorPatch logo(URI logo) {
+        this.logo = new MaybeUnset<>(logo);
+        return this;
+    }
+
+    /**
+     * Get logo
+     *
+     * @return logo
+     */
+    @javax.annotation.Nullable
+    public URI getLogo() {
+        if (logo == null) {
+            return null;
+        }
+        return logo.getValue();
+    }
+
+    public void setLogo(URI logo) {
+        this.logo = new MaybeUnset<>(logo);
+    }
+
+    public ConnectorPatch description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ConnectorPatch kind(ConnectorKind kind) {
+        this.kind = kind;
+        return this;
+    }
+
+    /**
+     * Get kind
+     *
+     * @return kind
+     */
+    @javax.annotation.Nullable
+    public ConnectorKind getKind() {
+        return kind;
+    }
+
+    public void setKind(ConnectorKind kind) {
+        this.kind = kind;
+    }
+
+    public ConnectorPatch instructions(String instructions) {
+        this.instructions = instructions;
+        return this;
+    }
+
+    /**
+     * Get instructions
+     *
+     * @return instructions
+     */
+    @javax.annotation.Nullable
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
 
     public ConnectorPatch allowedEventTypes(Set<String> allowedEventTypes) {
         this.allowedEventTypes = new MaybeUnset<>(allowedEventTypes);
@@ -63,23 +161,23 @@ public class ConnectorPatch {
         this.allowedEventTypes = new MaybeUnset<>(allowedEventTypes);
     }
 
-    public ConnectorPatch description(String description) {
-        this.description = description;
+    public ConnectorPatch transformation(String transformation) {
+        this.transformation = transformation;
         return this;
     }
 
     /**
-     * Get description
+     * Get transformation
      *
-     * @return description
+     * @return transformation
      */
     @javax.annotation.Nullable
-    public String getDescription() {
-        return description;
+    public String getTransformation() {
+        return transformation;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setTransformation(String transformation) {
+        this.transformation = transformation;
     }
 
     public ConnectorPatch featureFlags(Set<String> featureFlags) {
@@ -111,104 +209,6 @@ public class ConnectorPatch {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = new MaybeUnset<>(featureFlags);
-    }
-
-    public ConnectorPatch instructions(String instructions) {
-        this.instructions = instructions;
-        return this;
-    }
-
-    /**
-     * Get instructions
-     *
-     * @return instructions
-     */
-    @javax.annotation.Nullable
-    public String getInstructions() {
-        return instructions;
-    }
-
-    public void setInstructions(String instructions) {
-        this.instructions = instructions;
-    }
-
-    public ConnectorPatch kind(ConnectorKind kind) {
-        this.kind = kind;
-        return this;
-    }
-
-    /**
-     * Get kind
-     *
-     * @return kind
-     */
-    @javax.annotation.Nullable
-    public ConnectorKind getKind() {
-        return kind;
-    }
-
-    public void setKind(ConnectorKind kind) {
-        this.kind = kind;
-    }
-
-    public ConnectorPatch logo(URI logo) {
-        this.logo = new MaybeUnset<>(logo);
-        return this;
-    }
-
-    /**
-     * Get logo
-     *
-     * @return logo
-     */
-    @javax.annotation.Nullable
-    public URI getLogo() {
-        if (logo == null) {
-            return null;
-        }
-        return logo.getValue();
-    }
-
-    public void setLogo(URI logo) {
-        this.logo = new MaybeUnset<>(logo);
-    }
-
-    public ConnectorPatch name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return name
-     */
-    @javax.annotation.Nullable
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public ConnectorPatch transformation(String transformation) {
-        this.transformation = transformation;
-        return this;
-    }
-
-    /**
-     * Get transformation
-     *
-     * @return transformation
-     */
-    @javax.annotation.Nullable
-    public String getTransformation() {
-        return transformation;
-    }
-
-    public void setTransformation(String transformation) {
-        this.transformation = transformation;
     }
 
     /**

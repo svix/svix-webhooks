@@ -10,6 +10,6 @@ class EndpointTransformationOut(BaseModel):
 
     enabled: t.Optional[bool] = None
 
-    updated_at: t.Optional[datetime] = None
-
     variables: t.Optional[t.Dict[str, str]] = None
+
+    updated_at: t.Optional[datetime] = None

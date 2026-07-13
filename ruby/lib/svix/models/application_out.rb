@@ -4,21 +4,21 @@ require "json"
 
 module Svix
   class ApplicationOut
-    attr_accessor :created_at
-    # The Application's ID.
-    attr_accessor :id
-    attr_accessor :metadata
+    # Optional unique identifier for the application.
+    attr_accessor :uid
     # Application name for human consumption.
     attr_accessor :name
     # Maximum messages per second to send to this application.
     #
     # Outgoing messages will be throttled to this rate.
     attr_accessor :throttle_rate
-    # Optional unique identifier for the application.
-    attr_accessor :uid
+    # The Application's ID.
+    attr_accessor :id
+    attr_accessor :created_at
     attr_accessor :updated_at
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["created_at", "id", "metadata", "name", "throttle_rate", "uid", "updated_at"].freeze
+    ALL_FIELD ||= ["uid", "name", "throttle_rate", "id", "created_at", "updated_at", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -39,25 +39,25 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
-      attrs["id"] = attributes["id"]
-      attrs["metadata"] = attributes["metadata"]
+      attrs["uid"] = attributes["uid"]
       attrs["name"] = attributes["name"]
       attrs["throttle_rate"] = attributes["throttleRate"]
-      attrs["uid"] = attributes["uid"]
+      attrs["id"] = attributes["id"]
+      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["id"] = Svix::serialize_primitive(@id) if @id
+      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

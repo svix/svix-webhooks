@@ -1,10 +1,8 @@
 // this file is @generated
 
 export interface ApplicationOut {
-  createdAt: Date;
-  /** The Application's ID. */
-  id: string;
-  metadata: { [key: string]: string };
+  /** Optional unique identifier for the application. */
+  uid?: string | null;
   /** Application name for human consumption. */
   name: string;
   /**
@@ -13,33 +11,35 @@ export interface ApplicationOut {
    * Outgoing messages will be throttled to this rate.
    */
   throttleRate?: number | null;
-  /** Optional unique identifier for the application. */
-  uid?: string | null;
+  /** The Application's ID. */
+  id: string;
+  createdAt: Date;
   updatedAt: Date;
+  metadata: { [key: string]: string };
 }
 
 export const ApplicationOutSerializer = {
   _fromJsonObject(object: any): ApplicationOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      id: object["id"],
-      metadata: object["metadata"],
+      uid: object["uid"],
       name: object["name"],
       throttleRate: object["throttleRate"],
-      uid: object["uid"],
+      id: object["id"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: ApplicationOut): any {
     return {
-      createdAt: self.createdAt,
-      id: self.id,
-      metadata: self.metadata,
+      uid: self.uid,
       name: self.name,
       throttleRate: self.throttleRate,
-      uid: self.uid,
+      id: self.id,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
+      metadata: self.metadata,
     };
   },
 };

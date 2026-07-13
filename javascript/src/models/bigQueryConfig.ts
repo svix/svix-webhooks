@@ -2,29 +2,29 @@
 
 /** Configuration for a Google Cloud BigQuery sink. */
 export interface BigQueryConfig {
+  projectId: string;
+  datasetId: string;
+  tableId: string;
   /** Google Cloud Credentials JSON Object as a string. */
   credentials: string;
-  datasetId: string;
-  projectId: string;
-  tableId: string;
 }
 
 export const BigQueryConfigSerializer = {
   _fromJsonObject(object: any): BigQueryConfig {
     return {
-      credentials: object["credentials"],
-      datasetId: object["datasetId"],
       projectId: object["projectId"],
+      datasetId: object["datasetId"],
       tableId: object["tableId"],
+      credentials: object["credentials"],
     };
   },
 
   _toJsonObject(self: BigQueryConfig): any {
     return {
-      credentials: self.credentials,
-      datasetId: self.datasetId,
       projectId: self.projectId,
+      datasetId: self.datasetId,
       tableId: self.tableId,
+      credentials: self.credentials,
     };
   },
 };

@@ -1,35 +1,35 @@
 // this file is @generated
 
 export interface EventTypePatch {
+  description?: string;
   archived?: boolean;
   deprecated?: boolean;
-  description?: string;
+  schemas?: any | null;
   featureFlags?: string[] | null;
   /** The event type group's name */
   groupName?: string | null;
-  schemas?: any | null;
 }
 
 export const EventTypePatchSerializer = {
   _fromJsonObject(object: any): EventTypePatch {
     return {
+      description: object["description"],
       archived: object["archived"],
       deprecated: object["deprecated"],
-      description: object["description"],
+      schemas: object["schemas"],
       featureFlags: object["featureFlags"],
       groupName: object["groupName"],
-      schemas: object["schemas"],
     };
   },
 
   _toJsonObject(self: EventTypePatch): any {
     return {
+      description: self.description,
       archived: self.archived,
       deprecated: self.deprecated,
-      description: self.description,
+      schemas: self.schemas,
       featureFlags: self.featureFlags,
       groupName: self.groupName,
-      schemas: self.schemas,
     };
   },
 };

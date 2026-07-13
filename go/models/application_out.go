@@ -4,14 +4,14 @@ package models
 import "time"
 
 type ApplicationOut struct {
-	CreatedAt time.Time         `json:"createdAt"`
-	Id        string            `json:"id"` // The Application's ID.
-	Metadata  map[string]string `json:"metadata"`
-	Name      string            `json:"name"` // Application name for human consumption.
+	Uid  *string `json:"uid,omitempty"` // Optional unique identifier for the application.
+	Name string  `json:"name"`          // Application name for human consumption.
 	// Maximum messages per second to send to this application.
 	//
 	// Outgoing messages will be throttled to this rate.
-	ThrottleRate *uint16   `json:"throttleRate,omitempty"`
-	Uid          *string   `json:"uid,omitempty"` // Optional unique identifier for the application.
-	UpdatedAt    time.Time `json:"updatedAt"`
+	ThrottleRate *uint16           `json:"throttleRate,omitempty"`
+	Id           string            `json:"id"` // The Application's ID.
+	CreatedAt    time.Time         `json:"createdAt"`
+	UpdatedAt    time.Time         `json:"updatedAt"`
+	Metadata     map[string]string `json:"metadata"`
 }

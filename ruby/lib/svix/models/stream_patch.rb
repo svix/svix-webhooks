@@ -6,11 +6,11 @@ module Svix
   class StreamPatch
     # The Stream's description.
     attr_accessor :description
-    attr_accessor :metadata
     # An optional unique identifier for the stream.
     attr_accessor :uid
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["description", "metadata", "uid"].freeze
+    ALL_FIELD ||= ["description", "uid", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,16 +32,16 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["description"] = attributes["description"]
-      attrs["metadata"] = attributes["metadata"]
       attrs["uid"] = attributes["uid"]
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["description"] = Svix::serialize_primitive(@description) if @description
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["uid"] = Svix::serialize_primitive(@uid) if @__uid_is_defined
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

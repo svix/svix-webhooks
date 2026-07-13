@@ -3,59 +3,59 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventTypeOut {
+    /// The event type's name
+    pub name: String,
+
+    pub description: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archived: Option<bool>,
+
+    pub deprecated: bool,
+
+    /// The schema for the event type for a specific version as a JSON schema.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub schemas: Option<serde_json::Value>,
 
     #[serde(rename = "createdAt")]
     pub created_at: String,
 
-    pub deprecated: bool,
-
-    pub description: String,
-
-    #[serde(rename = "featureFlag")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flag: Option<String>,
-
-    #[serde(rename = "featureFlags")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
 
     /// The event type group's name
     #[serde(rename = "groupName")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub group_name: Option<String>,
 
-    /// The event type's name
-    pub name: String,
-
-    /// The schema for the event type for a specific version as a JSON schema.
+    #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub schemas: Option<serde_json::Value>,
+    pub feature_flags: Option<Vec<String>>,
 
-    #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    #[serde(rename = "featureFlag")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feature_flag: Option<String>,
 }
 
 impl EventTypeOut {
     pub fn new(
-        created_at: String,
-        deprecated: bool,
-        description: String,
         name: String,
+        description: String,
+        deprecated: bool,
+        created_at: String,
         updated_at: String,
     ) -> Self {
         Self {
-            archived: None,
-            created_at,
-            deprecated,
-            description,
-            feature_flag: None,
-            feature_flags: None,
-            group_name: None,
             name,
+            description,
+            archived: None,
+            deprecated,
             schemas: None,
+            created_at,
             updated_at,
+            group_name: None,
+            feature_flags: None,
+            feature_flag: None,
         }
     }
 }

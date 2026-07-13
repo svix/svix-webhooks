@@ -8,6 +8,6 @@ import kotlinx.serialization.Serializable
 data class EndpointTransformationOut(
     val code: String? = null,
     val enabled: Boolean? = null,
-    val updatedAt: Instant? = null,
     val variables: Map<String, String>? = null,
+    val updatedAt: Instant? = null,
 )

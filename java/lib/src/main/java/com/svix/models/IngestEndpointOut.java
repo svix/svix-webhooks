@@ -21,74 +21,17 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointOut {
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
     @JsonProperty private String id;
-    @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private String description;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Map<String, String> metadata;
 
     public IngestEndpointOut() {}
-
-    public IngestEndpointOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return createdAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public IngestEndpointOut description(String description) {
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * An example endpoint name.
-     *
-     * @return description
-     */
-    @javax.annotation.Nonnull
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public IngestEndpointOut disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
 
     public IngestEndpointOut id(String id) {
         this.id = id;
@@ -109,32 +52,23 @@ public class IngestEndpointOut {
         this.id = id;
     }
 
-    public IngestEndpointOut metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public IngestEndpointOut putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
+    public IngestEndpointOut description(String description) {
+        this.description = description;
         return this;
     }
 
     /**
-     * Get metadata
+     * An example endpoint name.
      *
-     * @return metadata
+     * @return description
      */
     @javax.annotation.Nonnull
-    public Map<String, String> getMetadata() {
-        return metadata;
+    public String getDescription() {
+        return description;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public IngestEndpointOut throttleRate(Long throttleRate) {
@@ -177,6 +111,63 @@ public class IngestEndpointOut {
         this.uid = uid;
     }
 
+    public IngestEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
+    public IngestEndpointOut disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public IngestEndpointOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return createdAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public IngestEndpointOut updatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
@@ -196,23 +187,32 @@ public class IngestEndpointOut {
         this.updatedAt = updatedAt;
     }
 
-    public IngestEndpointOut url(URI url) {
-        this.url = url;
+    public IngestEndpointOut metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public IngestEndpointOut putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
         return this;
     }
 
     /**
-     * Get url
+     * Get metadata
      *
-     * @return url
+     * @return metadata
      */
     @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
+    public Map<String, String> getMetadata() {
+        return metadata;
     }
 
-    public void setUrl(URI url) {
-        this.url = url;
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

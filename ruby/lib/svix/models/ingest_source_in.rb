@@ -175,13 +175,13 @@ module Svix
   end
 
   class IngestSourceIn
-    attr_accessor :metadata
     attr_accessor :name
     # The Source's UID.
     attr_accessor :uid
+    attr_accessor :metadata
     attr_accessor :config
 
-    ALL_FIELD ||= ["metadata", "name", "uid", "config"].freeze
+    ALL_FIELD ||= ["name", "uid", "metadata", "config"].freeze
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       IngestSourceInConfig::GenericWebhook => "generic-webhook",
@@ -265,9 +265,9 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["metadata"] = attributes["metadata"]
       attrs["name"] = attributes["name"]
       attrs["uid"] = attributes["uid"]
+      attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
@@ -282,9 +282,9 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["name"] = Svix::serialize_primitive(@name) if @name
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

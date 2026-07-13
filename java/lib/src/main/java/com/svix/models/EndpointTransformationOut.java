@@ -22,8 +22,8 @@ import java.util.Map;
 public class EndpointTransformationOut {
     @JsonProperty private String code;
     @JsonProperty private Boolean enabled;
-    @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private Map<String, String> variables;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public EndpointTransformationOut() {}
 
@@ -65,25 +65,6 @@ public class EndpointTransformationOut {
         this.enabled = enabled;
     }
 
-    public EndpointTransformationOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public EndpointTransformationOut variables(Map<String, String> variables) {
         this.variables = variables;
         return this;
@@ -110,6 +91,25 @@ public class EndpointTransformationOut {
 
     public void setVariables(Map<String, String> variables) {
         this.variables = variables;
+    }
+
+    public EndpointTransformationOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     /**

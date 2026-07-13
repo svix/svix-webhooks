@@ -82,9 +82,9 @@ pub enum StreamingSinkCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{\"...\": \"...\"}],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         stream_id: String,
@@ -102,26 +102,26 @@ pub enum StreamingSinkCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"batchSize\": 100,
-  \"eventTypes\": [\"...\"],
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
+  \"uid\": \"unique-identifier\",
   \"status\": \"enabled\",
-  \"uid\": \"unique-identifier\"
+  \"batchSize\": 100,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"batchSize\": 123,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"currentIterator\": \"...\",
-  \"eventTypes\": [\"...\"],
-  \"failureReason\": \"...\",
   \"id\": \"sink_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
-  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
-  \"status\": \"enabled\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"status\": \"enabled\",
+  \"currentIterator\": \"...\",
+  \"failureReason\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"batchSize\": 123,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         stream_id: String,
@@ -140,18 +140,18 @@ pub enum StreamingSinkCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"batchSize\": 123,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"currentIterator\": \"...\",
-  \"eventTypes\": [\"...\"],
-  \"failureReason\": \"...\",
   \"id\": \"sink_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
-  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
-  \"status\": \"enabled\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"status\": \"enabled\",
+  \"currentIterator\": \"...\",
+  \"failureReason\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"batchSize\": 123,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get {
         stream_id: String,
@@ -168,26 +168,26 @@ pub enum StreamingSinkCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"batchSize\": 100,
-  \"eventTypes\": [\"...\"],
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
+  \"uid\": \"unique-identifier\",
   \"status\": \"enabled\",
-  \"uid\": \"unique-identifier\"
+  \"batchSize\": 100,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"batchSize\": 123,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"currentIterator\": \"...\",
-  \"eventTypes\": [\"...\"],
-  \"failureReason\": \"...\",
   \"id\": \"sink_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
-  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
-  \"status\": \"enabled\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"status\": \"enabled\",
+  \"currentIterator\": \"...\",
+  \"failureReason\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"batchSize\": 123,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Upsert {
         stream_id: String,
@@ -218,26 +218,26 @@ pub enum StreamingSinkCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"batchSize\": 100,
-  \"eventTypes\": [\"...\"],
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
+  \"uid\": \"unique-identifier\",
   \"status\": \"enabled\",
-  \"uid\": \"unique-identifier\"
+  \"batchSize\": 100,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"batchSize\": 123,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"currentIterator\": \"...\",
-  \"eventTypes\": [\"...\"],
-  \"failureReason\": \"...\",
   \"id\": \"sink_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"maxWaitSecs\": 123,
-  \"metadata\": {\"key\": \"...\"},
-  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
-  \"status\": \"enabled\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"status\": \"enabled\",
+  \"currentIterator\": \"...\",
+  \"failureReason\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"batchSize\": 123,
+  \"maxWaitSecs\": 123,
+  \"eventTypes\": [\"...\"],
+  \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Patch {
         stream_id: String,
@@ -276,8 +276,8 @@ pub enum StreamingSinkCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"gracePeriodSeconds\": 123,
-  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"gracePeriodSeconds\": 123
 }\n\nExample response:
 {
 }\n")]

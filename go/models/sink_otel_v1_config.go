@@ -2,6 +2,6 @@
 package models
 
 type SinkOtelV1Config struct {
-	Headers *map[string]string `json:"headers,omitempty"`
 	Url     string             `json:"url"`
+	Headers *map[string]string `json:"headers,omitempty"`
 }

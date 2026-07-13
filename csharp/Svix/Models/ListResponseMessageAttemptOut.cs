@@ -9,14 +9,14 @@ namespace Svix.Models
         [JsonProperty("data", Required = Required.Always)]
         public required List<MessageAttemptOut> Data { get; set; }
 
-        [JsonProperty("done", Required = Required.Always)]
-        public required bool Done { get; set; }
-
         [JsonProperty("iterator")]
         public string? Iterator { get; set; } = null;
 
         [JsonProperty("prevIterator")]
         public string? PrevIterator { get; set; } = null;
+
+        [JsonProperty("done", Required = Required.Always)]
+        public required bool Done { get; set; }
 
         public override string ToString()
         {
@@ -24,9 +24,9 @@ namespace Svix.Models
 
             sb.Append("class ListResponseMessageAttemptOut {\n");
             sb.Append("  Data: ").Append(Data).Append('\n');
-            sb.Append("  Done: ").Append(Done).Append('\n');
             sb.Append("  Iterator: ").Append(Iterator).Append('\n');
             sb.Append("  PrevIterator: ").Append(PrevIterator).Append('\n');
+            sb.Append("  Done: ").Append(Done).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

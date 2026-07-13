@@ -4,16 +4,16 @@ require "json"
 
 module Svix
   class EventTypeUpdate
+    attr_accessor :description
     attr_accessor :archived
     attr_accessor :deprecated
-    attr_accessor :description
+    # The schema for the event type for a specific version as a JSON schema.
+    attr_accessor :schemas
     attr_accessor :feature_flags
     # The event type group's name
     attr_accessor :group_name
-    # The schema for the event type for a specific version as a JSON schema.
-    attr_accessor :schemas
 
-    ALL_FIELD ||= ["archived", "deprecated", "description", "feature_flags", "group_name", "schemas"].freeze
+    ALL_FIELD ||= ["description", "archived", "deprecated", "schemas", "feature_flags", "group_name"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,23 +34,23 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["description"] = attributes["description"]
       attrs["archived"] = attributes["archived"]
       attrs["deprecated"] = attributes["deprecated"]
-      attrs["description"] = attributes["description"]
+      attrs["schemas"] = attributes["schemas"]
       attrs["feature_flags"] = attributes["featureFlags"]
       attrs["group_name"] = attributes["groupName"]
-      attrs["schemas"] = attributes["schemas"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
+      out["description"] = Svix::serialize_primitive(@description) if @description
       out["archived"] = Svix::serialize_primitive(@archived) if @archived
       out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
-      out["description"] = Svix::serialize_primitive(@description) if @description
+      out["schemas"] = Svix::serialize_primitive(@schemas) if @schemas
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
       out["groupName"] = Svix::serialize_primitive(@group_name) if @group_name
-      out["schemas"] = Svix::serialize_primitive(@schemas) if @schemas
       out
     end
 

@@ -45,8 +45,8 @@ pub enum IngestCommands {
   \"readOnly\": true
 }\n\nExample response:
 {
-  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\",
-  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\"
+  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\",
+  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
 }\n")]
     Dashboard {
         source_id: String,

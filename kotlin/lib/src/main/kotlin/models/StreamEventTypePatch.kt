@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class StreamEventTypePatch(
-    val archived: Boolean? = null,
-    val deprecated: Boolean? = null,
     val description: MaybeUnset<String> = MaybeUnset.Unset,
     val featureFlags: MaybeUnset<Set<String>> = MaybeUnset.Unset,
+    val deprecated: Boolean? = null,
+    val archived: Boolean? = null,
 )

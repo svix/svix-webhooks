@@ -4,13 +4,13 @@ require "json"
 
 module Svix
   class EnvironmentOut
-    attr_accessor :connectors
+    attr_accessor :version
     attr_accessor :created_at
     attr_accessor :event_types
     attr_accessor :settings
-    attr_accessor :version
+    attr_accessor :connectors
 
-    ALL_FIELD ||= ["connectors", "created_at", "event_types", "settings", "version"].freeze
+    ALL_FIELD ||= ["version", "created_at", "event_types", "settings", "connectors"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -31,21 +31,21 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["connectors"] = attributes["connectors"].map { |v| Svix::ConnectorOut.deserialize(v) }
+      attrs["version"] = attributes["version"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["event_types"] = attributes["eventTypes"].map { |v| Svix::EventTypeOut.deserialize(v) }
       attrs["settings"] = attributes["settings"]
-      attrs["version"] = attributes["version"]
+      attrs["connectors"] = attributes["connectors"].map { |v| Svix::ConnectorOut.deserialize(v) }
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["connectors"] = @connectors.map { |v| v.serialize } if @connectors
+      out["version"] = Svix::serialize_primitive(@version) if @version
       out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["eventTypes"] = @event_types.map { |v| v.serialize } if @event_types
       out["settings"] = Svix::serialize_primitive(@settings) if @settings
-      out["version"] = Svix::serialize_primitive(@version) if @version
+      out["connectors"] = @connectors.map { |v| v.serialize } if @connectors
       out
     end
 

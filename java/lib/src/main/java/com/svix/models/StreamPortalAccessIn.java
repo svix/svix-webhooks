@@ -19,32 +19,11 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class StreamPortalAccessIn {
-    @JsonProperty private Long expiry;
     @JsonProperty private Set<String> featureFlags;
+    @JsonProperty private Long expiry;
     @JsonProperty private String sessionId;
 
     public StreamPortalAccessIn() {}
-
-    public StreamPortalAccessIn expiry(Long expiry) {
-        this.expiry = expiry;
-        return this;
-    }
-
-    /**
-     * How long the token will be valid for, in seconds.
-     *
-     * <p>Valid values are between 1 hour and 7 days. The default is 7 days.
-     *
-     * @return expiry
-     */
-    @javax.annotation.Nullable
-    public Long getExpiry() {
-        return expiry;
-    }
-
-    public void setExpiry(Long expiry) {
-        this.expiry = expiry;
-    }
 
     public StreamPortalAccessIn featureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
@@ -72,6 +51,27 @@ public class StreamPortalAccessIn {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
+    }
+
+    public StreamPortalAccessIn expiry(Long expiry) {
+        this.expiry = expiry;
+        return this;
+    }
+
+    /**
+     * How long the token will be valid for, in seconds.
+     *
+     * <p>Valid values are between 1 hour and 7 days. The default is 7 days.
+     *
+     * @return expiry
+     */
+    @javax.annotation.Nullable
+    public Long getExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(Long expiry) {
+        this.expiry = expiry;
     }
 
     public StreamPortalAccessIn sessionId(String sessionId) {

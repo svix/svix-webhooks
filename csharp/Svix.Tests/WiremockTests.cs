@@ -133,7 +133,7 @@ namespace Svix.Tests
             );
 
             string expected_json_body =
-                """{"metadata":{"key1":"val1","key2":"val2"},"name":"app"}""";
+                """{"name":"app","metadata":{"key1":"val1","key2":"val2"}}""";
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }

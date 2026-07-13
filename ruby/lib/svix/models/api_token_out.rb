@@ -4,14 +4,14 @@ require "json"
 
 module Svix
   class ApiTokenOut
-    attr_accessor :created_at
-    attr_accessor :expires_at
+    attr_accessor :token
     attr_accessor :id
     attr_accessor :name
+    attr_accessor :created_at
+    attr_accessor :expires_at
     attr_accessor :scopes
-    attr_accessor :token
 
-    ALL_FIELD ||= ["created_at", "expires_at", "id", "name", "scopes", "token"].freeze
+    ALL_FIELD ||= ["token", "id", "name", "created_at", "expires_at", "scopes"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,23 +32,23 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
-      attrs["expires_at"] = DateTime.rfc3339(attributes["expiresAt"]).to_time if attributes["expiresAt"]
+      attrs["token"] = attributes["token"]
       attrs["id"] = attributes["id"]
       attrs["name"] = attributes["name"]
+      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
+      attrs["expires_at"] = DateTime.rfc3339(attributes["expiresAt"]).to_time if attributes["expiresAt"]
       attrs["scopes"] = attributes["scopes"]
-      attrs["token"] = attributes["token"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["expiresAt"] = Svix::serialize_primitive(@expires_at) if @expires_at
+      out["token"] = Svix::serialize_primitive(@token) if @token
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["name"] = Svix::serialize_primitive(@name) if @name
+      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
+      out["expiresAt"] = Svix::serialize_primitive(@expires_at) if @expires_at
       out["scopes"] = Svix::serialize_primitive(@scopes) if @scopes
-      out["token"] = Svix::serialize_primitive(@token) if @token
       out
     end
 

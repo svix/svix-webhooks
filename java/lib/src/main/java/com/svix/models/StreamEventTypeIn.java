@@ -19,50 +19,31 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class StreamEventTypeIn {
-    @JsonProperty private Boolean archived;
-    @JsonProperty private Boolean deprecated;
+    @JsonProperty private String name;
     @JsonProperty private String description;
     @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private String name;
+    @JsonProperty private Boolean deprecated;
+    @JsonProperty private Boolean archived;
 
     public StreamEventTypeIn() {}
 
-    public StreamEventTypeIn archived(Boolean archived) {
-        this.archived = archived;
+    public StreamEventTypeIn name(String name) {
+        this.name = name;
         return this;
     }
 
     /**
-     * Get archived
+     * The event type's name
      *
-     * @return archived
+     * @return name
      */
-    @javax.annotation.Nullable
-    public Boolean getArchived() {
-        return archived;
+    @javax.annotation.Nonnull
+    public String getName() {
+        return name;
     }
 
-    public void setArchived(Boolean archived) {
-        this.archived = archived;
-    }
-
-    public StreamEventTypeIn deprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
-        return this;
-    }
-
-    /**
-     * Get deprecated
-     *
-     * @return deprecated
-     */
-    @javax.annotation.Nullable
-    public Boolean getDeprecated() {
-        return deprecated;
-    }
-
-    public void setDeprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public StreamEventTypeIn description(String description) {
@@ -112,23 +93,42 @@ public class StreamEventTypeIn {
         this.featureFlags = featureFlags;
     }
 
-    public StreamEventTypeIn name(String name) {
-        this.name = name;
+    public StreamEventTypeIn deprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
         return this;
     }
 
     /**
-     * The event type's name
+     * Get deprecated
      *
-     * @return name
+     * @return deprecated
      */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
+    @javax.annotation.Nullable
+    public Boolean getDeprecated() {
+        return deprecated;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDeprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
+    }
+
+    public StreamEventTypeIn archived(Boolean archived) {
+        this.archived = archived;
+        return this;
+    }
+
+    /**
+     * Get archived
+     *
+     * @return archived
+     */
+    @javax.annotation.Nullable
+    public Boolean getArchived() {
+        return archived;
+    }
+
+    public void setArchived(Boolean archived) {
+        this.archived = archived;
     }
 
     /**

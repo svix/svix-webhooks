@@ -20,51 +20,32 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApiTokenOut {
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private OffsetDateTime expiresAt;
+    @JsonProperty private String token;
     @JsonProperty private String id;
     @JsonProperty private String name;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime expiresAt;
     @JsonProperty private List<String> scopes;
-    @JsonProperty private String token;
 
     public ApiTokenOut() {}
 
-    public ApiTokenOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public ApiTokenOut token(String token) {
+        this.token = token;
         return this;
     }
 
     /**
-     * Get createdAt
+     * Get token
      *
-     * @return createdAt
+     * @return token
      */
     @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    public String getToken() {
+        return token;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public ApiTokenOut expiresAt(OffsetDateTime expiresAt) {
-        this.expiresAt = expiresAt;
-        return this;
-    }
-
-    /**
-     * Get expiresAt
-     *
-     * @return expiresAt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getExpiresAt() {
-        return expiresAt;
-    }
-
-    public void setExpiresAt(OffsetDateTime expiresAt) {
-        this.expiresAt = expiresAt;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public ApiTokenOut id(String id) {
@@ -105,6 +86,44 @@ public class ApiTokenOut {
         this.name = name;
     }
 
+    public ApiTokenOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return createdAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public ApiTokenOut expiresAt(OffsetDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+        return this;
+    }
+
+    /**
+     * Get expiresAt
+     *
+     * @return expiresAt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getExpiresAt() {
+        return expiresAt;
+    }
+
+    public void setExpiresAt(OffsetDateTime expiresAt) {
+        this.expiresAt = expiresAt;
+    }
+
     public ApiTokenOut scopes(List<String> scopes) {
         this.scopes = scopes;
         return this;
@@ -131,25 +150,6 @@ public class ApiTokenOut {
 
     public void setScopes(List<String> scopes) {
         this.scopes = scopes;
-    }
-
-    public ApiTokenOut token(String token) {
-        this.token = token;
-        return this;
-    }
-
-    /**
-     * Get token
-     *
-     * @return token
-     */
-    @javax.annotation.Nonnull
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     /**

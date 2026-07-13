@@ -16,30 +16,11 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class GoogleCloudPubSubPatchConfig {
-    @JsonProperty private String credentials;
     @JsonProperty private String projectId;
     @JsonProperty private String topicId;
+    @JsonProperty private String credentials;
 
     public GoogleCloudPubSubPatchConfig() {}
-
-    public GoogleCloudPubSubPatchConfig credentials(String credentials) {
-        this.credentials = credentials;
-        return this;
-    }
-
-    /**
-     * Get credentials
-     *
-     * @return credentials
-     */
-    @javax.annotation.Nullable
-    public String getCredentials() {
-        return credentials;
-    }
-
-    public void setCredentials(String credentials) {
-        this.credentials = credentials;
-    }
 
     public GoogleCloudPubSubPatchConfig projectId(String projectId) {
         this.projectId = projectId;
@@ -77,6 +58,25 @@ public class GoogleCloudPubSubPatchConfig {
 
     public void setTopicId(String topicId) {
         this.topicId = topicId;
+    }
+
+    public GoogleCloudPubSubPatchConfig credentials(String credentials) {
+        this.credentials = credentials;
+        return this;
+    }
+
+    /**
+     * Get credentials
+     *
+     * @return credentials
+     */
+    @javax.annotation.Nullable
+    public String getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(String credentials) {
+        this.credentials = credentials;
     }
 
     /**

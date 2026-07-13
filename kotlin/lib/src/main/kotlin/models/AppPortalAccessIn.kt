@@ -12,6 +12,8 @@ data class AppPortalAccessIn(
      * ignored.
      */
     val application: ApplicationIn? = null,
+    /** Whether the app portal should be in read-only mode. */
+    val readOnly: Boolean? = null,
     /**
      * Custom capabilities attached to the token, You can combine as many capabilities as necessary.
      *
@@ -29,16 +31,14 @@ data class AppPortalAccessIn(
      * specified.
      */
     val capabilities: Set<AppPortalCapability>? = null,
+    /** The set of feature flags the created token will have access to. */
+    val featureFlags: Set<String>? = null,
     /**
      * How long the token will be valid for, in seconds.
      *
      * Valid values are between 1 hour and 7 days. The default is 7 days.
      */
     val expiry: ULong? = null,
-    /** The set of feature flags the created token will have access to. */
-    val featureFlags: Set<String>? = null,
-    /** Whether the app portal should be in read-only mode. */
-    val readOnly: Boolean? = null,
     /**
      * An optional session ID to attach to the token.
      *

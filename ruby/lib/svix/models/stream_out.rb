@@ -4,17 +4,17 @@ require "json"
 
 module Svix
   class StreamOut
-    attr_accessor :created_at
     # The stream's ID.
     attr_accessor :id
-    attr_accessor :metadata
-    # The stream's name.
-    attr_accessor :name
     # The stream's UID.
     attr_accessor :uid
+    # The stream's name.
+    attr_accessor :name
+    attr_accessor :created_at
     attr_accessor :updated_at
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["created_at", "id", "metadata", "name", "uid", "updated_at"].freeze
+    ALL_FIELD ||= ["id", "uid", "name", "created_at", "updated_at", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -35,23 +35,23 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["id"] = attributes["id"]
-      attrs["metadata"] = attributes["metadata"]
-      attrs["name"] = attributes["name"]
       attrs["uid"] = attributes["uid"]
+      attrs["name"] = attributes["name"]
+      attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["id"] = Svix::serialize_primitive(@id) if @id
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["name"] = Svix::serialize_primitive(@name) if @name
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["name"] = Svix::serialize_primitive(@name) if @name
+      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

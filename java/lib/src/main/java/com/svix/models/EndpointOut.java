@@ -23,65 +23,65 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointOut {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private String description;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public EndpointOut() {}
 
-    public EndpointOut channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public EndpointOut addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
+    public EndpointOut id(String id) {
+        this.id = id;
         return this;
     }
 
     /**
-     * List of message channels this endpoint listens to (omit for all).
+     * The Endpoint's ID.
      *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
-
-    public EndpointOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return createdAt
+     * @return id
      */
     @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    public String getId() {
+        return id;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public EndpointOut metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public EndpointOut putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nonnull
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     public EndpointOut description(String description) {
@@ -101,6 +101,65 @@ public class EndpointOut {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public EndpointOut throttleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public EndpointOut uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public EndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
     public EndpointOut disabled(Boolean disabled) {
@@ -150,91 +209,51 @@ public class EndpointOut {
         this.filterTypes = filterTypes;
     }
 
-    public EndpointOut id(String id) {
-        this.id = id;
+    public EndpointOut channels(Set<String> channels) {
+        this.channels = channels;
         return this;
     }
 
-    /**
-     * The Endpoint's ID.
-     *
-     * @return id
-     */
-    @javax.annotation.Nonnull
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public EndpointOut metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public EndpointOut putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
+    public EndpointOut addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
         }
-        this.metadata.put(key, metadataItem);
+        this.channels.add(channelsItem);
 
         return this;
     }
 
     /**
-     * Get metadata
+     * List of message channels this endpoint listens to (omit for all).
      *
-     * @return metadata
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
+
+    public EndpointOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return createdAt
      */
     @javax.annotation.Nonnull
-    public Map<String, String> getMetadata() {
-        return metadata;
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
-
-    public EndpointOut throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-    }
-
-    public EndpointOut uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public EndpointOut updatedAt(OffsetDateTime updatedAt) {
@@ -254,25 +273,6 @@ public class EndpointOut {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public EndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

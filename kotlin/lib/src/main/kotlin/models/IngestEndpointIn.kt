@@ -6,15 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class IngestEndpointIn(
     val description: String? = null,
-    val disabled: Boolean? = null,
-    val metadata: Map<String, String>? = null,
-    /**
-     * The endpoint's verification secret.
-     *
-     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to
-     * not set this and let the server generate the secret.
-     */
-    val secret: String? = null,
     /**
      * Maximum messages per second to send to this endpoint.
      *
@@ -24,4 +15,13 @@ data class IngestEndpointIn(
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
+    val disabled: Boolean? = null,
+    /**
+     * The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended to
+     * not set this and let the server generate the secret.
+     */
+    val secret: String? = null,
+    val metadata: Map<String, String>? = null,
 )

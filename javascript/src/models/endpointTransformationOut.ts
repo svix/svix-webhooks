@@ -3,8 +3,8 @@
 export interface EndpointTransformationOut {
   code?: string | null;
   enabled?: boolean;
-  updatedAt?: Date | null;
   variables?: { [key: string]: string } | null;
+  updatedAt?: Date | null;
 }
 
 export const EndpointTransformationOutSerializer = {
@@ -12,8 +12,8 @@ export const EndpointTransformationOutSerializer = {
     return {
       code: object["code"],
       enabled: object["enabled"],
-      updatedAt: object["updatedAt"] ? new Date(object["updatedAt"]) : null,
       variables: object["variables"],
+      updatedAt: object["updatedAt"] ? new Date(object["updatedAt"]) : null,
     };
   },
 
@@ -21,8 +21,8 @@ export const EndpointTransformationOutSerializer = {
     return {
       code: self.code,
       enabled: self.enabled,
-      updatedAt: self.updatedAt,
       variables: self.variables,
+      updatedAt: self.updatedAt,
     };
   },
 };

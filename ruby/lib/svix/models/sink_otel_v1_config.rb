@@ -4,10 +4,10 @@ require "json"
 
 module Svix
   class SinkOtelV1Config
-    attr_accessor :headers
     attr_accessor :url
+    attr_accessor :headers
 
-    ALL_FIELD ||= ["headers", "url"].freeze
+    ALL_FIELD ||= ["url", "headers"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -28,15 +28,15 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["headers"] = attributes["headers"]
       attrs["url"] = attributes["url"]
+      attrs["headers"] = attributes["headers"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["headers"] = Svix::serialize_primitive(@headers) if @headers
       out["url"] = Svix::serialize_primitive(@url) if @url
+      out["headers"] = Svix::serialize_primitive(@headers) if @headers
       out
     end
 

@@ -6,20 +6,20 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageAttemptOut(
+    val url: String,
+    val response: String,
+    val responseStatusCode: Short,
+    /** Response duration in milliseconds. */
+    val responseDurationMs: Long,
+    val status: MessageStatus,
+    val statusText: MessageStatusText,
+    val triggerType: MessageAttemptTriggerType,
+    /** The Message's ID. */
+    val msgId: String,
     /** The Endpoint's ID. */
     val endpointId: String,
     /** The MessageAttempt's ID. */
     val id: String,
-    val msg: MessageOut? = null,
-    /** The Message's ID. */
-    val msgId: String,
-    val response: String,
-    /** Response duration in milliseconds. */
-    val responseDurationMs: Long,
-    val responseStatusCode: Short,
-    val status: MessageStatus,
-    val statusText: MessageStatusText,
     val timestamp: Instant,
-    val triggerType: MessageAttemptTriggerType,
-    val url: String,
+    val msg: MessageOut? = null,
 )

@@ -14,8 +14,8 @@ class EventStreamOut implements \JsonSerializable
      */
     private function __construct(
         public readonly array $data,
-        public readonly bool $done,
         public readonly string $iterator,
+        public readonly bool $done,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -26,14 +26,14 @@ class EventStreamOut implements \JsonSerializable
      */
     public static function create(
         array $data,
-        bool $done,
         string $iterator,
+        bool $done,
     ): self {
         return new self(
             data: $data,
-            done: $done,
             iterator: $iterator,
-            setFields: ['data' => true, 'done' => true, 'iterator' => true]
+            done: $done,
+            setFields: ['data' => true, 'iterator' => true, 'done' => true]
         );
     }
 
@@ -41,8 +41,8 @@ class EventStreamOut implements \JsonSerializable
     {
         $data = [
             'data' => $this->data,
-            'done' => $this->done,
-            'iterator' => $this->iterator];
+            'iterator' => $this->iterator,
+            'done' => $this->done];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -54,8 +54,8 @@ class EventStreamOut implements \JsonSerializable
     {
         return new self(
             data: \Svix\Utils::deserializeObjectArray($data, 'data', true, 'EventStreamOut', [EventOut::class, 'fromMixed']),
-            done: \Svix\Utils::deserializeBool($data, 'done', true, 'EventStreamOut'),
-            iterator: \Svix\Utils::deserializeString($data, 'iterator', true, 'EventStreamOut')
+            iterator: \Svix\Utils::deserializeString($data, 'iterator', true, 'EventStreamOut'),
+            done: \Svix\Utils::deserializeBool($data, 'done', true, 'EventStreamOut')
         );
     }
 

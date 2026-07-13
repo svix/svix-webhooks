@@ -3,13 +3,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ApplicationOut {
-    #[serde(rename = "createdAt")]
-    pub created_at: String,
-
-    /// The Application's ID.
-    pub id: String,
-
-    pub metadata: std::collections::HashMap<String, String>,
+    /// Optional unique identifier for the application.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uid: Option<String>,
 
     /// Application name for human consumption.
     pub name: String,
@@ -21,30 +17,34 @@ pub struct ApplicationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub throttle_rate: Option<u16>,
 
-    /// Optional unique identifier for the application.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub uid: Option<String>,
+    /// The Application's ID.
+    pub id: String,
+
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
 
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
+
+    pub metadata: std::collections::HashMap<String, String>,
 }
 
 impl ApplicationOut {
     pub fn new(
-        created_at: String,
-        id: String,
-        metadata: std::collections::HashMap<String, String>,
         name: String,
+        id: String,
+        created_at: String,
         updated_at: String,
+        metadata: std::collections::HashMap<String, String>,
     ) -> Self {
         Self {
-            created_at,
-            id,
-            metadata,
+            uid: None,
             name,
             throttle_rate: None,
-            uid: None,
+            id,
+            created_at,
             updated_at,
+            metadata,
         }
     }
 }

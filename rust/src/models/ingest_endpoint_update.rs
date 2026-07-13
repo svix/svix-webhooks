@@ -6,12 +6,6 @@ pub struct IngestEndpointUpdate {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub disabled: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
     /// Maximum messages per second to send to this endpoint.
     ///
     /// Outgoing messages will be throttled to this rate.
@@ -24,17 +18,23 @@ pub struct IngestEndpointUpdate {
     pub uid: Option<String>,
 
     pub url: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 }
 
 impl IngestEndpointUpdate {
     pub fn new(url: String) -> Self {
         Self {
             description: None,
-            disabled: None,
-            metadata: None,
             throttle_rate: None,
             uid: None,
             url,
+            disabled: None,
+            metadata: None,
         }
     }
 }

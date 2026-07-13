@@ -20,9 +20,9 @@ import java.util.List;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ListResponseBackgroundTaskOut {
     @JsonProperty private List<BackgroundTaskOut> data;
-    @JsonProperty private Boolean done;
     @JsonProperty private String iterator;
     @JsonProperty private String prevIterator;
+    @JsonProperty private Boolean done;
 
     public ListResponseBackgroundTaskOut() {}
 
@@ -52,25 +52,6 @@ public class ListResponseBackgroundTaskOut {
 
     public void setData(List<BackgroundTaskOut> data) {
         this.data = data;
-    }
-
-    public ListResponseBackgroundTaskOut done(Boolean done) {
-        this.done = done;
-        return this;
-    }
-
-    /**
-     * Get done
-     *
-     * @return done
-     */
-    @javax.annotation.Nonnull
-    public Boolean getDone() {
-        return done;
-    }
-
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     public ListResponseBackgroundTaskOut iterator(String iterator) {
@@ -109,6 +90,25 @@ public class ListResponseBackgroundTaskOut {
 
     public void setPrevIterator(String prevIterator) {
         this.prevIterator = prevIterator;
+    }
+
+    public ListResponseBackgroundTaskOut done(Boolean done) {
+        this.done = done;
+        return this;
+    }
+
+    /**
+     * Get done
+     *
+     * @return done
+     */
+    @javax.annotation.Nonnull
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
     }
 
     /**

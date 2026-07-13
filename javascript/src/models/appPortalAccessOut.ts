@@ -1,22 +1,22 @@
 // this file is @generated
 
 export interface AppPortalAccessOut {
-  token: string;
   url: string;
+  token: string;
 }
 
 export const AppPortalAccessOutSerializer = {
   _fromJsonObject(object: any): AppPortalAccessOut {
     return {
-      token: object["token"],
       url: object["url"],
+      token: object["token"],
     };
   },
 
   _toJsonObject(self: AppPortalAccessOut): any {
     return {
-      token: self.token,
       url: self.url,
+      token: self.token,
     };
   },
 };

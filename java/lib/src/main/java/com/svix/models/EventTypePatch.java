@@ -20,14 +20,33 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypePatch {
+    @JsonProperty private String description;
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
-    @JsonProperty private String description;
+    @JsonProperty private MaybeUnset<Object> schemas;
     @JsonProperty private MaybeUnset<Set<String>> featureFlags;
     @JsonProperty private MaybeUnset<String> groupName;
-    @JsonProperty private MaybeUnset<Object> schemas;
 
     public EventTypePatch() {}
+
+    public EventTypePatch description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public EventTypePatch archived(Boolean archived) {
         this.archived = archived;
@@ -67,23 +86,26 @@ public class EventTypePatch {
         this.deprecated = deprecated;
     }
 
-    public EventTypePatch description(String description) {
-        this.description = description;
+    public EventTypePatch schemas(Object schemas) {
+        this.schemas = new MaybeUnset<>(schemas);
         return this;
     }
 
     /**
-     * Get description
+     * Get schemas
      *
-     * @return description
+     * @return schemas
      */
     @javax.annotation.Nullable
-    public String getDescription() {
-        return description;
+    public Object getSchemas() {
+        if (schemas == null) {
+            return null;
+        }
+        return schemas.getValue();
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setSchemas(Object schemas) {
+        this.schemas = new MaybeUnset<>(schemas);
     }
 
     public EventTypePatch featureFlags(Set<String> featureFlags) {
@@ -137,28 +159,6 @@ public class EventTypePatch {
 
     public void setGroupName(String groupName) {
         this.groupName = new MaybeUnset<>(groupName);
-    }
-
-    public EventTypePatch schemas(Object schemas) {
-        this.schemas = new MaybeUnset<>(schemas);
-        return this;
-    }
-
-    /**
-     * Get schemas
-     *
-     * @return schemas
-     */
-    @javax.annotation.Nullable
-    public Object getSchemas() {
-        if (schemas == null) {
-            return null;
-        }
-        return schemas.getValue();
-    }
-
-    public void setSchemas(Object schemas) {
-        this.schemas = new MaybeUnset<>(schemas);
     }
 
     /**

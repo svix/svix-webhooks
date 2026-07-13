@@ -20,14 +20,71 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class StreamOut {
-    @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private String id;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private String name;
     @JsonProperty private String uid;
+    @JsonProperty private String name;
+    @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Map<String, String> metadata;
 
     public StreamOut() {}
+
+    public StreamOut id(String id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * The stream's ID.
+     *
+     * @return id
+     */
+    @javax.annotation.Nonnull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public StreamOut uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * The stream's UID.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public StreamOut name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * The stream's name.
+     *
+     * @return name
+     */
+    @javax.annotation.Nullable
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public StreamOut createdAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
@@ -48,23 +105,23 @@ public class StreamOut {
         this.createdAt = createdAt;
     }
 
-    public StreamOut id(String id) {
-        this.id = id;
+    public StreamOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
         return this;
     }
 
     /**
-     * The stream's ID.
+     * Get updatedAt
      *
-     * @return id
+     * @return updatedAt
      */
     @javax.annotation.Nonnull
-    public String getId() {
-        return id;
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public StreamOut metadata(Map<String, String> metadata) {
@@ -93,63 +150,6 @@ public class StreamOut {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public StreamOut name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * The stream's name.
-     *
-     * @return name
-     */
-    @javax.annotation.Nullable
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public StreamOut uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * The stream's UID.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public StreamOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

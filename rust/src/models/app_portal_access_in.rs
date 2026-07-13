@@ -12,6 +12,12 @@ pub struct AppPortalAccessIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub application: Option<ApplicationIn>,
 
+    /// Whether the app portal should be in read-only mode.
+    #[deprecated]
+    #[serde(rename = "readOnly")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+
     /// Custom capabilities attached to the token, You can combine as many
     /// capabilities as necessary.
     ///
@@ -39,22 +45,16 @@ pub struct AppPortalAccessIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub capabilities: Option<Vec<AppPortalCapability>>,
 
-    /// How long the token will be valid for, in seconds.
-    ///
-    /// Valid values are between 1 hour and 7 days. The default is 7 days.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry: Option<i32>,
-
     /// The set of feature flags the created token will have access to.
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flags: Option<Vec<String>>,
 
-    /// Whether the app portal should be in read-only mode.
-    #[deprecated]
-    #[serde(rename = "readOnly")]
+    /// How long the token will be valid for, in seconds.
+    ///
+    /// Valid values are between 1 hour and 7 days. The default is 7 days.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub read_only: Option<bool>,
+    pub expiry: Option<i32>,
 
     /// An optional session ID to attach to the token.
     ///
@@ -70,10 +70,10 @@ impl AppPortalAccessIn {
         #[allow(deprecated)]
         Self {
             application: None,
-            capabilities: None,
-            expiry: None,
-            feature_flags: None,
             read_only: None,
+            capabilities: None,
+            feature_flags: None,
+            expiry: None,
             session_id: None,
         }
     }

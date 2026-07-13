@@ -2,44 +2,44 @@
 import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 
 export interface ConnectorUpdate {
-  allowedEventTypes?: string[] | null;
-  description?: string;
-  featureFlags?: string[] | null;
-  instructions?: string;
-  kind?: ConnectorKind;
-  logo?: string | null;
   name?: string;
+  logo?: string | null;
+  description?: string;
+  kind?: ConnectorKind;
+  instructions?: string;
+  allowedEventTypes?: string[] | null;
   transformation: string;
+  featureFlags?: string[] | null;
 }
 
 export const ConnectorUpdateSerializer = {
   _fromJsonObject(object: any): ConnectorUpdate {
     return {
-      allowedEventTypes: object["allowedEventTypes"],
+      name: object["name"],
+      logo: object["logo"],
       description: object["description"],
-      featureFlags: object["featureFlags"],
-      instructions: object["instructions"],
       kind:
         object["kind"] != null
           ? ConnectorKindSerializer._fromJsonObject(object["kind"])
           : undefined,
-      logo: object["logo"],
-      name: object["name"],
+      instructions: object["instructions"],
+      allowedEventTypes: object["allowedEventTypes"],
       transformation: object["transformation"],
+      featureFlags: object["featureFlags"],
     };
   },
 
   _toJsonObject(self: ConnectorUpdate): any {
     return {
-      allowedEventTypes: self.allowedEventTypes,
+      name: self.name,
+      logo: self.logo,
       description: self.description,
-      featureFlags: self.featureFlags,
-      instructions: self.instructions,
       kind:
         self.kind != null ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
-      logo: self.logo,
-      name: self.name,
+      instructions: self.instructions,
+      allowedEventTypes: self.allowedEventTypes,
       transformation: self.transformation,
+      featureFlags: self.featureFlags,
     };
   },
 };

@@ -20,9 +20,9 @@ import java.util.List;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ListResponseEndpointMessageOut {
     @JsonProperty private List<EndpointMessageOut> data;
-    @JsonProperty private Boolean done;
     @JsonProperty private String iterator;
     @JsonProperty private String prevIterator;
+    @JsonProperty private Boolean done;
 
     public ListResponseEndpointMessageOut() {}
 
@@ -52,25 +52,6 @@ public class ListResponseEndpointMessageOut {
 
     public void setData(List<EndpointMessageOut> data) {
         this.data = data;
-    }
-
-    public ListResponseEndpointMessageOut done(Boolean done) {
-        this.done = done;
-        return this;
-    }
-
-    /**
-     * Get done
-     *
-     * @return done
-     */
-    @javax.annotation.Nonnull
-    public Boolean getDone() {
-        return done;
-    }
-
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     public ListResponseEndpointMessageOut iterator(String iterator) {
@@ -109,6 +90,25 @@ public class ListResponseEndpointMessageOut {
 
     public void setPrevIterator(String prevIterator) {
         this.prevIterator = prevIterator;
+    }
+
+    public ListResponseEndpointMessageOut done(Boolean done) {
+        this.done = done;
+        return this;
+    }
+
+    /**
+     * Get done
+     *
+     * @return done
+     */
+    @javax.annotation.Nonnull
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
     }
 
     /**

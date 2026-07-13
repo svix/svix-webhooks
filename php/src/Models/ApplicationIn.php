@@ -10,18 +10,18 @@ class ApplicationIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param array<string, string>|null $metadata
-     * @param string                     $name         application name for human consumption
-     * @param int|null                   $throttleRate Maximum messages per second to send to this application.
+     * @param string   $name         application name for human consumption
+     * @param int|null $throttleRate Maximum messages per second to send to this application.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid optional unique identifier for the application
+     * @param string|null                $uid      optional unique identifier for the application
+     * @param array<string, string>|null $metadata
      */
     private function __construct(
         public readonly string $name,
-        public readonly ?array $metadata = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
+        public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -34,25 +34,11 @@ class ApplicationIn implements \JsonSerializable
         string $name,
     ): self {
         return new self(
-            metadata: null,
             name: $name,
             throttleRate: null,
             uid: null,
+            metadata: null,
             setFields: ['name' => true]
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            metadata: $metadata,
-            name: $this->name,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            setFields: $setFields
         );
     }
 
@@ -62,10 +48,10 @@ class ApplicationIn implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
-            metadata: $this->metadata,
             name: $this->name,
             throttleRate: $throttleRate,
             uid: $this->uid,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -76,10 +62,24 @@ class ApplicationIn implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            metadata: $this->metadata,
             name: $this->name,
             throttleRate: $this->throttleRate,
             uid: $uid,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            name: $this->name,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            metadata: $metadata,
             setFields: $setFields
         );
     }
@@ -89,14 +89,14 @@ class ApplicationIn implements \JsonSerializable
         $data = [
             'name' => $this->name];
 
-        if (null !== $this->metadata) {
-            $data['metadata'] = $this->metadata;
-        }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
+        }
+        if (null !== $this->metadata) {
+            $data['metadata'] = $this->metadata;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -108,10 +108,10 @@ class ApplicationIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'ApplicationIn'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'ApplicationIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'ApplicationIn'),
-            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ApplicationIn')
+            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'ApplicationIn'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'ApplicationIn')
         );
     }
 

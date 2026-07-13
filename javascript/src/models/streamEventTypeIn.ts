@@ -1,32 +1,32 @@
 // this file is @generated
 
 export interface StreamEventTypeIn {
-  archived?: boolean;
-  deprecated?: boolean;
-  description?: string | null;
-  featureFlags?: string[] | null;
   /** The event type's name */
   name: string;
+  description?: string | null;
+  featureFlags?: string[] | null;
+  deprecated?: boolean;
+  archived?: boolean;
 }
 
 export const StreamEventTypeInSerializer = {
   _fromJsonObject(object: any): StreamEventTypeIn {
     return {
-      archived: object["archived"],
-      deprecated: object["deprecated"],
+      name: object["name"],
       description: object["description"],
       featureFlags: object["featureFlags"],
-      name: object["name"],
+      deprecated: object["deprecated"],
+      archived: object["archived"],
     };
   },
 
   _toJsonObject(self: StreamEventTypeIn): any {
     return {
-      archived: self.archived,
-      deprecated: self.deprecated,
+      name: self.name,
       description: self.description,
       featureFlags: self.featureFlags,
-      name: self.name,
+      deprecated: self.deprecated,
+      archived: self.archived,
     };
   },
 };

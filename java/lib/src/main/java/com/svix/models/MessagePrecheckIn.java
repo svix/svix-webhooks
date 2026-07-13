@@ -19,10 +19,29 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MessagePrecheckIn {
-    @JsonProperty private Set<String> channels;
     @JsonProperty private String eventType;
+    @JsonProperty private Set<String> channels;
 
     public MessagePrecheckIn() {}
+
+    public MessagePrecheckIn eventType(String eventType) {
+        this.eventType = eventType;
+        return this;
+    }
+
+    /**
+     * The event type's name
+     *
+     * @return eventType
+     */
+    @javax.annotation.Nonnull
+    public String getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
+    }
 
     public MessagePrecheckIn channels(Set<String> channels) {
         this.channels = channels;
@@ -50,25 +69,6 @@ public class MessagePrecheckIn {
 
     public void setChannels(Set<String> channels) {
         this.channels = channels;
-    }
-
-    public MessagePrecheckIn eventType(String eventType) {
-        this.eventType = eventType;
-        return this;
-    }
-
-    /**
-     * The event type's name
-     *
-     * @return eventType
-     */
-    @javax.annotation.Nonnull
-    public String getEventType() {
-        return eventType;
-    }
-
-    public void setEventType(String eventType) {
-        this.eventType = eventType;
     }
 
     /**

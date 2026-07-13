@@ -35,9 +35,9 @@ import (
 //   - "vgs": Use VgsConfig
 //   - "zoom": Use ZoomConfig
 type IngestSourceIn struct {
-	Metadata *map[string]string   `json:"metadata,omitempty"`
 	Name     string               `json:"name"`
 	Uid      *string              `json:"uid,omitempty"` // The Source's UID.
+	Metadata *map[string]string   `json:"metadata,omitempty"`
 	Type     IngestSourceInType   `json:"type"`
 	Config   IngestSourceInConfig `json:"config"`
 }

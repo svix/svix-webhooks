@@ -1,36 +1,36 @@
 // this file is @generated
 
 export interface EventTypeFromOpenApi {
-  deprecated: boolean;
-  description: string;
-  featureFlags?: string[] | null;
-  /** The event type group's name */
-  groupName?: string | null;
   /** The event type's name */
   name: string;
+  description: string;
   schemas?: any | null;
+  deprecated: boolean;
+  /** The event type group's name */
+  groupName?: string | null;
+  featureFlags?: string[] | null;
 }
 
 export const EventTypeFromOpenApiSerializer = {
   _fromJsonObject(object: any): EventTypeFromOpenApi {
     return {
-      deprecated: object["deprecated"],
-      description: object["description"],
-      featureFlags: object["featureFlags"],
-      groupName: object["groupName"],
       name: object["name"],
+      description: object["description"],
       schemas: object["schemas"],
+      deprecated: object["deprecated"],
+      groupName: object["groupName"],
+      featureFlags: object["featureFlags"],
     };
   },
 
   _toJsonObject(self: EventTypeFromOpenApi): any {
     return {
-      deprecated: self.deprecated,
-      description: self.description,
-      featureFlags: self.featureFlags,
-      groupName: self.groupName,
       name: self.name,
+      description: self.description,
       schemas: self.schemas,
+      deprecated: self.deprecated,
+      groupName: self.groupName,
+      featureFlags: self.featureFlags,
     };
   },
 };

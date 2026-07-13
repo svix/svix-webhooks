@@ -23,20 +23,8 @@ from .sqs_config import SqsConfig
 
 
 class StreamSinkIn(BaseModel):
-    batch_size: t.Optional[int] = None
-    """How many events will be batched in a request to the Sink."""
-
-    event_types: t.Optional[t.List[str]] = None
-    """A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events."""
-
-    max_wait_secs: t.Optional[int] = None
-    """How long to wait before a batch of events is sent, if the `batchSize` is not reached.
-
-    For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
-
-    Note that we will never send an empty batch of events to the Sink."""
-
-    metadata: t.Optional[t.Dict[str, str]] = None
+    uid: t.Optional[str] = None
+    """An optional unique identifier for the sink."""
 
     status: t.Optional[SinkStatusIn] = None
     """Whether the sink will receive events.
@@ -45,8 +33,20 @@ class StreamSinkIn(BaseModel):
 
     If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled."""
 
-    uid: t.Optional[str] = None
-    """An optional unique identifier for the sink."""
+    batch_size: t.Optional[int] = None
+    """How many events will be batched in a request to the Sink."""
+
+    max_wait_secs: t.Optional[int] = None
+    """How long to wait before a batch of events is sent, if the `batchSize` is not reached.
+
+    For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
+
+    Note that we will never send an empty batch of events to the Sink."""
+
+    event_types: t.Optional[t.List[str]] = None
+    """A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events."""
+
+    metadata: t.Optional[t.Dict[str, str]] = None
 
     type: t.Union[
         t.Literal["poller"],

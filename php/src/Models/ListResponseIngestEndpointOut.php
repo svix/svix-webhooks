@@ -14,8 +14,8 @@ class ListResponseIngestEndpointOut implements \JsonSerializable
      */
     private function __construct(
         public readonly array $data,
-        public readonly bool $done,
         public readonly string $iterator,
+        public readonly bool $done,
         public readonly ?string $prevIterator = null,
         array $setFields = [],
     ) {
@@ -27,15 +27,15 @@ class ListResponseIngestEndpointOut implements \JsonSerializable
      */
     public static function create(
         array $data,
-        bool $done,
         string $iterator,
+        bool $done,
     ): self {
         return new self(
             data: $data,
-            done: $done,
             iterator: $iterator,
             prevIterator: null,
-            setFields: ['data' => true, 'done' => true, 'iterator' => true]
+            done: $done,
+            setFields: ['data' => true, 'iterator' => true, 'done' => true]
         );
     }
 
@@ -46,9 +46,9 @@ class ListResponseIngestEndpointOut implements \JsonSerializable
 
         return new self(
             data: $this->data,
-            done: $this->done,
             iterator: $this->iterator,
             prevIterator: $prevIterator,
+            done: $this->done,
             setFields: $setFields
         );
     }
@@ -73,9 +73,9 @@ class ListResponseIngestEndpointOut implements \JsonSerializable
     {
         return new self(
             data: \Svix\Utils::deserializeObjectArray($data, 'data', true, 'ListResponseIngestEndpointOut', [IngestEndpointOut::class, 'fromMixed']),
-            done: \Svix\Utils::deserializeBool($data, 'done', true, 'ListResponseIngestEndpointOut'),
             iterator: \Svix\Utils::deserializeString($data, 'iterator', true, 'ListResponseIngestEndpointOut'),
-            prevIterator: \Svix\Utils::deserializeString($data, 'prevIterator', false, 'ListResponseIngestEndpointOut')
+            prevIterator: \Svix\Utils::deserializeString($data, 'prevIterator', false, 'ListResponseIngestEndpointOut'),
+            done: \Svix\Utils::deserializeBool($data, 'done', true, 'ListResponseIngestEndpointOut')
         );
     }
 

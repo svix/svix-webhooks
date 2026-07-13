@@ -10,11 +10,11 @@ class SnsPatchConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly ?string $accessKeyId = null,
-        public readonly ?string $endpointUrl = null,
-        public readonly ?string $region = null,
-        public readonly ?string $secretAccessKey = null,
         public readonly ?string $topicArn = null,
+        public readonly ?string $region = null,
+        public readonly ?string $accessKeyId = null,
+        public readonly ?string $secretAccessKey = null,
+        public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -26,41 +26,26 @@ class SnsPatchConfig implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            accessKeyId: null,
-            endpointUrl: null,
-            region: null,
-            secretAccessKey: null,
             topicArn: null,
+            region: null,
+            accessKeyId: null,
+            secretAccessKey: null,
+            endpointUrl: null,
             setFields: []
         );
     }
 
-    public function withAccessKeyId(?string $accessKeyId): self
+    public function withTopicArn(?string $topicArn): self
     {
         $setFields = $this->setFields;
-        $setFields['accessKeyId'] = true;
+        $setFields['topicArn'] = true;
 
         return new self(
-            accessKeyId: $accessKeyId,
-            endpointUrl: $this->endpointUrl,
+            topicArn: $topicArn,
             region: $this->region,
-            secretAccessKey: $this->secretAccessKey,
-            topicArn: $this->topicArn,
-            setFields: $setFields
-        );
-    }
-
-    public function withEndpointUrl(?string $endpointUrl): self
-    {
-        $setFields = $this->setFields;
-        $setFields['endpointUrl'] = true;
-
-        return new self(
             accessKeyId: $this->accessKeyId,
-            endpointUrl: $endpointUrl,
-            region: $this->region,
             secretAccessKey: $this->secretAccessKey,
-            topicArn: $this->topicArn,
+            endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
     }
@@ -71,11 +56,26 @@ class SnsPatchConfig implements \JsonSerializable
         $setFields['region'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $this->endpointUrl,
-            region: $region,
-            secretAccessKey: $this->secretAccessKey,
             topicArn: $this->topicArn,
+            region: $region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withAccessKeyId(?string $accessKeyId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['accessKeyId'] = true;
+
+        return new self(
+            topicArn: $this->topicArn,
+            region: $this->region,
+            accessKeyId: $accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
     }
@@ -86,26 +86,26 @@ class SnsPatchConfig implements \JsonSerializable
         $setFields['secretAccessKey'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $this->endpointUrl,
-            region: $this->region,
-            secretAccessKey: $secretAccessKey,
             topicArn: $this->topicArn,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $secretAccessKey,
+            endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
     }
 
-    public function withTopicArn(?string $topicArn): self
+    public function withEndpointUrl(?string $endpointUrl): self
     {
         $setFields = $this->setFields;
-        $setFields['topicArn'] = true;
+        $setFields['endpointUrl'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $this->endpointUrl,
+            topicArn: $this->topicArn,
             region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
-            topicArn: $topicArn,
+            endpointUrl: $endpointUrl,
             setFields: $setFields
         );
     }
@@ -115,20 +115,20 @@ class SnsPatchConfig implements \JsonSerializable
         $data = [
         ];
 
-        if (null !== $this->accessKeyId) {
-            $data['accessKeyId'] = $this->accessKeyId;
-        }
-        if (isset($this->setFields['endpointUrl'])) {
-            $data['endpointUrl'] = $this->endpointUrl;
+        if (null !== $this->topicArn) {
+            $data['topicArn'] = $this->topicArn;
         }
         if (null !== $this->region) {
             $data['region'] = $this->region;
         }
+        if (null !== $this->accessKeyId) {
+            $data['accessKeyId'] = $this->accessKeyId;
+        }
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
         }
-        if (null !== $this->topicArn) {
-            $data['topicArn'] = $this->topicArn;
+        if (isset($this->setFields['endpointUrl'])) {
+            $data['endpointUrl'] = $this->endpointUrl;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -140,11 +140,11 @@ class SnsPatchConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SnsPatchConfig'),
-            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SnsPatchConfig'),
+            topicArn: \Svix\Utils::deserializeString($data, 'topicArn', false, 'SnsPatchConfig'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'SnsPatchConfig'),
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SnsPatchConfig'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'SnsPatchConfig'),
-            topicArn: \Svix\Utils::deserializeString($data, 'topicArn', false, 'SnsPatchConfig')
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SnsPatchConfig')
         );
     }
 

@@ -7,17 +7,17 @@ use super::event_out::EventOut;
 pub struct EventStreamOut {
     pub data: Vec<EventOut>,
 
-    pub done: bool,
-
     pub iterator: String,
+
+    pub done: bool,
 }
 
 impl EventStreamOut {
-    pub fn new(data: Vec<EventOut>, done: bool, iterator: String) -> Self {
+    pub fn new(data: Vec<EventOut>, iterator: String, done: bool) -> Self {
         Self {
             data,
-            done,
             iterator,
+            done,
         }
     }
 }
