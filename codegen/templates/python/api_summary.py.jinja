@@ -15,7 +15,7 @@
 {% for type in api.types -%}
 from ..models import {{ type | to_upper_camel_case }}
 {% endfor %}
-from .svix import Svix, SvixAsync, SvixOptions, DEFAULT_SERVER_URL
+from .svix import Svix, SvixAsync, SvixOptions
 
 
 
@@ -23,7 +23,6 @@ __all__ = [
     "Svix",
     "SvixAsync",
     "SvixOptions",
-    "DEFAULT_SERVER_URL",
 {%- for resource in api.resources %}
     {%- if resource.name not in excluded_resources -%}
         {%- if resource.operations | length > 0 -%}
