@@ -159,6 +159,6 @@ def test_cmg_with_content_default():
         app_id, MessageIn(event_type="user.signup", payload=payload)
     )
 
-    assert response.payload == payload
+    assert response.payload == {"m": "FILTERED"}
     reqs = httpretty.latest_requests()
     assert reqs[0].url.endswith("/msg?with_content=false")

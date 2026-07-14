@@ -194,12 +194,12 @@ async fn test_cmg_with_content_default() {
         .message()
         .create(
             app_id.to_owned(),
-            MessageIn::new(event_type.to_owned(), payload.clone()),
+            MessageIn::new(event_type.to_owned(), payload),
             None,
         )
         .await
         .unwrap();
 
-    assert_eq!(response.payload, payload);
+    assert_eq!(response.payload, json!({ "m": "FILTERED" }));
     mock_server.verify().await;
 }
