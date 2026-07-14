@@ -13,7 +13,7 @@ module Svix
     attr_accessor :uid
     attr_accessor :url
     attr_accessor :disabled
-    attr_accessor :filter_types
+    attr_accessor :event_types
     # The endpoint's verification secret.
     #
     # Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -21,7 +21,7 @@ module Svix
     attr_accessor :secret
     attr_accessor :metadata
 
-    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "filter_types", "secret", "metadata"].freeze
+    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "event_types", "secret", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -50,7 +50,7 @@ module Svix
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["event_types"] = attributes["eventTypes"]
       attrs["secret"] = attributes["secret"]
       attrs["metadata"] = attributes["metadata"]
       new(attrs)
@@ -63,7 +63,7 @@ module Svix
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["secret"] = Svix::serialize_primitive(@secret) if @secret
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out

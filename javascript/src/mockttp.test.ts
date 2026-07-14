@@ -10,11 +10,11 @@ const ApplicationOut = `{"uid":"unique-identifier","name":"My first application"
 const ListResponseMessageOut = `{"data":[{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseApplicationOut = `{"data":[{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseMessageAttemptOut = `{"data":[{"url":"https://example.com/webhook/","response":"{}","responseStatusCode":200,"responseDurationMs":0,"status":0,"triggerType":0,"msgId":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","endpointId":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","id":"atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","msg":{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2025-02-16T21:38:21.977Z","tags":["project_1337"]}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
-const ListResponseOperationalWebhookEndpointOut = `{"data":[{"id":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","description":"string","throttleRate":0,"uid":"unique-identifier","url":"https://example.com/webhook/","disabled":false,"filterTypes":["message.attempt.failing"],"createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
+const ListResponseOperationalWebhookEndpointOut = `{"data":[{"id":"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2","description":"string","throttleRate":0,"uid":"unique-identifier","url":"https://example.com/webhook/","disabled":false,"eventTypes":["message.attempt.failing"],"createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const ListResponseBackgroundTaskOut = `{"data":[{"data":{},"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay","updatedAt":"2025-03-03T03:03:03.000000Z"}],"iterator":"iterator","prevIterator":"-iterator","done":true}`;
 const EventTypeImportOpenApiOut = `{"data":{"modified":["user.signup"],"to_modify":[{"name":"user.signup","description":"string","schemas":{},"deprecated":true,"featureFlags":["cool-new-feature"],"groupName":"user"}]}}`;
 const ReplayOut = `{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay","updatedAt":"2025-03-03T03:03:03.000000Z"}`;
-const EndpointOut = `{"description":"string","throttleRate":0,"uid":"unique-identifier","url":"http://example.com","version":1,"disabled":true,"filterTypes":["user.signup"],"channels":["project_1337"],"secret":"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD","metadata":{"property1":"string","property2":"string"}}`;
+const EndpointOut = `{"description":"string","throttleRate":0,"uid":"unique-identifier","url":"http://example.com","version":1,"disabled":true,"eventTypes":["user.signup"],"channels":["project_1337"],"secret":"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD","metadata":{"property1":"string","property2":"string"}}`;
 const ValidationErrorOut = `{"detail":[{"loc":["string"],"msg":"string","type":"string"}]}`;
 const IngestSourceOutCron = `{"type":"cron","config":{"schedule":"hello","payload":"world"},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
 const IngestSourceOutGeneric = `{"type":"generic-webhook","config":{},"id":"src_2yZwUhtgs5Ai8T9yRQJXA","uid":"unique-identifier","name":"string","ingestUrl":"http://example.com","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`;
@@ -291,17 +291,17 @@ test("mockttp tests", async (t) => {
       .thenReply(200, EndpointOut);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
-    await svx.endpoint.patch("app1", "endp1", { filterTypes: ["ty1"] });
-    await svx.endpoint.patch("app1", "endp1", { filterTypes: null });
+    await svx.endpoint.patch("app1", "endp1", { eventTypes: ["ty1"] });
+    await svx.endpoint.patch("app1", "endp1", { eventTypes: null });
     await svx.endpoint.patch("app1", "endp1", { description: "text" });
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 3);
 
     // nullable field is sent
-    assert.equal(await requests[0].body.getText(), `{"filterTypes":["ty1"]}`);
+    assert.equal(await requests[0].body.getText(), `{"eventTypes":["ty1"]}`);
     // nullable field is null
-    assert.equal(await requests[1].body.getText(), `{"filterTypes":null}`);
+    assert.equal(await requests[1].body.getText(), `{"eventTypes":null}`);
     // undefined field is omitted
     assert.equal(await requests[2].body.getText(), `{"description":"text"}`);
   });

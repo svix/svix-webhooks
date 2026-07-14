@@ -49,10 +49,10 @@ def test_endpoint_crud(client) -> None:
     )
     assert {s for s in ep.channels} == {"ch0", "ch1"}
     ep_patched = client.endpoint.patch(
-        app.id, ep.id, EndpointPatch(filter_types=["event.started", "event.ended"])
+        app.id, ep.id, EndpointPatch(event_types=["event.started", "event.ended"])
     )
     assert {s for s in ep_patched.channels} == {"ch0", "ch1"}
-    assert {s for s in ep_patched.filter_types} == {"event.started", "event.ended"}
+    assert {s for s in ep_patched.event_types} == {"event.started", "event.ended"}
 
     # Should succeed without error if the deserialization handles empty response bodies
     # correctly

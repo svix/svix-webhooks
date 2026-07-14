@@ -12,9 +12,9 @@ type SinkInCommon struct {
 	//
 	// Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
 	// It is recommended to not set this and let the server generate the secret.
-	Secret      *string            `json:"secret,omitempty"`
-	Disabled    *bool              `json:"disabled,omitempty"`
-	FilterTypes []string           `json:"filterTypes,omitempty"`
-	Channels    []string           `json:"channels,omitempty"` // List of message channels this sink listens to (omit for all).
-	Metadata    *map[string]string `json:"metadata,omitempty"`
+	Secret     *string            `json:"secret,omitempty"`
+	Disabled   *bool              `json:"disabled,omitempty"`
+	EventTypes []string           `json:"eventTypes,omitempty"`
+	Channels   []string           `json:"channels,omitempty"` // List of message channels this sink listens to (omit for all).
+	Metadata   *map[string]string `json:"metadata,omitempty"`
 }

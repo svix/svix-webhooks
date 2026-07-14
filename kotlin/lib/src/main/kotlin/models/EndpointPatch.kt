@@ -17,7 +17,7 @@ data class EndpointPatch(
     val uid: MaybeUnset<String> = MaybeUnset.Unset,
     val url: String? = null,
     val disabled: Boolean? = null,
-    val filterTypes: MaybeUnset<Set<String>> = MaybeUnset.Unset,
+    val eventTypes: MaybeUnset<Set<String>> = MaybeUnset.Unset,
     val channels: MaybeUnset<Set<String>> = MaybeUnset.Unset,
     val metadata: Map<String, String>? = null,
 )

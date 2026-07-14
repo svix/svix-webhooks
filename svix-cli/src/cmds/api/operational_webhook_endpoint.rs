@@ -92,7 +92,7 @@ pub enum OperationalWebhookEndpointCommands {
     \"uid\": \"unique-identifier\",
     \"url\": \"https://example.com/webhook/\",
     \"disabled\": false,
-    \"filterTypes\": [\"message.attempt.failing\"],
+    \"eventTypes\": [\"message.attempt.failing\"],
     \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
     \"metadata\": {\"key\": \"...\"}
@@ -121,7 +121,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
@@ -132,7 +132,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
@@ -159,7 +159,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
@@ -181,7 +181,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypesIds\": [\"message.attempt.failing\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
@@ -191,7 +191,7 @@ pub enum OperationalWebhookEndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}

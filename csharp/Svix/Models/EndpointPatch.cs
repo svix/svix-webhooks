@@ -31,11 +31,11 @@ namespace Svix.Models
 
         public bool ShouldSerializeDisabled() => Disabled != null;
 
-        [JsonProperty("filterTypes")]
-        public MaybeUnset<List<string>?> FilterTypes { get; set; } =
+        [JsonProperty("eventTypes")]
+        public MaybeUnset<List<string>?> EventTypes { get; set; } =
             MaybeUnset<List<string>?>.Unset();
 
-        public bool ShouldSerializeFilterTypes() => !FilterTypes.IsUnset;
+        public bool ShouldSerializeEventTypes() => !EventTypes.IsUnset;
 
         [JsonProperty("channels")]
         public MaybeUnset<List<string>?> Channels { get; set; } = MaybeUnset<List<string>?>.Unset();
@@ -57,7 +57,7 @@ namespace Svix.Models
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Disabled: ").Append(Disabled).Append('\n');
-            sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
+            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
             sb.Append("  Channels: ").Append(Channels).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("}\n");

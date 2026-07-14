@@ -22,9 +22,9 @@ pub struct EndpointIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub event_types: Option<Vec<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -53,7 +53,7 @@ impl EndpointIn {
             uid: None,
             url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             channels: None,
             secret: None,
             metadata: None,

@@ -15,8 +15,8 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null           $uid         optional unique identifier for the endpoint
-     * @param list<string>|null     $filterTypes
+     * @param string|null           $uid        optional unique identifier for the endpoint
+     * @param list<string>|null     $eventTypes
      * @param array<string, string> $metadata
      */
     private function __construct(
@@ -29,7 +29,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypes = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -53,7 +53,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             uid: null,
             url: $url,
             disabled: null,
-            filterTypes: null,
+            eventTypes: null,
             createdAt: $createdAt,
             updatedAt: $updatedAt,
             metadata: $metadata,
@@ -73,7 +73,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
             metadata: $this->metadata,
@@ -93,7 +93,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             uid: $uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
             metadata: $this->metadata,
@@ -113,7 +113,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
             metadata: $this->metadata,
@@ -121,10 +121,10 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypes(?array $eventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypes'] = true;
 
         return new self(
             id: $this->id,
@@ -133,7 +133,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypes: $eventTypes,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
             metadata: $this->metadata,
@@ -160,8 +160,8 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -179,7 +179,7 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointOut'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointOut'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointOut'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointOut'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'OperationalWebhookEndpointOut'),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'OperationalWebhookEndpointOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'OperationalWebhookEndpointOut'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'OperationalWebhookEndpointOut')

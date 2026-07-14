@@ -13,10 +13,10 @@ module Svix
     attr_accessor :uid
     attr_accessor :url
     attr_accessor :disabled
-    attr_accessor :filter_types
+    attr_accessor :event_types_ids
     attr_accessor :metadata
 
-    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "filter_types", "metadata"].freeze
+    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "event_types_ids", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -45,7 +45,7 @@ module Svix
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["event_types_ids"] = attributes["eventTypesIds"]
       attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
@@ -57,7 +57,7 @@ module Svix
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["eventTypesIds"] = Svix::serialize_primitive(@event_types_ids) if @event_types_ids
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end

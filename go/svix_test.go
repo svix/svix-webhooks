@@ -37,7 +37,7 @@ var endpointOurStr = `
   "url": "https://example.com/webhook/",
   "version": 1,
   "disabled": false,
-  "filterTypes": [
+  "eventTypes": [
     "user.signup",
     "user.deleted"
   ],
@@ -200,7 +200,7 @@ func TestKitchenSink(t *testing.T) {
 	}
 
 	endpPatch := models.EndpointPatch{
-		FilterTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
+		EventTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
 	}
 
 	patched, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, endpPatch)
@@ -208,7 +208,7 @@ func TestKitchenSink(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for _, typ := range patched.FilterTypes {
+	for _, typ := range patched.EventTypes {
 		if typ != "event.started" && typ != "event.ended" {
 			t.Fatalf("unexpected filter type: `%s`", typ)
 		}
@@ -360,8 +360,8 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Disabled != nil {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
 	}
-	if len(ep_out.FilterTypes) != 0 {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if len(ep_out.EventTypes) != 0 {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
 	if ep_out.ThrottleRate != nil {
 		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
@@ -388,7 +388,7 @@ func TestModelDeserialization(t *testing.T) {
 			"url": "https://example.com/webhook/",
 			"version": 1,
 			"disabled": false,
-			"filterTypes": [
+			"eventTypes": [
 				"user.signup",
 				"user.deleted"
 			],
@@ -431,14 +431,14 @@ func TestModelDeserialization(t *testing.T) {
 	if *ep_out.Disabled != false {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
 	}
-	if len(ep_out.FilterTypes) != 2 {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if len(ep_out.EventTypes) != 2 {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
-	if ep_out.FilterTypes[0] != "user.signup" {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if ep_out.EventTypes[0] != "user.signup" {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
-	if ep_out.FilterTypes[1] != "user.deleted" {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if ep_out.EventTypes[1] != "user.deleted" {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
 	if len(ep_out.Channels) != 2 {
 		t.Error("unexpected value for channels", ep_out.Channels)
@@ -463,7 +463,7 @@ func TestModelDeserialization(t *testing.T) {
 			"url": "https://example.com/webhook/",
 			"version": 1,
 			"disabled": null,
-			"filterTypes": null,
+			"eventTypes": null,
 			"channels": null,
 			"createdAt": "2019-08-24T14:15:22Z",
 			"updatedAt": "2019-08-24T14:15:22Z"
@@ -494,8 +494,8 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Disabled != nil {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
 	}
-	if len(ep_out.FilterTypes) != 0 {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if len(ep_out.EventTypes) != 0 {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
 	if len(ep_out.Channels) != 0 {
 		t.Error("unexpected value for channels", ep_out.Channels)

@@ -21,8 +21,8 @@ namespace Svix.Models
         [JsonProperty("disabled")]
         public bool? Disabled { get; set; } = null;
 
-        [JsonProperty("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = null;
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
 
         [JsonProperty("secret")]
         public string? Secret { get; set; } = null;
@@ -40,7 +40,7 @@ namespace Svix.Models
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Disabled: ").Append(Disabled).Append('\n');
-            sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
+            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
             sb.Append("  Secret: ").Append(Secret).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("}\n");
