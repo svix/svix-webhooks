@@ -22,7 +22,7 @@ namespace Svix
                     { "iterator", Iterator },
                     { "order", Order },
                     { "include_archived", IncludeArchived },
-                    { "with_content", WithContent },
+                    { "with_content", WithContent ?? false },
                 }
             );
         }

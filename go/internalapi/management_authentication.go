@@ -34,20 +34,21 @@ func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
 	apiTokenExpireIn models.ApiTokenExpireIn,
 	o *ManagementAuthenticationExpireApiTokenOptions,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"env_id": envId,
 		"key_id": keyId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := ManagementAuthenticationExpireApiTokenOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[models.ApiTokenExpireIn, any](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[models.ApiTokenExpireIn, any](
 		ctx,
 		managementAuthentication.client,
 		"POST",
@@ -90,17 +91,18 @@ func (managementAuthentication *ManagementAuthentication) CreateApiToken(
 	apiTokenIn models.ApiTokenIn,
 	o *ManagementAuthenticationCreateApiTokenOptions,
 ) (*models.ApiTokenOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"env_id": envId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ManagementAuthenticationCreateApiTokenOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.ApiTokenIn, models.ApiTokenOut](
 		ctx,

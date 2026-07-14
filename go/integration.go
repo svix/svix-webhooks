@@ -42,19 +42,20 @@ func (integration *Integration) List(
 	appId string,
 	o *IntegrationListOptions,
 ) (*models.ListResponseIntegrationOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IntegrationListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseIntegrationOut](
 		ctx,
@@ -75,17 +76,18 @@ func (integration *Integration) Create(
 	integrationIn models.IntegrationIn,
 	o *IntegrationCreateOptions,
 ) (*models.IntegrationOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IntegrationCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.IntegrationIn, models.IntegrationOut](
 		ctx,
@@ -150,11 +152,12 @@ func (integration *Integration) Delete(
 	appId string,
 	integId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id":   appId,
 		"integ_id": integId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		integration.client,
 		"DELETE",
@@ -174,18 +177,19 @@ func (integration *Integration) RotateKey(
 	integId string,
 	o *IntegrationRotateKeyOptions,
 ) (*models.IntegrationKeyOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":   appId,
 		"integ_id": integId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IntegrationRotateKeyOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.IntegrationKeyOut](
 		ctx,

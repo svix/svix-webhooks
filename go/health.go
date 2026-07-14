@@ -21,7 +21,8 @@ func newHealth(client *internal.SvixHttpClient) *Health {
 func (health *Health) Get(
 	ctx context.Context,
 ) error {
-	_, err := internal.ExecuteRequest[any, any](
+	var err error
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		health.client,
 		"GET",

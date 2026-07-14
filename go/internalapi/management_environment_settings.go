@@ -89,7 +89,8 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) UpdateOtelCo
 	ctx context.Context,
 	otelConfig models.OtelConfig,
 ) error {
-	_, err := internal.ExecuteRequest[models.OtelConfig, any](
+	var err error
+	_, err = internal.ExecuteRequest[models.OtelConfig, any](
 		ctx,
 		managementEnvironmentSettings.client,
 		"PUT",
@@ -106,7 +107,8 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) UpdateOtelCo
 func (managementEnvironmentSettings *ManagementEnvironmentSettings) DeleteOtelConfig(
 	ctx context.Context,
 ) error {
-	_, err := internal.ExecuteRequest[any, any](
+	var err error
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		managementEnvironmentSettings.client,
 		"DELETE",

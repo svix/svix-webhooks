@@ -42,19 +42,20 @@ func (ingestEndpoint *IngestEndpoint) List(
 	sourceId string,
 	o *IngestEndpointListOptions,
 ) (*models.ListResponseIngestEndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IngestEndpointListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseIngestEndpointOut](
 		ctx,
@@ -75,17 +76,18 @@ func (ingestEndpoint *IngestEndpoint) Create(
 	ingestEndpointIn models.IngestEndpointIn,
 	o *IngestEndpointCreateOptions,
 ) (*models.IngestEndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IngestEndpointCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.IngestEndpointIn, models.IngestEndpointOut](
 		ctx,
@@ -150,11 +152,12 @@ func (ingestEndpoint *IngestEndpoint) Delete(
 	sourceId string,
 	endpointId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		ingestEndpoint.client,
 		"DELETE",
@@ -202,20 +205,21 @@ func (ingestEndpoint *IngestEndpoint) RotateSecret(
 	ingestEndpointSecretIn models.IngestEndpointSecretIn,
 	o *IngestEndpointRotateSecretOptions,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := IngestEndpointRotateSecretOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[models.IngestEndpointSecretIn, any](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[models.IngestEndpointSecretIn, any](
 		ctx,
 		ingestEndpoint.client,
 		"POST",
@@ -257,11 +261,12 @@ func (ingestEndpoint *IngestEndpoint) UpdateHeaders(
 	endpointId string,
 	ingestEndpointHeadersIn models.IngestEndpointHeadersIn,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[models.IngestEndpointHeadersIn, any](
+	_, err = internal.ExecuteRequest[models.IngestEndpointHeadersIn, any](
 		ctx,
 		ingestEndpoint.client,
 		"PUT",
@@ -303,11 +308,12 @@ func (ingestEndpoint *IngestEndpoint) SetTransformation(
 	endpointId string,
 	ingestEndpointTransformationPatch models.IngestEndpointTransformationPatch,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"source_id":   sourceId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[models.IngestEndpointTransformationPatch, any](
+	_, err = internal.ExecuteRequest[models.IngestEndpointTransformationPatch, any](
 		ctx,
 		ingestEndpoint.client,
 		"PATCH",

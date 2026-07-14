@@ -42,19 +42,20 @@ func (streamingSink *StreamingSink) List(
 	streamId string,
 	o *StreamingSinkListOptions,
 ) (*models.ListResponseStreamSinkOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingSinkListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseStreamSinkOut](
 		ctx,
@@ -75,17 +76,18 @@ func (streamingSink *StreamingSink) Create(
 	streamSinkIn models.StreamSinkIn,
 	o *StreamingSinkCreateOptions,
 ) (*models.StreamSinkOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingSinkCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.StreamSinkIn, models.StreamSinkOut](
 		ctx,
@@ -150,11 +152,12 @@ func (streamingSink *StreamingSink) Delete(
 	streamId string,
 	sinkId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 		"sink_id":   sinkId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		streamingSink.client,
 		"DELETE",
@@ -247,18 +250,19 @@ func (streamingSink *StreamingSink) RotateSecret(
 	endpointSecretRotateIn models.EndpointSecretRotateIn,
 	o *StreamingSinkRotateSecretOptions,
 ) (*models.EmptyResponse, error) {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 		"sink_id":   sinkId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingSinkRotateSecretOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.EndpointSecretRotateIn, models.EmptyResponse](
 		ctx,

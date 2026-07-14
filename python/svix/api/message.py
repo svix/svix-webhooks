@@ -45,7 +45,7 @@ class MessageListOptions(BaseOptions):
                 "channel": self.channel,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "tag": self.tag,
                 "event_types": self.event_types,
             }
@@ -61,7 +61,7 @@ class MessageCreateOptions(BaseOptions):
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
-                "with_content": False,
+                "with_content": self.with_content or False,
             }
         )
 
@@ -93,7 +93,7 @@ class MessageGetOptions(BaseOptions):
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
             }
         )
 

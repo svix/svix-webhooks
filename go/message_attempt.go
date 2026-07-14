@@ -139,29 +139,30 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 	endpointId string,
 	o *MessageAttemptListByEndpointOptions,
 ) (*models.ListResponseMessageAttemptOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
-		internal.SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		internal.SerializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
-		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
-		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageAttemptListByEndpointOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+	internal.SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
+	internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+	internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+	internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	internal.SerializeParamToMap("with_msg", o.WithMsg, queryMap, &err)
+	internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
+	internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
@@ -187,29 +188,30 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 	msgId string,
 	o *MessageAttemptListByMsgOptions,
 ) (*models.ListResponseMessageAttemptOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
-		internal.SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		internal.SerializeParamToMap("endpoint_id", o.EndpointId, queryMap, &err)
-		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
-		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageAttemptListByMsgOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+	internal.SerializeParamToMap("status_code_class", o.StatusCodeClass, queryMap, &err)
+	internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+	internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+	internal.SerializeParamToMap("endpoint_id", o.EndpointId, queryMap, &err)
+	internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
+	internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseMessageAttemptOut](
 		ctx,
@@ -238,27 +240,28 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 	endpointId string,
 	o *MessageAttemptListAttemptedMessagesOptions,
 ) (*models.ListResponseEndpointMessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
-		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
-		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageAttemptListAttemptedMessagesOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+	internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+	internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+	internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
+	internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseEndpointMessageOut](
 		ctx,
@@ -282,19 +285,20 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 	msgId string,
 	o *MessageAttemptListAttemptedDestinationsOptions,
 ) (*models.ListResponseMessageEndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageAttemptListAttemptedDestinationsOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseMessageEndpointOut](
 		ctx,
@@ -316,19 +320,20 @@ func (messageAttempt *MessageAttempt) Get(
 	attemptId string,
 	o *MessageAttemptGetOptions,
 ) (*models.MessageAttemptOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":     appId,
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageAttemptGetOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("expanded_statuses", o.ExpandedStatuses, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.MessageAttemptOut](
 		ctx,
@@ -352,12 +357,13 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 	msgId string,
 	attemptId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id":     appId,
 		"msg_id":     msgId,
 		"attempt_id": attemptId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		messageAttempt.client,
 		"DELETE",
@@ -378,19 +384,20 @@ func (messageAttempt *MessageAttempt) Resend(
 	endpointId string,
 	o *MessageAttemptResendOptions,
 ) (*models.EmptyResponse, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"msg_id":      msgId,
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageAttemptResendOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.EmptyResponse](
 		ctx,

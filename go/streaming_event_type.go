@@ -44,17 +44,18 @@ func (streamingEventType *StreamingEventType) List(
 	ctx context.Context,
 	o *StreamingEventTypeListOptions,
 ) (*models.ListResponseStreamEventTypeOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventTypeListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseStreamEventTypeOut](
 		ctx,
@@ -74,14 +75,15 @@ func (streamingEventType *StreamingEventType) Create(
 	streamEventTypeIn models.StreamEventTypeIn,
 	o *StreamingEventTypeCreateOptions,
 ) (*models.StreamEventTypeOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventTypeCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.StreamEventTypeIn, models.StreamEventTypeOut](
 		ctx,
@@ -142,19 +144,20 @@ func (streamingEventType *StreamingEventType) Delete(
 	name string,
 	o *StreamingEventTypeDeleteOptions,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"name": name,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := StreamingEventTypeDeleteOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		streamingEventType.client,
 		"DELETE",

@@ -39,17 +39,18 @@ func (connector *Connector) List(
 	ctx context.Context,
 	o *ConnectorListOptions,
 ) (*models.ListResponseConnectorOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		internal.SerializeParamToMap("product_type", o.ProductType, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ConnectorListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	internal.SerializeParamToMap("product_type", o.ProductType, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseConnectorOut](
 		ctx,
@@ -69,14 +70,15 @@ func (connector *Connector) Create(
 	connectorIn models.ConnectorIn,
 	o *ConnectorCreateOptions,
 ) (*models.ConnectorOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ConnectorCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.ConnectorIn, models.ConnectorOut](
 		ctx,
@@ -136,10 +138,11 @@ func (connector *Connector) Delete(
 	ctx context.Context,
 	connectorId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"connector_id": connectorId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		connector.client,
 		"DELETE",
