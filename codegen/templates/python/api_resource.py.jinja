@@ -151,12 +151,7 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
                 {% if op.request_body_schema_name is defined -%}
                 ,json_body={{ op.request_body_schema_name | to_snake_case }}.model_dump_json(exclude_unset=True, by_alias=True)
                 {%- endif -%})
-            {% if op.id == "v1.message.create" -%}
-            message_out = MessageOut.model_validate(response.json())
-            if options.with_content is not False:
-                message_out.payload = message_in.payload
-            return message_out
-            {% elif op.response_body_schema_name is defined -%}
+            {% if op.response_body_schema_name is defined -%}
             return {{ op.response_body_schema_name | to_upper_camel_case }}.model_validate(response.json())
             {% endif %}
             {% set api_operation_extra -%}

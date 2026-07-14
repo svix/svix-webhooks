@@ -259,15 +259,11 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: new Dictionary<string, string> { { "with_content", "false" } },
+                    queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
                     content: messageIn,
                     cancellationToken: cancellationToken
                 );
-                if (options.WithContent ?? true)
-                {
-                    response.Data.Payload = messageIn.Payload;
-                }
                 return response.Data;
             }
             catch (ApiException e)
@@ -306,14 +302,10 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: new Dictionary<string, string> { { "with_content", "false" } },
+                    queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
                     content: messageIn
                 );
-                if (options.WithContent ?? true)
-                {
-                    response.Data.Payload = messageIn.Payload;
-                }
                 return response.Data;
             }
             catch (ApiException e)

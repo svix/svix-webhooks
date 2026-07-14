@@ -1043,7 +1043,10 @@ func TestCmgWithContentDefault(t *testing.T) {
 		t.Fatal(err, info)
 	}
 
-	if !reflect.DeepEqual(out.Payload, payload) {
+	expectedPayload := map[string]any{
+		"m": "FILTERED",
+	}
+	if !reflect.DeepEqual(out.Payload, expectedPayload) {
 		t.Error("Wrong output payload: ", out.Payload)
 	}
 }

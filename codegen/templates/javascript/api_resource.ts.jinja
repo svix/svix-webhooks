@@ -94,9 +94,6 @@ export class {{ resource_type_name }} {
             request.setQueryParams({
                 {% for p in op.query_params -%}
                 "{{ p.name }}":
-                {%- if op.id == "v1.message.create" and p.name == "with_content" -%}
-                    false,
-                {%- else -%}
                 options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }}
                     {#- default with_content to false, it only defaults to true
                         server-side because of backwards-compatibility #}
@@ -104,7 +101,6 @@ export class {{ resource_type_name }} {
                     {#- default expanded_statuses to true, it only defaults to false
                         server-side because of backwards-compatibility #}
                     {%- elif p.name == "expanded_statuses" %} ?? true{% endif %},
-                {%- endif %}
                 {% endfor -%}
             });
             {% endif -%}
@@ -121,27 +117,16 @@ export class {{ resource_type_name }} {
                         {{ op.request_body_schema_name | to_lower_camel_case }},
                     )
                 );
-            {% endif -%}
+            {% endif %}
 
-            {% if op.response_body_schema_name is defined -%}
-                {% set send_request -%}
-                await request.send(
+            return await {% if op.response_body_schema_name is defined -%}
+                request.send(
                     this.requestCtx,
                     {{ op.response_body_schema_name | to_upper_camel_case }}Serializer._fromJsonObject,
                 )
-                {%- endset %}
-                {% if op.id == "v1.message.create" -%}
-                    const response = {{ send_request }};
-                    if (options?.withContent ?? true) {
-                        response.payload = messageIn.payload;
-                    }
-                    return response;
-                {% else -%}
-                    return {{ send_request }};
-                {% endif -%}
             {% else %}
-                return await request.sendNoResponseBody(this.requestCtx);
-            {% endif -%}
+                request.sendNoResponseBody(this.requestCtx)
+            {% endif -%};
         }
 
         {% set extra_path -%}
