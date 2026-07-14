@@ -90,7 +90,7 @@ export class Message {
       channel: options?.channel,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       tag: options?.tag,
       event_types: options?.eventTypes,
     });
@@ -175,7 +175,7 @@ export class Message {
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
     request.setQueryParams({
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
     });
 
     return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);

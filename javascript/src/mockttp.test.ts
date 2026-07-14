@@ -101,7 +101,9 @@ test("mockttp tests", async (t) => {
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
     assert(
-      requests[0].url.endsWith("/api/v1/app/app1/msg?event_types=val8%2Cval1%2Cval5")
+      requests[0].url.endsWith(
+        "/api/v1/app/app1/msg?with_content=false&event_types=val8%2Cval1%2Cval5"
+      )
     );
   });
 
@@ -384,7 +386,9 @@ test("mockttp tests", async (t) => {
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
-    assert(requests[0].url.endsWith("api/v1/app/app1/msg?tag=test%23test"));
+    assert(
+      requests[0].url.endsWith("api/v1/app/app1/msg?with_content=false&tag=test%23test")
+    );
   });
 
   await t.test("content-type application/json is sent on request with body", async () => {
@@ -555,7 +559,7 @@ test("mockttp tests", async (t) => {
       username: "test_user",
     };
     const response = await svx.message.create(appId, { eventType, payload });
-    assert.equal(response.payload, payload);
+    assert.deepStrictEqual(response.payload, { m: "FILTERED" });
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);

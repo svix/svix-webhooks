@@ -90,14 +90,15 @@ func (statistics *Statistics) AggregateAppStats(
 	appUsageStatsIn models.AppUsageStatsIn,
 	o *StatisticsAggregateAppStatsOptions,
 ) (*models.AppUsageStatsOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StatisticsAggregateAppStatsOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.AppUsageStatsIn, models.AppUsageStatsOut](
 		ctx,

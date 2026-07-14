@@ -31,6 +31,7 @@ namespace {{ context.namespace }}
             return SerializeParams(new Dictionary<string, object?> {
             {%- for p in op.query_params %}
                 { "{{ p.name }}", {{ p.name | to_upper_camel_case }}
+                {%- if p.name == "with_content" %} ?? false {% endif -%}
                 {%- if p.name == "expanded_statuses" %} ?? true {% endif -%}
                 },
             {% endfor %}

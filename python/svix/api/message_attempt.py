@@ -56,7 +56,7 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "tag": self.tag,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "with_msg": self.with_msg,
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
@@ -107,7 +107,7 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "endpoint_id": self.endpoint_id,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
                 else True,
@@ -151,7 +151,7 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "status": self.status,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
                 else True,

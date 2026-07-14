@@ -66,7 +66,7 @@ namespace Svix.Tests
             );
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(
-                "?event_types=val1%2Cval2%2Cval3",
+                "?with_content=false&event_types=val1%2Cval2%2Cval3",
                 stub.LogEntries[0].RequestMessage.RawQuery
             );
         }
@@ -261,7 +261,7 @@ namespace Svix.Tests
             client.Message.List("app_id", new MessageListOptions { Tag = "test#test" });
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.EndsWith(
-                "/api/v1/app/app_id/msg?tag=test%23test",
+                "/api/v1/app/app_id/msg?with_content=false&tag=test%23test",
                 stub.LogEntries[0].RequestMessage.Url
             );
         }

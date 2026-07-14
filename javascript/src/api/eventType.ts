@@ -60,7 +60,7 @@ export class EventType {
       iterator: options?.iterator,
       order: options?.order,
       include_archived: options?.includeArchived,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
     });
 
     return await request.send(

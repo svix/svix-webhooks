@@ -51,6 +51,8 @@ public class EventType {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         return this.client.executeRequest(
                 "GET", url.build(), null, null, ListResponseEventTypeOut.class);

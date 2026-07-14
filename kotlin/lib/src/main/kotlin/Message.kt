@@ -74,7 +74,11 @@ class Message(private val client: SvixHttpClient) {
         options.channel?.let { url.addQueryParameter("channel", it) }
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         options.tag?.let { url.addQueryParameter("tag", it) }
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageOut>("GET", url.build())
@@ -103,7 +107,11 @@ class Message(private val client: SvixHttpClient) {
         options: MessageCreateOptions = MessageCreateOptions(),
     ): MessageOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg")
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
         var msgInInternal =
@@ -170,7 +178,11 @@ class Message(private val client: SvixHttpClient) {
         options: MessageGetOptions = MessageGetOptions(),
     ): MessageOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId")
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         return client.executeRequest<Any, MessageOut>("GET", url.build())
     }
 

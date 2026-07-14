@@ -40,20 +40,21 @@ func (streamingEvents *StreamingEvents) Get(
 	sinkId string,
 	o *StreamingEventsGetOptions,
 ) (*models.EventStreamOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 		"sink_id":   sinkId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventsGetOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.EventStreamOut](
 		ctx,
@@ -74,17 +75,18 @@ func (streamingEvents *StreamingEvents) Create(
 	createStreamEventsIn models.CreateStreamEventsIn,
 	o *StreamingEventsCreateOptions,
 ) (*models.CreateStreamEventsOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventsCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.CreateStreamEventsIn, models.CreateStreamEventsOut](
 		ctx,

@@ -36,7 +36,7 @@ describe "API Client" do
 
     svx.message_attempt.list_by_endpoint("app_id", "endpoint_id", {tag: "#"})
 
-    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&tag=%23"))
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&with_content=false&tag=%23"))
   end
 
   it "test Date in query param" do
@@ -52,7 +52,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&tag=%23&before=2025-02-26T20%3A35%3A43%2B00%3A00"
+        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&with_content=false&tag=%23&before=2025-02-26T20%3A35%3A43%2B00%3A00"
       )
     )
   end
@@ -89,7 +89,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true"
+        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&with_content=false"
       )
     )
   end
@@ -106,7 +106,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true"
+        "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&with_content=false"
       )
     )
   end
@@ -141,13 +141,14 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :get,
-        "#{host}/api/v1/app/app_id/msg?event_types=val1%2Cval5%2Cval8"
+        "#{host}/api/v1/app/app_id/msg?event_types=val1%2Cval5%2Cval8&with_content=false"
       )
     )
   end
 
   it "test header param sent" do
     stub_request(:post, "#{host}/api/v1/app/app_id/msg")
+      .with(query: hash_including({}))
       .to_return(
         status: 200,
         body: MessageOut_JSON
@@ -157,7 +158,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :post,
-        "#{host}/api/v1/app/app_id/msg"
+        "#{host}/api/v1/app/app_id/msg?with_content=false"
       )
         .with(
           headers: {
@@ -289,6 +290,7 @@ describe "API Client" do
 
   it "arbitrary json object body" do
     stub_request(:post, "#{host}/api/v1/app/app_id/msg")
+      .with(query: hash_including({}))
       .to_return(
         status: 200,
         body: MessageOut_JSON
@@ -299,7 +301,7 @@ describe "API Client" do
     expect(WebMock).to(
       have_requested(
         :post,
-        "#{host}/api/v1/app/app_id/msg"
+        "#{host}/api/v1/app/app_id/msg?with_content=false"
       )
         .with(body: "{\"payload\":{\"key\":\"val\"}}")
     )

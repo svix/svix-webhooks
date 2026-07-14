@@ -49,22 +49,23 @@ func (messagePoller *MessagePoller) Poll(
 	sinkId string,
 	o *MessagePollerPollOptions,
 ) (*models.PollingEndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":  appId,
 		"sink_id": sinkId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("event_type", o.EventType, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessagePollerPollOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("event_type", o.EventType, queryMap, &err)
+	internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.PollingEndpointOut](
 		ctx,
@@ -87,19 +88,20 @@ func (messagePoller *MessagePoller) ConsumerSeek(
 	pollingEndpointConsumerSeekIn models.PollingEndpointConsumerSeekIn,
 	o *MessagePollerConsumerSeekOptions,
 ) (*models.PollingEndpointConsumerSeekOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"sink_id":     sinkId,
 		"consumer_id": consumerId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessagePollerConsumerSeekOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.PollingEndpointConsumerSeekIn, models.PollingEndpointConsumerSeekOut](
 		ctx,
@@ -122,20 +124,21 @@ func (messagePoller *MessagePoller) ConsumerPoll(
 	consumerId string,
 	o *MessagePollerConsumerPollOptions,
 ) (*models.PollingEndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"sink_id":     sinkId,
 		"consumer_id": consumerId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessagePollerConsumerPollOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.PollingEndpointOut](
 		ctx,

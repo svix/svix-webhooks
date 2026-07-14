@@ -166,7 +166,7 @@ export class MessageAttempt {
       tag: options?.tag,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       with_msg: options?.withMsg,
       expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
@@ -208,7 +208,7 @@ export class MessageAttempt {
       endpoint_id: options?.endpointId,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
@@ -250,7 +250,7 @@ export class MessageAttempt {
       status: options?.status,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
