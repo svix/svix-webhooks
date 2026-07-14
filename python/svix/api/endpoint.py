@@ -255,7 +255,7 @@ class EndpointAsync(ApiBase):
     ) -> None:
         """Rotates the endpoint's signing secret.
 
-        The previous secret will remain valid for the next 24 hours."""
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
         await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
@@ -636,7 +636,7 @@ class Endpoint(ApiBase):
     ) -> None:
         """Rotates the endpoint's signing secret.
 
-        The previous secret will remain valid for the next 24 hours."""
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
         self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",

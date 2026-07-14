@@ -365,7 +365,7 @@ pub enum EndpointCommands {
     GetSecret { app_id: String, id: String },
     /// Rotates the endpoint's signing secret.
     ///
-    /// The previous secret will remain valid for the next 24 hours.
+    /// The previous secret will remain valid for the specified grace period (default 24 hours).
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

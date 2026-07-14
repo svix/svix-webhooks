@@ -188,7 +188,8 @@ impl<'a> Endpoint<'a> {
 
     /// Rotates the endpoint's signing secret.
     ///
-    /// The previous secret will remain valid for the next 24 hours.
+    /// The previous secret will remain valid for the specified grace period
+    /// (default 24 hours).
     pub async fn rotate_secret(
         &self,
         app_id: String,
