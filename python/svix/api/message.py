@@ -195,10 +195,7 @@ class MessageAsync(ApiBaseAsync):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        message_out = MessageOut.model_validate(response.json())
-        if options.with_content is not False:
-            message_out.payload = message_in.payload
-        return message_out
+        return MessageOut.model_validate(response.json())
 
     async def precheck(
         self,
@@ -346,10 +343,7 @@ class Message(ApiBaseSync):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        message_out = MessageOut.model_validate(response.json())
-        if options.with_content is not False:
-            message_out.payload = message_in.payload
-        return message_out
+        return MessageOut.model_validate(response.json())
 
     def precheck(
         self,

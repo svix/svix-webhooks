@@ -134,14 +134,7 @@ namespace {{ context.namespace }}
                     }
         {%- endif %}
         {%- if op | has_query_or_header_params %}
-                    , queryParams:
-                    {%- if op.id == "v1.message.create" -%}
-                        new Dictionary<string, string>{
-                            { "with_content", "false" },
-                        }
-                    {%- else -%}
-                        options.QueryParams()
-                    {%- endif %}
+                    , queryParams: options.QueryParams()
                     , headerParams: options.HeaderParams()
         {%- endif %}
         {%- if op.request_body_schema_name is defined %}
@@ -151,11 +144,6 @@ namespace {{ context.namespace }}
                     , cancellationToken: cancellationToken
         {%- endif %}
                 );
-                {% if op.id == "v1.message.create" -%}
-                    if (options.WithContent ?? true) {
-                        response.Data.Payload = messageIn.Payload;
-                    }
-                {% endif -%}
                 return response.Data;
             }
             catch (ApiException e)

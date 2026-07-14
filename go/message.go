@@ -131,11 +131,11 @@ func (message *Message) Create(
 		o = &opts
 	}
 	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
 	if err != nil {
 		return nil, err
 	}
-	queryMap["with_content"] = "false"
-	response, err := internal.ExecuteRequest[models.MessageIn, models.MessageOut](
+	return internal.ExecuteRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -145,13 +145,6 @@ func (message *Message) Create(
 		headerMap,
 		&messageIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	if o == nil || o.WithContent == nil || *o.WithContent {
-		response.Payload = messageIn.Payload
-	}
-	return response, nil
 }
 
 // A pre-check call for `message.create` that checks whether any active endpoints are

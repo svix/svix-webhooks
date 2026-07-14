@@ -396,7 +396,7 @@ namespace Svix.Tests
                 new MessageIn { EventType = "user.signup", Payload = payload }
             );
 
-            Assert.Equal(response.Payload, payload);
+            Assert.Equal(response.Payload, JsonConvert.DeserializeObject("""{"m": "FILTERED"}"""));
 
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal("?with_content=false", stub.LogEntries[0].RequestMessage.RawQuery);
