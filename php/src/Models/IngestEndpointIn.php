@@ -11,10 +11,14 @@ class IngestEndpointIn implements \JsonSerializable
 
     /**
      * @param array<string, string>|null $metadata
-     * @param string|null                $secret   The endpoint's verification secret.
+     * @param int|null                   $rateLimit deprecated, use `throttleRate` instead
+     * @param string|null                $secret    The endpoint's verification secret.
      *
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
      * It is recommended to not set this and let the server generate the secret.
+     * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
      * @param string|null $uid optional unique identifier for the endpoint
      */
     private function __construct(
@@ -24,6 +28,7 @@ class IngestEndpointIn implements \JsonSerializable
         public readonly ?array $metadata = null,
         public readonly ?int $rateLimit = null,
         public readonly ?string $secret = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
     ) {
@@ -42,6 +47,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: null,
             rateLimit: null,
             secret: null,
+            throttleRate: null,
             uid: null,
             url: $url,
             setFields: ['url' => true]
@@ -59,6 +65,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -76,6 +83,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -93,6 +101,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: $metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -110,6 +119,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -127,6 +137,25 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $secret,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            url: $this->url,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            description: $this->description,
+            disabled: $this->disabled,
+            metadata: $this->metadata,
+            rateLimit: $this->rateLimit,
+            secret: $this->secret,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
             setFields: $setFields
@@ -144,6 +173,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
             secret: $this->secret,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
             setFields: $setFields
@@ -170,6 +200,9 @@ class IngestEndpointIn implements \JsonSerializable
         if (isset($this->setFields['secret'])) {
             $data['secret'] = $this->secret;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
@@ -188,6 +221,7 @@ class IngestEndpointIn implements \JsonSerializable
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'IngestEndpointIn'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'IngestEndpointIn'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'IngestEndpointIn'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'IngestEndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'IngestEndpointIn'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointIn')
         );

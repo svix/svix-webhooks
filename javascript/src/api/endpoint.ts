@@ -219,7 +219,7 @@ export class Endpoint {
   /**
    * Rotates the endpoint's signing secret.
    *
-   * The previous secret will remain valid for the next 24 hours.
+   * The previous secret will remain valid for the specified grace period (default 24 hours).
    */
   public async rotateSecret(
     appId: string,

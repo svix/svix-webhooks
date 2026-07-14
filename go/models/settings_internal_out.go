@@ -27,6 +27,7 @@ type SettingsInternalOut struct {
 	EnableTransformations         *bool                   `json:"enableTransformations,omitempty"`
 	EnforceHttps                  *bool                   `json:"enforceHttps,omitempty"`
 	EventCatalogPublished         *bool                   `json:"eventCatalogPublished,omitempty"`
+	McpToken                      *bool                   `json:"mcpToken,omitempty"`
 	ReadOnly                      *bool                   `json:"readOnly,omitempty"`
 	RequireEndpointChannel        *bool                   `json:"requireEndpointChannel,omitempty"`
 	RequireEndpointFilterTypes    *bool                   `json:"requireEndpointFilterTypes,omitempty"`

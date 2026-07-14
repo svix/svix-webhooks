@@ -86,6 +86,7 @@ pub enum IngestEndpointCommands {
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"metadata\": {\"key\": \"...\"},
     \"rateLimit\": 123,
+    \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
     \"url\": \"https://example.com/webhook/\"
@@ -115,6 +116,7 @@ pub enum IngestEndpointCommands {
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\"
 }\n\nExample response:
@@ -125,6 +127,7 @@ pub enum IngestEndpointCommands {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
@@ -152,6 +155,7 @@ pub enum IngestEndpointCommands {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"
@@ -175,6 +179,7 @@ pub enum IngestEndpointCommands {
   \"disabled\": false,
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\"
 }\n\nExample response:
@@ -185,6 +190,7 @@ pub enum IngestEndpointCommands {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
   \"rateLimit\": 123,
+  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"url\": \"https://example.com/webhook/\"

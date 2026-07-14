@@ -146,7 +146,7 @@ class Endpoint(private val client: SvixHttpClient) {
     /**
      * Rotates the endpoint's signing secret.
      *
-     * The previous secret will remain valid for the next 24 hours.
+     * The previous secret will remain valid for the specified grace period (default 24 hours).
      */
     suspend fun rotateSecret(
         appId: String,

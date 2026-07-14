@@ -10,10 +10,14 @@ class IngestEndpointOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string                $description an example endpoint name
-     * @param string                $id          the Endpoint's ID
+     * @param string                $description  an example endpoint name
+     * @param string                $id           the Endpoint's ID
      * @param array<string, string> $metadata
-     * @param string|null           $uid         optional unique identifier for the endpoint
+     * @param int|null              $rateLimit    deprecated, use `throttleRate` instead
+     * @param int|null              $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null $uid optional unique identifier for the endpoint
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
@@ -24,6 +28,7 @@ class IngestEndpointOut implements \JsonSerializable
         public readonly string $url,
         public readonly ?bool $disabled = null,
         public readonly ?int $rateLimit = null,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
     ) {
@@ -48,6 +53,7 @@ class IngestEndpointOut implements \JsonSerializable
             id: $id,
             metadata: $metadata,
             rateLimit: null,
+            throttleRate: null,
             uid: null,
             updatedAt: $updatedAt,
             url: $url,
@@ -67,6 +73,7 @@ class IngestEndpointOut implements \JsonSerializable
             id: $this->id,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -86,6 +93,27 @@ class IngestEndpointOut implements \JsonSerializable
             id: $this->id,
             metadata: $this->metadata,
             rateLimit: $rateLimit,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            updatedAt: $this->updatedAt,
+            url: $this->url,
+            setFields: $setFields
+        );
+    }
+
+    public function withThrottleRate(?int $throttleRate): self
+    {
+        $setFields = $this->setFields;
+        $setFields['throttleRate'] = true;
+
+        return new self(
+            createdAt: $this->createdAt,
+            description: $this->description,
+            disabled: $this->disabled,
+            id: $this->id,
+            metadata: $this->metadata,
+            rateLimit: $this->rateLimit,
+            throttleRate: $throttleRate,
             uid: $this->uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -105,6 +133,7 @@ class IngestEndpointOut implements \JsonSerializable
             id: $this->id,
             metadata: $this->metadata,
             rateLimit: $this->rateLimit,
+            throttleRate: $this->throttleRate,
             uid: $uid,
             updatedAt: $this->updatedAt,
             url: $this->url,
@@ -128,6 +157,9 @@ class IngestEndpointOut implements \JsonSerializable
         if (isset($this->setFields['rateLimit'])) {
             $data['rateLimit'] = $this->rateLimit;
         }
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
+        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
@@ -147,6 +179,7 @@ class IngestEndpointOut implements \JsonSerializable
             id: \Svix\Utils::deserializeString($data, 'id', true, 'IngestEndpointOut'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'IngestEndpointOut'),
             rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'IngestEndpointOut'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'IngestEndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'IngestEndpointOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'IngestEndpointOut'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointOut')
