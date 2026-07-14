@@ -161,7 +161,7 @@ pub enum EndpointCommands {
     \"uid\": \"unique-identifier\",
     \"url\": \"https://example.com/webhook/\",
     \"disabled\": false,
-    \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+    \"eventTypes\": [\"user.signup\",\"user.deleted\"],
     \"channels\": [\"project_123\",\"group_2\"],
     \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -193,7 +193,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
   \"channels\": [\"project_123\",\"group_2\"],
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"metadata\": {\"key\": \"...\"},
@@ -210,7 +210,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
   \"channels\": [\"project_123\",\"group_2\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -239,7 +239,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
   \"channels\": [\"project_123\",\"group_2\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -264,7 +264,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
   \"channels\": [\"project_123\",\"group_2\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
@@ -276,7 +276,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
   \"channels\": [\"project_123\",\"group_2\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
@@ -315,7 +315,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"...\",
   \"disabled\": true,
-  \"filterTypes\": [\"...\"],
+  \"eventTypes\": [\"...\"],
   \"channels\": [\"...\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
@@ -327,7 +327,7 @@ pub enum EndpointCommands {
   \"uid\": \"unique-identifier\",
   \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
   \"channels\": [\"project_123\",\"group_2\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"

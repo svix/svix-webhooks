@@ -13,7 +13,7 @@ module Svix
     attr_accessor :uid
     attr_accessor :url
     attr_accessor :disabled
-    attr_accessor :filter_types
+    attr_accessor :event_types
     # List of message channels this endpoint listens to (omit for all).
     attr_accessor :channels
     # The endpoint's verification secret.
@@ -30,7 +30,7 @@ module Svix
       "uid",
       "url",
       "disabled",
-      "filter_types",
+      "event_types",
       "channels",
       "secret",
       "metadata",
@@ -61,7 +61,7 @@ module Svix
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["event_types"] = attributes["eventTypes"]
       attrs["channels"] = attributes["channels"]
       attrs["secret"] = attributes["secret"]
       attrs["metadata"] = attributes["metadata"]
@@ -76,7 +76,7 @@ module Svix
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["secret"] = Svix::serialize_primitive(@secret) if @secret
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata

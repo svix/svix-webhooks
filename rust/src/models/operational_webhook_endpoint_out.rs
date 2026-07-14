@@ -25,9 +25,9 @@ pub struct OperationalWebhookEndpointOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub event_types: Option<Vec<String>>,
 
     #[serde(rename = "createdAt")]
     pub created_at: String,
@@ -54,7 +54,7 @@ impl OperationalWebhookEndpointOut {
             uid: None,
             url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             created_at,
             updated_at,
             metadata,

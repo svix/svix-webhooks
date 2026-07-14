@@ -115,7 +115,7 @@ ListResponseOperationalWebhookEndpointOut_JSON='{
       "uid": "unique-identifier",
       "url": "https://example.com/webhook/",
       "disabled": false,
-      "filterTypes": [
+      "eventTypes": [
         "message.attempt.failing"
       ],
       "createdAt": "2019-08-24T14:15:22Z",
@@ -191,7 +191,7 @@ EndpointOut_JSON='{
   "url": "https://example.com/webhook/",
   "version": 1,
   "disabled": false,
-  "filterTypes": [
+  "eventTypes": [
     "user.signup",
     "user.deleted"
   ],

@@ -28,9 +28,9 @@ pub struct SinkInCommon {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub event_types: Option<Vec<String>>,
 
     /// List of message channels this sink listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -48,7 +48,7 @@ impl SinkInCommon {
             uid: None,
             secret: None,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             channels: None,
             metadata: None,
         }

@@ -24,9 +24,9 @@ pub struct EndpointPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub filter_types: JsOption<Vec<String>>,
+    pub event_types: JsOption<Vec<String>>,
 
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub channels: JsOption<Vec<String>>,
@@ -43,7 +43,7 @@ impl EndpointPatch {
             uid: JsOption::Undefined,
             url: None,
             disabled: None,
-            filter_types: JsOption::Undefined,
+            event_types: JsOption::Undefined,
             channels: JsOption::Undefined,
             metadata: None,
         }

@@ -16,6 +16,6 @@ data class OperationalWebhookEndpointUpsertIn(
     val uid: String? = null,
     val url: String,
     val disabled: Boolean? = null,
-    val filterTypes: Set<String>? = null,
+    val eventTypesIds: Set<String>? = null,
     val metadata: Map<String, String>? = null,
 )

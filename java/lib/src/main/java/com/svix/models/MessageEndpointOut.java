@@ -30,7 +30,7 @@ public class MessageEndpointOut {
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Set<String> channels;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
@@ -210,32 +210,32 @@ public class MessageEndpointOut {
         this.disabled = disabled;
     }
 
-    public MessageEndpointOut filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public MessageEndpointOut eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
         return this;
     }
 
-    public MessageEndpointOut addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
+    public MessageEndpointOut addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
         }
-        this.filterTypes.add(filterTypesItem);
+        this.eventTypes.add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypes
      *
-     * @return filterTypes
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
+    public Set<String> getEventTypes() {
+        return eventTypes;
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
     }
 
     public MessageEndpointOut channels(Set<String> channels) {

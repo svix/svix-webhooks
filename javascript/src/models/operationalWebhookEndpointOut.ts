@@ -15,7 +15,7 @@ export interface OperationalWebhookEndpointOut {
   uid?: string | null;
   url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   createdAt: Date;
   updatedAt: Date;
   metadata: { [key: string]: string };
@@ -30,7 +30,7 @@ export const OperationalWebhookEndpointOutSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
       metadata: object["metadata"],
@@ -45,7 +45,7 @@ export const OperationalWebhookEndpointOutSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       createdAt: self.createdAt,
       updatedAt: self.updatedAt,
       metadata: self.metadata,

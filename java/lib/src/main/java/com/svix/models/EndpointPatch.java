@@ -28,7 +28,7 @@ public class EndpointPatch {
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private MaybeUnset<Set<String>> filterTypes;
+    @JsonProperty private MaybeUnset<Set<String>> eventTypes;
     @JsonProperty private MaybeUnset<Set<String>> channels;
     @JsonProperty private Map<String, String> metadata;
 
@@ -137,35 +137,35 @@ public class EndpointPatch {
         this.disabled = disabled;
     }
 
-    public EndpointPatch filterTypes(Set<String> filterTypes) {
-        this.filterTypes = new MaybeUnset<>(filterTypes);
+    public EndpointPatch eventTypes(Set<String> eventTypes) {
+        this.eventTypes = new MaybeUnset<>(eventTypes);
         return this;
     }
 
-    public EndpointPatch addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new MaybeUnset<>(new LinkedHashSet<>());
+    public EndpointPatch addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new MaybeUnset<>(new LinkedHashSet<>());
         }
-        this.filterTypes.getValue().add(filterTypesItem);
+        this.eventTypes.getValue().add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypes
      *
-     * @return filterTypes
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        if (filterTypes == null) {
+    public Set<String> getEventTypes() {
+        if (eventTypes == null) {
             return null;
         }
-        return filterTypes.getValue();
+        return eventTypes.getValue();
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = new MaybeUnset<>(filterTypes);
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = new MaybeUnset<>(eventTypes);
     }
 
     public EndpointPatch channels(Set<String> channels) {

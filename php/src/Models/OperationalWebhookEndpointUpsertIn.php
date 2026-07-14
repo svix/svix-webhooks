@@ -13,8 +13,8 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null                $uid         optional unique identifier for the endpoint
-     * @param list<string>|null          $filterTypes
+     * @param string|null                $uid           optional unique identifier for the endpoint
+     * @param list<string>|null          $eventTypesIds
      * @param array<string, string>|null $metadata
      */
     private function __construct(
@@ -23,7 +23,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypesIds = null,
         public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
@@ -42,7 +42,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: null,
             url: $url,
             disabled: null,
-            filterTypes: null,
+            eventTypesIds: null,
             metadata: null,
             setFields: ['url' => true]
         );
@@ -59,7 +59,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypesIds: $this->eventTypesIds,
             metadata: $this->metadata,
             setFields: $setFields
         );
@@ -76,7 +76,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypesIds: $this->eventTypesIds,
             metadata: $this->metadata,
             setFields: $setFields
         );
@@ -93,7 +93,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: $uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypesIds: $this->eventTypesIds,
             metadata: $this->metadata,
             setFields: $setFields
         );
@@ -110,16 +110,16 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypesIds: $this->eventTypesIds,
             metadata: $this->metadata,
             setFields: $setFields
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypesIds(?array $eventTypesIds): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypesIds'] = true;
 
         return new self(
             description: $this->description,
@@ -127,7 +127,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypesIds: $eventTypesIds,
             metadata: $this->metadata,
             setFields: $setFields
         );
@@ -144,7 +144,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypesIds: $this->eventTypesIds,
             metadata: $metadata,
             setFields: $setFields
         );
@@ -167,8 +167,8 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypesIds'])) {
+            $data['eventTypesIds'] = $this->eventTypesIds;
         }
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;
@@ -188,7 +188,7 @@ class OperationalWebhookEndpointUpsertIn implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointUpsertIn'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointUpsertIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointUpsertIn'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointUpsertIn'),
+            eventTypesIds: \Svix\Utils::getValFromJson($data, 'eventTypesIds', false, 'OperationalWebhookEndpointUpsertIn'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'OperationalWebhookEndpointUpsertIn')
         );
     }

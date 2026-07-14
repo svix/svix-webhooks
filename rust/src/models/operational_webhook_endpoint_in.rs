@@ -22,9 +22,9 @@ pub struct OperationalWebhookEndpointIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub event_types: Option<Vec<String>>,
 
     /// The endpoint's verification secret.
     ///
@@ -46,7 +46,7 @@ impl OperationalWebhookEndpointIn {
             uid: None,
             url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             secret: None,
             metadata: None,
         }

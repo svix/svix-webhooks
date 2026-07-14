@@ -12,7 +12,7 @@ export interface OperationalWebhookEndpointIn {
   uid?: string | null;
   url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   /**
    * The endpoint's verification secret.
    *
@@ -31,7 +31,7 @@ export const OperationalWebhookEndpointInSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       secret: object["secret"],
       metadata: object["metadata"],
     };
@@ -44,7 +44,7 @@ export const OperationalWebhookEndpointInSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       secret: self.secret,
       metadata: self.metadata,
     };

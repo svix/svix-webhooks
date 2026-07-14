@@ -22,9 +22,9 @@ pub struct OperationalWebhookEndpointUpsertIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypesIds")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub event_types_ids: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
@@ -38,7 +38,7 @@ impl OperationalWebhookEndpointUpsertIn {
             uid: None,
             url,
             disabled: None,
-            filter_types: None,
+            event_types_ids: None,
             metadata: None,
         }
     }

@@ -15,9 +15,9 @@ class MessageEndpointOut implements \JsonSerializable
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null       $uid         optional unique identifier for the endpoint
-     * @param list<string>|null $filterTypes
-     * @param list<string>|null $channels    list of message channels this endpoint listens to (omit for all)
+     * @param string|null       $uid        optional unique identifier for the endpoint
+     * @param list<string>|null $eventTypes
+     * @param list<string>|null $channels   list of message channels this endpoint listens to (omit for all)
      */
     private function __construct(
         public readonly string $id,
@@ -31,7 +31,7 @@ class MessageEndpointOut implements \JsonSerializable
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypes = null,
         public readonly ?array $channels = null,
         array $setFields = [],
     ) {
@@ -60,7 +60,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: null,
             url: $url,
             disabled: null,
-            filterTypes: null,
+            eventTypes: null,
             channels: null,
             createdAt: $createdAt,
             updatedAt: $updatedAt,
@@ -83,7 +83,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
@@ -106,7 +106,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
@@ -129,7 +129,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: $uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
@@ -152,7 +152,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
@@ -160,10 +160,10 @@ class MessageEndpointOut implements \JsonSerializable
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypes(?array $eventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypes'] = true;
 
         return new self(
             id: $this->id,
@@ -175,7 +175,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypes: $eventTypes,
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
@@ -198,7 +198,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
@@ -229,8 +229,8 @@ class MessageEndpointOut implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
         }
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
@@ -254,7 +254,7 @@ class MessageEndpointOut implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'MessageEndpointOut'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'MessageEndpointOut'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'MessageEndpointOut'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'MessageEndpointOut'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'MessageEndpointOut'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'MessageEndpointOut'),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'MessageEndpointOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'MessageEndpointOut')
