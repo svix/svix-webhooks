@@ -35,7 +35,7 @@ class EventTypeListOptions(BaseOptions):
                 "iterator": self.iterator,
                 "order": self.order,
                 "include_archived": self.include_archived,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
             }
         )
 

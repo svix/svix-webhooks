@@ -115,9 +115,13 @@ module Svix
           else
             encoded_query_pairs.append("#{k}=#{CGI.escape(v)}")
           end
+        elsif k == "with_content"
+          # default with_content to false, it only defaults to true
+          # server-side because of backwards-compatibility
+          encoded_query_pairs.append("#{k}=false")
         elsif k == "expanded_statuses"
-          # HACK: default expanded_statuses to true, it only defaults to false
-          #       server-side because of backwards-compatibility for old SDKs
+          # default expanded_statuses to true, it only defaults to false
+          # server-side because of backwards-compatibility
           encoded_query_pairs.append("#{k}=true")
         end
       end

@@ -41,16 +41,17 @@ func (ingestSource *IngestSource) List(
 	ctx context.Context,
 	o *IngestSourceListOptions,
 ) (*models.ListResponseIngestSourceOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IngestSourceListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseIngestSourceOut](
 		ctx,
@@ -70,14 +71,15 @@ func (ingestSource *IngestSource) Create(
 	ingestSourceIn models.IngestSourceIn,
 	o *IngestSourceCreateOptions,
 ) (*models.IngestSourceOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IngestSourceCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.IngestSourceIn, models.IngestSourceOut](
 		ctx,
@@ -137,10 +139,11 @@ func (ingestSource *IngestSource) Delete(
 	ctx context.Context,
 	sourceId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		ingestSource.client,
 		"DELETE",
@@ -164,17 +167,18 @@ func (ingestSource *IngestSource) RotateToken(
 	sourceId string,
 	o *IngestSourceRotateTokenOptions,
 ) (*models.RotateTokenOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IngestSourceRotateTokenOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.RotateTokenOut](
 		ctx,

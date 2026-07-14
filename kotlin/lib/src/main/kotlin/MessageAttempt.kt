@@ -157,7 +157,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.tag?.let { url.addQueryParameter("tag", it) }
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         options.withMsg?.let { url.addQueryParameter("with_msg", serializeQueryParam(it)) }
 
         url.addQueryParameter(
@@ -193,7 +197,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.endpointId?.let { url.addQueryParameter("endpoint_id", it) }
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
 
         url.addQueryParameter(
             "expanded_statuses",
@@ -228,7 +236,11 @@ class MessageAttempt(private val client: SvixHttpClient) {
         options.status?.let { url.addQueryParameter("status", serializeQueryParam(it)) }
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
 
         url.addQueryParameter(
             "expanded_statuses",

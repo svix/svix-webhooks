@@ -71,9 +71,13 @@ impl Request {
     ) -> Self {
         if let Some(value) = param {
             self.query_params.push((name, value.encode()));
+        } else if name == "with_content" {
+            // default with_content to false, it only defaults to true
+            // server-side because of backwards-compatibility
+            self.query_params.push((name, false.encode()));
         } else if name == "expanded_statuses" {
-            // HACK: default expanded_statuses to true, it only defaults to false
-            //       server-side because of backwards-compatibility for old SDKs
+            // default expanded_statuses to true, it only defaults to false
+            // server-side because of backwards-compatibility
             self.query_params.push((name, true.encode()));
         }
         self

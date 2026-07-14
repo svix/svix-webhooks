@@ -37,16 +37,17 @@ func (managementEnvironment *ManagementEnvironment) List(
 	ctx context.Context,
 	o *ManagementEnvironmentListOptions,
 ) (*models.ListResponseEnvironmentModelOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ManagementEnvironmentListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseEnvironmentModelOut](
 		ctx,
@@ -66,14 +67,15 @@ func (managementEnvironment *ManagementEnvironment) Create(
 	environmentModelIn models.EnvironmentModelIn,
 	o *ManagementEnvironmentCreateOptions,
 ) (*models.EnvironmentModelOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ManagementEnvironmentCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.EnvironmentModelIn, models.EnvironmentModelOut](
 		ctx,
@@ -133,10 +135,11 @@ func (managementEnvironment *ManagementEnvironment) Delete(
 	ctx context.Context,
 	envId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"env_id": envId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		managementEnvironment.client,
 		"DELETE",

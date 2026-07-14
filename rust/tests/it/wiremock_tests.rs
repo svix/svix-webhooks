@@ -56,7 +56,10 @@ async fn test_urlencoded_octothorpe() {
         .expect("we should have sent a request");
 
     assert_eq!(1, requests.len());
-    assert_eq!(Some("tag=test%23test"), requests[0].url.query());
+    assert_eq!(
+        Some("with_content=false&tag=test%23test"),
+        requests[0].url.query()
+    );
 }
 
 #[tokio::test]

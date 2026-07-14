@@ -48,7 +48,11 @@ class EventType(private val client: SvixHttpClient) {
         options.includeArchived?.let {
             url.addQueryParameter("include_archived", serializeQueryParam(it))
         }
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         return client.executeRequest<Any, ListResponseEventTypeOut>("GET", url.build())
     }
 

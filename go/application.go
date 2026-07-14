@@ -43,19 +43,20 @@ func (application *Application) List(
 	ctx context.Context,
 	o *ApplicationListOptions,
 ) (*models.ListResponseApplicationOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("exclude_apps_with_no_endpoints", o.ExcludeAppsWithNoEndpoints, queryMap, &err)
-		internal.SerializeParamToMap("exclude_apps_with_disabled_endpoints", o.ExcludeAppsWithDisabledEndpoints, queryMap, &err)
-		internal.SerializeParamToMap("exclude_apps_with_svix_play_endpoints", o.ExcludeAppsWithSvixPlayEndpoints, queryMap, &err)
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ApplicationListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("exclude_apps_with_no_endpoints", o.ExcludeAppsWithNoEndpoints, queryMap, &err)
+	internal.SerializeParamToMap("exclude_apps_with_disabled_endpoints", o.ExcludeAppsWithDisabledEndpoints, queryMap, &err)
+	internal.SerializeParamToMap("exclude_apps_with_svix_play_endpoints", o.ExcludeAppsWithSvixPlayEndpoints, queryMap, &err)
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseApplicationOut](
 		ctx,
@@ -75,17 +76,18 @@ func (application *Application) Create(
 	applicationIn models.ApplicationIn,
 	o *ApplicationCreateOptions,
 ) (*models.ApplicationOut, error) {
+	var err error
 	queryMap := map[string]string{
 		"get_if_exists": "false",
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ApplicationCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.ApplicationIn, models.ApplicationOut](
 		ctx,
@@ -105,17 +107,20 @@ func (application *Application) GetOrCreate(
 	applicationIn models.ApplicationIn,
 	o *ApplicationCreateOptions,
 ) (*models.ApplicationOut, error) {
+	var err error
+
 	queryMap := map[string]string{
 		"get_if_exists": "true",
 	}
 	headerMap := map[string]string{}
 
-	var err error
 	if o != nil {
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+		opts := ApplicationCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 
 	return internal.ExecuteRequest[models.ApplicationIn, models.ApplicationOut](
@@ -176,10 +181,11 @@ func (application *Application) Delete(
 	ctx context.Context,
 	appId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		application.client,
 		"DELETE",

@@ -33,7 +33,7 @@ namespace Svix
                     { "tag", Tag },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
+                    { "with_content", WithContent ?? false },
                     { "with_msg", WithMsg },
                     { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
@@ -71,7 +71,7 @@ namespace Svix
                     { "endpoint_id", EndpointId },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
+                    { "with_content", WithContent ?? false },
                     { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
@@ -104,7 +104,7 @@ namespace Svix
                     { "status", Status },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
+                    { "with_content", WithContent ?? false },
                     { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }

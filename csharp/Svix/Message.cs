@@ -26,7 +26,7 @@ namespace Svix
                     { "channel", Channel },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
+                    { "with_content", WithContent ?? false },
                     { "tag", Tag },
                     { "event_types", EventTypes },
                 }
@@ -42,7 +42,7 @@ namespace Svix
         public new Dictionary<string, string> QueryParams()
         {
             return SerializeParams(
-                new Dictionary<string, object?> { { "with_content", WithContent } }
+                new Dictionary<string, object?> { { "with_content", WithContent ?? false } }
             );
         }
 
@@ -73,7 +73,7 @@ namespace Svix
         public new Dictionary<string, string> QueryParams()
         {
             return SerializeParams(
-                new Dictionary<string, object?> { { "with_content", WithContent } }
+                new Dictionary<string, object?> { { "with_content", WithContent ?? false } }
             );
         }
     }

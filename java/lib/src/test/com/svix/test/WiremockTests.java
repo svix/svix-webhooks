@@ -76,7 +76,7 @@ public class WiremockTests {
                 1,
                 getRequestedFor(
                         urlEqualTo(
-                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T16%3A07%3A35.514412223Z&expanded_statuses=true")));
+                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T16%3A07%3A35.514412223Z&with_content=false&expanded_statuses=true")));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class WiremockTests {
                 1,
                 getRequestedFor(
                         urlEqualTo(
-                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T11%3A07%3A35.514412223-05%3A00&expanded_statuses=true")));
+                                "/api/v1/app/ap/attempt/endpoint/endp?before=2025-02-22T11%3A07%3A35.514412223-05%3A00&with_content=false&expanded_statuses=true")));
     }
 
     @Test
@@ -169,7 +169,7 @@ public class WiremockTests {
         ListResponseMessageAttemptOut res = svx.getMessageAttempt().listByEndpoint("ap", "endp");
         assertNull(res.getIterator());
 
-        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?expanded_statuses=true")));
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?with_content=false&expanded_statuses=true")));
     }
 
     @Test
@@ -191,7 +191,7 @@ public class WiremockTests {
     public void testListAsQueryParam() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlEqualTo("/api/v1/app/app1/msg?event_types=val1%2Cval5%2Cval8"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/app1/msg"))
                         .willReturn(WireMock.ok().withBodyFile("ListResponseMessageOut.json")));
         MessageListOptions opts = new MessageListOptions();
         HashSet<String> eventTypes = new HashSet<>();
@@ -204,7 +204,7 @@ public class WiremockTests {
 
         wireMockRule.verify(
                 1,
-                getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?event_types=val1%2Cval5%2Cval8")));
+                getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false&event_types=val1%2Cval5%2Cval8")));
     }
 
     @Test
@@ -299,7 +299,7 @@ public class WiremockTests {
         ListResponseMessageAttemptOut res = svx.getMessageAttempt().listByEndpoint("ap", "endp");
 
         assertEquals(MessageAttemptTriggerType.SCHEDULED, res.getData().get(0).getTriggerType());
-        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?expanded_statuses=true")));
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?with_content=false&expanded_statuses=true")));
     }
 
     @Test
@@ -381,7 +381,7 @@ public class WiremockTests {
     public void arbitraryJsonObjectBody() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.post(urlEqualTo("/api/v1/app/app1/msg"))
+                WireMock.post(urlPathEqualTo("/api/v1/app/app1/msg"))
                         .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
 
         MessageIn msg = new MessageIn();
@@ -405,7 +405,7 @@ public class WiremockTests {
 
         wireMockRule.verify(
                 1,
-                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false"))
                         .withRequestBody(equalTo(expectedBody)));
     }
 
@@ -431,7 +431,7 @@ public class WiremockTests {
     public void msgInRaw() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.post(urlEqualTo("/api/v1/app/app1/msg"))
+                WireMock.post(urlPathEqualTo("/api/v1/app/app1/msg"))
                         .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
 
         MessageIn msg = Message.messageInRaw("<xml>{no json here}").eventType("event.ended");
@@ -442,7 +442,7 @@ public class WiremockTests {
                     + " json here}\"}}";
         wireMockRule.verify(
                 1,
-                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false"))
                         .withRequestBody(equalTo(expectedBody)));
     }
 
@@ -450,21 +450,21 @@ public class WiremockTests {
     public void octothorpeInUrlQuery() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.get(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test"))
+                WireMock.get(urlPathEqualTo("/api/v1/app/app1/msg"))
                         .willReturn(WireMock.ok().withBodyFile("ListResponseMessageOut.json")));
 
         MessageListOptions opts = new MessageListOptions();
         opts.setTag("test#test");
         svx.getMessage().list("app1", opts);
 
-        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test")));
+        wireMockRule.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false&tag=test%23test")));
     }
 
     @Test
     public void headersInTransformationParamsNotOverwritten() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.post(urlEqualTo("/api/v1/app/app1/msg"))
+                WireMock.post(urlPathEqualTo("/api/v1/app/app1/msg"))
                         .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
 
         String jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}";
@@ -490,14 +490,14 @@ public class WiremockTests {
                         .readContentsAsString();
         wireMockRule.verify(
                 1,
-                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false"))
                         .withRequestBody(equalTo(expectedBody)));
     }
     @Test
     public void jsonEncodedMessageIn() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(
-                WireMock.post(urlEqualTo("/api/v1/app/app1/msg"))
+                WireMock.post(urlPathEqualTo("/api/v1/app/app1/msg"))
                         .willReturn(WireMock.ok().withBodyFile("MessageOut.json")));
 
         String jsonPayload = "{\"key\":\"val\",\"key1\":[\"list\"]}";
@@ -513,7 +513,7 @@ public class WiremockTests {
                         .readContentsAsString();
         wireMockRule.verify(
                 1,
-                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+                postRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false"))
                         .withRequestBody(equalTo(expectedBody)));
     }
 
