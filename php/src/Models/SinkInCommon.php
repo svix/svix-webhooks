@@ -18,8 +18,8 @@ class SinkInCommon implements \JsonSerializable
      *
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
      * It is recommended to not set this and let the server generate the secret.
-     * @param list<string>|null          $filterTypes
-     * @param list<string>|null          $channels    list of message channels this sink listens to (omit for all)
+     * @param list<string>|null          $eventTypes
+     * @param list<string>|null          $channels   list of message channels this sink listens to (omit for all)
      * @param array<string, string>|null $metadata
      */
     private function __construct(
@@ -28,7 +28,7 @@ class SinkInCommon implements \JsonSerializable
         public readonly ?string $uid = null,
         public readonly ?string $secret = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypes = null,
         public readonly ?array $channels = null,
         public readonly ?array $metadata = null,
         array $setFields = [],
@@ -47,7 +47,7 @@ class SinkInCommon implements \JsonSerializable
             uid: null,
             secret: null,
             disabled: null,
-            filterTypes: null,
+            eventTypes: null,
             channels: null,
             metadata: null,
             setFields: []
@@ -65,7 +65,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $this->secret,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -83,7 +83,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $this->secret,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -101,7 +101,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $uid,
             secret: $this->secret,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -119,7 +119,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $secret,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -137,17 +137,17 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $this->secret,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypes(?array $eventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypes'] = true;
 
         return new self(
             description: $this->description,
@@ -155,7 +155,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $this->secret,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypes: $eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -173,7 +173,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $this->secret,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -191,7 +191,7 @@ class SinkInCommon implements \JsonSerializable
             uid: $this->uid,
             secret: $this->secret,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $metadata,
             setFields: $setFields
@@ -218,8 +218,8 @@ class SinkInCommon implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
         }
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
@@ -242,7 +242,7 @@ class SinkInCommon implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'SinkInCommon'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'SinkInCommon'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'SinkInCommon'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'SinkInCommon'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'SinkInCommon'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'SinkInCommon'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'SinkInCommon')
         );

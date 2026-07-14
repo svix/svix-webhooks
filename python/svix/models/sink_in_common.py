@@ -23,7 +23,7 @@ class SinkInCommon(BaseModel):
 
     disabled: t.Optional[bool] = None
 
-    filter_types: t.Optional[t.List[str]] = None
+    event_types: t.Optional[t.List[str]] = None
 
     channels: t.Optional[t.List[str]] = None
     """List of message channels this sink listens to (omit for all)."""

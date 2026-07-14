@@ -19,6 +19,6 @@ class OperationalWebhookEndpointUpsertIn(BaseModel):
 
     disabled: t.Optional[bool] = None
 
-    filter_types: t.Optional[t.List[str]] = None
+    event_types_ids: t.Optional[t.List[str]] = None
 
     metadata: t.Optional[t.Dict[str, str]] = None

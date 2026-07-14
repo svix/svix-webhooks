@@ -12,7 +12,7 @@ export interface EndpointUpsertIn {
   uid?: string | null;
   url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   /** List of message channels this endpoint listens to (omit for all). */
   channels?: string[] | null;
   metadata?: { [key: string]: string };
@@ -26,7 +26,7 @@ export const EndpointUpsertInSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       channels: object["channels"],
       metadata: object["metadata"],
     };
@@ -39,7 +39,7 @@ export const EndpointUpsertInSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       channels: self.channels,
       metadata: self.metadata,
     };

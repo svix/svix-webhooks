@@ -16,7 +16,7 @@ data class OperationalWebhookEndpointIn(
     val uid: String? = null,
     val url: String,
     val disabled: Boolean? = null,
-    val filterTypes: Set<String>? = null,
+    val eventTypes: Set<String>? = null,
     /**
      * The endpoint's verification secret.
      *

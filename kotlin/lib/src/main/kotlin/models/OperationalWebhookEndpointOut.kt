@@ -20,7 +20,7 @@ data class OperationalWebhookEndpointOut(
     val uid: String? = null,
     val url: String,
     val disabled: Boolean? = null,
-    val filterTypes: Set<String>? = null,
+    val eventTypes: Set<String>? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
     val metadata: Map<String, String>,

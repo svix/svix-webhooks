@@ -16,7 +16,7 @@ type EndpointPatch struct {
 	Uid          utils.Nullable[string]   `json:"uid"` // The Endpoint's UID.
 	Url          *string                  `json:"url,omitempty"`
 	Disabled     *bool                    `json:"disabled,omitempty"`
-	FilterTypes  utils.Nullable[[]string] `json:"filterTypes"`
+	EventTypes   utils.Nullable[[]string] `json:"eventTypes"`
 	Channels     utils.Nullable[[]string] `json:"channels"`
 	Metadata     *map[string]string       `json:"metadata,omitempty"`
 }
@@ -38,8 +38,8 @@ func (o EndpointPatch) MarshalJSON() ([]byte, error) {
 	if o.Disabled != nil {
 		toSerialize["disabled"] = o.Disabled
 	}
-	if o.FilterTypes.IsSet() {
-		toSerialize["filterTypes"] = o.FilterTypes
+	if o.EventTypes.IsSet() {
+		toSerialize["eventTypes"] = o.EventTypes
 	}
 	if o.Channels.IsSet() {
 		toSerialize["channels"] = o.Channels

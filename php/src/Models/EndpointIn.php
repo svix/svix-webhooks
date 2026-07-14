@@ -13,10 +13,10 @@ class EndpointIn implements \JsonSerializable
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null       $uid         optional unique identifier for the endpoint
-     * @param list<string>|null $filterTypes
-     * @param list<string>|null $channels    list of message channels this endpoint listens to (omit for all)
-     * @param string|null       $secret      The endpoint's verification secret.
+     * @param string|null       $uid        optional unique identifier for the endpoint
+     * @param list<string>|null $eventTypes
+     * @param list<string>|null $channels   list of message channels this endpoint listens to (omit for all)
+     * @param string|null       $secret     The endpoint's verification secret.
      *
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
      * It is recommended to not set this and let the server generate the secret.
@@ -29,7 +29,7 @@ class EndpointIn implements \JsonSerializable
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypes = null,
         public readonly ?array $channels = null,
         public readonly ?string $secret = null,
         public readonly ?array $metadata = null,
@@ -51,7 +51,7 @@ class EndpointIn implements \JsonSerializable
             uid: null,
             url: $url,
             disabled: null,
-            filterTypes: null,
+            eventTypes: null,
             channels: null,
             secret: null,
             metadata: null,
@@ -71,7 +71,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -91,7 +91,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -111,7 +111,7 @@ class EndpointIn implements \JsonSerializable
             uid: $uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -131,7 +131,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -140,10 +140,10 @@ class EndpointIn implements \JsonSerializable
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypes(?array $eventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypes'] = true;
 
         return new self(
             description: $this->description,
@@ -151,7 +151,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypes: $eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -171,7 +171,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -191,7 +191,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $secret,
             metadata: $this->metadata,
@@ -211,7 +211,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $metadata,
@@ -231,7 +231,7 @@ class EndpointIn implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             secret: $this->secret,
             metadata: $this->metadata,
@@ -257,8 +257,8 @@ class EndpointIn implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
         }
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
@@ -287,7 +287,7 @@ class EndpointIn implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointIn'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointIn'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointIn'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointIn'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointIn'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'EndpointIn'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointIn'),

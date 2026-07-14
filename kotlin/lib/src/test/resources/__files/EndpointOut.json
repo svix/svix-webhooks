@@ -10,7 +10,7 @@
     "url": "https://example.com/webhook/",
     "version": 1,
     "disabled": false,
-    "filterTypes": [
+    "eventTypes": [
         "user.signup",
         "user.deleted"
     ],

@@ -72,17 +72,17 @@ def test_auto_config_sink_type_revalidates_when_nested():
     # Regression: nesting an already-built AutoConfigSinkType inside another
     # model re-runs its wrap validator with a model instance (not a dict),
     # which used to raise TypeError on `data["config"] = {}`.
-    sink = AutoConfigSinkType(type="poller", config=SinkInCommon(filter_types=["a"]))
+    sink = AutoConfigSinkType(type="poller", config=SinkInCommon(event_types=["a"]))
     subscribe_in = SubscribeIn(sink=sink)
 
     assert subscribe_in.sink is not None
     assert isinstance(subscribe_in.sink.config, SinkInCommon)
-    assert subscribe_in.sink.config.filter_types == ["a"]
+    assert subscribe_in.sink.config.event_types == ["a"]
 
 
 def test_auto_config_consumer_subscribe_in_payload():
     consumer = AutoConfigConsumer(
-        _make_token(), SinkInCommon(filter_types=["issue.opened"])
+        _make_token(), SinkInCommon(event_types=["issue.opened"])
     )
     subscribe_in = consumer._subscribe_in()
 
@@ -91,5 +91,5 @@ def test_auto_config_consumer_subscribe_in_payload():
     assert isinstance(subscribe_in.sink.config, SinkInCommon)
     assert (
         subscribe_in.model_dump_json(exclude_unset=True, by_alias=True)
-        == '{"sink":{"type":"poller","config":{"filterTypes":["issue.opened"]}}}'
+        == '{"sink":{"type":"poller","config":{"eventTypes":["issue.opened"]}}}'
     )

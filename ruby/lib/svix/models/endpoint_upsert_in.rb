@@ -13,12 +13,12 @@ module Svix
     attr_accessor :uid
     attr_accessor :url
     attr_accessor :disabled
-    attr_accessor :filter_types
+    attr_accessor :event_types
     # List of message channels this endpoint listens to (omit for all).
     attr_accessor :channels
     attr_accessor :metadata
 
-    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "filter_types", "channels", "metadata"].freeze
+    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "event_types", "channels", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -44,7 +44,7 @@ module Svix
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["event_types"] = attributes["eventTypes"]
       attrs["channels"] = attributes["channels"]
       attrs["metadata"] = attributes["metadata"]
       new(attrs)
@@ -57,7 +57,7 @@ module Svix
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out

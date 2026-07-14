@@ -12,7 +12,7 @@ export interface OperationalWebhookEndpointUpsertIn {
   uid?: string | null;
   url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypesIds?: string[] | null;
   metadata?: { [key: string]: string };
 }
 
@@ -24,7 +24,7 @@ export const OperationalWebhookEndpointUpsertInSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypesIds: object["eventTypesIds"],
       metadata: object["metadata"],
     };
   },
@@ -36,7 +36,7 @@ export const OperationalWebhookEndpointUpsertInSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypesIds: self.eventTypesIds,
       metadata: self.metadata,
     };
   },

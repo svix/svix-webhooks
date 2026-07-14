@@ -22,9 +22,9 @@ pub struct EndpointUpsertIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -42,7 +42,7 @@ impl EndpointUpsertIn {
             uid: None,
             url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             channels: None,
             metadata: None,
         }

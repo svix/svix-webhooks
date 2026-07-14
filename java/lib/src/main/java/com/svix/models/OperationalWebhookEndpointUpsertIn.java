@@ -27,7 +27,7 @@ public class OperationalWebhookEndpointUpsertIn {
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> eventTypesIds;
     @JsonProperty private Map<String, String> metadata;
 
     public OperationalWebhookEndpointUpsertIn() {}
@@ -129,32 +129,32 @@ public class OperationalWebhookEndpointUpsertIn {
         this.disabled = disabled;
     }
 
-    public OperationalWebhookEndpointUpsertIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public OperationalWebhookEndpointUpsertIn eventTypesIds(Set<String> eventTypesIds) {
+        this.eventTypesIds = eventTypesIds;
         return this;
     }
 
-    public OperationalWebhookEndpointUpsertIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
+    public OperationalWebhookEndpointUpsertIn addEventTypesIdsItem(String eventTypesIdsItem) {
+        if (this.eventTypesIds == null) {
+            this.eventTypesIds = new LinkedHashSet<>();
         }
-        this.filterTypes.add(filterTypesItem);
+        this.eventTypesIds.add(eventTypesIdsItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypesIds
      *
-     * @return filterTypes
+     * @return eventTypesIds
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
+    public Set<String> getEventTypesIds() {
+        return eventTypesIds;
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public void setEventTypesIds(Set<String> eventTypesIds) {
+        this.eventTypesIds = eventTypesIds;
     }
 
     public OperationalWebhookEndpointUpsertIn metadata(Map<String, String> metadata) {

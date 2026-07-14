@@ -12,7 +12,7 @@ export interface EndpointIn {
   uid?: string | null;
   url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   /** List of message channels this endpoint listens to (omit for all). */
   channels?: string[] | null;
   /**
@@ -34,7 +34,7 @@ export const EndpointInSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       channels: object["channels"],
       secret: object["secret"],
       metadata: object["metadata"],
@@ -49,7 +49,7 @@ export const EndpointInSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       channels: self.channels,
       secret: self.secret,
       metadata: self.metadata,

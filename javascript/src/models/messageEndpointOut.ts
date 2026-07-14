@@ -20,7 +20,7 @@ export interface MessageEndpointOut {
   uid?: string | null;
   url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   /** List of message channels this endpoint listens to (omit for all). */
   channels?: string[] | null;
   createdAt: Date;
@@ -39,7 +39,7 @@ export const MessageEndpointOutSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       channels: object["channels"],
       createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
@@ -57,7 +57,7 @@ export const MessageEndpointOutSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       channels: self.channels,
       createdAt: self.createdAt,
       updatedAt: self.updatedAt,

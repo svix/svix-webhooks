@@ -19,7 +19,7 @@ module Svix
     attr_accessor :uid
     attr_accessor :url
     attr_accessor :disabled
-    attr_accessor :filter_types
+    attr_accessor :event_types
     # List of message channels this endpoint listens to (omit for all).
     attr_accessor :channels
     attr_accessor :created_at
@@ -35,7 +35,7 @@ module Svix
       "uid",
       "url",
       "disabled",
-      "filter_types",
+      "event_types",
       "channels",
       "created_at",
       "updated_at"
@@ -69,7 +69,7 @@ module Svix
       attrs["uid"] = attributes["uid"]
       attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
-      attrs["filter_types"] = attributes["filterTypes"]
+      attrs["event_types"] = attributes["eventTypes"]
       attrs["channels"] = attributes["channels"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
@@ -87,7 +87,7 @@ module Svix
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
       out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["filterTypes"] = Svix::serialize_primitive(@filter_types) if @filter_types
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
