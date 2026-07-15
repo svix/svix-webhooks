@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "strict": true,
-    /* Basic Options */
-    "target": "es6",
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "declaration": true,
-    "allowJs": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
 
     /* Additional Checks */
     "noUnusedLocals": false /* Report errors on unused locals. */, // TODO: reenable (unused imports!)
@@ -14,16 +17,12 @@
     "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
 
-    "removeComments": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "noLib": false,
-    "lib": ["es6", "dom"]
+    "lib": ["ES2022", "DOM"]
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
     "src/**/*.test.ts"
-  ],
+  ]
 }
