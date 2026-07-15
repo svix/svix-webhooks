@@ -8,7 +8,7 @@ from ..models import (
     PollingEndpointConsumerSeekOut,
     PollingEndpointOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -63,7 +63,7 @@ class MessagePollerConsumerPollOptions(BaseOptions):
         )
 
 
-class MessagePollerAsync(ApiBase):
+class MessagePollerAsync(ApiBaseAsync):
     async def poll(
         self,
         app_id: str,
@@ -135,7 +135,7 @@ class MessagePollerAsync(ApiBase):
         return PollingEndpointOut.model_validate(response.json())
 
 
-class MessagePoller(ApiBase):
+class MessagePoller(ApiBaseSync):
     def poll(
         self,
         app_id: str,

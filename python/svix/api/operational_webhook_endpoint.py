@@ -13,7 +13,7 @@ from ..models import (
     OperationalWebhookEndpointSecretOut,
     OperationalWebhookEndpointUpdate,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -59,7 +59,7 @@ class OperationalWebhookEndpointRotateSecretOptions(BaseOptions):
         )
 
 
-class OperationalWebhookEndpointAsync(ApiBase):
+class OperationalWebhookEndpointAsync(ApiBaseAsync):
     async def list(
         self,
         options: OperationalWebhookEndpointListOptions = (
@@ -204,7 +204,7 @@ class OperationalWebhookEndpointAsync(ApiBase):
         )
 
 
-class OperationalWebhookEndpoint(ApiBase):
+class OperationalWebhookEndpoint(ApiBaseSync):
     def list(
         self,
         options: OperationalWebhookEndpointListOptions = (

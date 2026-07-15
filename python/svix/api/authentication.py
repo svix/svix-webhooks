@@ -14,7 +14,7 @@ from ..models import (
     StreamPortalAccessIn,
     StreamTokenExpireIn,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -113,7 +113,7 @@ class AuthenticationDashboardAccessOptions(BaseOptions):
         )
 
 
-class AuthenticationAsync(ApiBase):
+class AuthenticationAsync(ApiBaseAsync):
     async def app_portal_access(
         self,
         app_id: str,
@@ -291,7 +291,7 @@ class AuthenticationAsync(ApiBase):
         return ApiTokenOut.model_validate(response.json())
 
 
-class Authentication(ApiBase):
+class Authentication(ApiBaseSync):
     def app_portal_access(
         self,
         app_id: str,

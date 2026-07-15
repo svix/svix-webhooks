@@ -9,7 +9,7 @@ from ..models import (
     ListResponseIngestSourceOut,
     RotateTokenOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -55,7 +55,7 @@ class IngestSourceRotateTokenOptions(BaseOptions):
         )
 
 
-class IngestSourceAsync(ApiBase):
+class IngestSourceAsync(ApiBaseAsync):
     async def list(
         self, options: IngestSourceListOptions = (IngestSourceListOptions())
     ) -> ListResponseIngestSourceOut:
@@ -147,7 +147,7 @@ class IngestSourceAsync(ApiBase):
         return RotateTokenOut.model_validate(response.json())
 
 
-class IngestSource(ApiBase):
+class IngestSource(ApiBaseSync):
     def list(
         self, options: IngestSourceListOptions = (IngestSourceListOptions())
     ) -> ListResponseIngestSourceOut:

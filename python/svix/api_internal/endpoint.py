@@ -2,14 +2,14 @@
 from deprecated import deprecated
 
 from ..models import EndpointTransformationIn
-from .common import ApiBase
+from .common import ApiBaseAsync, ApiBaseSync
 from .endpoint_auto_config import (
     EndpointAutoConfig,
     EndpointAutoConfigAsync,
 )
 
 
-class EndpointAsync(ApiBase):
+class EndpointAsync(ApiBaseAsync):
     @property
     def auto_config(self) -> EndpointAutoConfigAsync:
         return EndpointAutoConfigAsync(self._client)
@@ -35,7 +35,7 @@ class EndpointAsync(ApiBase):
         )
 
 
-class Endpoint(ApiBase):
+class Endpoint(ApiBaseSync):
     @property
     def auto_config(self) -> EndpointAutoConfig:
         return EndpointAutoConfig(self._client)

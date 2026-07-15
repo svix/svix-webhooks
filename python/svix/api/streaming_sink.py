@@ -13,7 +13,7 @@ from ..models import (
     StreamSinkOut,
     StreamSinkPatch,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -59,7 +59,7 @@ class StreamingSinkRotateSecretOptions(BaseOptions):
         )
 
 
-class StreamingSinkAsync(ApiBase):
+class StreamingSinkAsync(ApiBaseAsync):
     async def list(
         self,
         stream_id: str,
@@ -210,7 +210,7 @@ class StreamingSinkAsync(ApiBase):
         return EmptyResponse.model_validate(response.json())
 
 
-class StreamingSink(ApiBase):
+class StreamingSink(ApiBaseSync):
     def list(
         self,
         stream_id: str,

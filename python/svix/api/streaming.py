@@ -1,6 +1,6 @@
 # This file is @generated
 from ..models import EndpointHeadersOut, HttpSinkHeadersPatchIn, SinkTransformationOut
-from .common import ApiBase
+from .common import ApiBaseAsync, ApiBaseSync
 from .streaming_event_type import (
     StreamingEventType,
     StreamingEventTypeAsync,
@@ -19,7 +19,7 @@ from .streaming_stream import (
 )
 
 
-class StreamingAsync(ApiBase):
+class StreamingAsync(ApiBaseAsync):
     @property
     def event_type(self) -> StreamingEventTypeAsync:
         return StreamingEventTypeAsync(self._client)
@@ -89,7 +89,7 @@ class StreamingAsync(ApiBase):
         return EndpointHeadersOut.model_validate(response.json())
 
 
-class Streaming(ApiBase):
+class Streaming(ApiBaseSync):
     @property
     def event_type(self) -> StreamingEventType:
         return StreamingEventType(self._client)

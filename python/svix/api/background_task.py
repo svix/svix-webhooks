@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .. import models
 from ..models import BackgroundTaskOut, ListResponseBackgroundTaskOut
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -32,7 +32,7 @@ class BackgroundTaskListOptions(BaseOptions):
         )
 
 
-class BackgroundTaskAsync(ApiBase):
+class BackgroundTaskAsync(ApiBaseAsync):
     async def list(
         self, options: BackgroundTaskListOptions = (BackgroundTaskListOptions())
     ) -> ListResponseBackgroundTaskOut:
@@ -58,7 +58,7 @@ class BackgroundTaskAsync(ApiBase):
         return BackgroundTaskOut.model_validate(response.json())
 
 
-class BackgroundTask(ApiBase):
+class BackgroundTask(ApiBaseSync):
     def list(
         self, options: BackgroundTaskListOptions = (BackgroundTaskListOptions())
     ) -> ListResponseBackgroundTaskOut:
