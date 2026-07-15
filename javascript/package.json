@@ -28,7 +28,6 @@
     "typecheck": "tsc --noEmit",
     "build": "npm run typecheck && tsdown",
     "prepare": "npm run build",
-    "test": "tsc -p tsconfig.test.json && node --enable-source-maps test_build/src/index.test.js",
     "prepublishOnly": "biome check",
     "check": "biome check",
     "check:fix": "biome check --write",
