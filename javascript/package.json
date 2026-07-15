@@ -5,6 +5,10 @@
   "author": "svix",
   "repository": "https://github.com/svix/svix-webhooks",
   "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "keywords": [
     "svix",
     "diahook",
@@ -13,11 +17,7 @@
   ],
   "license": "MIT",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
-    },
+    ".": "./dist/index.mjs",
     "./package.json": "./package.json"
   },
   "files": [
@@ -43,5 +43,8 @@
     "mockttp": "^4.4.1",
     "tsdown": "^0.22.5",
     "typescript": "^5.0"
-  }
+  },
+  "types": "./dist/index.d.mts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs"
 }
