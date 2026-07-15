@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output
 * Libs/All: Support customizing expiration (grace period) of old endpoint secret when rotating
