@@ -12,7 +12,7 @@ from ..models import (
     IntegrationUpdate,
     ListResponseIntegrationOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -58,7 +58,7 @@ class IntegrationRotateKeyOptions(BaseOptions):
         )
 
 
-class IntegrationAsync(ApiBase):
+class IntegrationAsync(ApiBaseAsync):
     async def list(
         self, app_id: str, options: IntegrationListOptions = (IntegrationListOptions())
     ) -> ListResponseIntegrationOut:
@@ -166,7 +166,7 @@ class IntegrationAsync(ApiBase):
         return IntegrationKeyOut.model_validate(response.json())
 
 
-class Integration(ApiBase):
+class Integration(ApiBaseSync):
     def list(
         self, app_id: str, options: IntegrationListOptions = (IntegrationListOptions())
     ) -> ListResponseIntegrationOut:

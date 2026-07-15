@@ -15,7 +15,7 @@ from ..models import (
     IngestEndpointUpdate,
     ListResponseIngestEndpointOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -61,7 +61,7 @@ class IngestEndpointRotateSecretOptions(BaseOptions):
         )
 
 
-class IngestEndpointAsync(ApiBase):
+class IngestEndpointAsync(ApiBaseAsync):
     async def list(
         self,
         source_id: str,
@@ -253,7 +253,7 @@ class IngestEndpointAsync(ApiBase):
         )
 
 
-class IngestEndpoint(ApiBase):
+class IngestEndpoint(ApiBaseSync):
     def list(
         self,
         source_id: str,

@@ -3,7 +3,7 @@ import typing as t
 from dataclasses import dataclass
 
 from ..models import AggregateEventTypesOut, AppUsageStatsIn, AppUsageStatsOut
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -18,7 +18,7 @@ class StatisticsAggregateAppStatsOptions(BaseOptions):
         )
 
 
-class StatisticsAsync(ApiBase):
+class StatisticsAsync(ApiBaseAsync):
     async def aggregate_event_types(self) -> AggregateEventTypesOut:
         """Creates a background task to calculate the listed event types for all apps in the organization.
 
@@ -89,7 +89,7 @@ class StatisticsAsync(ApiBase):
         return AppUsageStatsOut.model_validate(response.json())
 
 
-class Statistics(ApiBase):
+class Statistics(ApiBaseSync):
     def aggregate_event_types(self) -> AggregateEventTypesOut:
         """Creates a background task to calculate the listed event types for all apps in the organization.
 

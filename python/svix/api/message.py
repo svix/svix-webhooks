@@ -11,7 +11,7 @@ from ..models import (
     MessagePrecheckIn,
     MessagePrecheckOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 from .message_poller import (
     MessagePoller,
     MessagePollerAsync,
@@ -142,10 +142,10 @@ def message_in_raw(
     )
 
 
-class MessageAsync(ApiBase):
+class MessageAsync(ApiBaseAsync):
     @property
     def poller(self) -> MessagePollerAsync:
-        return MessagePollerAsync(self._client)
+        return MessagePollerAsync(self._client, self._httpx_client)
 
     async def list(
         self, app_id: str, options: MessageListOptions = (MessageListOptions())
@@ -293,10 +293,10 @@ class MessageAsync(ApiBase):
         return ExpungeAllContentsOut.model_validate(response.json())
 
 
-class Message(ApiBase):
+class Message(ApiBaseSync):
     @property
     def poller(self) -> MessagePoller:
-        return MessagePoller(self._client)
+        return MessagePoller(self._client, self._httpx_client)
 
     def list(
         self, app_id: str, options: MessageListOptions = (MessageListOptions())

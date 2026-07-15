@@ -1,9 +1,11 @@
 import base64
 import typing as t
 
+import httpx
 import pydantic
 
 from .api.client import AuthenticatedClient
+from .api.common import _make_httpx_async_client, _make_httpx_client
 from .api.svix import Svix, SvixOptions
 from .api_internal.endpoint_auto_config import (
     EndpointAutoConfig,
@@ -66,6 +68,8 @@ class AutoConfig:
     _endpoint: EndpointIn
     _webhook: Webhook
     _client: AuthenticatedClient
+    _sync_api: t.Optional[EndpointAutoConfig]
+    _async_api: t.Optional[EndpointAutoConfigAsync]
 
     def __init__(self, token: str, endpoint: EndpointIn) -> None:
         content = _decode_autoconfig_token_v1(token)
@@ -86,14 +90,22 @@ class AutoConfig:
         self._client = svix._client
 
     def subscribe(self) -> EndpointOut:
-        return EndpointAutoConfig(self._client).update(
+        if self._sync_api is None:
+            httpx_client = _make_httpx_client(self._client)
+            self._sync_api = EndpointAutoConfig(self._client, httpx_client)
+
+        return self._sync_api.update(
             self._app_id,
             self._endpoint_id,
             SubscribeIn(endpoint=self._endpoint),
         )
 
     async def subscribe_async(self) -> EndpointOut:
-        return await EndpointAutoConfigAsync(self._client).update(
+        if self._async_api is None:
+            httpx_client = _make_httpx_async_client(self._client)
+            self._async_api = EndpointAutoConfigAsync(self._client, httpx_client)
+
+        return await self._async_api.update(
             self._app_id,
             self._endpoint_id,
             SubscribeIn(endpoint=self._endpoint),
@@ -108,6 +120,8 @@ class AutoConfigConsumer:
     _sink_id: str
     _sink_in: SinkInCommon
     _client: AuthenticatedClient
+    _httpx_client: t.Optional[httpx.Client]
+    _httpx_async_client: t.Optional[httpx.AsyncClient]
 
     def __init__(self, token: str, sink_in: SinkInCommon) -> None:
         content = _decode_autoconfig_token_v1(token)
@@ -128,14 +142,22 @@ class AutoConfigConsumer:
         )
 
     def subscribe(self) -> EndpointOut:
-        return EndpointAutoConfig(self._client).update(
+        if self._httpx_client is None:
+            self._httpx_client = _make_httpx_client(self._client)
+
+        return EndpointAutoConfig(self._client, self._httpx_client).update(
             self._app_id,
             self._sink_id,
             self._subscribe_in(),
         )
 
     async def subscribe_async(self) -> EndpointOut:
-        return await EndpointAutoConfigAsync(self._client).update(
+        if self._httpx_async_client is None:
+            self._httpx_async_client = _make_httpx_async_client(self._client)
+
+        return await EndpointAutoConfigAsync(
+            self._client, self._httpx_async_client
+        ).update(
             self._app_id,
             self._sink_id,
             self._subscribe_in(),
@@ -148,7 +170,10 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerPollOptions()
         ),
     ) -> PollerV2PollOut:
-        return MessagePollerv2(self._client).consumer_poll(
+        if self._httpx_client is None:
+            self._httpx_client = _make_httpx_client(self._client)
+
+        return MessagePollerv2(self._client, self._httpx_client).consumer_poll(
             self._app_id,
             self._sink_id,
             consumer_id,
@@ -162,7 +187,12 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerPollOptions()
         ),
     ) -> PollerV2PollOut:
-        return await MessagePollerv2Async(self._client).consumer_poll(
+        if self._httpx_async_client is None:
+            self._httpx_async_client = _make_httpx_async_client(self._client)
+
+        return await MessagePollerv2Async(
+            self._client, self._httpx_async_client
+        ).consumer_poll(
             self._app_id,
             self._sink_id,
             consumer_id,
@@ -177,7 +207,10 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerCommitOptions()
         ),
     ) -> None:
-        MessagePollerv2(self._client).consumer_commit(
+        if self._httpx_client is None:
+            self._httpx_client = _make_httpx_client(self._client)
+
+        MessagePollerv2(self._client, self._httpx_client).consumer_commit(
             self._app_id,
             self._sink_id,
             consumer_id,
@@ -193,7 +226,12 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerCommitOptions()
         ),
     ) -> None:
-        await MessagePollerv2Async(self._client).consumer_commit(
+        if self._httpx_async_client is None:
+            self._httpx_async_client = _make_httpx_async_client(self._client)
+
+        await MessagePollerv2Async(
+            self._client, self._httpx_async_client
+        ).consumer_commit(
             self._app_id,
             self._sink_id,
             consumer_id,

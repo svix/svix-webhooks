@@ -10,7 +10,7 @@ from ..models import (
     ConnectorUpdate,
     ListResponseConnectorOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -46,7 +46,7 @@ class ConnectorCreateOptions(BaseOptions):
         )
 
 
-class ConnectorAsync(ApiBase):
+class ConnectorAsync(ApiBaseAsync):
     async def list(
         self, options: ConnectorListOptions = (ConnectorListOptions())
     ) -> ListResponseConnectorOut:
@@ -130,7 +130,7 @@ class ConnectorAsync(ApiBase):
         return ConnectorOut.model_validate(response.json())
 
 
-class Connector(ApiBase):
+class Connector(ApiBaseSync):
     def list(
         self, options: ConnectorListOptions = (ConnectorListOptions())
     ) -> ListResponseConnectorOut:

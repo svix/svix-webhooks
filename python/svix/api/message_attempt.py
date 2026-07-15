@@ -11,7 +11,7 @@ from ..models import (
     ListResponseMessageEndpointOut,
     MessageAttemptOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -205,7 +205,7 @@ class MessageAttemptResendOptions(BaseOptions):
         )
 
 
-class MessageAttemptAsync(ApiBase):
+class MessageAttemptAsync(ApiBaseAsync):
     async def list_by_endpoint(
         self,
         app_id: str,
@@ -368,7 +368,7 @@ class MessageAttemptAsync(ApiBase):
         return EmptyResponse.model_validate(response.json())
 
 
-class MessageAttempt(ApiBase):
+class MessageAttempt(ApiBaseSync):
     def list_by_endpoint(
         self,
         app_id: str,

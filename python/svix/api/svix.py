@@ -4,10 +4,13 @@ import platform
 import typing as t
 from dataclasses import dataclass, field
 
+import httpx
+
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
 from .background_task import BackgroundTask, BackgroundTaskAsync
 from .client import AuthenticatedClient
+from .common import _make_httpx_async_client, _make_httpx_client
 from .connector import Connector, ConnectorAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
@@ -98,132 +101,144 @@ class ClientBase:
 
 
 class SvixAsync(ClientBase):
+    _httpx_client: httpx.AsyncClient
+
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()):
+        super().__init__(auth_token, options)
+        self._httpx_client = _make_httpx_async_client(self._client)
+
     @property
     def application(self) -> ApplicationAsync:
-        return ApplicationAsync(self._client)
+        return ApplicationAsync(self._client, self._httpx_client)
 
     @property
     def authentication(self) -> AuthenticationAsync:
-        return AuthenticationAsync(self._client)
+        return AuthenticationAsync(self._client, self._httpx_client)
 
     @property
     def background_task(self) -> BackgroundTaskAsync:
-        return BackgroundTaskAsync(self._client)
+        return BackgroundTaskAsync(self._client, self._httpx_client)
 
     @property
     def connector(self) -> ConnectorAsync:
-        return ConnectorAsync(self._client)
+        return ConnectorAsync(self._client, self._httpx_client)
 
     @property
     def endpoint(self) -> EndpointAsync:
-        return EndpointAsync(self._client)
+        return EndpointAsync(self._client, self._httpx_client)
 
     @property
     def environment(self) -> EnvironmentAsync:
-        return EnvironmentAsync(self._client)
+        return EnvironmentAsync(self._client, self._httpx_client)
 
     @property
     def event_type(self) -> EventTypeAsync:
-        return EventTypeAsync(self._client)
+        return EventTypeAsync(self._client, self._httpx_client)
 
     @property
     def health(self) -> HealthAsync:
-        return HealthAsync(self._client)
+        return HealthAsync(self._client, self._httpx_client)
 
     @property
     def ingest(self) -> IngestAsync:
-        return IngestAsync(self._client)
+        return IngestAsync(self._client, self._httpx_client)
 
     @property
     def integration(self) -> IntegrationAsync:
-        return IntegrationAsync(self._client)
+        return IntegrationAsync(self._client, self._httpx_client)
 
     @property
     def message(self) -> MessageAsync:
-        return MessageAsync(self._client)
+        return MessageAsync(self._client, self._httpx_client)
 
     @property
     def message_attempt(self) -> MessageAttemptAsync:
-        return MessageAttemptAsync(self._client)
+        return MessageAttemptAsync(self._client, self._httpx_client)
 
     @property
     def operational_webhook(self) -> OperationalWebhookAsync:
-        return OperationalWebhookAsync(self._client)
+        return OperationalWebhookAsync(self._client, self._httpx_client)
 
     @property
     def statistics(self) -> StatisticsAsync:
-        return StatisticsAsync(self._client)
+        return StatisticsAsync(self._client, self._httpx_client)
 
     @property
     def streaming(self) -> StreamingAsync:
-        return StreamingAsync(self._client)
+        return StreamingAsync(self._client, self._httpx_client)
 
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
-        return OperationalWebhookEndpointAsync(self._client)
+        return OperationalWebhookEndpointAsync(self._client, self._httpx_client)
 
 
 class Svix(ClientBase):
+    _httpx_client: httpx.Client
+
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()):
+        super().__init__(auth_token, options)
+        self._httpx_client = _make_httpx_client(self._client)
+
     @property
     def application(self) -> Application:
-        return Application(self._client)
+        return Application(self._client, self._httpx_client)
 
     @property
     def authentication(self) -> Authentication:
-        return Authentication(self._client)
+        return Authentication(self._client, self._httpx_client)
 
     @property
     def background_task(self) -> BackgroundTask:
-        return BackgroundTask(self._client)
+        return BackgroundTask(self._client, self._httpx_client)
 
     @property
     def connector(self) -> Connector:
-        return Connector(self._client)
+        return Connector(self._client, self._httpx_client)
 
     @property
     def endpoint(self) -> Endpoint:
-        return Endpoint(self._client)
+        return Endpoint(self._client, self._httpx_client)
 
     @property
     def environment(self) -> Environment:
-        return Environment(self._client)
+        return Environment(self._client, self._httpx_client)
 
     @property
     def event_type(self) -> EventType:
-        return EventType(self._client)
+        return EventType(self._client, self._httpx_client)
 
     @property
     def health(self) -> Health:
-        return Health(self._client)
+        return Health(self._client, self._httpx_client)
 
     @property
     def ingest(self) -> Ingest:
-        return Ingest(self._client)
+        return Ingest(self._client, self._httpx_client)
 
     @property
     def integration(self) -> Integration:
-        return Integration(self._client)
+        return Integration(self._client, self._httpx_client)
 
     @property
     def message(self) -> Message:
-        return Message(self._client)
+        return Message(self._client, self._httpx_client)
 
     @property
     def message_attempt(self) -> MessageAttempt:
-        return MessageAttempt(self._client)
+        return MessageAttempt(self._client, self._httpx_client)
 
     @property
     def operational_webhook(self) -> OperationalWebhook:
-        return OperationalWebhook(self._client)
+        return OperationalWebhook(self._client, self._httpx_client)
 
     @property
     def statistics(self) -> Statistics:
-        return Statistics(self._client)
+        return Statistics(self._client, self._httpx_client)
 
     @property
     def streaming(self) -> Streaming:
-        return Streaming(self._client)
+        return Streaming(self._client, self._httpx_client)
 
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
-        return OperationalWebhookEndpoint(self._client)
+        return OperationalWebhookEndpoint(self._client, self._httpx_client)

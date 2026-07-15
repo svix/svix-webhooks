@@ -3,7 +3,7 @@ import typing as t
 from dataclasses import dataclass
 
 from ..models import DashboardAccessOut, IngestSourceConsumerPortalAccessIn
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 from .ingest_endpoint import (
     IngestEndpoint,
     IngestEndpointAsync,
@@ -26,14 +26,14 @@ class IngestDashboardOptions(BaseOptions):
         )
 
 
-class IngestAsync(ApiBase):
+class IngestAsync(ApiBaseAsync):
     @property
     def endpoint(self) -> IngestEndpointAsync:
-        return IngestEndpointAsync(self._client)
+        return IngestEndpointAsync(self._client, self._httpx_client)
 
     @property
     def source(self) -> IngestSourceAsync:
-        return IngestSourceAsync(self._client)
+        return IngestSourceAsync(self._client, self._httpx_client)
 
     async def dashboard(
         self,
@@ -57,14 +57,14 @@ class IngestAsync(ApiBase):
         return DashboardAccessOut.model_validate(response.json())
 
 
-class Ingest(ApiBase):
+class Ingest(ApiBaseSync):
     @property
     def endpoint(self) -> IngestEndpoint:
-        return IngestEndpoint(self._client)
+        return IngestEndpoint(self._client, self._httpx_client)
 
     @property
     def source(self) -> IngestSource:
-        return IngestSource(self._client)
+        return IngestSource(self._client, self._httpx_client)
 
     def dashboard(
         self,

@@ -12,7 +12,7 @@ from ..models import (
     EventTypeUpdate,
     ListResponseEventTypeOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -77,7 +77,7 @@ class EventTypeDeleteOptions(BaseOptions):
         )
 
 
-class EventTypeAsync(ApiBase):
+class EventTypeAsync(ApiBaseAsync):
     async def list(
         self, options: EventTypeListOptions = (EventTypeListOptions())
     ) -> ListResponseEventTypeOut:
@@ -198,7 +198,7 @@ class EventTypeAsync(ApiBase):
         return EventTypeOut.model_validate(response.json())
 
 
-class EventType(ApiBase):
+class EventType(ApiBaseSync):
     def list(
         self, options: EventTypeListOptions = (EventTypeListOptions())
     ) -> ListResponseEventTypeOut:

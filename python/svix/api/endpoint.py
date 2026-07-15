@@ -29,7 +29,7 @@ from ..models import (
     ReplayIn,
     ReplayOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -139,7 +139,7 @@ class EndpointSendExampleOptions(BaseOptions):
         )
 
 
-class EndpointAsync(ApiBase):
+class EndpointAsync(ApiBaseAsync):
     async def list(
         self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
     ) -> ListResponseEndpointOut:
@@ -520,7 +520,7 @@ class EndpointAsync(ApiBase):
         )
 
 
-class Endpoint(ApiBase):
+class Endpoint(ApiBaseSync):
     def list(
         self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
     ) -> ListResponseEndpointOut:

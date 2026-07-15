@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .. import models
 from ..models import ListResponseStreamOut, StreamIn, StreamOut, StreamPatch
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -38,7 +38,7 @@ class StreamingStreamCreateOptions(BaseOptions):
         )
 
 
-class StreamingStreamAsync(ApiBase):
+class StreamingStreamAsync(ApiBaseAsync):
     async def list(
         self, options: StreamingStreamListOptions = (StreamingStreamListOptions())
     ) -> ListResponseStreamOut:
@@ -114,7 +114,7 @@ class StreamingStreamAsync(ApiBase):
         return StreamOut.model_validate(response.json())
 
 
-class StreamingStream(ApiBase):
+class StreamingStream(ApiBaseSync):
     def list(
         self, options: StreamingStreamListOptions = (StreamingStreamListOptions())
     ) -> ListResponseStreamOut:

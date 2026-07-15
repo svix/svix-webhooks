@@ -9,7 +9,7 @@ from ..models import (
     ApplicationPatch,
     ListResponseApplicationOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -52,7 +52,7 @@ class ApplicationCreateOptions(BaseOptions):
         )
 
 
-class ApplicationAsync(ApiBase):
+class ApplicationAsync(ApiBaseAsync):
     async def list(
         self, options: ApplicationListOptions = (ApplicationListOptions())
     ) -> ListResponseApplicationOut:
@@ -149,7 +149,7 @@ class ApplicationAsync(ApiBase):
         return ApplicationOut.model_validate(response.json())
 
 
-class Application(ApiBase):
+class Application(ApiBaseSync):
     def list(
         self, options: ApplicationListOptions = (ApplicationListOptions())
     ) -> ListResponseApplicationOut:

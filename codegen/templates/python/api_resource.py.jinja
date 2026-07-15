@@ -6,7 +6,7 @@ import typing as t
 from datetime import datetime
 from dataclasses import dataclass
 from deprecated import deprecated
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 from .. import models
 
 {% for c in referenced_components -%}
@@ -84,12 +84,13 @@ class {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options(BaseOpt
 
 
 {% for is_async in [true, false] %}
-class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}(ApiBase):
+{% set sync_bit %}{% if is_async %}Async{% else %}Sync{% endif %}{% endset -%}
+class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}(ApiBase{{ sync_bit }}):
     {%- for name, sub in resource.subresources | items %}
     {%- set sub_type_name %}{{ sub.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}{% endset %}
     @property
     def {{ name | to_snake_case }}(self) -> {{ sub_type_name }}:
-        return {{ sub_type_name }}(self._client)
+        return {{ sub_type_name }}(self._client, self._httpx_client)
 
     {% endfor %}
 

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..models import CreateStreamEventsIn, CreateStreamEventsOut, EventStreamOut
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -37,7 +37,7 @@ class StreamingEventsCreateOptions(BaseOptions):
         )
 
 
-class StreamingEventsAsync(ApiBase):
+class StreamingEventsAsync(ApiBaseAsync):
     async def get(
         self,
         stream_id: str,
@@ -81,7 +81,7 @@ class StreamingEventsAsync(ApiBase):
         return CreateStreamEventsOut.model_validate(response.json())
 
 
-class StreamingEvents(ApiBase):
+class StreamingEvents(ApiBaseSync):
     def get(
         self,
         stream_id: str,
