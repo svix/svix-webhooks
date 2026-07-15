@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output
 * Libs/All: Support customizing expiration (grace period) of old endpoint secret when rotating
 * Libs/Python: Bump minimum-supported Python interpreter version to 3.9
