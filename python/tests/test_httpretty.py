@@ -9,7 +9,6 @@ from svix.api import (
     MessageIn,
     MessageListOptions,
 )
-from svix.api.ingest_source import IngestSource
 
 
 @httpretty.activate(verbose=True, allow_net_connect=False)
@@ -26,7 +25,6 @@ def test_octothorpe_in_query_param():
 @httpretty.activate(verbose=True, allow_net_connect=False)
 def test_struct_enum_with_fields():
     svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
-    ingest_source = IngestSource(svx._client)
     httpretty.register_uri(
         httpretty.POST,
         "http://test.example/ingest/api/v1/source",
@@ -44,7 +42,7 @@ def test_struct_enum_with_fields():
         type="cron",
         config=CronConfig(content_type="asd", payload="asd", schedule="asd"),
     )
-    res = ingest_source.create(source_in)
+    res = svx.ingest.source.create(source_in)
     assert isinstance(res.config, CronConfig)
 
     assert res.config.content_type == "mendy/tired"
@@ -55,7 +53,6 @@ def test_struct_enum_with_fields():
 @httpretty.activate(verbose=True, allow_net_connect=False)
 def test_struct_enum_without_fields():
     svx = svix.Svix("token", svix.SvixOptions(server_url="http://test.example"))
-    ingest_source = IngestSource(svx._client)
     httpretty.register_uri(
         httpretty.POST,
         "http://test.example/ingest/api/v1/source",
@@ -67,7 +64,7 @@ def test_struct_enum_without_fields():
     )
     source_in = IngestSourceIn(name="name", type="generic-webhook", config={})
 
-    res = ingest_source.create(source_in)
+    res = svx.ingest.source.create(source_in)
 
     assert isinstance(res.config, dict)
     assert res.config == {}

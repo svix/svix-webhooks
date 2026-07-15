@@ -9,10 +9,10 @@ from .operational_webhook_endpoint import (
 class OperationalWebhookAsync(ApiBaseAsync):
     @property
     def endpoint(self) -> OperationalWebhookEndpointAsync:
-        return OperationalWebhookEndpointAsync(self._client)
+        return OperationalWebhookEndpointAsync(self._client, self._httpx_client)
 
 
 class OperationalWebhook(ApiBaseSync):
     @property
     def endpoint(self) -> OperationalWebhookEndpoint:
-        return OperationalWebhookEndpoint(self._client)
+        return OperationalWebhookEndpoint(self._client, self._httpx_client)

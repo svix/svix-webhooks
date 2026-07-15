@@ -90,7 +90,7 @@ class {{ resource.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}
     {%- set sub_type_name %}{{ sub.name | to_upper_camel_case }}{% if is_async %}Async{% endif %}{% endset %}
     @property
     def {{ name | to_snake_case }}(self) -> {{ sub_type_name }}:
-        return {{ sub_type_name }}(self._client)
+        return {{ sub_type_name }}(self._client, self._httpx_client)
 
     {% endfor %}
 

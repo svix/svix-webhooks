@@ -12,7 +12,7 @@ from .endpoint_auto_config import (
 class EndpointAsync(ApiBaseAsync):
     @property
     def auto_config(self) -> EndpointAutoConfigAsync:
-        return EndpointAutoConfigAsync(self._client)
+        return EndpointAutoConfigAsync(self._client, self._httpx_client)
 
     @deprecated
     async def transformation_partial_update(
@@ -38,7 +38,7 @@ class EndpointAsync(ApiBaseAsync):
 class Endpoint(ApiBaseSync):
     @property
     def auto_config(self) -> EndpointAutoConfig:
-        return EndpointAutoConfig(self._client)
+        return EndpointAutoConfig(self._client, self._httpx_client)
 
     @deprecated
     def transformation_partial_update(

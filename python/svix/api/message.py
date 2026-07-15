@@ -145,7 +145,7 @@ def message_in_raw(
 class MessageAsync(ApiBaseAsync):
     @property
     def poller(self) -> MessagePollerAsync:
-        return MessagePollerAsync(self._client)
+        return MessagePollerAsync(self._client, self._httpx_client)
 
     async def list(
         self, app_id: str, options: MessageListOptions = (MessageListOptions())
@@ -296,7 +296,7 @@ class MessageAsync(ApiBaseAsync):
 class Message(ApiBaseSync):
     @property
     def poller(self) -> MessagePoller:
-        return MessagePoller(self._client)
+        return MessagePoller(self._client, self._httpx_client)
 
     def list(
         self, app_id: str, options: MessageListOptions = (MessageListOptions())

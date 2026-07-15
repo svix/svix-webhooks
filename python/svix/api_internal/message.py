@@ -9,10 +9,10 @@ from .message_pollerv2 import (
 class MessageAsync(ApiBaseAsync):
     @property
     def pollerv2(self) -> MessagePollerv2Async:
-        return MessagePollerv2Async(self._client)
+        return MessagePollerv2Async(self._client, self._httpx_client)
 
 
 class Message(ApiBaseSync):
     @property
     def pollerv2(self) -> MessagePollerv2:
-        return MessagePollerv2(self._client)
+        return MessagePollerv2(self._client, self._httpx_client)

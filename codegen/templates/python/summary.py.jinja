@@ -4,6 +4,7 @@
 import typing as t
 import platform
 from dataclasses import field, dataclass
+import httpx
 
 {% for resource in api.resources %}
 from .{{ resource.name | to_snake_case }} import {{ resource.name | to_upper_camel_case }}, {{ resource.name | to_upper_camel_case }}Async
@@ -13,6 +14,7 @@ from .operational_webhook_endpoint import (
     OperationalWebhookEndpointAsync,
 )
 from .client import AuthenticatedClient
+from .common import _make_httpx_async_client, _make_httpx_client
 
 DEFAULT_SERVER_URL = "https://api.svix.com"
 
@@ -87,25 +89,37 @@ class ClientBase:
 
 
 class SvixAsync(ClientBase):
+    _httpx_client: httpx.AsyncClient
+
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()):
+        super().__init__(auth_token, options)
+        self._httpx_client = _make_httpx_async_client(self._client)
+
 {% for resource in api.resources %}
     @property
     def {{ resource.name | to_snake_case }}(self) -> {{ resource.name | to_upper_camel_case }}Async:
-        return {{ resource.name | to_upper_camel_case }}Async(self._client)
+        return {{ resource.name | to_upper_camel_case }}Async(self._client, self._httpx_client)
 {% endfor %}
     {# here for backwards compatibly #}
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpointAsync:
-        return OperationalWebhookEndpointAsync(self._client)
+        return OperationalWebhookEndpointAsync(self._client, self._httpx_client)
 
 
 class Svix(ClientBase):
+    _httpx_client: httpx.Client
+
+    def __init__(self, auth_token: str, options: SvixOptions = SvixOptions()):
+        super().__init__(auth_token, options)
+        self._httpx_client = _make_httpx_client(self._client)
+
 {% for resource in api.resources %}
     @property
     def {{ resource.name | to_snake_case }}(self) -> {{ resource.name | to_upper_camel_case }}:
-        return {{ resource.name | to_upper_camel_case }}(self._client)
+        return {{ resource.name | to_upper_camel_case }}(self._client, self._httpx_client)
 {% endfor %}
 
     {# here for backwards compatibly #}
     @property
     def operational_webhook_endpoint(self) -> OperationalWebhookEndpoint:
-        return OperationalWebhookEndpoint(self._client)
+        return OperationalWebhookEndpoint(self._client, self._httpx_client)
