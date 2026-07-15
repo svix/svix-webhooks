@@ -1,12 +1,16 @@
 # Changelog
 
 ## Unreleased
-* Server: add `statusText` to `EndpointMessageOut` (the response type for `v1.message-attempt.list-attempted-messages`), matching the cloud version
-* Server: add `statusText` to `MessageEndpointOut` (the response type for `v1.message-attempt.list-attempted-destinations`), matching the cloud version
-* Server: add `canceled` to `EndpointStatsOut`, matching the cloud version. This is always 0 in the OSS server, which doesn't currently track message cancellations
-* Server: add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created
-* Server: add `gracePeriodSeconds` to `EndpointSecretRotateIn`, allowing users to customize how long the old key is still valid for (in a range from 0, which means immediate expiry, to 7 days)
+* CLI: Ignore `EPIPE` when printing output
+* Libs/All: Support customizing expiration (grace period) of old endpoint secret when rotating
 * Libs/Python: Bump minimum-supported Python interpreter version to 3.9
+* Libs/Python: Fix memory and file-descriptor leak from excessively constructing httpx clients
+* Server: Add `statusText` to `EndpointMessageOut` (the response type for `v1.message-attempt.list-attempted-messages`), matching the cloud version
+* Server: Add `statusText` to `MessageEndpointOut` (the response type for `v1.message-attempt.list-attempted-destinations`), matching the cloud version
+* Server: Add `canceled` to `EndpointStatsOut`, matching the cloud version. This is always 0 in the OSS server, which doesn't currently track message cancellations
+* Server: Add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created
+* Server: Add `gracePeriodSeconds` to `EndpointSecretRotateIn`, allowing users to customize how long the old key is still valid for (in a range from 0, which means immediate expiry, to 7 days)
+* Server, Bridge, CLI: Update dependencies
 
 ## Version 1.96.1
 * Libs/Java: Upgrade jackson dependency to v2.21.4

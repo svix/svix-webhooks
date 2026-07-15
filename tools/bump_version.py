@@ -150,12 +150,6 @@ VERSION_FILES = [
         "php/src/Version.php",
         [r"(const VERSION\s*=\s*')([^']*)(')", ],
     ),
-    # OpenAPI spec (anchor to info.title to avoid matching schema version fields)
-    VersionFile(
-        "codegen/lib-openapi.json",
-        [r'("title":\s*"Svix API",\s*\n\s*"version":\s*")([^"]*)(")', ],
-        re.DOTALL,
-    ),
 ]
 
 
