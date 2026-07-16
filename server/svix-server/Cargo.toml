@@ -92,10 +92,7 @@ tracing-opentelemetry = "0.33.0"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url = { version = "2.2.2", features = ["serde"] }
 urlencoding = "2.1.2"
-# Forked version of 0.16 with a small fix and dependency upgrades, since we
-# haven't gotten around to doing a proper upgrade yet (0.17 is a large
-# rewrite with a barely-useful changelog)
-validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
+validator = { version = "0.20.0", features = ["derive"] }
 
 [dev-dependencies]
 assert_matches = "1.5.0"

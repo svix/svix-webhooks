@@ -166,7 +166,7 @@ impl<'de> Deserialize<'de> for EndpointMessageOut {
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptedMessagesQueryParams {
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Filter response based on the delivery status
     status: Option<MessageStatus>,
@@ -450,7 +450,7 @@ pub struct ListAttemptsByEndpointQueryParams {
     /// Filter response based on the HTTP status code
     status_code_class: Option<StatusCodeClass>,
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
@@ -599,10 +599,10 @@ pub struct ListAttemptsByMsgQueryParams {
     /// Filter response based on the HTTP status code
     status_code_class: Option<StatusCodeClass>,
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Filter the attempts based on the attempted endpoint
-    #[validate]
+    #[validate(nested)]
     endpoint_id: Option<EndpointIdOrUid>,
     /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
@@ -800,7 +800,7 @@ async fn list_attempted_destinations(
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptsForEndpointQueryParams {
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     pub channel: Option<EventChannel>,
     /// Filter response based on the delivery status
     pub status: Option<MessageStatus>,
@@ -879,10 +879,10 @@ async fn list_attempts_for_endpoint(
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct AttemptListFetchQueryParams {
     /// Filter the attempts based on the attempted endpoint
-    #[validate]
+    #[validate(nested)]
     pub endpoint_id: Option<EndpointIdOrUid>,
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     pub channel: Option<EventChannel>,
     /// Filter response based on the delivery status
     pub status: Option<MessageStatus>,

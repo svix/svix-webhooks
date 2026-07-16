@@ -56,7 +56,7 @@ pub struct AppPortalAccessIn {
     ///
     /// If the application id or uid that is used in the path already exists,
     /// this argument is ignored.
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub application: Option<ApplicationIn>,
 }
