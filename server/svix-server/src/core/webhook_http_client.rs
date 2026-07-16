@@ -143,19 +143,10 @@ impl WebhookClient {
         retry: bool,
     ) -> BoxFuture<'_, Result<Response<Incoming>, Error>> {
         async move {
-            let org_req = request.clone();
-            if let Some(auth) = request.uri.authority() {
-                if let Ok(ip) = auth.host().parse::<IpAddr>() {
-                    if !is_allowed(ip)
-                        && !self
-                            .whitelist_nets
-                            .iter()
-                            .any(|subnet| subnet.contains(&ip))
-                    {
-                        return Err(Error::BlockedIp);
-                    }
-                }
+            if request.blocked_ip(self.whitelist_nets.as_slice()) {
+                return Err(Error::BlockedIp);
             }
+            let org_req = request.clone();
 
             let mut req = if let Some(body) = request.body {
                 hyper::Request::builder()
@@ -217,6 +208,33 @@ pub struct Request {
     version: Version,
 }
 
+impl Request {
+    pub fn blocked_ip<'a>(&self, whitelisted_subnets: impl IntoIterator<Item = &'a IpNet>) -> bool {
+        let Some(auth) = self.uri.authority() else {
+            return false;
+        };
+
+        let host = auth.host();
+        // the host may be an IP address surrounded by "[" and "]"
+        let host = host
+            .strip_prefix('[')
+            .and_then(|r| r.strip_suffix(']'))
+            .unwrap_or(host);
+
+        // if it's IPv6, the host may have a % followed by a scope identifier
+        let host = host.split_once('%').map(|(i, _)| i).unwrap_or(host);
+
+        let Ok(ip) = host.parse::<IpAddr>() else {
+            return false;
+        };
+
+        !is_allowed(ip)
+            && !whitelisted_subnets
+                .into_iter()
+                .any(|subnet| subnet.contains(&ip))
+    }
+}
+
 pub struct RequestBuilder {
     method: Option<Method>,
     uri: Option<Uri>,
@@ -271,6 +289,31 @@ fn decode_or_log(s: &str) -> String {
         })
 }
 
+#[derive(Debug)]
+/// A wrapper to unify the errors from the `uri` and `url` parsers
+pub enum UriError {
+    Uri(http::uri::InvalidUri),
+    Url(url::ParseError),
+}
+
+impl std::error::Error for UriError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        Some(match self {
+            Self::Uri(s) => s,
+            Self::Url(s) => s,
+        })
+    }
+}
+
+impl std::fmt::Display for UriError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Uri(s) => s.fmt(f),
+            Self::Url(s) => s.fmt(f),
+        }
+    }
+}
+
 impl RequestBuilder {
     pub fn new() -> Self {
         Self {
@@ -293,7 +336,7 @@ impl RequestBuilder {
         self
     }
 
-    pub fn uri(mut self, uri: url::Url) -> Self {
+    pub fn uri(mut self, uri: url::Url) -> Result<Self, UriError> {
         let basic_auth = if uri.password().is_some() || !uri.username().is_empty() {
             let username = decode_or_log(uri.username());
             let password = uri.password().map(decode_or_log).unwrap_or_default();
@@ -310,15 +353,16 @@ impl RequestBuilder {
         };
         self.basic_auth = basic_auth;
 
-        let uri =
-            Uri::from_str(uri.as_str()).expect("If it's a valid url::Url, it's also a valid Uri");
+        // the URL and URI errors aren't actually compatible, and some things valid in one
+        // will not be valid in the other
+        let uri = Uri::from_str(uri.as_str()).map_err(UriError::Uri)?;
         self.uri = Some(uri);
-        self
+        Ok(self)
     }
 
-    pub fn uri_str(self, uri: &str) -> Result<Self, url::ParseError> {
-        let uri = url::Url::from_str(uri)?;
-        Ok(self.uri(uri))
+    pub fn uri_str(self, uri: &str) -> Result<Self, UriError> {
+        let uri = url::Url::from_str(uri).map_err(UriError::Url)?;
+        self.uri(uri)
     }
 
     fn build_headers(
@@ -705,7 +749,6 @@ mod tests {
     use std::{
         net::{IpAddr, TcpListener},
         path::PathBuf,
-        str::FromStr,
         sync::Arc,
     };
 
@@ -766,7 +809,8 @@ mod tests {
 
         assert!(
             RequestBuilder::new()
-                .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
+                .uri_str("http://127.0.0.1/")
+                .unwrap()
                 .version(Version::HTTP_11)
                 .build()
                 .is_ok()
@@ -780,7 +824,8 @@ mod tests {
             .unwrap();
 
         let req = RequestBuilder::new()
-            .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
+            .uri_str("http://127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .headers(hdrs)
             .build()
@@ -802,7 +847,8 @@ mod tests {
     #[test]
     fn test_url_basic_auth() {
         let req = RequestBuilder::new()
-            .uri(url::Url::from_str("http://test:123@127.0.0.1/").unwrap())
+            .uri_str("http://test:123@127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -810,7 +856,8 @@ mod tests {
         assert_eq!(req.headers[&AUTHORIZATION], "Basic dGVzdDoxMjM=".as_bytes());
 
         let req_user_only = RequestBuilder::new()
-            .uri(url::Url::from_str("http://test:@127.0.0.1/").unwrap())
+            .uri_str("http://test:@127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -821,7 +868,8 @@ mod tests {
         );
 
         let req_pass_only = RequestBuilder::new()
-            .uri(url::Url::from_str("http://:123@127.0.0.1/").unwrap())
+            .uri_str("http://:123@127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -832,7 +880,8 @@ mod tests {
         );
 
         let req_no_basic_auth = RequestBuilder::new()
-            .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
+            .uri_str("http://127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -840,7 +889,8 @@ mod tests {
         assert!(req_no_basic_auth.headers.get("authorization").is_none());
 
         let req_special_chars = RequestBuilder::new()
-            .uri(url::Url::from_str("http://test==:123==@127.0.0.1/").unwrap())
+            .uri_str("http://test==:123==@127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -854,7 +904,8 @@ mod tests {
     #[test]
     fn test_host_header() {
         let req = RequestBuilder::new()
-            .uri(url::Url::from_str("http://127.0.0.1/").unwrap())
+            .uri_str("http://127.0.0.1/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -862,7 +913,8 @@ mod tests {
         assert_eq!(req.headers.get("host").unwrap(), "127.0.0.1".as_bytes());
 
         let req_with_port = RequestBuilder::new()
-            .uri(url::Url::from_str("http://127.0.0.1:8000/").unwrap())
+            .uri_str("http://127.0.0.1:8000/")
+            .unwrap()
             .version(Version::HTTP_11)
             .build()
             .unwrap();
@@ -928,5 +980,45 @@ mod tests {
         // And assert that when the flag is enabled, that it will succeed
         let whc_without_validation = WebhookClient::new(Some(whitelist), None, true, None);
         assert!(whc_without_validation.execute(request).await.is_ok());
+    }
+
+    macro_rules! assert_should_be_blocked {
+        ($url:tt, $expected:literal) => {
+            let request = RequestBuilder::new()
+                .method(Method::GET)
+                .uri_str($url)
+                .expect("URL should parse")
+                .version(Version::HTTP_2)
+                .build()
+                .expect("builder should... build...");
+            assert_eq!(request.blocked_ip(&[]), $expected);
+        };
+    }
+
+    #[test]
+    fn test_blocked_ip() {
+        assert_should_be_blocked!("https://127.0.0.1", true);
+        assert_should_be_blocked!("https://8.8.8.8", false);
+        assert_should_be_blocked!("https://[::1]", true);
+        assert_should_be_blocked!("https://[::1]:9876", true);
+        assert_should_be_blocked!("https://@[::1]:9876", true);
+        assert_should_be_blocked!("https://1:2@[::1]:9876", true);
+        assert_should_be_blocked!(
+            "https://[0000:0000:0000:0000:0000:ffff:7f00:0001]:9854",
+            true
+        );
+        // there are a couple of edge-cases that we don't test here because the `url`
+        // crate can't parse them; the next test is making sure they they still aren't parsed
+        // if the `url` crate ever adds support for bracked IPv4 literals or IPv6 literals
+        // with scopes, make sure to add tests here
+    }
+
+    #[test]
+    fn test_url_does_not_parse_some_edge_cases() {
+        assert_matches::assert_matches!(url::Url::try_from("https://[127.0.0.1]"), Err(_));
+        assert_matches::assert_matches!(url::Url::try_from("https://[::1%lo]"), Err(_));
+        // this one is technically illegal, but some (permissive) libraries allow
+        // it
+        assert_matches::assert_matches!(url::Url::try_from("https://::1"), Err(_));
     }
 }
