@@ -97,6 +97,9 @@ urlencoding = "2.1.2"
 # rewrite with a barely-useful changelog)
 validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
 
+[build-dependencies]
+rust-executable-metadata = { git = "https://github.com/svix/rust-executable-metadata", rev = "7a32435fbdab53f33e6abab9c1ab500afef0a7a8" }
+
 [dev-dependencies]
 assert_matches = "1.5.0"
 axum-server = { version = "0.7.1", features = ["tls-openssl"] }

@@ -2,6 +2,7 @@
 
 ## Unreleased
 * CLI, Server, Bridge: Set OCI metadata on Docker images
+* CLI, Server, Bridge: Embed package metadata in compiled binaries on Linux
 
 ## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output

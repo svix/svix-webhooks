@@ -69,6 +69,9 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "ansi", "fmt", "registry", "local-time"] }
 url = "2.5.4"
 
+[build-dependencies]
+rust-executable-metadata = { git = "https://github.com/svix/rust-executable-metadata", rev = "7a32435fbdab53f33e6abab9c1ab500afef0a7a8" }
+
 # The profile that 'dist' will build with
 [profile.dist]
 inherits = "release"
