@@ -27,8 +27,11 @@ public class ModelTests {
         "{\"metadata\":{},\"name\":\"mendy\",\"uid\":\"very"
             + " unique\",\"type\":\"generic-webhook\",\"config\":{}}";
     IngestSourceIn sourceIn =
-        new IngestSourceIn(
-            new HashMap<>(), "mendy", "very unique", new IngestSourceInConfig.GenericWebhook());
+        new IngestSourceIn()
+            .name("mendy")
+            .uid("very unique")
+            .metadata(new HashMap<>())
+            .config(new IngestSourceInConfig.GenericWebhook());
 
     assertEquals(jsonString, sourceIn.toJson());
     assertEquals(IngestSourceIn.fromJson(jsonString), sourceIn);
@@ -40,12 +43,14 @@ public class ModelTests {
         "{\"metadata\":{},\"name\":\"name\",\"uid\":\"uuiidd\",\"type\":\"cron\",\"config\":{\"contentType\":\"asd\",\"payload\":\"cool\",\"schedule\":\"*"
             + " * * * *\"}}";
     IngestSourceIn sourceIn =
-        new IngestSourceIn(
-            new HashMap<>(),
-            "name",
-            "uuiidd",
-            new IngestSourceInConfig.Cron(
-                new CronConfig().contentType("asd").payload("cool").schedule("* * * * *")));
+        new IngestSourceIn()
+            .name("name")
+            .uid("uuiidd")
+            .metadata(new HashMap<>())
+            .config(new IngestSourceInConfig.Cron(
+                new CronConfig().contentType("asd").payload("cool").schedule("* * * * *")
+            )
+        );
     assertEquals(jsonString, sourceIn.toJson());
     assertEquals(IngestSourceIn.fromJson(jsonString), sourceIn);
   }
