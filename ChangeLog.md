@@ -1,8 +1,9 @@
 # Changelog
 
-## Unreleased
+## Version 1.98.0
 * CLI, Server, Bridge: Set OCI metadata on Docker images
 * CLI, Server, Bridge: Embed package metadata in compiled binaries on Linux
+* Server: Improve validation of endpoint URLs (SVIXSEC-2026-0001)
 
 ## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output
