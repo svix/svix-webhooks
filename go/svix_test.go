@@ -209,7 +209,7 @@ func TestKitchenSink(t *testing.T) {
 	}
 
 	for _, typ := range patched.FilterTypes {
-		if !(typ == "event.started" || typ == "event.ended") {
+		if typ != "event.started" && typ != "event.ended" {
 			t.Fatalf("unexpected filter type: `%s`", typ)
 		}
 	}

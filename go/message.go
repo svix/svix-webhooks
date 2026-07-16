@@ -146,7 +146,7 @@ func (message *Message) Create(
 	if err != nil {
 		return nil, err
 	}
-	if o == nil || o.WithContent == nil || *o.WithContent == true {
+	if o == nil || o.WithContent == nil || *o.WithContent {
 		response.Payload = messageIn.Payload
 	}
 	return response, nil

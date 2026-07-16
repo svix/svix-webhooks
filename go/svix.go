@@ -129,17 +129,18 @@ func (s Svix) SetUserAgentSuffix(userAgentSuffix string) error {
 func getDefaultBaseUrl(token string) string {
 	var tokenParts = strings.Split(token, ".")
 	var region = tokenParts[len(tokenParts)-1]
-	if region == "us" {
+	switch region {
+	case "us":
 		return "https://api.us.svix.com"
-	} else if region == "eu" {
+	case "eu":
 		return "https://api.eu.svix.com"
-	} else if region == "in" {
+	case "in":
 		return "https://api.in.svix.com"
-	} else if region == "ca" {
+	case "ca":
 		return "https://api.ca.svix.com"
-	} else if region == "au" {
+	case "au":
 		return "https://api.au.svix.com"
-	} else {
+	default:
 		return "https://api.svix.com"
 	}
 }
