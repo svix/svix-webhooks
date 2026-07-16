@@ -47,7 +47,7 @@ RUN touch src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260623-slim AS prod
+FROM docker.io/debian:trixie-20260713-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
@@ -72,5 +72,14 @@ COPY bridge/scripts/check-deps.sh /usr/local/bin/check-deps.sh
 
 # Verify all the dynamic libs we depend on are present in the runtime stage
 RUN /usr/local/bin/check-deps.sh /usr/local/bin/svix
+
+LABEL org.opencontainers.image.authors="support@svix.com" \
+      org.opencontainers.image.url="https://www.svix.com" \
+      org.opencontainers.image.documentation="https://docs.svix.com" \
+      org.opencontainers.image.description="The Svix webhooks service, CLI component (OSS build)" \
+      org.opencontainers.image.title="svix-webhooks, cli, oss" \
+      org.opencontainers.image.vendor="Svix" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.base.name="docker.io/debian:trixie"
 
 CMD ["/usr/local/bin/svix"]

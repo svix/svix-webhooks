@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* CLI, Server, Bridge: Set OCI metadata on Docker images
 
 ## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output

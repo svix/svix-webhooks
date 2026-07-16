@@ -50,6 +50,10 @@ jobs:
         type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
         type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
         type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+      meta-labels: |
+        org.opencontainers.image.created={{commit_date 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'}}
+        org.opencontainers.image.version=${{ needs.get-version.outputs.version }}
+        org.opencontainers.image.revision=${{ github.sha }}
     secrets:
       registry-auths: |
         - registry: ghcr.io
