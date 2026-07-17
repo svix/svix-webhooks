@@ -3939,6 +3939,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "rust-executable-metadata"
+version = "0.1.0"
+source = "git+https://github.com/svix/rust-executable-metadata?rev=7a32435fbdab53f33e6abab9c1ab500afef0a7a8#7a32435fbdab53f33e6abab9c1ab500afef0a7a8"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "rustc-hash"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4609,6 +4618,7 @@ dependencies = [
  "opentelemetry-otlp",
  "opentelemetry_sdk",
  "reqwest",
+ "rust-executable-metadata",
  "serde",
  "serde_json",
  "serde_yaml",

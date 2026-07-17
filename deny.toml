@@ -80,6 +80,7 @@ allow-git = [
     "https://github.com/svix/hyper.git",
     "https://github.com/svix/omniqueue-rs.git",
     "https://github.com/svix/validator.git",
+    "https://github.com/svix/rust-executable-metadata.git",
 ]
 # there are several projects in here, so it's okay if we don't use them all
 unused-allowed-source = "allow"

@@ -44,6 +44,9 @@ tracing-opentelemetry = "0.33.0"
 tracing-subscriber = { workspace = true, features = ["fmt", "json"] }
 url = "2.5.4"
 
+[build-dependencies]
+rust-executable-metadata = { git = "https://github.com/svix/rust-executable-metadata", rev = "7a32435fbdab53f33e6abab9c1ab500afef0a7a8" }
+
 [dev-dependencies]
 chrono = "0.4"
 tower = "0.5.1"
