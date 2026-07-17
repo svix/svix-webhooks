@@ -1,5 +1,7 @@
 # Changelog
 
+## Unreleased
+
 ## Version 1.98.0
 * CLI, Server, Bridge: Set OCI metadata on Docker images
 * CLI, Server, Bridge: Embed package metadata in compiled binaries on Linux
