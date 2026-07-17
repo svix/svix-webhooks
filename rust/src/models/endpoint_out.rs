@@ -8,7 +8,8 @@ pub struct EndpointOut {
 
     pub metadata: std::collections::HashMap<String, String>,
 
-    /// An example endpoint name.
+    pub url: String,
+
     pub description: String,
 
     /// Maximum messages per second to send to this endpoint.
@@ -21,8 +22,6 @@ pub struct EndpointOut {
     /// Optional unique identifier for the endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
-
-    pub url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
@@ -46,18 +45,18 @@ impl EndpointOut {
     pub fn new(
         id: String,
         metadata: std::collections::HashMap<String, String>,
-        description: String,
         url: String,
+        description: String,
         created_at: String,
         updated_at: String,
     ) -> Self {
         Self {
             id,
             metadata,
+            url,
             description,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
             event_types: None,
             channels: None,

@@ -1,6 +1,7 @@
 // this file is @generated
 
 export interface OperationalWebhookEndpointIn {
+  url: string;
   description?: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -10,7 +11,6 @@ export interface OperationalWebhookEndpointIn {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
   eventTypes?: string[] | null;
   /**
@@ -26,10 +26,10 @@ export interface OperationalWebhookEndpointIn {
 export const OperationalWebhookEndpointInSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointIn {
     return {
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
       eventTypes: object["eventTypes"],
       secret: object["secret"],
@@ -39,10 +39,10 @@ export const OperationalWebhookEndpointInSerializer = {
 
   _toJsonObject(self: OperationalWebhookEndpointIn): any {
     return {
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
       eventTypes: self.eventTypes,
       secret: self.secret,

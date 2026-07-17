@@ -26,7 +26,12 @@ data class MessageListOptions(
     val before: Instant? = null,
     /** Only include items created after a certain date. */
     val after: Instant? = null,
-    /** When `true` message payloads are included in the response. */
+    /**
+     * When `true` message payloads are included in the response.
+     *
+     * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+     * without specifying this parameter.
+     */
     val withContent: Boolean? = null,
     /** Filter messages matching the provided tag. */
     val tag: String? = null,
@@ -35,7 +40,12 @@ data class MessageListOptions(
 )
 
 data class MessageCreateOptions(
-    /** When `true`, message payloads are included in the response. */
+    /**
+     * When `true`, message payloads are included in the response.
+     *
+     * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+     * without specifying this parameter.
+     */
     val withContent: Boolean? = null,
     val idempotencyKey: String? = null,
 )
@@ -43,7 +53,12 @@ data class MessageCreateOptions(
 data class MessagePrecheckOptions(val idempotencyKey: String? = null)
 
 data class MessageGetOptions(
-    /** When `true` message payloads are included in the response. */
+    /**
+     * When `true` message payloads are included in the response.
+     *
+     * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+     * without specifying this parameter.
+     */
     val withContent: Boolean? = null
 )
 

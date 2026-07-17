@@ -32,7 +32,10 @@ pub struct MessageAttemptListByEndpointOptions {
     /// RFC3339 date string.
     pub after: Option<String>,
 
-    /// When `true` attempt content is included in the response
+    /// When `true` attempt content is included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when
+    /// manually making a request without specifying this parameter.
     pub with_content: Option<bool>,
 
     /// When `true`, the message information is included in the response
@@ -85,7 +88,10 @@ pub struct MessageAttemptListByMsgOptions {
     /// RFC3339 date string.
     pub after: Option<String>,
 
-    /// When `true` attempt content is included in the response
+    /// When `true` attempt content is included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when
+    /// manually making a request without specifying this parameter.
     pub with_content: Option<bool>,
 
     /// When `true`, return the Canceled (4) status in attempts.
@@ -126,7 +132,10 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// RFC3339 date string.
     pub after: Option<String>,
 
-    /// When `true` message payloads are included in the response
+    /// When `true` message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when
+    /// manually making a request without specifying this parameter.
     pub with_content: Option<bool>,
 
     /// When `true`, return the Canceled (4) status in attempts.

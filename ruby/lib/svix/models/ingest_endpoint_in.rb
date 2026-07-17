@@ -4,6 +4,7 @@ require "json"
 
 module Svix
   class IngestEndpointIn
+    attr_accessor :url
     attr_accessor :description
     # Maximum messages per second to send to this endpoint.
     #
@@ -11,7 +12,6 @@ module Svix
     attr_accessor :throttle_rate
     # Optional unique identifier for the endpoint.
     attr_accessor :uid
-    attr_accessor :url
     attr_accessor :disabled
     # The endpoint's verification secret.
     #
@@ -20,7 +20,7 @@ module Svix
     attr_accessor :secret
     attr_accessor :metadata
 
-    ALL_FIELD ||= ["description", "throttle_rate", "uid", "url", "disabled", "secret", "metadata"].freeze
+    ALL_FIELD ||= ["url", "description", "throttle_rate", "uid", "disabled", "secret", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -41,10 +41,10 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["url"] = attributes["url"]
       attrs["description"] = attributes["description"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
-      attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
       attrs["secret"] = attributes["secret"]
       attrs["metadata"] = attributes["metadata"]
@@ -53,10 +53,10 @@ module Svix
 
     def serialize
       out = Hash.new
+      out["url"] = Svix::serialize_primitive(@url) if @url
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["secret"] = Svix::serialize_primitive(@secret) if @secret
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata

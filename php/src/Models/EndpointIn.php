@@ -46,10 +46,10 @@ class EndpointIn implements \JsonSerializable
         string $url,
     ): self {
         return new self(
+            url: $url,
             description: null,
             throttleRate: null,
             uid: null,
-            url: $url,
             disabled: null,
             eventTypes: null,
             channels: null,
@@ -66,10 +66,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
+            url: $this->url,
             description: $description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -86,10 +86,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -106,10 +106,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -126,10 +126,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['disabled'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -146,10 +146,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['eventTypes'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $eventTypes,
             channels: $this->channels,
@@ -166,10 +166,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['channels'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $channels,
@@ -186,10 +186,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['secret'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -206,10 +206,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['metadata'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -226,10 +226,10 @@ class EndpointIn implements \JsonSerializable
         $setFields['headers'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -282,10 +282,10 @@ class EndpointIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointIn'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'EndpointIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointIn'),
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointIn'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointIn'),

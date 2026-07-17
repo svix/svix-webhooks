@@ -31,7 +31,9 @@ class MessageListOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date."""
     with_content: t.Optional[bool] = None
-    """When `true` message payloads are included in the response."""
+    """When `true` message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     tag: t.Optional[str] = None
     """Filter messages matching the provided tag."""
     event_types: t.Optional[t.List[str]] = None
@@ -55,7 +57,9 @@ class MessageListOptions(BaseOptions):
 @dataclass
 class MessageCreateOptions(BaseOptions):
     with_content: t.Optional[bool] = None
-    """When `true`, message payloads are included in the response."""
+    """When `true`, message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     idempotency_key: t.Optional[str] = None
 
     def _query_params(self) -> t.Dict[str, str]:
@@ -88,7 +92,9 @@ class MessagePrecheckOptions(BaseOptions):
 @dataclass
 class MessageGetOptions(BaseOptions):
     with_content: t.Optional[bool] = None
-    """When `true` message payloads are included in the response."""
+    """When `true` message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(

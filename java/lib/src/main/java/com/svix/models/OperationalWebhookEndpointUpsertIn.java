@@ -22,15 +22,34 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointUpsertIn {
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> eventTypesIds;
+    @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Map<String, String> metadata;
 
     public OperationalWebhookEndpointUpsertIn() {}
+
+    public OperationalWebhookEndpointUpsertIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public OperationalWebhookEndpointUpsertIn description(String description) {
         this.description = description;
@@ -91,25 +110,6 @@ public class OperationalWebhookEndpointUpsertIn {
         this.uid = uid;
     }
 
-    public OperationalWebhookEndpointUpsertIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
     public OperationalWebhookEndpointUpsertIn disabled(Boolean disabled) {
         this.disabled = disabled;
         return this;
@@ -129,32 +129,32 @@ public class OperationalWebhookEndpointUpsertIn {
         this.disabled = disabled;
     }
 
-    public OperationalWebhookEndpointUpsertIn eventTypesIds(Set<String> eventTypesIds) {
-        this.eventTypesIds = eventTypesIds;
+    public OperationalWebhookEndpointUpsertIn eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
         return this;
     }
 
-    public OperationalWebhookEndpointUpsertIn addEventTypesIdsItem(String eventTypesIdsItem) {
-        if (this.eventTypesIds == null) {
-            this.eventTypesIds = new LinkedHashSet<>();
+    public OperationalWebhookEndpointUpsertIn addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
         }
-        this.eventTypesIds.add(eventTypesIdsItem);
+        this.eventTypes.add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get eventTypesIds
+     * Get eventTypes
      *
-     * @return eventTypesIds
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getEventTypesIds() {
-        return eventTypesIds;
+    public Set<String> getEventTypes() {
+        return eventTypes;
     }
 
-    public void setEventTypesIds(Set<String> eventTypesIds) {
-        this.eventTypesIds = eventTypesIds;
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
     }
 
     public OperationalWebhookEndpointUpsertIn metadata(Map<String, String> metadata) {

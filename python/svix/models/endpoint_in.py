@@ -5,6 +5,8 @@ from .common import BaseModel
 
 
 class EndpointIn(BaseModel):
+    url: str
+
     description: t.Optional[str] = None
 
     throttle_rate: t.Optional[int] = None
@@ -14,8 +16,6 @@ class EndpointIn(BaseModel):
 
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""
-
-    url: str
 
     disabled: t.Optional[bool] = None
 
