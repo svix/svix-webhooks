@@ -109,18 +109,18 @@ pub fn validate_raw_payload_is_object(payload: &RawPayload) -> Result<(), Valida
 #[serde(rename_all = "camelCase")]
 pub struct MessageIn {
     /// Optional unique identifier for the message
-    #[validate]
+    #[validate(nested)]
     #[serde(rename = "eventId", skip_serializing_if = "Option::is_none")]
     pub uid: Option<MessageUid>,
-    #[validate]
+    #[validate(nested)]
     pub event_type: EventTypeName,
-    #[validate(custom = "validate_raw_payload_is_object")]
+    #[validate(custom(function = "validate_raw_payload_is_object"))]
     #[serde(alias = "payload", alias = "data")]
     #[schemars(example = "example_payload")]
     pub payload: RawPayload,
     /// List of free-form identifiers that endpoints can filter by
-    #[validate(custom = "validate_channels_msg")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_msg"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_channel_set", length(min = 1, max = 5))]
     pub channels: Option<EventChannelSet>,
@@ -136,7 +136,7 @@ pub struct MessageIn {
     ///
     /// If the application id or uid that is used in the path already exists,
     /// this argument is ignored.
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub application: Option<ApplicationIn>,
 }
@@ -256,7 +256,7 @@ fn default_90() -> i64 {
 #[derive(Clone, Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListMessagesQueryParams {
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,

@@ -145,7 +145,7 @@ fn default_endpoint_version() -> Option<u16> {
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
-    #[validate(custom = "validate_no_control_characters")]
+    #[validate(custom(function = "validate_no_control_characters"))]
     #[schemars(example = "example_endpoint_description")]
     pub description: String,
 
@@ -166,11 +166,11 @@ pub struct EndpointIn {
     pub throttle_rate: Option<u16>,
 
     /// Optional unique identifier for the endpoint
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
 
-    #[validate(custom = "validate_url")]
+    #[validate(custom(function = "validate_url"))]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
@@ -184,19 +184,19 @@ pub struct EndpointIn {
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
     #[serde(rename = "filterTypes")]
-    #[validate(custom = "validate_event_types_ids")]
-    #[validate]
+    #[validate(custom(function = "validate_event_types_ids"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types_ids: Option<EventTypeNameSet>,
     /// List of message channels this endpoint listens to (omit for all)
-    #[validate(custom = "validate_channels_endpoint")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_endpoint"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
-    #[validate]
+    #[validate(nested)]
     #[serde(default)]
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -256,7 +256,7 @@ impl ModelIn for EndpointIn {
 #[serde(rename_all = "camelCase")]
 struct EndpointUpdate {
     #[serde(default)]
-    #[validate(custom = "validate_no_control_characters")]
+    #[validate(custom(function = "validate_no_control_characters"))]
     #[schemars(example = "example_endpoint_description")]
     pub description: String,
 
@@ -277,11 +277,11 @@ struct EndpointUpdate {
     pub throttle_rate: Option<u16>,
 
     /// Optional unique identifier for the endpoint
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
 
-    #[validate(custom = "validate_url")]
+    #[validate(custom(function = "validate_url"))]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
@@ -296,14 +296,14 @@ struct EndpointUpdate {
     pub disabled: bool,
 
     #[serde(rename = "filterTypes")]
-    #[validate(custom = "validate_event_types_ids")]
-    #[validate]
+    #[validate(custom(function = "validate_event_types_ids"))]
+    #[validate(nested)]
     #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types_ids: Option<EventTypeNameSet>,
 
     /// List of message channels this endpoint listens to (omit for all)
-    #[validate(custom = "validate_channels_endpoint")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_endpoint"))]
+    #[validate(nested)]
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
@@ -381,32 +381,32 @@ impl EndpointUpdate {
 pub struct EndpointPatch {
     #[serde(default)]
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
-    #[validate(custom = "validate_no_control_characters_unrequired")]
+    #[validate(custom(function = "validate_no_control_characters_unrequired"))]
     pub description: UnrequiredField<String>,
 
     /// Deprecated, use `throttleRate` instead.
     #[deprecated]
-    #[validate(custom = "validate_rate_limit_patch")]
+    #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub rate_limit: UnrequiredNullableField<u16>,
 
     /// Maximum messages per second to send to this endpoint.
     ///
     /// Outgoing messages will be throttled to this rate.
-    #[validate(custom = "validate_rate_limit_patch")]
+    #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub throttle_rate: UnrequiredNullableField<u16>,
 
-    #[validate]
+    #[validate(nested)]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub uid: UnrequiredNullableField<EndpointUid>,
 
-    #[validate(custom = "validate_url_unrequired")]
+    #[validate(custom(function = "validate_url_unrequired"))]
     #[serde(default)]
     pub url: UnrequiredField<Url>,
 
     #[deprecated]
-    #[validate(custom = "validate_minimum_version_patch")]
+    #[validate(custom(function = "validate_minimum_version_patch"))]
     #[schemars(range(min = 1), example = "example_endpoint_version")]
     #[serde(default)]
     pub version: UnrequiredField<u16>,
@@ -416,13 +416,13 @@ pub struct EndpointPatch {
     pub disabled: UnrequiredField<bool>,
 
     #[serde(default, rename = "filterTypes")]
-    #[validate(custom = "validate_event_types_ids_unrequired_nullable")]
-    #[validate]
+    #[validate(custom(function = "validate_event_types_ids_unrequired_nullable"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub event_types_ids: UnrequiredNullableField<EventTypeNameSet>,
 
-    #[validate(custom = "validate_channels_endpoint_unrequired_nullable")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_endpoint_unrequired_nullable"))]
+    #[validate(nested)]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub channels: UnrequiredNullableField<EventChannelSet>,
 
@@ -580,7 +580,7 @@ impl From<(endpoint::Model, Metadata)> for EndpointOut {
 #[derive(Default, Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
-    #[validate]
+    #[validate(nested)]
     #[serde(default)]
     key: Option<EndpointSecret>,
     /// How long the old secret will be valid for, in seconds.
@@ -697,7 +697,7 @@ fn endpoint_headers_patch_example() -> EndpointHeadersPatch {
 #[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
-    #[validate]
+    #[validate(nested)]
     #[schemars(example = "endpoint_headers_patch_example")]
     pub headers: EndpointHeadersPatch,
 }

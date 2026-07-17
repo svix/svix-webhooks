@@ -49,7 +49,7 @@ fn application_name_example() -> &'static str {
 pub struct ApplicationIn {
     #[validate(
         length(min = 1, message = "Application names must be at least one character"),
-        custom = "validate_no_control_characters"
+        custom(function = "validate_no_control_characters")
     )]
     #[schemars(example = "application_name_example")]
     pub name: String,
@@ -70,7 +70,7 @@ pub struct ApplicationIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub throttle_rate: Option<u16>,
     /// Optional unique identifier for the application
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<ApplicationUid>,
 
@@ -105,26 +105,26 @@ impl ModelIn for ApplicationIn {
 pub struct ApplicationPatch {
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
     #[validate(
-        custom = "validate_name_length_patch",
-        custom = "validate_no_control_characters_unrequired"
+        custom(function = "validate_name_length_patch"),
+        custom(function = "validate_no_control_characters_unrequired")
     )]
     pub name: UnrequiredField<String>,
 
     /// Deprecated, use `throttleRate` instead.
     #[deprecated]
-    #[validate(custom = "validate_rate_limit_patch")]
+    #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub rate_limit: UnrequiredNullableField<u16>,
 
     /// Maximum messages per second to send to this application's endpoints.
     ///
     /// Outgoing messages will be throttled to this rate.
-    #[validate(custom = "validate_rate_limit_patch")]
+    #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub throttle_rate: UnrequiredNullableField<u16>,
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
-    #[validate]
+    #[validate(nested)]
     pub uid: UnrequiredNullableField<ApplicationUid>,
 
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]

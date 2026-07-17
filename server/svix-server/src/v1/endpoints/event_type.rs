@@ -51,9 +51,9 @@ fn event_type_versioned_schemas_example() -> serde_json::Value {
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EventTypeIn {
-    #[validate]
+    #[validate(nested)]
     pub name: EventTypeName,
-    #[validate(custom = "validate_no_control_characters")]
+    #[validate(custom(function = "validate_no_control_characters"))]
     #[schemars(example = "event_type_description_example")]
     pub description: String,
     #[serde(default, rename = "archived")]
@@ -94,7 +94,7 @@ impl ModelIn for EventTypeIn {
 #[derive(Clone, Debug, PartialEq, Deserialize, Validate, ModelIn, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 struct EventTypeUpdate {
-    #[validate(custom = "validate_no_control_characters")]
+    #[validate(custom(function = "validate_no_control_characters"))]
     #[schemars(example = "event_type_description_example")]
     description: String,
     #[serde(default, rename = "archived")]
@@ -134,7 +134,7 @@ impl ModelIn for EventTypeUpdate {
 #[serde(rename_all = "camelCase")]
 struct EventTypePatch {
     #[serde(default, skip_serializing_if = "UnrequiredField::is_absent")]
-    #[validate(custom = "validate_no_control_characters_unrequired")]
+    #[validate(custom(function = "validate_no_control_characters_unrequired"))]
     description: UnrequiredField<String>,
 
     #[serde(
