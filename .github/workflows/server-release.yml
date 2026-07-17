@@ -52,8 +52,7 @@ jobs:
 
   build:
     needs: [get-version]
-    # TODO: switch back to docker/github-builder after https://github.com/docker/github-builder/pull/256 is landed
-    uses: svix-jbrown/github-builder/.github/workflows/build.yml@849c76fdd485958f58aff3ef1222ddfb8dcf4c3b # 849c76fdd485958f58aff3ef1222ddfb8dcf4c3b
+    uses: docker/github-builder/.github/workflows/build.yml@v1
     permissions:
       contents: read # to fetch the repository content
       id-token: write # for signing attestation(s) with GitHub OIDC Token
@@ -73,8 +72,8 @@ jobs:
         type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
         type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
         type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
-      meta-labels: |
-        org.opencontainers.image.created={{commit_date 'YYYY-MM-DDTHH:mm:ss.SSS[Z]'}}
+      set-meta-labels: true
+      labels: |
         org.opencontainers.image.version=${{ needs.get-version.outputs.version }}
         org.opencontainers.image.revision=${{ github.sha }}
     secrets:
