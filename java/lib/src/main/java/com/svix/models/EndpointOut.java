@@ -25,10 +25,10 @@ import java.util.Set;
 public class EndpointOut {
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Set<String> channels;
@@ -84,13 +84,32 @@ public class EndpointOut {
         this.metadata = metadata;
     }
 
+    public EndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
     public EndpointOut description(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -141,25 +160,6 @@ public class EndpointOut {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public EndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     public EndpointOut disabled(Boolean disabled) {

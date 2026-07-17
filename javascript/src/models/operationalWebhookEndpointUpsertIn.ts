@@ -1,6 +1,7 @@
 // this file is @generated
 
 export interface OperationalWebhookEndpointUpsertIn {
+  url: string;
   description?: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -10,33 +11,32 @@ export interface OperationalWebhookEndpointUpsertIn {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
-  eventTypesIds?: string[] | null;
+  eventTypes?: string[] | null;
   metadata?: { [key: string]: string };
 }
 
 export const OperationalWebhookEndpointUpsertInSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointUpsertIn {
     return {
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
-      eventTypesIds: object["eventTypesIds"],
+      eventTypes: object["eventTypes"],
       metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: OperationalWebhookEndpointUpsertIn): any {
     return {
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
-      eventTypesIds: self.eventTypesIds,
+      eventTypes: self.eventTypes,
       metadata: self.metadata,
     };
   },

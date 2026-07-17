@@ -39,10 +39,10 @@ class EndpointUpsertIn implements \JsonSerializable
         string $url,
     ): self {
         return new self(
+            url: $url,
             description: null,
             throttleRate: null,
             uid: null,
-            url: $url,
             disabled: null,
             eventTypes: null,
             channels: null,
@@ -57,10 +57,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
+            url: $this->url,
             description: $description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -75,10 +75,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -93,10 +93,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -111,10 +111,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['disabled'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -129,10 +129,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['eventTypes'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $eventTypes,
             channels: $this->channels,
@@ -147,10 +147,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['channels'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $channels,
@@ -165,10 +165,10 @@ class EndpointUpsertIn implements \JsonSerializable
         $setFields['metadata'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -213,10 +213,10 @@ class EndpointUpsertIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointUpsertIn'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'EndpointUpsertIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointUpsertIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointUpsertIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointUpsertIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointUpsertIn'),
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointUpsertIn'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointUpsertIn'),

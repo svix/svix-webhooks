@@ -11,7 +11,7 @@ data class MessageEndpointOut(
     val status: MessageStatus,
     val statusText: MessageStatusText,
     val nextAttempt: Instant? = null,
-    /** An example endpoint name. */
+    val url: String,
     val description: String,
     /**
      * Maximum messages per second to send to this endpoint.
@@ -21,7 +21,6 @@ data class MessageEndpointOut(
     val throttleRate: UShort? = null,
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
-    val url: String,
     val disabled: Boolean? = null,
     val eventTypes: Set<String>? = null,
     /** List of message channels this endpoint listens to (omit for all). */

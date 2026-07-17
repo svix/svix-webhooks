@@ -6,6 +6,9 @@ namespace Svix.Models
 {
     public class IngestEndpointUpsertIn
     {
+        [JsonProperty("url", Required = Required.Always)]
+        public required string Url { get; set; }
+
         [JsonProperty("description")]
         public string? Description { get; set; } = null;
 
@@ -14,9 +17,6 @@ namespace Svix.Models
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
-
-        [JsonProperty("url", Required = Required.Always)]
-        public required string Url { get; set; }
 
         [JsonProperty("disabled")]
         public bool? Disabled { get; set; } = null;
@@ -29,10 +29,10 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class IngestEndpointUpsertIn {\n");
+            sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
-            sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Disabled: ").Append(Disabled).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("}\n");

@@ -11,7 +11,6 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
 
     /**
      * @param string   $id           the Endpoint's ID
-     * @param string   $description  an example endpoint name
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
@@ -21,8 +20,8 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
      */
     private function __construct(
         public readonly string $id,
-        public readonly string $description,
         public readonly string $url,
+        public readonly string $description,
         public readonly \DateTimeImmutable $createdAt,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly array $metadata,
@@ -40,24 +39,24 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
      */
     public static function create(
         string $id,
-        string $description,
         string $url,
+        string $description,
         \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
         array $metadata,
     ): self {
         return new self(
             id: $id,
+            url: $url,
             description: $description,
             throttleRate: null,
             uid: null,
-            url: $url,
             disabled: null,
             eventTypes: null,
             createdAt: $createdAt,
             updatedAt: $updatedAt,
             metadata: $metadata,
-            setFields: ['id' => true, 'description' => true, 'url' => true, 'createdAt' => true, 'updatedAt' => true, 'metadata' => true]
+            setFields: ['id' => true, 'url' => true, 'description' => true, 'createdAt' => true, 'updatedAt' => true, 'metadata' => true]
         );
     }
 
@@ -68,10 +67,10 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
 
         return new self(
             id: $this->id,
+            url: $this->url,
             description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             createdAt: $this->createdAt,
@@ -88,10 +87,10 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
 
         return new self(
             id: $this->id,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             createdAt: $this->createdAt,
@@ -108,10 +107,10 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
 
         return new self(
             id: $this->id,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $disabled,
             eventTypes: $this->eventTypes,
             createdAt: $this->createdAt,
@@ -128,10 +127,10 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
 
         return new self(
             id: $this->id,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $eventTypes,
             createdAt: $this->createdAt,
@@ -145,8 +144,8 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
     {
         $data = [
             'id' => $this->id,
-            'description' => $this->description,
             'url' => $this->url,
+            'description' => $this->description,
             'createdAt' => $this->createdAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c'),
             'metadata' => $this->metadata];
@@ -174,10 +173,10 @@ class OperationalWebhookEndpointOut implements \JsonSerializable
     {
         return new self(
             id: \Svix\Utils::deserializeString($data, 'id', true, 'OperationalWebhookEndpointOut'),
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointOut'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'OperationalWebhookEndpointOut'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'OperationalWebhookEndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointOut'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointOut'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointOut'),
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'OperationalWebhookEndpointOut'),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'OperationalWebhookEndpointOut'),

@@ -6,7 +6,7 @@ module Svix
   class OperationalWebhookEndpointOut
     # The Endpoint's ID.
     attr_accessor :id
-    # An example endpoint name.
+    attr_accessor :url
     attr_accessor :description
     # Maximum messages per second to send to this endpoint.
     #
@@ -14,7 +14,6 @@ module Svix
     attr_accessor :throttle_rate
     # Optional unique identifier for the endpoint.
     attr_accessor :uid
-    attr_accessor :url
     attr_accessor :disabled
     attr_accessor :event_types
     attr_accessor :created_at
@@ -23,10 +22,10 @@ module Svix
 
     ALL_FIELD ||= [
       "id",
+      "url",
       "description",
       "throttle_rate",
       "uid",
-      "url",
       "disabled",
       "event_types",
       "created_at",
@@ -57,10 +56,10 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["id"] = attributes["id"]
+      attrs["url"] = attributes["url"]
       attrs["description"] = attributes["description"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
-      attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
       attrs["event_types"] = attributes["eventTypes"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
@@ -72,10 +71,10 @@ module Svix
     def serialize
       out = Hash.new
       out["id"] = Svix::serialize_primitive(@id) if @id
+      out["url"] = Svix::serialize_primitive(@url) if @url
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at

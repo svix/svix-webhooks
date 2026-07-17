@@ -12,7 +12,6 @@ class EndpointOut implements \JsonSerializable
     /**
      * @param string                $id           the Endpoint's ID
      * @param array<string, string> $metadata
-     * @param string                $description  an example endpoint name
      * @param int|null              $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
@@ -23,8 +22,8 @@ class EndpointOut implements \JsonSerializable
     private function __construct(
         public readonly string $id,
         public readonly array $metadata,
-        public readonly string $description,
         public readonly string $url,
+        public readonly string $description,
         public readonly \DateTimeImmutable $createdAt,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly ?int $throttleRate = null,
@@ -43,24 +42,24 @@ class EndpointOut implements \JsonSerializable
     public static function create(
         string $id,
         array $metadata,
-        string $description,
         string $url,
+        string $description,
         \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
             id: $id,
             metadata: $metadata,
+            url: $url,
             description: $description,
             throttleRate: null,
             uid: null,
-            url: $url,
             disabled: null,
             eventTypes: null,
             channels: null,
             createdAt: $createdAt,
             updatedAt: $updatedAt,
-            setFields: ['id' => true, 'metadata' => true, 'description' => true, 'url' => true, 'createdAt' => true, 'updatedAt' => true]
+            setFields: ['id' => true, 'metadata' => true, 'url' => true, 'description' => true, 'createdAt' => true, 'updatedAt' => true]
         );
     }
 
@@ -72,10 +71,10 @@ class EndpointOut implements \JsonSerializable
         return new self(
             id: $this->id,
             metadata: $this->metadata,
+            url: $this->url,
             description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -93,10 +92,10 @@ class EndpointOut implements \JsonSerializable
         return new self(
             id: $this->id,
             metadata: $this->metadata,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -114,10 +113,10 @@ class EndpointOut implements \JsonSerializable
         return new self(
             id: $this->id,
             metadata: $this->metadata,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $disabled,
             eventTypes: $this->eventTypes,
             channels: $this->channels,
@@ -135,10 +134,10 @@ class EndpointOut implements \JsonSerializable
         return new self(
             id: $this->id,
             metadata: $this->metadata,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $eventTypes,
             channels: $this->channels,
@@ -156,10 +155,10 @@ class EndpointOut implements \JsonSerializable
         return new self(
             id: $this->id,
             metadata: $this->metadata,
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             channels: $channels,
@@ -174,8 +173,8 @@ class EndpointOut implements \JsonSerializable
         $data = [
             'id' => $this->id,
             'metadata' => $this->metadata,
-            'description' => $this->description,
             'url' => $this->url,
+            'description' => $this->description,
             'createdAt' => $this->createdAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c')];
 
@@ -206,10 +205,10 @@ class EndpointOut implements \JsonSerializable
         return new self(
             id: \Svix\Utils::deserializeString($data, 'id', true, 'EndpointOut'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'EndpointOut'),
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointOut'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'EndpointOut'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointOut'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointOut'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointOut'),
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointOut'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointOut'),

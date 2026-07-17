@@ -9,7 +9,7 @@ module Svix
     attr_accessor :status
     attr_accessor :status_text
     attr_accessor :next_attempt
-    # An example endpoint name.
+    attr_accessor :url
     attr_accessor :description
     # Maximum messages per second to send to this endpoint.
     #
@@ -17,7 +17,6 @@ module Svix
     attr_accessor :throttle_rate
     # Optional unique identifier for the endpoint.
     attr_accessor :uid
-    attr_accessor :url
     attr_accessor :disabled
     attr_accessor :event_types
     # List of message channels this endpoint listens to (omit for all).
@@ -30,10 +29,10 @@ module Svix
       "status",
       "status_text",
       "next_attempt",
+      "url",
       "description",
       "throttle_rate",
       "uid",
-      "url",
       "disabled",
       "event_types",
       "channels",
@@ -64,10 +63,10 @@ module Svix
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"])
       attrs["status_text"] = Svix::MessageStatusText.deserialize(attributes["statusText"])
       attrs["next_attempt"] = DateTime.rfc3339(attributes["nextAttempt"]).to_time if attributes["nextAttempt"]
+      attrs["url"] = attributes["url"]
       attrs["description"] = attributes["description"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
-      attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
       attrs["event_types"] = attributes["eventTypes"]
       attrs["channels"] = attributes["channels"]
@@ -82,10 +81,10 @@ module Svix
       out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
       out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
+      out["url"] = Svix::serialize_primitive(@url) if @url
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["channels"] = Svix::serialize_primitive(@channels) if @channels

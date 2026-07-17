@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointIn {
+    pub url: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
@@ -16,8 +18,6 @@ pub struct EndpointIn {
     /// Optional unique identifier for the endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
-
-    pub url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
@@ -48,10 +48,10 @@ pub struct EndpointIn {
 impl EndpointIn {
     pub fn new(url: String) -> Self {
         Self {
+            url,
             description: None,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
             event_types: None,
             channels: None,

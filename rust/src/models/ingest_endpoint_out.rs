@@ -6,7 +6,8 @@ pub struct IngestEndpointOut {
     /// The Endpoint's ID.
     pub id: String,
 
-    /// An example endpoint name.
+    pub url: String,
+
     pub description: String,
 
     /// Maximum messages per second to send to this endpoint.
@@ -19,8 +20,6 @@ pub struct IngestEndpointOut {
     /// Optional unique identifier for the endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
-
-    pub url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
@@ -37,18 +36,18 @@ pub struct IngestEndpointOut {
 impl IngestEndpointOut {
     pub fn new(
         id: String,
-        description: String,
         url: String,
+        description: String,
         created_at: String,
         updated_at: String,
         metadata: std::collections::HashMap<String, String>,
     ) -> Self {
         Self {
             id,
+            url,
             description,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
             created_at,
             updated_at,

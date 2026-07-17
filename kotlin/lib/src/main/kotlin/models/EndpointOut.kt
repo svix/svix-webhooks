@@ -9,7 +9,7 @@ data class EndpointOut(
     /** The Endpoint's ID. */
     val id: String,
     val metadata: Map<String, String>,
-    /** An example endpoint name. */
+    val url: String,
     val description: String,
     /**
      * Maximum messages per second to send to this endpoint.
@@ -19,7 +19,6 @@ data class EndpointOut(
     val throttleRate: UShort? = null,
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
-    val url: String,
     val disabled: Boolean? = null,
     val eventTypes: Set<String>? = null,
     /** List of message channels this endpoint listens to (omit for all). */

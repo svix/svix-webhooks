@@ -42,10 +42,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         string $url,
     ): self {
         return new self(
+            url: $url,
             description: null,
             throttleRate: null,
             uid: null,
-            url: $url,
             disabled: null,
             eventTypes: null,
             secret: null,
@@ -60,10 +60,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
+            url: $this->url,
             description: $description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             secret: $this->secret,
@@ -78,10 +78,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             secret: $this->secret,
@@ -96,10 +96,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             secret: $this->secret,
@@ -114,10 +114,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['disabled'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $disabled,
             eventTypes: $this->eventTypes,
             secret: $this->secret,
@@ -132,10 +132,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['eventTypes'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $eventTypes,
             secret: $this->secret,
@@ -150,10 +150,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['secret'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             secret: $secret,
@@ -168,10 +168,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['metadata'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
             eventTypes: $this->eventTypes,
             secret: $this->secret,
@@ -216,10 +216,10 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointIn'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'OperationalWebhookEndpointIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'OperationalWebhookEndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointIn'),
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'OperationalWebhookEndpointIn'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'OperationalWebhookEndpointIn'),

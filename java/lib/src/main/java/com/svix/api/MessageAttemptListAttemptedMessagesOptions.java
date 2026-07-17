@@ -34,7 +34,12 @@ public class MessageAttemptListAttemptedMessagesOptions {
     /** Only include items created after a certain date */
     OffsetDateTime after;
 
-    /** When `true` message payloads are included in the response */
+    /**
+     * When `true` message payloads are included in the response.
+     *
+     * <p>Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a
+     * request without specifying this parameter.
+     */
     Boolean withContent;
 
     /**

@@ -24,6 +24,9 @@ pub struct MessageListOptions {
     pub after: Option<String>,
 
     /// When `true` message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when
+    /// manually making a request without specifying this parameter.
     pub with_content: Option<bool>,
 
     /// Filter messages matching the provided tag.
@@ -36,6 +39,9 @@ pub struct MessageListOptions {
 #[derive(Default)]
 pub struct MessageCreateOptions {
     /// When `true`, message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when
+    /// manually making a request without specifying this parameter.
     pub with_content: Option<bool>,
 
     pub idempotency_key: Option<String>,
@@ -49,6 +55,9 @@ pub struct MessagePrecheckOptions {
 #[derive(Default)]
 pub struct MessageGetOptions {
     /// When `true` message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when
+    /// manually making a request without specifying this parameter.
     pub with_content: Option<bool>,
 }
 

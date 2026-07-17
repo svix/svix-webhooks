@@ -17,8 +17,9 @@ class MessageEndpointOut(BaseModel):
 
     next_attempt: t.Optional[datetime] = None
 
+    url: str
+
     description: str
-    """An example endpoint name."""
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
@@ -27,8 +28,6 @@ class MessageEndpointOut(BaseModel):
 
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""
-
-    url: str
 
     disabled: t.Optional[bool] = None
 

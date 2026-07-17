@@ -30,7 +30,9 @@ pub struct MessageAttemptListByEndpointOptions {
     /// Only include items created after a certain date
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
-    /// When `true` attempt content is included in the response
+    /// When `true` attempt content is included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
     /// When `true`, the message information is included in the response
@@ -110,7 +112,9 @@ pub struct MessageAttemptListByMsgOptions {
     /// Only include items created after a certain date
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
-    /// When `true` attempt content is included in the response
+    /// When `true` attempt content is included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
     /// When `true`, return the Canceled (4) status in attempts.
@@ -179,7 +183,9 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Only include items created after a certain date
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
-    /// When `true` message payloads are included in the response
+    /// When `true` message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
     /// When `true`, return the Canceled (4) status in attempts.
@@ -452,10 +458,10 @@ pub enum MessageAttemptCommands {
     \"status\": 0,
     \"statusText\": \"success\",
     \"nextAttempt\": \"2030-01-01T00:00:00Z\",
+    \"url\": \"https://example.com/webhook/\",
     \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
-    \"url\": \"https://example.com/webhook/\",
     \"disabled\": false,
     \"eventTypes\": [\"user.signup\",\"user.deleted\"],
     \"channels\": [\"project_123\",\"group_2\"],
