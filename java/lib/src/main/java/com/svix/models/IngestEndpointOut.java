@@ -22,10 +22,10 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointOut {
     @JsonProperty private String id;
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
@@ -52,13 +52,32 @@ public class IngestEndpointOut {
         this.id = id;
     }
 
+    public IngestEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
     public IngestEndpointOut description(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -109,25 +128,6 @@ public class IngestEndpointOut {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public IngestEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     public IngestEndpointOut disabled(Boolean disabled) {

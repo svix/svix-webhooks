@@ -5,6 +5,8 @@ from .common import BaseModel
 
 
 class OperationalWebhookEndpointUpsertIn(BaseModel):
+    url: str
+
     description: t.Optional[str] = None
 
     throttle_rate: t.Optional[int] = None
@@ -15,10 +17,8 @@ class OperationalWebhookEndpointUpsertIn(BaseModel):
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""
 
-    url: str
-
     disabled: t.Optional[bool] = None
 
-    event_types_ids: t.Optional[t.List[str]] = None
+    event_types: t.Optional[t.List[str]] = None
 
     metadata: t.Optional[t.Dict[str, str]] = None

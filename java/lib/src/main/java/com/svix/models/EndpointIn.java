@@ -22,10 +22,10 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointIn {
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Set<String> channels;
@@ -34,6 +34,25 @@ public class EndpointIn {
     @JsonProperty private Map<String, String> headers;
 
     public EndpointIn() {}
+
+    public EndpointIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public EndpointIn description(String description) {
         this.description = description;
@@ -92,25 +111,6 @@ public class EndpointIn {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public EndpointIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     public EndpointIn disabled(Boolean disabled) {

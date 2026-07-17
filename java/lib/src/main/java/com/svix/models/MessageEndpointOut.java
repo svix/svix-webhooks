@@ -25,10 +25,10 @@ public class MessageEndpointOut {
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
     @JsonProperty private OffsetDateTime nextAttempt;
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Set<String> channels;
@@ -113,13 +113,32 @@ public class MessageEndpointOut {
         this.nextAttempt = nextAttempt;
     }
 
+    public MessageEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
     public MessageEndpointOut description(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -170,25 +189,6 @@ public class MessageEndpointOut {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public MessageEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     public MessageEndpointOut disabled(Boolean disabled) {

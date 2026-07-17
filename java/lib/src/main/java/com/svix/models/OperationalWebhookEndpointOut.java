@@ -24,10 +24,10 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointOut {
     @JsonProperty private String id;
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> eventTypes;
     @JsonProperty private OffsetDateTime createdAt;
@@ -55,13 +55,32 @@ public class OperationalWebhookEndpointOut {
         this.id = id;
     }
 
+    public OperationalWebhookEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
     public OperationalWebhookEndpointOut description(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -112,25 +131,6 @@ public class OperationalWebhookEndpointOut {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public OperationalWebhookEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     public OperationalWebhookEndpointOut disabled(Boolean disabled) {

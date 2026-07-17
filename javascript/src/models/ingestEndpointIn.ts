@@ -1,6 +1,7 @@
 // this file is @generated
 
 export interface IngestEndpointIn {
+  url: string;
   description?: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -10,7 +11,6 @@ export interface IngestEndpointIn {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
   /**
    * The endpoint's verification secret.
@@ -25,10 +25,10 @@ export interface IngestEndpointIn {
 export const IngestEndpointInSerializer = {
   _fromJsonObject(object: any): IngestEndpointIn {
     return {
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
       secret: object["secret"],
       metadata: object["metadata"],
@@ -37,10 +37,10 @@ export const IngestEndpointInSerializer = {
 
   _toJsonObject(self: IngestEndpointIn): any {
     return {
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
       secret: self.secret,
       metadata: self.metadata,

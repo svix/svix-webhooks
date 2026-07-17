@@ -8,7 +8,7 @@ export interface MessageEndpointOut {
   status: MessageStatus;
   statusText: MessageStatusText;
   nextAttempt?: Date | null;
-  /** An example endpoint name. */
+  url: string;
   description: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -18,7 +18,6 @@ export interface MessageEndpointOut {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
   eventTypes?: string[] | null;
   /** List of message channels this endpoint listens to (omit for all). */
@@ -34,10 +33,10 @@ export const MessageEndpointOutSerializer = {
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
       statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
       nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
       eventTypes: object["eventTypes"],
       channels: object["channels"],
@@ -52,10 +51,10 @@ export const MessageEndpointOutSerializer = {
       status: MessageStatusSerializer._toJsonObject(self.status),
       statusText: MessageStatusTextSerializer._toJsonObject(self.statusText),
       nextAttempt: self.nextAttempt,
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
       eventTypes: self.eventTypes,
       channels: self.channels,

@@ -36,7 +36,9 @@ type MessageAttemptListByEndpointOptions struct {
 	Before *time.Time
 	// Only include items created after a certain date
 	After *time.Time
-	// When `true` attempt content is included in the response
+	// When `true` attempt content is included in the response.
+	//
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
 	WithContent *bool
 	// When `true`, the message information is included in the response
 	//
@@ -71,7 +73,9 @@ type MessageAttemptListByMsgOptions struct {
 	Before *time.Time
 	// Only include items created after a certain date
 	After *time.Time
-	// When `true` attempt content is included in the response
+	// When `true` attempt content is included in the response.
+	//
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
 	WithContent *bool
 	// When `true`, return the Canceled (4) status in attempts.
 	//
@@ -97,7 +101,9 @@ type MessageAttemptListAttemptedMessagesOptions struct {
 	Before *time.Time
 	// Only include items created after a certain date
 	After *time.Time
-	// When `true` message payloads are included in the response
+	// When `true` message payloads are included in the response.
+	//
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
 	WithContent *bool
 	// When `true`, return the Canceled (4) status in attempts.
 	//

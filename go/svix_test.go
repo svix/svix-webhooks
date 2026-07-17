@@ -255,11 +255,11 @@ func TestModelSerialization(t *testing.T) {
 
 	uid := "test"
 	ep_in.Uid = &uid
-	assertMarshalEq(ep_in, `{"uid":"test","url":"http://example.local"}`, t)
+	assertMarshalEq(ep_in, `{"url":"http://example.local","uid":"test"}`, t)
 
 	uid = ""
 	ep_in.Uid = &uid
-	assertMarshalEq(ep_in, `{"uid":"","url":"http://example.local"}`, t)
+	assertMarshalEq(ep_in, `{"url":"http://example.local","uid":""}`, t)
 
 	metadata := make(map[string]string)
 	ep_in.Uid = nil

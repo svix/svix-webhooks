@@ -4,6 +4,7 @@ require "json"
 
 module Svix
   class EndpointIn
+    attr_accessor :url
     attr_accessor :description
     # Maximum messages per second to send to this endpoint.
     #
@@ -11,7 +12,6 @@ module Svix
     attr_accessor :throttle_rate
     # Optional unique identifier for the endpoint.
     attr_accessor :uid
-    attr_accessor :url
     attr_accessor :disabled
     attr_accessor :event_types
     # List of message channels this endpoint listens to (omit for all).
@@ -25,10 +25,10 @@ module Svix
     attr_accessor :headers
 
     ALL_FIELD ||= [
+      "url",
       "description",
       "throttle_rate",
       "uid",
-      "url",
       "disabled",
       "event_types",
       "channels",
@@ -56,10 +56,10 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["url"] = attributes["url"]
       attrs["description"] = attributes["description"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
-      attrs["url"] = attributes["url"]
       attrs["disabled"] = attributes["disabled"]
       attrs["event_types"] = attributes["eventTypes"]
       attrs["channels"] = attributes["channels"]
@@ -71,10 +71,10 @@ module Svix
 
     def serialize
       out = Hash.new
+      out["url"] = Svix::serialize_primitive(@url) if @url
       out["description"] = Svix::serialize_primitive(@description) if @description
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["url"] = Svix::serialize_primitive(@url) if @url
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
       out["channels"] = Svix::serialize_primitive(@channels) if @channels

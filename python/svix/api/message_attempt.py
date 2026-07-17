@@ -33,7 +33,9 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    """When `true` attempt content is included in the response"""
+    """When `true` attempt content is included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     with_msg: t.Optional[bool] = None
     """When `true`, the message information is included in the response
 
@@ -87,7 +89,9 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    """When `true` attempt content is included in the response"""
+    """When `true` attempt content is included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     expanded_statuses: t.Optional[bool] = None
     """When `true`, return the Canceled (4) status in attempts.
 
@@ -133,7 +137,9 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    """When `true` message payloads are included in the response"""
+    """When `true` message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     expanded_statuses: t.Optional[bool] = None
     """When `true`, return the Canceled (4) status in attempts.
 

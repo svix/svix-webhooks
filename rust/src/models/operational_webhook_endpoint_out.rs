@@ -6,7 +6,8 @@ pub struct OperationalWebhookEndpointOut {
     /// The Endpoint's ID.
     pub id: String,
 
-    /// An example endpoint name.
+    pub url: String,
+
     pub description: String,
 
     /// Maximum messages per second to send to this endpoint.
@@ -19,8 +20,6 @@ pub struct OperationalWebhookEndpointOut {
     /// Optional unique identifier for the endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
-
-    pub url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
@@ -41,18 +40,18 @@ pub struct OperationalWebhookEndpointOut {
 impl OperationalWebhookEndpointOut {
     pub fn new(
         id: String,
-        description: String,
         url: String,
+        description: String,
         created_at: chrono::DateTime<chrono::Utc>,
         updated_at: chrono::DateTime<chrono::Utc>,
         metadata: std::collections::BTreeMap<String, String>,
     ) -> Self {
         Self {
             id,
+            url,
             description,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
             event_types: None,
             created_at,
