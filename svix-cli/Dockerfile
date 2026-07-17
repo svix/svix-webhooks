@@ -3,21 +3,19 @@
 # NOTE: this should be built from the root of `svix-webhooks`
 # with `docker build -f svix-cli/Dockerfile .`# Base build
 
-FROM docker.io/rust:1.96-slim-trixie AS build
+FROM docker.io/rust:1.97.1-alpine3.24 AS build
+RUN cargo install --locked cargo-sbom@0.10.0
 
-SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
-RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/var/cache/apt,type=cache,sharing=locked <<EOF
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -q
-    apt-get install -y \
-        build-essential=12.* \
-        checkinstall=1.* \
-        curl=8.* \
-        libssl-dev=* \
-        pkg-config=1.8.* \
-        zlib1g-dev=1:* \
-        cmake=3.* \
-        --no-install-recommends
+SHELL ["/bin/sh", "-eux", "-c"]
+RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
+    apk update
+    apk add build-base~0.5 \
+        curl~8 \
+        openssl-dev~3.5 \
+        zlib-dev~1.3 \
+        cmake~4 \
+        shadow~4 \
+        git~2
 EOF
 
 RUN <<EOF
@@ -30,26 +28,27 @@ EOF
 
 WORKDIR /app/svix-cli
 
-# Hack to enable docker caching
 COPY rust /app/rust
-COPY svix-cli/Cargo.toml .
-COPY svix-cli/Cargo.lock .
+COPY svix-cli /app/svix-cli
 
-RUN <<EOF
-    mkdir src
-    echo 'fn main() { println!("Dummy!"); }' > src/main.rs
-    cargo build --release
-    rm -rf src
-EOF
+RUN cargo build --release
+RUN cargo sbom > /app/svix-cli.spdx
+RUN strip target/release/svix
 
-COPY . /app
-RUN touch src/main.rs
-RUN cargo build --release --frozen
+FROM alpine:3.24 AS checker
+RUN mkdir /scripts
+COPY bridge/scripts/check-deps.sh /scripts/check-deps.sh
 
 # Production
-FROM docker.io/debian:trixie-20260713-slim AS prod
+FROM alpine:3.24 AS prod
 
-SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
+SHELL ["/bin/sh", "-eux", "-c"]
+
+RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
+    apk add shadow~4 ca-certificates~20260611
+    update-ca-certificates
+EOF
+
 RUN <<EOF
     mkdir -p /app
     useradd appuser
@@ -58,20 +57,13 @@ RUN <<EOF
     chown -R appuser: /home/appuser
 EOF
 
-RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/var/cache/apt,type=cache,sharing=locked <<EOF
-    export DEBIAN_FRONTEND=noninteractive
-    apt-get update -q
-    apt-get install -y --no-install-recommends ca-certificates=20250419
-    update-ca-certificates
-EOF
-
 USER appuser
 
 COPY --chown=root:root --chmod=755 --from=build /app/svix-cli/target/release/svix /usr/local/bin/svix
-COPY bridge/scripts/check-deps.sh /usr/local/bin/check-deps.sh
+COPY --chown=root:root --chmod=444 --from=build /app/svix-cli.spdx /svix-cli.spdx
 
 # Verify all the dynamic libs we depend on are present in the runtime stage
-RUN /usr/local/bin/check-deps.sh /usr/local/bin/svix
+RUN --mount=type=bind,from=checker,source=/scripts,target=/scripts /scripts/check-deps.sh /usr/local/bin/svix
 
 LABEL org.opencontainers.image.authors="support@svix.com" \
       org.opencontainers.image.url="https://www.svix.com" \
@@ -80,6 +72,6 @@ LABEL org.opencontainers.image.authors="support@svix.com" \
       org.opencontainers.image.title="svix-webhooks, cli, oss" \
       org.opencontainers.image.vendor="Svix" \
       org.opencontainers.image.licenses="MIT" \
-      org.opencontainers.image.base.name="docker.io/debian:trixie"
+      org.opencontainers.image.base.name="docker.io/alpine:3.24"
 
 CMD ["/usr/local/bin/svix"]
