@@ -45,19 +45,18 @@ FROM alpine:3.24 AS prod
 SHELL ["/bin/sh", "-eux", "-c"]
 
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
-    apk add shadow~4 ca-certificates~20260611
+    apk add ca-certificates~20260611
     update-ca-certificates
 EOF
 
 RUN <<EOF
     mkdir -p /app
-    useradd appuser
-    chown -R appuser: /app
+    addgroup -S appgroup
+    adduser -G appgroup -S appuser
+    chown -R appuser:appgroup /app
     mkdir -p /home/appuser
-    chown -R appuser: /home/appuser
+    chown -R appuser:appgroup /home/appuser
 EOF
-
-USER appuser
 
 COPY --chown=root:root --chmod=755 --from=build /app/svix-cli/target/release/svix /usr/local/bin/svix
 COPY --chown=root:root --chmod=444 --from=build /app/svix-cli.spdx /svix-cli.spdx
@@ -73,5 +72,7 @@ LABEL org.opencontainers.image.authors="support@svix.com" \
       org.opencontainers.image.vendor="Svix" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.base.name="docker.io/alpine:3.24"
+
+USER appuser:appgroup
 
 CMD ["/usr/local/bin/svix"]
