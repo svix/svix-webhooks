@@ -37,5 +37,3 @@ svix-server-derive = { opt-level = 0 }
 
 [patch.crates-io]
 hyper = { git = "https://github.com/svix/hyper.git", rev = "0b8b37910862f6da9cf08717f753c052f5c087fd" }
-# remove this override after https://github.com/SeaQL/sea-bae/pull/3 lands
-sea-bae = { git = "https://github.com/svix-jbrown/sea-bae.git", rev = "a09fff7d57f626df1990d1c829053ba28435b1c3" }

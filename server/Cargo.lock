@@ -4487,11 +4487,11 @@ dependencies = [
 
 [[package]]
 name = "sea-bae"
-version = "0.2.1"
-source = "git+https://github.com/svix-jbrown/sea-bae.git?rev=a09fff7d57f626df1990d1c829053ba28435b1c3#a09fff7d57f626df1990d1c829053ba28435b1c3"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "260bbc7148a8d6818ac5032a1b9970da1a68bdd723d45b12d59f7c1bf3565e24"
 dependencies = [
  "heck 0.4.1",
- "proc-macro-error3",
  "proc-macro2",
  "quote",
  "syn",
