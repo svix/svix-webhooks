@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# this has to run under both bash on debian and busybox sh on alpine
+# this has to run under both bash on debian and busybox sh on alpine/wolfi
 
 BINPATH="$1"
 
