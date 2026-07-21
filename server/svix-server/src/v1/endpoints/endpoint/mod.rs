@@ -997,42 +997,42 @@ mod tests {
     #[test]
     fn test_endpoint_in_validation() {
         let invalid_1: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_INVALID,
-             "url": URL_VALID
+            "version": VERSION_INVALID,
+            "url": URL_VALID
         }))
         .unwrap();
 
         let invalid_2: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "channels": EVENT_CHANNELS_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "channels": EVENT_CHANNELS_INVALID
         }))
         .unwrap();
 
         let invalid_3: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "rateLimit": RATE_LIMIT_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_INVALID
         }))
         .unwrap();
 
         let invalid_4: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "uid": ENDPOINT_ID_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "uid": ENDPOINT_ID_INVALID
         }))
         .unwrap();
 
         let invalid_5: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "filterTypes": EVENT_TYPES_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "filterTypes": EVENT_TYPES_INVALID
         }))
         .unwrap();
 
         let invalid_6: Result<EndpointIn, _> = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_INVALID
+            "version": VERSION_VALID,
+            "url": URL_INVALID
         }));
         assert!(invalid_6.is_err());
 
@@ -1041,22 +1041,22 @@ mod tests {
         }
 
         let valid_1: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "rateLimit": RATE_LIMIT_VALID,
-             "uid": ENDPOINT_ID_VALID,
-             "filterTypes": EVENT_TYPES_VALID,
-             "channels": EVENT_CHANNELS_VALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": ENDPOINT_ID_VALID,
+            "filterTypes": EVENT_TYPES_VALID,
+            "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
         valid_1.validate().unwrap();
 
         let valid_2: EndpointIn = serde_json::from_value(json!({
-             "url": URL_VALID,
-             "rateLimit": RATE_LIMIT_VALID,
-             "uid": ENDPOINT_ID_VALID,
-             "filterTypes": EVENT_TYPES_VALID,
-             "channels": EVENT_CHANNELS_VALID
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": ENDPOINT_ID_VALID,
+            "filterTypes": EVENT_TYPES_VALID,
+            "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
         valid_2.validate().unwrap();
