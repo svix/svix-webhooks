@@ -4,7 +4,11 @@
   "description": "Svix webhooks API client and webhook verification library",
   "author": "svix",
   "repository": "https://github.com/svix/svix-webhooks",
-  "type": "commonjs",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
   "keywords": [
     "svix",
     "diahook",
@@ -12,16 +16,19 @@
     "typescript"
   ],
   "license": "MIT",
-  "main": "./dist/index.js",
-  "typings": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
   "files": [
     "src",
     "dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && tsdown",
     "prepare": "npm run build",
-    "test": "tsc -p tsconfig.test.json && node --enable-source-maps test_build/src/index.test.js",
+    "test": "tsc -p tsconfig.test.json && printf '%s\\n' '{\"type\":\"commonjs\"}' > test_build/package.json && node --enable-source-maps test_build/src/index.test.js",
     "prepublishOnly": "biome check",
     "check": "biome check",
     "check:fix": "biome check --write",
@@ -34,6 +41,10 @@
     "@biomejs/biome": "2.2.4",
     "@stablelib/utf8": "^2.0.0",
     "mockttp": "^4.4.1",
-    "typescript": "^4.0"
-  }
+    "tsdown": "^0.22.5",
+    "typescript": "^5.0"
+  },
+  "types": "./dist/index.d.mts",
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs"
 }
