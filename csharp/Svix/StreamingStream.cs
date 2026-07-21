@@ -48,13 +48,17 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingStreamListOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ListResponseStreamOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/stream",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -72,13 +76,17 @@ namespace Svix
         /// </summary>
         public ListResponseStreamOut List(StreamingStreamListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new StreamingStreamListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseStreamOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/stream",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -99,14 +107,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingStreamCreateOptions();
+            }
             streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<StreamOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stream",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamIn,
                     cancellationToken: cancellationToken
                 );
@@ -125,14 +137,18 @@ namespace Svix
         /// </summary>
         public StreamOut Create(StreamIn streamIn, StreamingStreamCreateOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new StreamingStreamCreateOptions();
+            }
             streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<StreamOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stream",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamIn
                 );
                 return response.Data;

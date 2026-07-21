@@ -41,6 +41,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestDashboardOptions();
+            }
             ingestSourceConsumerPortalAccessIn =
                 ingestSourceConsumerPortalAccessIn
                 ?? throw new ArgumentNullException(nameof(ingestSourceConsumerPortalAccessIn));
@@ -50,8 +54,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/dashboard",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestSourceConsumerPortalAccessIn,
                     cancellationToken: cancellationToken
                 );
@@ -74,6 +78,10 @@ namespace Svix
             IngestDashboardOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestDashboardOptions();
+            }
             ingestSourceConsumerPortalAccessIn =
                 ingestSourceConsumerPortalAccessIn
                 ?? throw new ArgumentNullException(nameof(ingestSourceConsumerPortalAccessIn));
@@ -83,8 +91,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/dashboard",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestSourceConsumerPortalAccessIn
                 );
                 return response.Data;

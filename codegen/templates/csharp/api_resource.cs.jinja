@@ -30,7 +30,9 @@ namespace {{ context.namespace }}
     public new Dictionary<string, string> QueryParams() {
             return SerializeParams(new Dictionary<string, object?> {
             {%- for p in op.query_params %}
-                { "{{ p.name }}", {{ p.name | to_upper_camel_case }} },
+                { "{{ p.name }}", {{ p.name | to_upper_camel_case }}
+                {%- if p.name == "expanded_statuses" %} ?? true {% endif -%}
+                },
             {% endfor %}
             });
        }
@@ -65,6 +67,7 @@ namespace {{ context.namespace }}
     {%- include api_resource_extra ignore missing %}
 {%- for op in resource.operations %}
     {%- set req_body_varname = op.request_body_schema_name | to_lower_camel_case %}
+    {%- set options_type = r_name_pascal_case ~ op.name | to_upper_camel_case ~ "Options" %}
     {% for async in [true, false] %}
         {%- if op.description is defined %}
         /// <summary>
@@ -98,7 +101,7 @@ namespace {{ context.namespace }}
 
         {# query params/headers class #}
         {%- if op | has_query_or_header_params %}
-            {{ r_name_pascal_case }}{{ op.name | to_upper_camel_case }}Options? options = null,
+            {{ options_type }}? options = null,
         {%- endif %}
 
         {# async cancellation token, needed for some reason #}
@@ -108,6 +111,12 @@ namespace {{ context.namespace }}
         {%- endset %}
         {{ args_str | strip_trailing_comma }} )
         {
+        {%- if op | has_query_or_header_params %}
+            if (options== null)
+            {
+                options = new {{ options_type }}();
+            }
+        {%- endif %}
 
         {%- if op.request_body_schema_name is defined %}
             {{ req_body_varname }} = {{ req_body_varname }} ?? throw new ArgumentNullException(nameof({{ req_body_varname }}));
@@ -130,9 +139,9 @@ namespace {{ context.namespace }}
                             { "with_content", "false" },
                         }
                     {%- else -%}
-                        options?.QueryParams()
+                        options.QueryParams()
                     {%- endif %}
-                    , headerParams: options?.HeaderParams()
+                    , headerParams: options.HeaderParams()
         {%- endif %}
         {%- if op.request_body_schema_name is defined %}
                     , content: {{ req_body_varname }}
@@ -142,7 +151,7 @@ namespace {{ context.namespace }}
         {%- endif %}
                 );
                 {% if op.id == "v1.message.create" -%}
-                    if (options?.WithContent ?? true) {
+                    if (options.WithContent ?? true) {
                         response.Data.Payload = messageIn.Payload;
                     }
                 {% endif -%}

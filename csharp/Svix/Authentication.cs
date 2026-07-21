@@ -103,6 +103,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationAppPortalAccessOptions();
+            }
             appPortalAccessIn =
                 appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
             try
@@ -111,8 +115,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app-portal-access/{app_id}",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: appPortalAccessIn,
                     cancellationToken: cancellationToken
                 );
@@ -135,6 +139,10 @@ namespace Svix
             AuthenticationAppPortalAccessOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationAppPortalAccessOptions();
+            }
             appPortalAccessIn =
                 appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
             try
@@ -143,8 +151,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app-portal-access/{app_id}",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: appPortalAccessIn
                 );
                 return response.Data;
@@ -167,13 +175,17 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationLogoutOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -193,13 +205,17 @@ namespace Svix
         /// </summary>
         public bool Logout(AuthenticationLogoutOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new AuthenticationLogoutOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -221,6 +237,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationExpireAllOptions();
+            }
             applicationTokenExpireIn =
                 applicationTokenExpireIn
                 ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
@@ -230,8 +250,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app/{app_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: applicationTokenExpireIn,
                     cancellationToken: cancellationToken
                 );
@@ -254,6 +274,10 @@ namespace Svix
             AuthenticationExpireAllOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationExpireAllOptions();
+            }
             applicationTokenExpireIn =
                 applicationTokenExpireIn
                 ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
@@ -263,8 +287,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app/{app_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: applicationTokenExpireIn
                 );
                 return response.Data;
@@ -339,6 +363,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamPortalAccessOptions();
+            }
             streamPortalAccessIn =
                 streamPortalAccessIn
                 ?? throw new ArgumentNullException(nameof(streamPortalAccessIn));
@@ -348,8 +376,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream-portal-access/{stream_id}",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamPortalAccessIn,
                     cancellationToken: cancellationToken
                 );
@@ -372,6 +400,10 @@ namespace Svix
             AuthenticationStreamPortalAccessOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamPortalAccessOptions();
+            }
             streamPortalAccessIn =
                 streamPortalAccessIn
                 ?? throw new ArgumentNullException(nameof(streamPortalAccessIn));
@@ -381,8 +413,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream-portal-access/{stream_id}",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamPortalAccessIn
                 );
                 return response.Data;
@@ -405,13 +437,17 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamLogoutOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream-logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -431,13 +467,17 @@ namespace Svix
         /// </summary>
         public bool StreamLogout(AuthenticationStreamLogoutOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamLogoutOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream-logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -459,6 +499,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamExpireAllOptions();
+            }
             streamTokenExpireIn =
                 streamTokenExpireIn ?? throw new ArgumentNullException(nameof(streamTokenExpireIn));
             try
@@ -467,8 +511,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream/{stream_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamTokenExpireIn,
                     cancellationToken: cancellationToken
                 );
@@ -491,6 +535,10 @@ namespace Svix
             AuthenticationStreamExpireAllOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamExpireAllOptions();
+            }
             streamTokenExpireIn =
                 streamTokenExpireIn ?? throw new ArgumentNullException(nameof(streamTokenExpireIn));
             try
@@ -499,8 +547,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream/{stream_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamTokenExpireIn
                 );
                 return response.Data;
@@ -524,6 +572,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationRotateStreamPollerTokenOptions();
+            }
             rotatePollerTokenIn =
                 rotatePollerTokenIn ?? throw new ArgumentNullException(nameof(rotatePollerTokenIn));
             try
@@ -536,8 +588,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: rotatePollerTokenIn,
                     cancellationToken: cancellationToken
                 );
@@ -561,6 +613,10 @@ namespace Svix
             AuthenticationRotateStreamPollerTokenOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationRotateStreamPollerTokenOptions();
+            }
             rotatePollerTokenIn =
                 rotatePollerTokenIn ?? throw new ArgumentNullException(nameof(rotatePollerTokenIn));
             try
@@ -573,8 +629,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: rotatePollerTokenIn
                 );
                 return response.Data;

@@ -51,6 +51,10 @@ namespace Svix.ApiInternal
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerv2ConsumerPollOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<PollerV2PollOut>(
@@ -62,8 +66,8 @@ namespace Svix.ApiInternal
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -86,6 +90,10 @@ namespace Svix.ApiInternal
             MessagePollerv2ConsumerPollOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerv2ConsumerPollOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<PollerV2PollOut>(
@@ -97,8 +105,8 @@ namespace Svix.ApiInternal
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -122,6 +130,10 @@ namespace Svix.ApiInternal
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerv2ConsumerCommitOptions();
+            }
             pollerV2CommitIn =
                 pollerV2CommitIn ?? throw new ArgumentNullException(nameof(pollerV2CommitIn));
             try
@@ -135,8 +147,8 @@ namespace Svix.ApiInternal
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: pollerV2CommitIn,
                     cancellationToken: cancellationToken
                 );
@@ -161,6 +173,10 @@ namespace Svix.ApiInternal
             MessagePollerv2ConsumerCommitOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerv2ConsumerCommitOptions();
+            }
             pollerV2CommitIn =
                 pollerV2CommitIn ?? throw new ArgumentNullException(nameof(pollerV2CommitIn));
             try
@@ -174,8 +190,8 @@ namespace Svix.ApiInternal
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: pollerV2CommitIn
                 );
                 return response.Data;

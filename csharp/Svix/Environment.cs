@@ -44,13 +44,17 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EnvironmentExportOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EnvironmentOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/environment/export",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -71,13 +75,17 @@ namespace Svix
         /// </summary>
         public EnvironmentOut Export(EnvironmentExportOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new EnvironmentExportOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EnvironmentOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/environment/export",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -103,14 +111,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EnvironmentImportOptions();
+            }
             environmentIn = environmentIn ?? throw new ArgumentNullException(nameof(environmentIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Post,
                     path: "/api/v1/environment/import",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: environmentIn,
                     cancellationToken: cancellationToken
                 );
@@ -134,14 +146,18 @@ namespace Svix
         /// </summary>
         public bool Import(EnvironmentIn environmentIn, EnvironmentImportOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new EnvironmentImportOptions();
+            }
             environmentIn = environmentIn ?? throw new ArgumentNullException(nameof(environmentIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Post,
                     path: "/api/v1/environment/import",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: environmentIn
                 );
                 return response.Data;

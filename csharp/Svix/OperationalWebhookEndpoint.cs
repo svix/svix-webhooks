@@ -60,14 +60,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new OperationalWebhookEndpointListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseOperationalWebhookEndpointOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/operational-webhook/endpoint",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -87,14 +91,18 @@ namespace Svix
             OperationalWebhookEndpointListOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new OperationalWebhookEndpointListOptions();
+            }
             try
             {
                 var response =
                     _client.SvixHttpClient.SendRequest<ListResponseOperationalWebhookEndpointOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/operational-webhook/endpoint",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams()
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams()
                     );
                 return response.Data;
             }
@@ -115,6 +123,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new OperationalWebhookEndpointCreateOptions();
+            }
             operationalWebhookEndpointIn =
                 operationalWebhookEndpointIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointIn));
@@ -124,8 +136,8 @@ namespace Svix
                     await _client.SvixHttpClient.SendRequestAsync<OperationalWebhookEndpointOut>(
                         method: HttpMethod.Post,
                         path: "/api/v1/operational-webhook/endpoint",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         content: operationalWebhookEndpointIn,
                         cancellationToken: cancellationToken
                     );
@@ -147,6 +159,10 @@ namespace Svix
             OperationalWebhookEndpointCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new OperationalWebhookEndpointCreateOptions();
+            }
             operationalWebhookEndpointIn =
                 operationalWebhookEndpointIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointIn));
@@ -155,8 +171,8 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<OperationalWebhookEndpointOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/operational-webhook/endpoint",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: operationalWebhookEndpointIn
                 );
                 return response.Data;
@@ -404,6 +420,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new OperationalWebhookEndpointRotateSecretOptions();
+            }
             operationalWebhookEndpointSecretIn =
                 operationalWebhookEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointSecretIn));
@@ -413,8 +433,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: operationalWebhookEndpointSecretIn,
                     cancellationToken: cancellationToken
                 );
@@ -439,6 +459,10 @@ namespace Svix
             OperationalWebhookEndpointRotateSecretOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new OperationalWebhookEndpointRotateSecretOptions();
+            }
             operationalWebhookEndpointSecretIn =
                 operationalWebhookEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(operationalWebhookEndpointSecretIn));
@@ -448,8 +472,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string> { { "endpoint_id", endpointId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: operationalWebhookEndpointSecretIn
                 );
                 return response.Data;

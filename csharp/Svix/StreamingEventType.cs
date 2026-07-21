@@ -60,14 +60,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventTypeListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseStreamEventTypeOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/stream/event-type",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -85,13 +89,17 @@ namespace Svix
         /// </summary>
         public ListResponseStreamEventTypeOut List(StreamingEventTypeListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new StreamingEventTypeListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseStreamEventTypeOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/stream/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -112,6 +120,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventTypeCreateOptions();
+            }
             streamEventTypeIn =
                 streamEventTypeIn ?? throw new ArgumentNullException(nameof(streamEventTypeIn));
             try
@@ -119,8 +131,8 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<StreamEventTypeOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamEventTypeIn,
                     cancellationToken: cancellationToken
                 );
@@ -142,6 +154,10 @@ namespace Svix
             StreamingEventTypeCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventTypeCreateOptions();
+            }
             streamEventTypeIn =
                 streamEventTypeIn ?? throw new ArgumentNullException(nameof(streamEventTypeIn));
             try
@@ -149,8 +165,8 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<StreamEventTypeOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamEventTypeIn
                 );
                 return response.Data;
@@ -275,14 +291,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventTypeDeleteOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Delete,
                     path: "/api/v1/stream/event-type/{name}",
                     pathParams: new Dictionary<string, string> { { "name", name } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -300,14 +320,18 @@ namespace Svix
         /// </summary>
         public bool Delete(string name, StreamingEventTypeDeleteOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new StreamingEventTypeDeleteOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Delete,
                     path: "/api/v1/stream/event-type/{name}",
                     pathParams: new Dictionary<string, string> { { "name", name } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

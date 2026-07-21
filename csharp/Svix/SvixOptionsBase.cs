@@ -13,15 +13,7 @@ namespace Svix
             var dict = new Dictionary<string, string>();
             foreach (KeyValuePair<string, object?> entry in rawParams)
             {
-                if (entry.Value == null)
-                {
-                    // HACK: default expanded_statuses to true, it only defaults to false
-                    //       server-side because of backwards-compatibility for old SDKs
-                    if (entry.Key == "expanded_statuses")
-                    {
-                        dict[entry.Key] = "true";
-                    }
-                }
+                if (entry.Value == null) { }
                 else if (IsGenericList(entry.Value))
                 {
                     var list = (System.Collections.IEnumerable)entry.Value;
