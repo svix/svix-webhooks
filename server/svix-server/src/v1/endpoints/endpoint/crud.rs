@@ -348,7 +348,7 @@ async fn validate_event_types(
             .collect::<Vec<&str>>()
             .join(", ");
         Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
-            loc: vec!["body".to_owned(), "filterTypes".to_owned()],
+            loc: vec!["body".to_owned(), "eventTypes".to_owned()],
             msg: format!("The following event types don't exist: {missing}"),
             ty: "value_error".to_owned(),
         }])

@@ -56,8 +56,8 @@ use crate::{
 pub fn validate_event_types_ids(event_types_ids: &EventTypeNameSet) -> Result<(), ValidationError> {
     if event_types_ids.0.is_empty() {
         Err(validation_error(
-            Some("filterTypes"),
-            Some("filterTypes can't be empty, it must have at least one item."),
+            Some("eventTypes"),
+            Some("eventTypes can't be empty, it must have at least one item."),
         ))
     } else {
         Ok(())
@@ -183,12 +183,14 @@ pub struct EndpointIn {
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
-    #[serde(rename = "filterTypes")]
+
+    #[serde(alias = "filterTypes")]
     #[validate(custom(function = "validate_event_types_ids"))]
     #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types: Option<EventTypeNameSet>,
+
     /// List of message channels this endpoint listens to (omit for all)
     #[validate(custom(function = "validate_channels_endpoint"))]
     #[validate(nested)]
@@ -295,7 +297,7 @@ struct EndpointUpdate {
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(alias = "filterTypes")]
     #[validate(custom(function = "validate_event_types_ids"))]
     #[validate(nested)]
     #[schemars(example = "example_filter_types", length(min = 1))]
@@ -415,7 +417,7 @@ pub struct EndpointPatch {
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
     pub disabled: UnrequiredField<bool>,
 
-    #[serde(default, rename = "filterTypes")]
+    #[serde(default, alias = "filterTypes")]
     #[validate(custom(function = "validate_event_types_ids_unrequired_nullable"))]
     #[validate(nested)]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
@@ -528,9 +530,12 @@ pub struct EndpointOutCommon {
         default = "endpoint_disabled_default"
     )]
     pub disabled: bool,
-    #[serde(rename = "filterTypes")]
     #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types: Option<EventTypeNameSet>,
+    /// Deprecated alias of `event_types`.
+    #[serde(rename = "filterTypes")]
+    #[schemars(skip)]
+    pub filter_types: Option<EventTypeNameSet>,
     /// List of message channels this endpoint listens to (omit for all)
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
@@ -549,7 +554,8 @@ impl From<endpoint::Model> for EndpointOutCommon {
             url: model.url,
             version: model.version as u16,
             disabled: model.disabled,
-            event_types: model.event_types_ids,
+            event_types: model.event_types_ids.clone(),
+            filter_types: model.event_types_ids,
             channels: model.channels,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
