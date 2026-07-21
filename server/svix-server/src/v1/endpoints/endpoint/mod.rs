@@ -180,7 +180,7 @@ pub struct EndpointIn {
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
 
-    #[serde(alias = "filterTypes")]
+    #[serde(rename = "eventTypes", alias = "filterTypes")]
     #[validate(custom(function = "validate_event_types_ids"))]
     #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -291,7 +291,7 @@ struct EndpointUpdate {
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
 
-    #[serde(alias = "filterTypes")]
+    #[serde(rename = "eventTypes", alias = "filterTypes")]
     #[validate(custom(function = "validate_event_types_ids"))]
     #[validate(nested)]
     #[schemars(example = "example_filter_types", length(min = 1))]
@@ -405,7 +405,7 @@ pub struct EndpointPatch {
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
     pub disabled: UnrequiredField<bool>,
 
-    #[serde(default, alias = "filterTypes")]
+    #[serde(default, rename = "eventTypes", alias = "filterTypes")]
     #[validate(custom(function = "validate_event_types_ids_unrequired_nullable"))]
     #[validate(nested)]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
@@ -518,7 +518,6 @@ pub struct EndpointOutCommon {
     #[schemars(example = "example_filter_types", length(min = 1))]
     pub event_types: Option<EventTypeNameSet>,
     /// Deprecated alias of `event_types`.
-    #[serde(rename = "filterTypes")]
     #[schemars(skip)]
     pub filter_types: Option<EventTypeNameSet>,
     /// List of message channels this endpoint listens to (omit for all)
@@ -1015,7 +1014,7 @@ mod tests {
         let invalid_5: EndpointIn = serde_json::from_value(json!({
             "version": VERSION_VALID,
             "url": URL_VALID,
-            "filterTypes": EVENT_TYPES_INVALID
+            "eventTypes": EVENT_TYPES_INVALID
         }))
         .unwrap();
 
@@ -1034,7 +1033,7 @@ mod tests {
             "url": URL_VALID,
             "rateLimit": RATE_LIMIT_VALID,
             "uid": ENDPOINT_ID_VALID,
-            "filterTypes": EVENT_TYPES_VALID,
+            "eventTypes": EVENT_TYPES_VALID,
             "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
@@ -1044,7 +1043,7 @@ mod tests {
             "url": URL_VALID,
             "rateLimit": RATE_LIMIT_VALID,
             "uid": ENDPOINT_ID_VALID,
-            "filterTypes": EVENT_TYPES_VALID,
+            "eventTypes": EVENT_TYPES_VALID,
             "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();

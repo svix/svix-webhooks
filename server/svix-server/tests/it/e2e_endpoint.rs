@@ -338,7 +338,7 @@ async fn test_patch() {
         .patch(
             &url,
             json!({
-                "filterTypes": ["test"],
+                "eventTypes": ["test"],
             }),
             StatusCode::OK,
         )
@@ -367,7 +367,7 @@ async fn test_patch() {
 
     // Test that event type IDs may be unset
     let _: EndpointOut = client
-        .patch(&url, json!({ "filterTypes": null }), StatusCode::OK)
+        .patch(&url, json!({ "eventTypes": null }), StatusCode::OK)
         .await
         .unwrap();
 
@@ -1741,13 +1741,13 @@ async fn test_endpoint_filter_events() {
     let ep_empty_events: serde_json::Value = json!({
         "url": "http://www.example.com",
         "version": 1,
-        "filterTypes": [],
+        "eventTypes": [],
     });
 
     let ep_with_events: serde_json::Value = json!({
         "url": "http://www.example.com",
         "version": 1,
-        "filterTypes": ["et1"],
+        "eventTypes": ["et1"],
     });
 
     let ep_no_events: serde_json::Value = json!({
