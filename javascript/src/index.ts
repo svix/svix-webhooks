@@ -14,7 +14,7 @@ import { MessageAttempt } from "./api/messageAttempt";
 import { OperationalWebhook } from "./api/operationalWebhook";
 import { Statistics } from "./api/statistics";
 import { Streaming } from "./api/streaming";
-import type { SvixRequestContext } from "./request";
+import { createSvixRequestContext, type SvixRequestContext } from "./request";
 
 export { type PostOptions, ApiException } from "./util";
 export { HTTPValidationError, HttpErrorOut, ValidationError } from "./HttpErrors";
@@ -54,47 +54,11 @@ export type SvixOptions = {
   }
 >;
 
-const REGIONS = [
-  { region: "us", url: "https://api.us.svix.com" },
-  { region: "eu", url: "https://api.eu.svix.com" },
-  { region: "in", url: "https://api.in.svix.com" },
-  { region: "ca", url: "https://api.ca.svix.com" },
-  { region: "au", url: "https://api.au.svix.com" },
-];
-
 export class Svix {
   protected readonly requestCtx: SvixRequestContext;
 
   public constructor(token: string, options: SvixOptions = {}) {
-    const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
-    const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
-
-    if (options.retryScheduleInMs) {
-      this.requestCtx = {
-        baseUrl,
-        token,
-        timeout: options.requestTimeout,
-        retryScheduleInMs: options.retryScheduleInMs,
-        fetch: options.fetch,
-      };
-      return;
-    }
-    if (options.numRetries) {
-      this.requestCtx = {
-        baseUrl,
-        token,
-        timeout: options.requestTimeout,
-        numRetries: options.numRetries,
-        fetch: options.fetch,
-      };
-      return;
-    }
-    this.requestCtx = {
-      baseUrl,
-      token,
-      timeout: options.requestTimeout,
-      fetch: options.fetch,
-    };
+    this.requestCtx = createSvixRequestContext(token, options);
   }
 
   public get application() {
