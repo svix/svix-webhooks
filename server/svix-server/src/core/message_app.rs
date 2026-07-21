@@ -137,7 +137,7 @@ impl CreateMessageApp {
                         || (
                             // If an endpoint has event types and it matches ours, or has no event types
                             endpoint
-                                .event_types_ids
+                                .event_types
                                 .as_ref()
                                 .map(|x| x.0.contains(event_type))
                                 .unwrap_or(true)
@@ -165,7 +165,14 @@ pub struct CreateMessageEndpoint {
     pub id: EndpointId,
     pub url: String,
     pub key: EndpointSecretInternal,
-    pub event_types_ids: Option<EventTypeNameSet>,
+    #[serde(
+        // backwards compat
+        rename = "event_types_ids",
+        // in case we ever start cleaning up old stuff
+        // (we'll have to figure out how to do the migration though)
+        alias = "event_types"
+    )]
+    pub event_types: Option<EventTypeNameSet>,
     pub channels: Option<EventChannelSet>,
     pub rate_limit: Option<u16>,
     // Same type as the `DateTimeWithTimeZone from SeaORM used in the endpoint model
@@ -203,7 +210,7 @@ impl TryFrom<endpoint::Model> for CreateMessageEndpoint {
             url: m.url,
             key: m.key,
             old_signing_keys: m.old_keys,
-            event_types_ids: m.event_types_ids,
+            event_types: m.event_types_ids,
             channels: m.channels,
             rate_limit: m
                 .rate_limit
@@ -267,7 +274,7 @@ mod tests {
             url: "".to_string(),
             key,
             old_signing_keys,
-            event_types_ids: None,
+            event_types: None,
             channels: None,
             rate_limit: None,
             first_failure_at: None,

@@ -460,7 +460,7 @@
                         "example": false,
                         "type": "boolean"
                     },
-                    "filterTypes": {
+                    "eventTypes": {
                         "example": [
                             "user.signup",
                             "user.deleted"
@@ -642,7 +642,7 @@
                         "example": false,
                         "type": "boolean"
                     },
-                    "filterTypes": {
+                    "eventTypes": {
                         "example": [
                             "user.signup",
                             "user.deleted"
@@ -741,7 +741,7 @@
                     "disabled": {
                         "type": "boolean"
                     },
-                    "filterTypes": {
+                    "eventTypes": {
                         "items": {
                             "example": "user.signup",
                             "maxLength": 256,
@@ -908,7 +908,7 @@
                         "example": false,
                         "type": "boolean"
                     },
-                    "filterTypes": {
+                    "eventTypes": {
                         "example": [
                             "user.signup",
                             "user.deleted"
@@ -1834,7 +1834,7 @@
                         "example": false,
                         "type": "boolean"
                     },
-                    "filterTypes": {
+                    "eventTypes": {
                         "example": [
                             "user.signup",
                             "user.deleted"

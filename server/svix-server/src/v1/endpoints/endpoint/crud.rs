@@ -124,8 +124,8 @@ pub(super) async fn create_endpoint(
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointIn>,
 ) -> Result<JsonStatus<201, EndpointOut>> {
-    if let Some(ref event_types_ids) = data.event_types_ids {
-        validate_event_types(db, event_types_ids, &app.org_id).await?;
+    if let Some(event_types) = &data.event_types {
+        validate_event_types(db, event_types, &app.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
@@ -199,8 +199,8 @@ pub(super) async fn update_endpoint(
     permissions::Application { app }: permissions::Application,
     ValidatedJson(mut data): ValidatedJson<EndpointUpdate>,
 ) -> Result<JsonStatusUpsert<EndpointOut>> {
-    if let Some(ref event_types_ids) = data.event_types_ids {
-        validate_event_types(db, event_types_ids, &app.org_id).await?;
+    if let Some(event_types) = &data.event_types {
+        validate_event_types(db, event_types, &app.org_id).await?;
     }
     validate_endpoint_url(&data.url, cfg.endpoint_https_only)?;
 
@@ -238,8 +238,8 @@ pub(super) async fn patch_endpoint(
     permissions::Application { app }: permissions::Application,
     ValidatedJson(data): ValidatedJson<EndpointPatch>,
 ) -> Result<Json<EndpointOut>> {
-    if let UnrequiredNullableField::Some(ref event_types_ids) = data.event_types_ids {
-        validate_event_types(db, event_types_ids, &app.org_id).await?;
+    if let UnrequiredNullableField::Some(event_types) = &data.event_types {
+        validate_event_types(db, event_types, &app.org_id).await?;
     }
     if let UnrequiredField::Some(url) = &data.url {
         validate_endpoint_url(url, cfg.endpoint_https_only)?;
@@ -348,7 +348,7 @@ async fn validate_event_types(
             .collect::<Vec<&str>>()
             .join(", ");
         Err(HttpError::unprocessable_entity(vec![ValidationErrorItem {
-            loc: vec!["body".to_owned(), "filterTypes".to_owned()],
+            loc: vec!["body".to_owned(), "eventTypes".to_owned()],
             msg: format!("The following event types don't exist: {missing}"),
             ty: "value_error".to_owned(),
         }])
