@@ -1,7 +1,7 @@
 // Modified version of the file openapi-generator would usually put in
 // apis/request.rs
 
-use std::{collections::HashMap, time::Duration};
+use std::{collections::BTreeMap, time::Duration};
 
 use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
@@ -26,10 +26,10 @@ pub(crate) enum Auth {
 pub(crate) struct Request {
     method: http1::Method,
     path: &'static str,
-    query_params: HashMap<&'static str, String>,
+    query_params: Vec<(&'static str, String)>,
     no_return_type: bool,
-    path_params: HashMap<&'static str, String>,
-    header_params: HashMap<&'static str, String>,
+    path_params: Vec<(&'static str, String)>,
+    header_params: BTreeMap<&'static str, String>,
     // TODO: multiple body params are possible technically, but not supported here.
     serialized_body: Option<String>,
 }
@@ -39,9 +39,9 @@ impl Request {
         Request {
             method,
             path,
-            query_params: HashMap::new(),
-            path_params: HashMap::new(),
-            header_params: HashMap::new(),
+            query_params: Vec::new(),
+            path_params: Vec::new(),
+            header_params: BTreeMap::new(),
             serialized_body: None,
             no_return_type: false,
         }
@@ -60,7 +60,7 @@ impl Request {
     }
 
     pub fn with_query_param(mut self, name: &'static str, param: impl QueryParamValue) -> Self {
-        self.query_params.insert(name, param.encode());
+        self.query_params.push((name, param.encode()));
         self
     }
 
@@ -70,17 +70,17 @@ impl Request {
         param: Option<T>,
     ) -> Self {
         if let Some(value) = param {
-            self.query_params.insert(name, value.encode());
+            self.query_params.push((name, value.encode()));
         } else if name == "expanded_statuses" {
             // HACK: default expanded_statuses to true, it only defaults to false
             //       server-side because of backwards-compatibility for old SDKs
-            self.query_params.insert(name, true.encode());
+            self.query_params.push((name, true.encode()));
         }
         self
     }
 
     pub fn with_path_param(mut self, basename: &'static str, param: String) -> Self {
-        self.path_params.insert(basename, param);
+        self.path_params.push((basename, param));
         self
     }
 
