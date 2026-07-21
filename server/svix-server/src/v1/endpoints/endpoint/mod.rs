@@ -188,7 +188,7 @@ pub struct EndpointIn {
     #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_filter_types", length(min = 1))]
-    pub event_types_ids: Option<EventTypeNameSet>,
+    pub event_types: Option<EventTypeNameSet>,
     /// List of message channels this endpoint listens to (omit for all)
     #[validate(custom(function = "validate_channels_endpoint"))]
     #[validate(nested)]
@@ -235,7 +235,7 @@ impl ModelIn for EndpointIn {
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             key: _,
             metadata: _,
@@ -299,7 +299,7 @@ struct EndpointUpdate {
     #[validate(custom(function = "validate_event_types_ids"))]
     #[validate(nested)]
     #[schemars(example = "example_filter_types", length(min = 1))]
-    pub event_types_ids: Option<EventTypeNameSet>,
+    pub event_types: Option<EventTypeNameSet>,
 
     /// List of message channels this endpoint listens to (omit for all)
     #[validate(custom(function = "validate_channels_endpoint"))]
@@ -325,7 +325,7 @@ impl ModelIn for EndpointUpdate {
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata: _,
         } = self;
@@ -353,7 +353,7 @@ impl EndpointUpdate {
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata,
         } = self;
@@ -367,7 +367,7 @@ impl EndpointUpdate {
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata,
 
@@ -419,7 +419,7 @@ pub struct EndpointPatch {
     #[validate(custom(function = "validate_event_types_ids_unrequired_nullable"))]
     #[validate(nested)]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
-    pub event_types_ids: UnrequiredNullableField<EventTypeNameSet>,
+    pub event_types: UnrequiredNullableField<EventTypeNameSet>,
 
     #[validate(custom(function = "validate_channels_endpoint_unrequired_nullable"))]
     #[validate(nested)]
@@ -445,7 +445,7 @@ impl ModelIn for EndpointPatch {
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata: _,
         } = self;
@@ -530,7 +530,7 @@ pub struct EndpointOutCommon {
     pub disabled: bool,
     #[serde(rename = "filterTypes")]
     #[schemars(example = "example_filter_types", length(min = 1))]
-    pub event_types_ids: Option<EventTypeNameSet>,
+    pub event_types: Option<EventTypeNameSet>,
     /// List of message channels this endpoint listens to (omit for all)
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
@@ -549,7 +549,7 @@ impl From<endpoint::Model> for EndpointOutCommon {
             url: model.url,
             version: model.version as u16,
             disabled: model.disabled,
-            event_types_ids: model.event_types_ids,
+            event_types: model.event_types_ids,
             channels: model.channels,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),

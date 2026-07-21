@@ -64,7 +64,7 @@ pub fn default_test_endpoint() -> EndpointIn {
         url: Url::parse("http://example.com").unwrap(),
         version: Some(1),
         disabled: Default::default(),
-        event_types_ids: Default::default(),
+        event_types: Default::default(),
         channels: Default::default(),
         key: Default::default(),
         metadata: Default::default(),

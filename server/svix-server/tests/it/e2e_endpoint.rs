@@ -121,7 +121,7 @@ async fn test_create() {
     assert_eq!(out.ep.url, "http://example.com/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 }
 
@@ -165,7 +165,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that the rate limit may be set
@@ -186,7 +186,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that the rate limit may be unset
@@ -213,7 +213,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that the UID may be set
@@ -234,7 +234,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test the UID may be unset
@@ -255,7 +255,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url/".to_owned());
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that the URL may be set
@@ -276,7 +276,7 @@ async fn test_patch() {
     assert_eq!(out.ep.uid, None);
     assert_eq!(out.ep.version, 1);
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that the version may be set
@@ -297,7 +297,7 @@ async fn test_patch() {
     assert_eq!(out.ep.uid, None);
     assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert!(!out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that disabled may be set
@@ -318,7 +318,7 @@ async fn test_patch() {
     assert_eq!(out.ep.uid, None);
     assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     assert_eq!(out.ep.channels, None);
 
     // Test that event type IDs may be set
@@ -353,7 +353,7 @@ async fn test_patch() {
         .await
         .unwrap();
     assert_eq!(
-        out.ep.event_types_ids,
+        out.ep.event_types,
         Some(EventTypeNameSet(HashSet::from([EventTypeName(
             "test".to_owned()
         )])))
@@ -378,7 +378,7 @@ async fn test_patch() {
         .get::<EndpointOut>(&url, StatusCode::OK)
         .await
         .unwrap();
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
     // Assert that no other changes were made
     assert_eq!(out.ep.description, "test".to_owned());
     assert_eq!(out.ep.rate_limit, None);
@@ -418,7 +418,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert!(out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
 
     // Test that channels may be unset
     let _: EndpointOut = client
@@ -439,7 +439,7 @@ async fn test_patch() {
     assert_eq!(out.ep.url, "http://bad.url2/".to_owned());
     assert_eq!(out.ep.version, 2);
     assert!(out.ep.disabled);
-    assert_eq!(out.ep.event_types_ids, None);
+    assert_eq!(out.ep.event_types, None);
 }
 
 #[allow(deprecated)]
@@ -1796,7 +1796,7 @@ async fn test_endpoint_filter_events() {
         .await
         .unwrap();
 
-    assert_eq!(ep_with_valid_event.ep.event_types_ids.unwrap(), expected_et);
+    assert_eq!(ep_with_valid_event.ep.event_types.unwrap(), expected_et);
 
     let ep_removed_events: EndpointOut = client
         .put(
@@ -1807,13 +1807,13 @@ async fn test_endpoint_filter_events() {
         .await
         .unwrap();
 
-    assert!(ep_removed_events.ep.event_types_ids.is_none());
+    assert!(ep_removed_events.ep.event_types.is_none());
 
     let ep_removed_events = get_endpoint(&client, &app_id, &ep_removed_events.id)
         .await
         .unwrap();
 
-    assert!(ep_removed_events.ep.event_types_ids.is_none());
+    assert!(ep_removed_events.ep.event_types.is_none());
 
     let ep_updated_events: EndpointOut = client
         .put(
@@ -1824,13 +1824,13 @@ async fn test_endpoint_filter_events() {
         .await
         .unwrap();
 
-    assert_eq!(ep_updated_events.ep.event_types_ids.unwrap(), expected_et);
+    assert_eq!(ep_updated_events.ep.event_types.unwrap(), expected_et);
 
     let ep_updated_events: EndpointOut = get_endpoint(&client, &app_id, &ep_with_valid_event.id)
         .await
         .unwrap();
 
-    assert_eq!(ep_updated_events.ep.event_types_ids.unwrap(), expected_et);
+    assert_eq!(ep_updated_events.ep.event_types.unwrap(), expected_et);
 }
 
 #[tokio::test]
@@ -1991,7 +1991,7 @@ async fn test_msg_event_types_filter() {
             &app_id,
             EndpointIn {
                 url: Url::parse(&receiver.endpoint).unwrap(),
-                event_types_ids: event_types,
+                event_types,
                 ..default_test_endpoint()
             },
         )
