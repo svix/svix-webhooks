@@ -50,14 +50,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new ConnectorListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseConnectorOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/connector",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -75,13 +79,17 @@ namespace Svix
         /// </summary>
         public ListResponseConnectorOut List(ConnectorListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new ConnectorListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseConnectorOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/connector",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -102,14 +110,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new ConnectorCreateOptions();
+            }
             connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/connector",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: connectorIn,
                     cancellationToken: cancellationToken
                 );
@@ -128,14 +140,18 @@ namespace Svix
         /// </summary>
         public ConnectorOut Create(ConnectorIn connectorIn, ConnectorCreateOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new ConnectorCreateOptions();
+            }
             connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/connector",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: connectorIn
                 );
                 return response.Data;

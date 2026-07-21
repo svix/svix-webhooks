@@ -169,6 +169,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageListOptions();
+            }
             try
             {
                 var response =
@@ -176,8 +180,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/api/v1/app/{app_id}/msg",
                         pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -203,14 +207,18 @@ namespace Svix
         /// </summary>
         public ListResponseMessageOut List(string appId, MessageListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new MessageListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseMessageOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/app/{app_id}/msg",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -240,6 +248,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageCreateOptions();
+            }
             messageIn = messageIn ?? throw new ArgumentNullException(nameof(messageIn));
             try
             {
@@ -248,11 +260,11 @@ namespace Svix
                     path: "/api/v1/app/{app_id}/msg",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: new Dictionary<string, string> { { "with_content", "false" } },
-                    headerParams: options?.HeaderParams(),
+                    headerParams: options.HeaderParams(),
                     content: messageIn,
                     cancellationToken: cancellationToken
                 );
-                if (options?.WithContent ?? true)
+                if (options.WithContent ?? true)
                 {
                     response.Data.Payload = messageIn.Payload;
                 }
@@ -283,6 +295,10 @@ namespace Svix
             MessageCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageCreateOptions();
+            }
             messageIn = messageIn ?? throw new ArgumentNullException(nameof(messageIn));
             try
             {
@@ -291,10 +307,10 @@ namespace Svix
                     path: "/api/v1/app/{app_id}/msg",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: new Dictionary<string, string> { { "with_content", "false" } },
-                    headerParams: options?.HeaderParams(),
+                    headerParams: options.HeaderParams(),
                     content: messageIn
                 );
-                if (options?.WithContent ?? true)
+                if (options.WithContent ?? true)
                 {
                     response.Data.Payload = messageIn.Payload;
                 }
@@ -323,6 +339,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePrecheckOptions();
+            }
             messagePrecheckIn =
                 messagePrecheckIn ?? throw new ArgumentNullException(nameof(messagePrecheckIn));
             try
@@ -331,8 +351,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg/precheck/active",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: messagePrecheckIn,
                     cancellationToken: cancellationToken
                 );
@@ -360,6 +380,10 @@ namespace Svix
             MessagePrecheckOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePrecheckOptions();
+            }
             messagePrecheckIn =
                 messagePrecheckIn ?? throw new ArgumentNullException(nameof(messagePrecheckIn));
             try
@@ -368,8 +392,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg/precheck/active",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: messagePrecheckIn
                 );
                 return response.Data;
@@ -392,6 +416,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageGetOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<MessageOut>(
@@ -402,8 +430,8 @@ namespace Svix
                         { "app_id", appId },
                         { "msg_id", msgId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -421,6 +449,10 @@ namespace Svix
         /// </summary>
         public MessageOut Get(string appId, string msgId, MessageGetOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new MessageGetOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<MessageOut>(
@@ -431,8 +463,8 @@ namespace Svix
                         { "app_id", appId },
                         { "msg_id", msgId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -530,14 +562,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageExpungeAllContentsOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ExpungeAllContentsOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg/expunge-all-contents",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -572,14 +608,18 @@ namespace Svix
             MessageExpungeAllContentsOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageExpungeAllContentsOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ExpungeAllContentsOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/msg/expunge-all-contents",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

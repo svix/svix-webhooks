@@ -67,6 +67,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerPollOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<PollingEndpointOut>(
@@ -77,8 +81,8 @@ namespace Svix
                         { "app_id", appId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -100,6 +104,10 @@ namespace Svix
             MessagePollerPollOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerPollOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<PollingEndpointOut>(
@@ -110,8 +118,8 @@ namespace Svix
                         { "app_id", appId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -135,6 +143,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerSeekOptions();
+            }
             pollingEndpointConsumerSeekIn =
                 pollingEndpointConsumerSeekIn
                 ?? throw new ArgumentNullException(nameof(pollingEndpointConsumerSeekIn));
@@ -150,8 +162,8 @@ namespace Svix
                             { "sink_id", sinkId },
                             { "consumer_id", consumerId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         content: pollingEndpointConsumerSeekIn,
                         cancellationToken: cancellationToken
                     );
@@ -176,6 +188,10 @@ namespace Svix
             MessagePollerConsumerSeekOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerSeekOptions();
+            }
             pollingEndpointConsumerSeekIn =
                 pollingEndpointConsumerSeekIn
                 ?? throw new ArgumentNullException(nameof(pollingEndpointConsumerSeekIn));
@@ -190,8 +206,8 @@ namespace Svix
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: pollingEndpointConsumerSeekIn
                 );
                 return response.Data;
@@ -216,6 +232,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerPollOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<PollingEndpointOut>(
@@ -227,8 +247,8 @@ namespace Svix
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -252,6 +272,10 @@ namespace Svix
             MessagePollerConsumerPollOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerPollOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<PollingEndpointOut>(
@@ -263,8 +287,8 @@ namespace Svix
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

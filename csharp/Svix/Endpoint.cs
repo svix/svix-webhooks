@@ -122,6 +122,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointListOptions();
+            }
             try
             {
                 var response =
@@ -129,8 +133,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/api/v1/app/{app_id}/endpoint",
                         pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -148,14 +152,18 @@ namespace Svix
         /// </summary>
         public ListResponseEndpointOut List(string appId, EndpointListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new EndpointListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseEndpointOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/app/{app_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -179,6 +187,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointCreateOptions();
+            }
             endpointIn = endpointIn ?? throw new ArgumentNullException(nameof(endpointIn));
             try
             {
@@ -186,8 +198,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointIn,
                     cancellationToken: cancellationToken
                 );
@@ -212,6 +224,10 @@ namespace Svix
             EndpointCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointCreateOptions();
+            }
             endpointIn = endpointIn ?? throw new ArgumentNullException(nameof(endpointIn));
             try
             {
@@ -219,8 +235,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointIn
                 );
                 return response.Data;
@@ -549,6 +565,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointRotateSecretOptions();
+            }
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
@@ -562,8 +582,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointSecretRotateIn,
                     cancellationToken: cancellationToken
                 );
@@ -589,6 +609,10 @@ namespace Svix
             EndpointRotateSecretOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointRotateSecretOptions();
+            }
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
@@ -602,8 +626,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointSecretRotateIn
                 );
                 return response.Data;
@@ -965,6 +989,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointReplayMissingOptions();
+            }
             replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
             try
             {
@@ -976,8 +1004,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: replayIn,
                     cancellationToken: cancellationToken
                 );
@@ -1016,6 +1044,10 @@ namespace Svix
             EndpointReplayMissingOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointReplayMissingOptions();
+            }
             replayIn = replayIn ?? throw new ArgumentNullException(nameof(replayIn));
             try
             {
@@ -1027,8 +1059,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: replayIn
                 );
                 return response.Data;
@@ -1067,6 +1099,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointBulkReplayOptions();
+            }
             bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
             try
             {
@@ -1078,8 +1114,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: bulkReplayIn,
                     cancellationToken: cancellationToken
                 );
@@ -1118,6 +1154,10 @@ namespace Svix
             EndpointBulkReplayOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointBulkReplayOptions();
+            }
             bulkReplayIn = bulkReplayIn ?? throw new ArgumentNullException(nameof(bulkReplayIn));
             try
             {
@@ -1129,8 +1169,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: bulkReplayIn
                 );
                 return response.Data;
@@ -1153,6 +1193,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointGetStatsOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EndpointStats>(
@@ -1163,8 +1207,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -1186,6 +1230,10 @@ namespace Svix
             EndpointGetStatsOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointGetStatsOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EndpointStats>(
@@ -1196,8 +1244,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -1234,6 +1282,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointRecoverOptions();
+            }
             recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
             try
             {
@@ -1245,8 +1297,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: recoverIn,
                     cancellationToken: cancellationToken
                 );
@@ -1284,6 +1336,10 @@ namespace Svix
             EndpointRecoverOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointRecoverOptions();
+            }
             recoverIn = recoverIn ?? throw new ArgumentNullException(nameof(recoverIn));
             try
             {
@@ -1295,8 +1351,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: recoverIn
                 );
                 return response.Data;
@@ -1320,6 +1376,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EndpointSendExampleOptions();
+            }
             eventExampleIn =
                 eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
             try
@@ -1332,8 +1392,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: eventExampleIn,
                     cancellationToken: cancellationToken
                 );
@@ -1357,6 +1417,10 @@ namespace Svix
             EndpointSendExampleOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EndpointSendExampleOptions();
+            }
             eventExampleIn =
                 eventExampleIn ?? throw new ArgumentNullException(nameof(eventExampleIn));
             try
@@ -1369,8 +1433,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: eventExampleIn
                 );
                 return response.Data;

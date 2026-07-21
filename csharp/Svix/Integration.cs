@@ -61,6 +61,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IntegrationListOptions();
+            }
             try
             {
                 var response =
@@ -68,8 +72,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/api/v1/app/{app_id}/integration",
                         pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -87,14 +91,18 @@ namespace Svix
         /// </summary>
         public ListResponseIntegrationOut List(string appId, IntegrationListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new IntegrationListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseIntegrationOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/app/{app_id}/integration",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -116,6 +124,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IntegrationCreateOptions();
+            }
             integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
             try
             {
@@ -123,8 +135,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/integration",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: integrationIn,
                     cancellationToken: cancellationToken
                 );
@@ -147,6 +159,10 @@ namespace Svix
             IntegrationCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IntegrationCreateOptions();
+            }
             integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
             try
             {
@@ -154,8 +170,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/integration",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: integrationIn
                 );
                 return response.Data;
@@ -360,6 +376,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IntegrationRotateKeyOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
@@ -370,8 +390,8 @@ namespace Svix
                         { "app_id", appId },
                         { "integ_id", integId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -393,6 +413,10 @@ namespace Svix
             IntegrationRotateKeyOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IntegrationRotateKeyOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
@@ -403,8 +427,8 @@ namespace Svix
                         { "app_id", appId },
                         { "integ_id", integId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

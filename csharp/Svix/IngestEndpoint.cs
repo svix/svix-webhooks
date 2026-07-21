@@ -61,6 +61,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointListOptions();
+            }
             try
             {
                 var response =
@@ -68,8 +72,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/ingest/api/v1/source/{source_id}/endpoint",
                         pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -90,14 +94,18 @@ namespace Svix
             IngestEndpointListOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseIngestEndpointOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -119,6 +127,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointCreateOptions();
+            }
             ingestEndpointIn =
                 ingestEndpointIn ?? throw new ArgumentNullException(nameof(ingestEndpointIn));
             try
@@ -127,8 +139,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointIn,
                     cancellationToken: cancellationToken
                 );
@@ -151,6 +163,10 @@ namespace Svix
             IngestEndpointCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointCreateOptions();
+            }
             ingestEndpointIn =
                 ingestEndpointIn ?? throw new ArgumentNullException(nameof(ingestEndpointIn));
             try
@@ -159,8 +175,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointIn
                 );
                 return response.Data;
@@ -434,6 +450,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointRotateSecretOptions();
+            }
             ingestEndpointSecretIn =
                 ingestEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(ingestEndpointSecretIn));
@@ -447,8 +467,8 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointSecretIn,
                     cancellationToken: cancellationToken
                 );
@@ -474,6 +494,10 @@ namespace Svix
             IngestEndpointRotateSecretOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointRotateSecretOptions();
+            }
             ingestEndpointSecretIn =
                 ingestEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(ingestEndpointSecretIn));
@@ -487,8 +511,8 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointSecretIn
                 );
                 return response.Data;

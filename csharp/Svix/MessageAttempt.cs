@@ -35,7 +35,7 @@ namespace Svix
                     { "after", After },
                     { "with_content", WithContent },
                     { "with_msg", WithMsg },
-                    { "expanded_statuses", ExpandedStatuses },
+                    { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
             );
@@ -72,7 +72,7 @@ namespace Svix
                     { "before", Before },
                     { "after", After },
                     { "with_content", WithContent },
-                    { "expanded_statuses", ExpandedStatuses },
+                    { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
             );
@@ -105,7 +105,7 @@ namespace Svix
                     { "before", Before },
                     { "after", After },
                     { "with_content", WithContent },
-                    { "expanded_statuses", ExpandedStatuses },
+                    { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
             );
@@ -132,7 +132,10 @@ namespace Svix
         public new Dictionary<string, string> QueryParams()
         {
             return SerializeParams(
-                new Dictionary<string, object?> { { "expanded_statuses", ExpandedStatuses } }
+                new Dictionary<string, object?>
+                {
+                    { "expanded_statuses", ExpandedStatuses ?? true },
+                }
             );
         }
     }
@@ -168,6 +171,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByEndpointOptions();
+            }
             try
             {
                 var response =
@@ -179,8 +186,8 @@ namespace Svix
                             { "app_id", appId },
                             { "endpoint_id", endpointId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -207,6 +214,10 @@ namespace Svix
             MessageAttemptListByEndpointOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByEndpointOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
@@ -217,8 +228,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -245,6 +256,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByMsgOptions();
+            }
             try
             {
                 var response =
@@ -256,8 +271,8 @@ namespace Svix
                             { "app_id", appId },
                             { "msg_id", msgId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -284,6 +299,10 @@ namespace Svix
             MessageAttemptListByMsgOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByMsgOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
@@ -294,8 +313,8 @@ namespace Svix
                         { "app_id", appId },
                         { "msg_id", msgId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -325,6 +344,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedMessagesOptions();
+            }
             try
             {
                 var response =
@@ -336,8 +359,8 @@ namespace Svix
                             { "app_id", appId },
                             { "endpoint_id", endpointId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -367,6 +390,10 @@ namespace Svix
             MessageAttemptListAttemptedMessagesOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedMessagesOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseEndpointMessageOut>(
@@ -377,8 +404,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -403,6 +430,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedDestinationsOptions();
+            }
             try
             {
                 var response =
@@ -414,8 +445,8 @@ namespace Svix
                             { "app_id", appId },
                             { "msg_id", msgId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -440,6 +471,10 @@ namespace Svix
             MessageAttemptListAttemptedDestinationsOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedDestinationsOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseMessageEndpointOut>(
@@ -450,8 +485,8 @@ namespace Svix
                         { "app_id", appId },
                         { "msg_id", msgId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -474,6 +509,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptGetOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<MessageAttemptOut>(
@@ -485,8 +524,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "attempt_id", attemptId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -509,6 +548,10 @@ namespace Svix
             MessageAttemptGetOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptGetOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<MessageAttemptOut>(
@@ -520,8 +563,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "attempt_id", attemptId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -610,6 +653,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptResendOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
@@ -621,8 +668,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -645,6 +692,10 @@ namespace Svix
             MessageAttemptResendOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptResendOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
@@ -656,8 +707,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

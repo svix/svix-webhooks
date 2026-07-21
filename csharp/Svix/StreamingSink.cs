@@ -61,6 +61,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkListOptions();
+            }
             try
             {
                 var response =
@@ -68,8 +72,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/api/v1/stream/{stream_id}/sink",
                         pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -90,14 +94,18 @@ namespace Svix
             StreamingSinkListOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseStreamSinkOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/stream/{stream_id}/sink",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -119,6 +127,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkCreateOptions();
+            }
             streamSinkIn = streamSinkIn ?? throw new ArgumentNullException(nameof(streamSinkIn));
             try
             {
@@ -126,8 +138,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/sink",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamSinkIn,
                     cancellationToken: cancellationToken
                 );
@@ -150,6 +162,10 @@ namespace Svix
             StreamingSinkCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkCreateOptions();
+            }
             streamSinkIn = streamSinkIn ?? throw new ArgumentNullException(nameof(streamSinkIn));
             try
             {
@@ -157,8 +173,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/sink",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamSinkIn
                 );
                 return response.Data;
@@ -555,6 +571,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkRotateSecretOptions();
+            }
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
@@ -568,8 +588,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointSecretRotateIn,
                     cancellationToken: cancellationToken
                 );
@@ -593,6 +613,10 @@ namespace Svix
             StreamingSinkRotateSecretOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkRotateSecretOptions();
+            }
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
@@ -606,8 +630,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointSecretRotateIn
                 );
                 return response.Data;

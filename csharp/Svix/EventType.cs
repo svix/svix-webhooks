@@ -74,14 +74,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EventTypeListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseEventTypeOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/event-type",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -99,13 +103,17 @@ namespace Svix
         /// </summary>
         public ListResponseEventTypeOut List(EventTypeListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new EventTypeListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseEventTypeOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -130,14 +138,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EventTypeCreateOptions();
+            }
             eventTypeIn = eventTypeIn ?? throw new ArgumentNullException(nameof(eventTypeIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EventTypeOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: eventTypeIn,
                     cancellationToken: cancellationToken
                 );
@@ -160,14 +172,18 @@ namespace Svix
         /// </summary>
         public EventTypeOut Create(EventTypeIn eventTypeIn, EventTypeCreateOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new EventTypeCreateOptions();
+            }
             eventTypeIn = eventTypeIn ?? throw new ArgumentNullException(nameof(eventTypeIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EventTypeOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/event-type",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: eventTypeIn
                 );
                 return response.Data;
@@ -193,6 +209,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EventTypeImportOpenapiOptions();
+            }
             eventTypeImportOpenApiIn =
                 eventTypeImportOpenApiIn
                 ?? throw new ArgumentNullException(nameof(eventTypeImportOpenApiIn));
@@ -202,8 +222,8 @@ namespace Svix
                     await _client.SvixHttpClient.SendRequestAsync<EventTypeImportOpenApiOut>(
                         method: HttpMethod.Post,
                         path: "/api/v1/event-type/import/openapi",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         content: eventTypeImportOpenApiIn,
                         cancellationToken: cancellationToken
                     );
@@ -229,6 +249,10 @@ namespace Svix
             EventTypeImportOpenapiOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new EventTypeImportOpenapiOptions();
+            }
             eventTypeImportOpenApiIn =
                 eventTypeImportOpenApiIn
                 ?? throw new ArgumentNullException(nameof(eventTypeImportOpenApiIn));
@@ -237,8 +261,8 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<EventTypeImportOpenApiOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/event-type/import/openapi",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: eventTypeImportOpenApiIn
                 );
                 return response.Data;
@@ -380,6 +404,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new EventTypeDeleteOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
@@ -389,8 +417,8 @@ namespace Svix
                     {
                         { "event_type_name", eventTypeName },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -413,6 +441,10 @@ namespace Svix
         /// </summary>
         public bool Delete(string eventTypeName, EventTypeDeleteOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new EventTypeDeleteOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
@@ -422,8 +454,8 @@ namespace Svix
                     {
                         { "event_type_name", eventTypeName },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

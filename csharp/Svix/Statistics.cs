@@ -139,6 +139,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StatisticsAggregateAppStatsOptions();
+            }
             appUsageStatsIn =
                 appUsageStatsIn ?? throw new ArgumentNullException(nameof(appUsageStatsIn));
             try
@@ -146,8 +150,8 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<AppUsageStatsOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stats/usage/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: appUsageStatsIn,
                     cancellationToken: cancellationToken
                 );
@@ -190,6 +194,10 @@ namespace Svix
             StatisticsAggregateAppStatsOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StatisticsAggregateAppStatsOptions();
+            }
             appUsageStatsIn =
                 appUsageStatsIn ?? throw new ArgumentNullException(nameof(appUsageStatsIn));
             try
@@ -197,8 +205,8 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<AppUsageStatsOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stats/usage/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: appUsageStatsIn
                 );
                 return response.Data;

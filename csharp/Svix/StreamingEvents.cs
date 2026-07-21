@@ -52,6 +52,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventsGetOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EventStreamOut>(
@@ -62,8 +66,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -87,6 +91,10 @@ namespace Svix
             StreamingEventsGetOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventsGetOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EventStreamOut>(
@@ -97,8 +105,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -120,6 +128,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventsCreateOptions();
+            }
             createStreamEventsIn =
                 createStreamEventsIn
                 ?? throw new ArgumentNullException(nameof(createStreamEventsIn));
@@ -129,8 +141,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/events",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: createStreamEventsIn,
                     cancellationToken: cancellationToken
                 );
@@ -153,6 +165,10 @@ namespace Svix
             StreamingEventsCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingEventsCreateOptions();
+            }
             createStreamEventsIn =
                 createStreamEventsIn
                 ?? throw new ArgumentNullException(nameof(createStreamEventsIn));
@@ -162,8 +178,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/events",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: createStreamEventsIn
                 );
                 return response.Data;
