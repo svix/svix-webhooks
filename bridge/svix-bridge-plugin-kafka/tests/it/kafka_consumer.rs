@@ -11,7 +11,9 @@ use rdkafka::{
     util::Timeout,
 };
 use serde_json::json;
-use svix_bridge_plugin_kafka::{KafkaConsumer, KafkaInputOpts, KafkaTransformationInput};
+use svix_bridge_plugin_kafka::{
+    KafkaAutoOffsetReset, KafkaConsumer, KafkaInputOpts, KafkaTransformationInput,
+};
 use svix_bridge_types::{
     CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
     TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
@@ -66,6 +68,37 @@ fn get_test_plugin_with_transformation_input(
     use_transformation: Option<TransformerInputFormat>,
     transformation_input: KafkaTransformationInput,
 ) -> KafkaConsumer {
+    get_test_plugin_with_kafka_options(
+        svix_url,
+        topic,
+        use_transformation,
+        transformation_input,
+        KafkaAutoOffsetReset::Latest,
+    )
+}
+
+fn get_test_plugin_with_auto_offset_reset(
+    svix_url: String,
+    topic: &str,
+    use_transformation: Option<TransformerInputFormat>,
+    auto_offset_reset: KafkaAutoOffsetReset,
+) -> KafkaConsumer {
+    get_test_plugin_with_kafka_options(
+        svix_url,
+        topic,
+        use_transformation,
+        KafkaTransformationInput::Payload,
+        auto_offset_reset,
+    )
+}
+
+fn get_test_plugin_with_kafka_options(
+    svix_url: String,
+    topic: &str,
+    use_transformation: Option<TransformerInputFormat>,
+    transformation_input: KafkaTransformationInput,
+    auto_offset_reset: KafkaAutoOffsetReset,
+) -> KafkaConsumer {
     KafkaConsumer::new(
         "test".into(),
         KafkaInputOpts::Inner {
@@ -74,6 +107,7 @@ fn get_test_plugin_with_transformation_input(
             group_id: "svix_bridge_test_group_id".to_owned(),
             topic: topic.to_owned(),
             transformation_input,
+            auto_offset_reset,
             security_protocol: svix_bridge_plugin_kafka::KafkaSecurityProtocol::Plaintext,
             debug_contexts: None,
         },
@@ -180,6 +214,49 @@ async fn test_consume_ok() {
 
     // Wait for the consumer to consume.
     tokio::time::sleep(CONSUME_WAIT_TIME).await;
+
+    handle.abort();
+    delete_topic(&admin_client, topic).await;
+}
+
+#[tokio::test]
+async fn test_consume_with_earliest_auto_offset_reset_ok() {
+    let topic = unique_topic_name!();
+
+    let admin_client = kafka_admin_client();
+    create_topic(&admin_client, topic).await;
+
+    let producer = kafka_producer();
+    let msg = CreateMessageRequest {
+        app_id: "app_1234".into(),
+        message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
+    };
+    publish(&producer, topic, &serde_json::to_vec(&msg).unwrap()).await;
+
+    let mock_server = MockServer::start().await;
+    let mock = Mock::given(method("POST"))
+        .respond_with(ResponseTemplate::new(202).set_body_json(json!({
+          "eventType": "testing.things",
+          "payload": {
+            "hi": "there",
+          },
+          "id": "msg_xxxx",
+          "timestamp": "2023-04-25T00:00:00Z"
+        })))
+        .named("create_message")
+        .expect(1);
+    mock_server.register(mock).await;
+
+    let plugin = get_test_plugin_with_auto_offset_reset(
+        mock_server.uri(),
+        topic,
+        None,
+        KafkaAutoOffsetReset::Earliest,
+    );
+    let handle = tokio::spawn(async move {
+        plugin.run().await;
+    });
+    tokio::time::sleep(CONNECT_WAIT_TIME + CONSUME_WAIT_TIME).await;
 
     handle.abort();
     delete_topic(&admin_client, topic).await;

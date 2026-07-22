@@ -11,6 +11,7 @@ base64 = "0.22.1"
 rdkafka = { version = "0.38.0", features = ["cmake-build", "ssl", "tracing"] }
 serde.workspace = true
 serde_json.workspace = true
+strum.workspace = true
 svix-bridge-types.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["time"] }
