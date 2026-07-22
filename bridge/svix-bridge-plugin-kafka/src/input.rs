@@ -3,10 +3,12 @@ use std::{
     time::{Duration, Instant},
 };
 
+use base64::{Engine as _, engine::general_purpose::STANDARD};
 use rdkafka::{
     Message as _,
     consumer::{CommitMode, Consumer as _},
     error::KafkaError,
+    message::Headers as _,
 };
 use svix_bridge_types::{
     CreateMessageRequest, JsObject, SenderInput, SenderOutputOpts, TransformationConfig,
@@ -16,7 +18,10 @@ use svix_bridge_types::{
 };
 use tokio::task::spawn_blocking;
 
-use crate::{Error, Result, config::KafkaInputOpts};
+use crate::{
+    Error, Result,
+    config::{KafkaInputOpts, KafkaTransformationInput},
+};
 
 pub struct KafkaConsumer {
     name: String,
@@ -46,6 +51,44 @@ impl KafkaConsumer {
         })
     }
 
+    fn kafka_header_value_as_json(value: Option<&[u8]>) -> serde_json::Value {
+        value.map_or(serde_json::Value::Null, |value| {
+            serde_json::Value::String(STANDARD.encode(value))
+        })
+    }
+
+    fn kafka_key_as_json(key: Option<&[u8]>) -> serde_json::Value {
+        key.map_or(serde_json::Value::Null, |key| {
+            serde_json::Value::String(String::from_utf8_lossy(key).into_owned())
+        })
+    }
+
+    fn kafka_envelope(
+        msg: &rdkafka::message::BorrowedMessage<'_>,
+        payload: serde_json::Value,
+    ) -> serde_json::Value {
+        let headers: Vec<_> = msg
+            .headers()
+            .into_iter()
+            .flat_map(|headers| headers.iter())
+            .map(|header| {
+                serde_json::json!({
+                    "key": header.key,
+                    "value": Self::kafka_header_value_as_json(header.value),
+                })
+            })
+            .collect();
+
+        serde_json::json!({
+            "headers": headers,
+            "key": Self::kafka_key_as_json(msg.key()),
+            "topic": msg.topic(),
+            "partition": msg.partition(),
+            "offset": msg.offset(),
+            "payload": payload,
+        })
+    }
+
     #[tracing::instrument(skip_all)]
     async fn process(&self, msg: &rdkafka::message::BorrowedMessage<'_>) -> Result<()> {
         let payload = msg.payload().ok_or_else(|| Error::MissingPayload)?;
@@ -54,7 +97,18 @@ impl KafkaConsumer {
                 TransformerInputFormat::Json => {
                     let json_payload =
                         serde_json::from_slice(payload).map_err(Error::Deserialization)?;
-                    TransformerInput::Json(json_payload)
+                    let KafkaInputOpts::Inner {
+                        transformation_input,
+                        ..
+                    } = &self.opts;
+                    let input = match transformation_input {
+                        KafkaTransformationInput::Payload => json_payload,
+                        KafkaTransformationInput::Envelope => {
+                            Self::kafka_envelope(msg, json_payload)
+                        }
+                    };
+
+                    TransformerInput::Json(input)
                 }
                 TransformerInputFormat::String => {
                     let raw_payload = str::from_utf8(payload).map_err(Error::NonUtf8Payload)?;

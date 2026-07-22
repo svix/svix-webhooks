@@ -141,6 +141,10 @@ senders:
       kafka_bootstrap_brokers: "localhost:9094"
       kafka_group_id: "kafka_example_consumer_group"
       kafka_topic: "foobar"
+      # Optional - defaults to "payload". "envelope" passes Kafka record metadata and payload
+      # to JSON transformations. Headers preserve duplicate keys; values are null or base64 strings.
+      # The record key is decoded as UTF-8 with invalid bytes replaced.
+      # kafka_transformation_input: "envelope"
       # Other valid values: "plaintext", "ssl"
       kafka_security_protocol: "sasl_ssl"
       # Only for SASL
