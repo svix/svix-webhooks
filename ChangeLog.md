@@ -3,6 +3,7 @@
 ## Unreleased
 * Server: Fix warning when opentelemetry is disabled
 * Bridge: Include the Kafka partition in consumer idempotency keys
+* CLI: Use [wolfi](https://github.com/wolfi-dev) as the image base instead of Debian, shrinking the Docker image by 77% and removing all open CVEs
 
 ## Version 1.98.0
 * CLI, Server, Bridge: Set OCI metadata on Docker images
