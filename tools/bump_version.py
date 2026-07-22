@@ -47,60 +47,74 @@ VERSION_FILES = [
     # CLI
     VersionFile(
         "svix-cli/Cargo.toml",
-        [r'(\[package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")', ],
+        [
+            r'(\[package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
+        ],
         re.DOTALL,
     ),
     VersionFile(
         "svix-cli/README.md",
-        [r'(download/v)(\d+\.\d+\.\d+)(/svix-cli-installer)'],
+        [r"(download/v)(\d+\.\d+\.\d+)(/svix-cli-installer)"],
     ),
     # Server
     VersionFile(
         "server/Cargo.toml",
-        [r'(\[workspace\.package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")', ],
+        [
+            r'(\[workspace\.package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
+        ],
         re.DOTALL,
     ),
     # Bridge
     VersionFile(
         "bridge/Cargo.toml",
-        [r'(\[workspace\.package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")', ],
+        [
+            r'(\[workspace\.package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
+        ],
         re.DOTALL,
     ),
     # Rust client
     VersionFile(
         "rust/Cargo.toml",
-        [r'(\[package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")', ],
+        [
+            r'(\[package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
+        ],
         re.DOTALL,
     ),
     # C#
     VersionFile(
         "csharp/Svix/Svix.csproj",
-        [r'(<Version>)([^<]*)(</Version>)'],
+        [r"(<Version>)([^<]*)(</Version>)"],
     ),
     VersionFile(
         "csharp/Svix/Version.cs",
-        [r'(public const string version\s*=\s*")([^"]*)(")', ],
+        [
+            r'(public const string version\s*=\s*")([^"]*)(")',
+        ],
     ),
     # Go
     VersionFile(
         "go/internal/version.go",
-        [r'(const Version\s*=\s*")([^"]*)(")', ],
+        [
+            r'(const Version\s*=\s*")([^"]*)(")',
+        ],
     ),
     # Java
     VersionFile(
         "java/gradle.properties",
-        [r'(VERSION_NAME=)([^\n]+)'],
+        [r"(VERSION_NAME=)([^\n]+)"],
     ),
     VersionFile(
         "java/README.md",
         [
-            r'(<version>)([^<]*)(</version>)',
+            r"(<version>)([^<]*)(</version>)",
             r'(com\.svix:svix:)([^\s"]+)',
         ],
     ),
     VersionFile(
         "java/lib/src/main/java/com/svix/Version.java",
-        [r'(public static final String VERSION\s*=\s*")([^"]*)(")', ],
+        [
+            r'(public static final String VERSION\s*=\s*")([^"]*)(")',
+        ],
     ),
     # JavaScript
     VersionFile(
@@ -109,46 +123,65 @@ VERSION_FILES = [
     ),
     VersionFile(
         "javascript/src/request.ts",
-        [r'(export const LIB_VERSION\s*=\s*")([^"]*)(")', ],
+        [
+            r'(export const LIB_VERSION\s*=\s*")([^"]*)(")',
+        ],
     ),
     # Kotlin
     VersionFile(
         "kotlin/gradle.properties",
-        [r'(VERSION_NAME=)([^\n]+)'],
+        [r"(VERSION_NAME=)([^\n]+)"],
     ),
     VersionFile(
         "kotlin/README.md",
         [
-            r'(<version>)([^<]*)(</version>)',
+            r"(<version>)([^<]*)(</version>)",
             r'(com\.svix\.kotlin:svix-kotlin:)([^\s"]+)',
         ],
     ),
     VersionFile(
         "kotlin/lib/src/main/kotlin/Version.kt",
-        [r'(const val Version\s*=\s*")([^"]*)(")', ],
+        [
+            r'(const val Version\s*=\s*")([^"]*)(")',
+        ],
     ),
     # Python
     VersionFile(
         "python/svix/__init__.py",
-        [r'(__version__\s*=\s*")([^"]*)(")', ],
+        [
+            r'(__version__\s*=\s*")([^"]*)(")',
+        ],
     ),
     VersionFile(
         "python/pyproject.toml",
-        [r'(\[project\][\s\S]*?\nversion\s*=\s*")([^"]*)(")', ],
+        [
+            r'(\[project\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
+        ],
     ),
     # Ruby
     VersionFile(
         "ruby/Gemfile.lock",
-        [r'(\bsvix \()([^)]+)(\))'],
+        [r"(\bsvix \()([^)]+)(\))"],
     ),
     VersionFile(
         "ruby/lib/svix/version.rb",
-        [r'(VERSION\s*=\s*")([^"]*)(")', ],
+        [
+            r'(VERSION\s*=\s*")([^"]*)(")',
+        ],
     ),
     # PHP
     VersionFile(
         "php/src/Version.php",
-        [r"(const VERSION\s*=\s*')([^']*)(')", ],
+        [
+            r"(const VERSION\s*=\s*')([^']*)(')",
+        ],
+    ),
+]
+
+OLD_VERSION_FILES = [
+    VersionFile(
+        "client-integration-tests/docker-compose.yml",
+        [r"(image: docker.io/svix/svix-server:)(v.+)"],
     ),
 ]
 
@@ -210,6 +243,31 @@ def update_changelog(new_version: str) -> None:
         changelog_path.write_text(updated)
 
 
+def update_version_file(vf: VersionFile, version: str):
+    abs_path = REPO_ROOT / vf.path
+    content, had_crlf = read_file(abs_path)
+    for pattern in vf.patterns:
+        m = re.search(pattern, content, vf.pattern_flags)
+        if not m:
+            print(
+                f"ERROR: no match for pattern '{pattern}' in {vf.path}",
+                file=sys.stderr,
+            )
+            return 1
+
+        content = re.sub(
+            pattern,
+            lambda mo, v=version: (
+                mo.group(1)
+                + v
+                + (mo.group(3) if mo.lastindex and mo.lastindex >= 3 else "")
+            ),
+            content,
+            flags=vf.pattern_flags,
+        )
+    write_file(abs_path, content, had_crlf)
+
+
 def cmd_bump(new_version: str) -> int:
     if not semver.Version.is_valid(new_version):
         print(f"ERROR: '{new_version}' is not a valid semver", file=sys.stderr)
@@ -227,30 +285,14 @@ def cmd_bump(new_version: str) -> int:
         return 1
 
     (REPO_ROOT / ".version").write_text(new_version + "\n")
-    version = new_version
 
     for vf in VERSION_FILES:
-        abs_path = REPO_ROOT / vf.path
-        content, had_crlf = read_file(abs_path)
-        for pattern in vf.patterns:
-            m = re.search(pattern, content, vf.pattern_flags)
-            if not m:
-                print(
-                    f"ERROR: no match for pattern '{pattern}' in {vf.path}",
-                    file=sys.stderr,
-                )
-                return 1
-
-            content = re.sub(
-                pattern,
-                lambda mo, v=version: mo.group(1) + v + (mo.group(3) if mo.lastindex and mo.lastindex >= 3 else ""),
-                content,
-                flags=vf.pattern_flags,
-            )
-        write_file(abs_path, content, had_crlf)
+        update_version_file(vf, new_version)
+    for vf in OLD_VERSION_FILES:
+        update_version_file(vf, old_version)
 
     update_changelog(new_version)
-    print(f"Updated all versions to: {version}")
+    print(f"Updated all versions to: {new_version}")
 
     if rc := cmd_check():
         return rc

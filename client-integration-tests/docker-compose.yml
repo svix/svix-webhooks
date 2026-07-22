@@ -1,0 +1,81 @@
+services:
+  backend:
+    # this version intentionally always lags one version behind the latest
+    image: docker.io/svix/svix-server:v1.97.0
+    pull_policy: missing
+    healthcheck:
+      test: ["CMD-SHELL", "svix-server healthcheck http://localhost:8071"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
+    environment:
+      SVIX_JWT_SECRET: "x"
+      WAIT_FOR: "true" # We want to wait for the default services
+      SVIX_REDIS_DSN: "redis://redis:6379"
+      SVIX_DB_DSN: "postgresql://postgres:postgres@pgbouncer/postgres"
+      SVIX_LOG_LEVEL: "debug"
+      SVIX_ENDPOINT_HTTPS_ONLY: "false"
+      SVIX_WHITELIST_SUBNETS: "[127.0.0.1/32, 172.17.0.0/16, 0.250.250.0/24]"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8071:8071"
+    depends_on:
+      pgbouncer:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: "docker.io/postgres:15.18-trixie"
+    pull_policy: missing
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
+    volumes:
+      - "postgres-data:/var/lib/postgresql/data/"
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  pgbouncer:
+    image: "docker.io/edoburu/pgbouncer:v1.25.2-p0"
+    pull_policy: missing
+    healthcheck:
+      test: "pg_isready -h localhost"
+      interval: 30s
+      start_interval: 3s
+      start_period: 30s
+      timeout: 10s
+      retries: 3
+    ports:
+      - "8079:5432"
+    environment:
+      DB_HOST: "postgres"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      AUTH_TYPE: "scram-sha-256"
+      MAX_CLIENT_CONN: 500
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: "docker.io/redis:7-alpine"
+    pull_policy: daily
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 1s
+      retries: 600
+    # Enable persistence
+    command: "--save 60 500 --appendonly yes --appendfsync everysec"
+    volumes:
+      - "redis-data:/data"
+    ports:
+      - "8078:6379"
+
+volumes:
+  postgres-data:
+  redis-data:
