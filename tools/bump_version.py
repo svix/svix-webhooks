@@ -181,7 +181,7 @@ VERSION_FILES = [
 OLD_VERSION_FILES = [
     VersionFile(
         "client-integration-tests/docker-compose.yml",
-        [r"(image: docker.io/svix/svix-server:)(v.+)"],
+        [r"(image: docker.io/svix/svix-server:v)(.+)"],
     ),
 ]
 
