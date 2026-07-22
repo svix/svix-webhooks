@@ -1,7 +1,7 @@
 services:
   backend:
     # this version intentionally always lags one version behind the latest
-    image: docker.io/svix/svix-server:v1.97.0
+    image: docker.io/svix/svix-server:v1.98.0
     pull_policy: missing
     healthcheck:
       test: ["CMD-SHELL", "svix-server healthcheck http://localhost:8071"]
