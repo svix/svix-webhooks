@@ -81,9 +81,11 @@ impl KafkaConsumer {
             // If committing the message fails or the process crashes after posting the webhook but
             // before committing, this makes sure that the next run of this fn with the same kafka
             // message doesn't end up creating a duplicate webhook in svix.
-            idempotency_key: Some(format!(
-                "svix_bridge_kafka_{group_id}_{topic}_{}",
-                msg.offset()
+            idempotency_key: Some(kafka_idempotency_key(
+                group_id,
+                topic,
+                msg.partition(),
+                msg.offset(),
             )),
         };
 
@@ -181,6 +183,10 @@ impl KafkaConsumer {
             consumer.commit_message(&msg, CommitMode::Async)?;
         }
     }
+}
+
+fn kafka_idempotency_key(group_id: &str, topic: &str, partition: i32, offset: i64) -> String {
+    format!("svix_bridge_kafka_{group_id}_{topic}_{partition}_{offset}")
 }
 
 #[async_trait]
