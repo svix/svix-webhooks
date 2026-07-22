@@ -191,7 +191,7 @@ pub async fn run_with_prefix(
         cache: cache.clone(),
         op_webhooks: op_webhook_sender.clone(),
     };
-    let v1_router = v1::router().with_state::<()>(app_state);
+    let v1_router = v1::router(cfg.clone()).with_state::<()>(app_state);
 
     // Initialize all routes which need to be part of OpenAPI first.
     let app = ApiRouter::new()
