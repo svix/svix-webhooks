@@ -19,7 +19,15 @@ use tracing_opentelemetry::OpenTelemetrySpanExt;
 /// An implementor of [`MakeSpan`] which creates `tracing` spans populated with information about
 /// the request received by an `axum` web server.
 #[derive(Clone, Copy)]
-pub struct AxumOtelSpanCreator;
+pub struct AxumOtelSpanCreator {
+    set_otel_parent: bool,
+}
+
+impl AxumOtelSpanCreator {
+    pub fn new(set_otel_parent: bool) -> Self {
+        Self { set_otel_parent }
+    }
+}
 
 impl<B> MakeSpan<B> for AxumOtelSpanCreator {
     fn make_span(&mut self, request: &http::Request<B>) -> tracing::Span {
@@ -92,8 +100,10 @@ impl<B> MakeSpan<B> for AxumOtelSpanCreator {
             app_id = tracing::field::Empty,
         );
 
-        if let Err(err) = span.set_parent(remote_context) {
-            tracing::warn!(?err, "failed to set span parent from remote context");
+        if self.set_otel_parent {
+            if let Err(err) = span.set_parent(remote_context) {
+                tracing::warn!(?err, "failed to set span parent from remote context");
+            }
         }
 
         span

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Server: Fix warning when opentelemetry is disabled
 
 ## Version 1.98.0
 * CLI, Server, Bridge: Set OCI metadata on Docker images

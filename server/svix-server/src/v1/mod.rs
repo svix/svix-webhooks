@@ -6,13 +6,14 @@ use tower_http::trace::TraceLayer;
 
 use crate::{
     AppState,
+    cfg::Configuration,
     core::otel_spans::{AxumOtelOnFailure, AxumOtelOnResponse, AxumOtelSpanCreator},
 };
 
 pub mod endpoints;
 pub mod utils;
 
-pub fn router() -> ApiRouter<AppState> {
+pub fn router(cfg: Configuration) -> ApiRouter<AppState> {
     let ret: ApiRouter<AppState> = ApiRouter::new()
         .merge(endpoints::health::router())
         .merge(endpoints::auth::router())
@@ -24,7 +25,9 @@ pub fn router() -> ApiRouter<AppState> {
         .merge(endpoints::admin::router())
         .layer(
             TraceLayer::new_for_http()
-                .make_span_with(AxumOtelSpanCreator)
+                .make_span_with(AxumOtelSpanCreator::new(
+                    cfg.opentelemetry_address.is_some(),
+                ))
                 .on_response(AxumOtelOnResponse)
                 .on_failure(AxumOtelOnFailure),
         );
