@@ -15,7 +15,7 @@ pub struct MessageEndpointOut {
 
     #[serde(rename = "nextAttempt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub next_attempt: Option<String>,
+    pub next_attempt: Option<chrono::DateTime<chrono::Utc>>,
 
     /// An example endpoint name.
     pub description: String,
@@ -38,17 +38,17 @@ pub struct MessageEndpointOut {
 
     #[serde(rename = "filterTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub filter_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl MessageEndpointOut {
@@ -58,8 +58,8 @@ impl MessageEndpointOut {
         status_text: MessageStatusText,
         description: String,
         url: String,
-        created_at: String,
-        updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             id,

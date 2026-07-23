@@ -14,7 +14,7 @@ pub struct EventExampleIn {
     /// array of examples.
     #[serde(rename = "exampleIndex")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub example_index: Option<i32>,
+    pub example_index: Option<u64>,
 }
 
 impl EventExampleIn {

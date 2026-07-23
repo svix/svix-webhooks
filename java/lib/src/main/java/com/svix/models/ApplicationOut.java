@@ -22,7 +22,7 @@ import java.util.Map;
 public class ApplicationOut {
     @JsonProperty private String uid;
     @JsonProperty private String name;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String id;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
@@ -68,7 +68,7 @@ public class ApplicationOut {
         this.name = name;
     }
 
-    public ApplicationOut throttleRate(Long throttleRate) {
+    public ApplicationOut throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -81,11 +81,11 @@ public class ApplicationOut {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

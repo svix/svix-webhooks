@@ -14,7 +14,7 @@ pub struct EndpointMessageOut {
 
     #[serde(rename = "nextAttempt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub next_attempt: Option<String>,
+    pub next_attempt: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Optional unique identifier for the message
     #[serde(rename = "eventId")]
@@ -29,19 +29,19 @@ pub struct EndpointMessageOut {
 
     /// List of free-form identifiers that endpoints can filter by
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     /// The Message's ID.
     pub id: String,
 
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
+    pub tags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub deliver_at: Option<String>,
+    pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl EndpointMessageOut {
@@ -51,7 +51,7 @@ impl EndpointMessageOut {
         event_type: String,
         payload: serde_json::Value,
         id: String,
-        timestamp: String,
+        timestamp: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             status,

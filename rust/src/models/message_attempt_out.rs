@@ -17,7 +17,7 @@ pub struct MessageAttemptOut {
 
     /// Response duration in milliseconds.
     #[serde(rename = "responseDurationMs")]
-    pub response_duration_ms: i32,
+    pub response_duration_ms: i64,
 
     pub status: MessageStatus,
 
@@ -38,7 +38,7 @@ pub struct MessageAttemptOut {
     /// The MessageAttempt's ID.
     pub id: String,
 
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub msg: Option<MessageOut>,
@@ -49,14 +49,14 @@ impl MessageAttemptOut {
         url: String,
         response: String,
         response_status_code: i16,
-        response_duration_ms: i32,
+        response_duration_ms: i64,
         status: MessageStatus,
         status_text: MessageStatusText,
         trigger_type: MessageAttemptTriggerType,
         msg_id: String,
         endpoint_id: String,
         id: String,
-        timestamp: String,
+        timestamp: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             url,

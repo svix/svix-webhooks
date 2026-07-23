@@ -4,7 +4,7 @@ use crate::{error::Result, models::*, Configuration};
 #[derive(Default)]
 pub struct MessagePollerPollOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
@@ -15,7 +15,7 @@ pub struct MessagePollerPollOptions {
     /// Filters messages sent with this channel (optional).
     pub channel: Option<String>,
 
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Default)]
@@ -26,7 +26,7 @@ pub struct MessagePollerConsumerSeekOptions {
 #[derive(Default)]
 pub struct MessagePollerConsumerPollOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,

@@ -8,19 +8,24 @@ use svix::models::*;
 pub struct MessageAttemptListByEndpointOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
+
     /// Filter response based on the HTTP status code
     #[arg(long)]
     pub status_code_class: Option<StatusCodeClass>,
+
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
+
     /// Filter response based on the tag
     #[arg(long)]
     pub tag: Option<String>,
@@ -30,14 +35,17 @@ pub struct MessageAttemptListByEndpointOptions {
     /// Only include items created after a certain date
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// When `true`, the message information is included in the response
     ///
     /// Note that message payloads are never included in the response, regardless of this flag.
     #[arg(long)]
     pub with_msg: Option<bool>,
+
     /// When `true`, return the Canceled (4) status in attempts.
     ///
     /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
@@ -71,12 +79,12 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             status_code_class,
             channel,
             tag,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             with_msg,
             expanded_statuses,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }
@@ -85,22 +93,28 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
 pub struct MessageAttemptListByMsgOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
+
     /// Filter response based on the HTTP status code
     #[arg(long)]
     pub status_code_class: Option<StatusCodeClass>,
+
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
+
     /// Filter response based on the tag
     #[arg(long)]
     pub tag: Option<String>,
+
     /// Filter the attempts based on the attempted endpoint
     #[arg(long)]
     pub endpoint_id: Option<String>,
@@ -110,9 +124,11 @@ pub struct MessageAttemptListByMsgOptions {
     /// Only include items created after a certain date
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// When `true`, return the Canceled (4) status in attempts.
     ///
     /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
@@ -147,11 +163,11 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
             channel,
             tag,
             endpoint_id,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             expanded_statuses,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }
@@ -160,16 +176,20 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
 pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
+
     /// Filter response based on the message tags
     #[arg(long)]
     pub tag: Option<String>,
+
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
@@ -179,9 +199,11 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Only include items created after a certain date
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` message payloads are included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// When `true`, return the Canceled (4) status in attempts.
     ///
     /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
@@ -214,11 +236,11 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
             channel,
             tag,
             status,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             expanded_statuses,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }
@@ -227,7 +249,8 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
 pub struct MessageAttemptListAttemptedDestinationsOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

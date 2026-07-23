@@ -22,7 +22,7 @@ pub struct MessageIn {
 
     /// List of free-form identifiers that endpoints can filter by
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     /// Optionally creates a new application alongside the message.
     ///
@@ -33,7 +33,7 @@ pub struct MessageIn {
 
     /// List of free-form tags that can be filtered by when listing messages
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
+    pub tags: Option<std::collections::BTreeSet<String>>,
 
     /// Extra parameters to pass to Transformations (for future use)
     #[serde(rename = "transformationsParams")]
@@ -44,23 +44,21 @@ pub struct MessageIn {
     ///
     /// Note that this time is best-effort-only. Must be at least one minute and
     /// no more than 24 hours in the future.
-    ///
-    /// RFC3339 date string.
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub deliver_at: Option<String>,
+    pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Optional number of days to retain the message payload. Defaults to 90.
     /// Note that this is mutually exclusive with `payloadRetentionHours`.
     #[serde(rename = "payloadRetentionPeriod")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payload_retention_period: Option<i32>,
+    pub payload_retention_period: Option<i64>,
 
     /// Optional number of hours to retain the message payload. Note that this
     /// is mutually exclusive with `payloadRetentionPeriod`.
     #[serde(rename = "payloadRetentionHours")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub payload_retention_hours: Option<i32>,
+    pub payload_retention_hours: Option<i64>,
 }
 
 impl MessageIn {

@@ -21,7 +21,7 @@ impl {{ type_name }} {
     pub fn new(
         {% for field in type.fields -%}
             {% if field.type.is_datetime() -%}
-                {% set field_ty = "String" -%}
+                {% set field_ty = "chrono::DateTime<chrono::Utc>" -%}
             {% else -%}
                 {% set field_ty = field.type.to_rust() -%}
             {% endif -%}

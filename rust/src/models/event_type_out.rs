@@ -18,10 +18,10 @@ pub struct EventTypeOut {
     pub schemas: Option<serde_json::Value>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     /// The event type group's name
     #[serde(rename = "groupName")]
@@ -30,7 +30,7 @@ pub struct EventTypeOut {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "featureFlag")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -42,8 +42,8 @@ impl EventTypeOut {
         name: String,
         description: String,
         deprecated: bool,
-        created_at: String,
-        updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             name,

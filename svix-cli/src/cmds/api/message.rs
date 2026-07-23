@@ -9,10 +9,12 @@ use super::message_poller::MessagePollerArgs;
 pub struct MessageListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the channel.
     #[arg(long)]
     pub channel: Option<String>,
@@ -22,9 +24,11 @@ pub struct MessageListOptions {
     /// Only include items created after a certain date.
     #[arg(long)]
     pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` message payloads are included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// Filter messages matching the provided tag.
     #[arg(long)]
     pub tag: Option<String>,
@@ -49,11 +53,11 @@ impl From<MessageListOptions> for svix::api::MessageListOptions {
             limit,
             iterator,
             channel,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             tag,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }

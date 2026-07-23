@@ -71,7 +71,7 @@ impl AutoConfigConsumer {
     pub async fn commit(
         &self,
         consumer_id: String,
-        offset: i32,
+        offset: u64,
         options: Option<api_internal::message_pollerv2::MessagePollerv2ConsumerCommitOptions>,
     ) -> Result<()> {
         api_internal::message_pollerv2(self.svix.cfg())

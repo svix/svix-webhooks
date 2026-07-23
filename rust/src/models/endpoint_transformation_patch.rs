@@ -11,7 +11,7 @@ pub struct EndpointTransformationPatch {
     pub enabled: Option<bool>,
 
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub variables: JsOption<std::collections::HashMap<String, String>>,
+    pub variables: JsOption<std::collections::BTreeMap<String, String>>,
 }
 
 impl EndpointTransformationPatch {

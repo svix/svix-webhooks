@@ -24,11 +24,11 @@ pub struct EndpointIn {
 
     #[serde(rename = "filterTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub filter_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     /// The endpoint's verification secret.
     ///
@@ -39,10 +39,10 @@ pub struct EndpointIn {
     pub secret: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
+    pub metadata: Option<std::collections::BTreeMap<String, String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub headers: Option<std::collections::HashMap<String, String>>,
+    pub headers: Option<std::collections::BTreeMap<String, String>>,
 }
 
 impl EndpointIn {

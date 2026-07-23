@@ -6,7 +6,7 @@ pub struct SinkOtelV1Config {
     pub url: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub headers: Option<std::collections::HashMap<String, String>>,
+    pub headers: Option<std::collections::BTreeMap<String, String>>,
 }
 
 impl SinkOtelV1Config {

@@ -26,13 +26,13 @@ pub struct EndpointPatch {
 
     #[serde(rename = "filterTypes")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub filter_types: JsOption<Vec<String>>,
+    pub filter_types: JsOption<std::collections::BTreeSet<String>>,
 
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub channels: JsOption<Vec<String>>,
+    pub channels: JsOption<std::collections::BTreeSet<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
+    pub metadata: Option<std::collections::BTreeMap<String, String>>,
 }
 
 impl EndpointPatch {

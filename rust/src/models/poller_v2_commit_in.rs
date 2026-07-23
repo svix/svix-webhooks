@@ -3,11 +3,11 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PollerV2CommitIn {
-    pub offset: i32,
+    pub offset: u64,
 }
 
 impl PollerV2CommitIn {
-    pub fn new(offset: i32) -> Self {
+    pub fn new(offset: u64) -> Self {
         Self { offset }
     }
 }

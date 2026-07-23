@@ -5,7 +5,7 @@ use crate::{error::Result, models::*, Configuration};
 #[derive(Default)]
 pub struct MessageListOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
@@ -14,14 +14,10 @@ pub struct MessageListOptions {
     pub channel: Option<String>,
 
     /// Only include items created before a certain date.
-    ///
-    /// RFC3339 date string.
-    pub before: Option<String>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Only include items created after a certain date.
-    ///
-    /// RFC3339 date string.
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 
     /// When `true` message payloads are included in the response.
     pub with_content: Option<bool>,
@@ -30,7 +26,7 @@ pub struct MessageListOptions {
     pub tag: Option<String>,
 
     /// Filter response based on the event type
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 #[derive(Default)]
@@ -303,7 +299,7 @@ pub struct V1MessageEventsParams {
     /// The app's ID or UID
     pub app_id: String,
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
     /// Filter response based on the event type
@@ -321,7 +317,7 @@ pub struct V1MessageEventsSubscriptionParams {
     /// The esub's ID or UID
     pub subscription_id: String,
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
     /// Filter response based on the event type

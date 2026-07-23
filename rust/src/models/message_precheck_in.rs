@@ -8,7 +8,7 @@ pub struct MessagePrecheckIn {
     pub event_type: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 }
 
 impl MessagePrecheckIn {

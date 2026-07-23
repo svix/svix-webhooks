@@ -36,8 +36,8 @@ import java.util.Map;
 public class StreamSinkPatch {
     private String uid;
     private SinkStatusIn status;
-    private Long batchSize;
-    private Long maxWaitSecs;
+    private Short batchSize;
+    private Short maxWaitSecs;
     private List<String> eventTypes;
     private Map<String, String> metadata;
     private StreamSinkPatchConfig config;
@@ -52,12 +52,12 @@ public class StreamSinkPatch {
         return this;
     }
 
-    public StreamSinkPatch batchSize(Long batchSize) {
+    public StreamSinkPatch batchSize(Short batchSize) {
         this.batchSize = batchSize;
         return this;
     }
 
-    public StreamSinkPatch maxWaitSecs(Long maxWaitSecs) {
+    public StreamSinkPatch maxWaitSecs(Short maxWaitSecs) {
         this.maxWaitSecs = maxWaitSecs;
         return this;
     }
@@ -96,10 +96,10 @@ class StreamSinkPatchSurrogate {
     SinkStatusIn status;
 
     @JsonProperty("batchSize")
-    Long batchSize;
+    Short batchSize;
 
     @JsonProperty("maxWaitSecs")
-    Long maxWaitSecs;
+    Short maxWaitSecs;
 
     @JsonProperty("eventTypes")
     List<String> eventTypes;
@@ -160,8 +160,8 @@ class StreamSinkPatchDeserializer extends StdDeserializer<StreamSinkPatch> {
                 p.getCodec().readValue(p, StreamSinkPatchSurrogate.class);
         String uid = surrogate.getUid();
         SinkStatusIn status = surrogate.getStatus();
-        Long batchSize = surrogate.getBatchSize();
-        Long maxWaitSecs = surrogate.getMaxWaitSecs();
+        Short batchSize = surrogate.getBatchSize();
+        Short maxWaitSecs = surrogate.getMaxWaitSecs();
         List<String> eventTypes = surrogate.getEventTypes();
         Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();

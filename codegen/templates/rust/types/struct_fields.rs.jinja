@@ -2,12 +2,6 @@
 {% for field in type.fields %}
     {% if field.description is defined -%}
         {{ field.description | to_doc_comment(style="rust") }}
-        {# we currently use String for date-time params, for backwards compat -#}
-        {# document the format so it's not _that_ awkward -#}
-        {% if field.type.is_datetime() -%}
-        ///
-        /// RFC3339 date string.
-        {% endif -%}
     {% endif -%}
 
     {% if field.deprecated -%}
@@ -27,7 +21,8 @@
     #[serde(default = "{{ field.name | to_snake_case }}_default")]
     {% endif -%} -#}
     {% if field.type.is_datetime() -%}
-        {% set field_ty = "String" -%}
+        {# openapi-codegen now outputs jiff::Timestamp, we want to use chrono for now though -#}
+        {% set field_ty = "chrono::DateTime<chrono::Utc>" -%}
     {% else -%}
         {% set field_ty = field.type.to_rust() -%}
     {% endif -%}

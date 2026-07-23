@@ -3,10 +3,10 @@ use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct MessagePollerv2ConsumerPollOptions {
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// Lease duration in milliseconds.
-    pub lease_duration_ms: Option<i32>,
+    pub lease_duration_ms: Option<u64>,
 
     pub starting_position: Option<StartingPosition>,
 }

@@ -9,10 +9,12 @@ use super::streaming_sink_transformation::StreamingSinkTransformationArgs;
 pub struct StreamingSinkListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,

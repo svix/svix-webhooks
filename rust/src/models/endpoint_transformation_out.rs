@@ -10,11 +10,11 @@ pub struct EndpointTransformationOut {
     pub enabled: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub variables: Option<std::collections::HashMap<String, String>>,
+    pub variables: Option<std::collections::BTreeMap<String, String>>,
 
     #[serde(rename = "updatedAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl EndpointTransformationOut {

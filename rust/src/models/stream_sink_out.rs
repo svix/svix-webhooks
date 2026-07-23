@@ -30,10 +30,10 @@ pub struct StreamSinkOut {
     pub failure_reason: Option<String>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "batchSize")]
     pub batch_size: i32,
@@ -47,9 +47,9 @@ pub struct StreamSinkOut {
 
     #[serde(rename = "nextRetryAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub next_retry_at: Option<String>,
+    pub next_retry_at: Option<chrono::DateTime<chrono::Utc>>,
 
-    pub metadata: std::collections::HashMap<String, String>,
+    pub metadata: std::collections::BTreeMap<String, String>,
 
     #[serde(flatten)]
     pub config: StreamSinkOutConfig,

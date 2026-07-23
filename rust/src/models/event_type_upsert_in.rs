@@ -17,7 +17,7 @@ pub struct EventTypeUpsertIn {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 
     /// The event type group's name
     #[serde(rename = "groupName")]

@@ -10,10 +10,10 @@ pub struct StreamEventTypeOut {
     pub description: Option<String>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     pub deprecated: bool,
 
@@ -21,14 +21,14 @@ pub struct StreamEventTypeOut {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 }
 
 impl StreamEventTypeOut {
     pub fn new(
         name: String,
-        created_at: String,
-        updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
         deprecated: bool,
         archived: bool,
     ) -> Self {

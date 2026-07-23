@@ -20,7 +20,7 @@ pub struct EventTypeFromOpenApi {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 }
 
 impl EventTypeFromOpenApi {

@@ -6,7 +6,7 @@ pub struct EndpointOut {
     /// The Endpoint's ID.
     pub id: String,
 
-    pub metadata: std::collections::HashMap<String, String>,
+    pub metadata: std::collections::BTreeMap<String, String>,
 
     /// An example endpoint name.
     pub description: String,
@@ -29,27 +29,27 @@ pub struct EndpointOut {
 
     #[serde(rename = "filterTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub filter_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl EndpointOut {
     pub fn new(
         id: String,
-        metadata: std::collections::HashMap<String, String>,
+        metadata: std::collections::BTreeMap<String, String>,
         description: String,
         url: String,
-        created_at: String,
-        updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             id,

@@ -9,10 +9,12 @@ use super::endpoint_transformation::EndpointTransformationArgs;
 pub struct EndpointListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -98,10 +100,7 @@ pub struct EndpointGetStatsOptions {
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
     fn from(value: EndpointGetStatsOptions) -> Self {
         let EndpointGetStatsOptions { since, until } = value;
-        Self {
-            since: since.map(|dt| dt.to_rfc3339()),
-            until: until.map(|dt| dt.to_rfc3339()),
-        }
+        Self { since, until }
     }
 }
 

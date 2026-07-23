@@ -18,7 +18,7 @@ pub struct EventTypePatch {
 
     #[serde(rename = "featureFlags")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub feature_flags: JsOption<Vec<String>>,
+    pub feature_flags: JsOption<std::collections::BTreeSet<String>>,
 
     /// The event type group's name
     #[serde(rename = "groupName")]

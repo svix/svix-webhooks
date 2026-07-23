@@ -9,11 +9,15 @@ pub struct EventOut {
 
     pub payload: String,
 
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 }
 
 impl EventOut {
-    pub fn new(event_type: String, payload: String, timestamp: String) -> Self {
+    pub fn new(
+        event_type: String,
+        payload: String,
+        timestamp: chrono::DateTime<chrono::Utc>,
+    ) -> Self {
         Self {
             event_type,
             payload,

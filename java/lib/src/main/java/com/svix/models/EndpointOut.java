@@ -26,7 +26,7 @@ public class EndpointOut {
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String description;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -103,7 +103,7 @@ public class EndpointOut {
         this.description = description;
     }
 
-    public EndpointOut throttleRate(Long throttleRate) {
+    public EndpointOut throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -116,11 +116,11 @@ public class EndpointOut {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

@@ -23,7 +23,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointIn {
     @JsonProperty private String description;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -54,7 +54,7 @@ public class EndpointIn {
         this.description = description;
     }
 
-    public EndpointIn throttleRate(Long throttleRate) {
+    public EndpointIn throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -67,11 +67,11 @@ public class EndpointIn {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

@@ -11,7 +11,7 @@ pub struct StreamEventTypeIn {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deprecated: Option<bool>,

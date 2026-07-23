@@ -1,8 +1,12 @@
 // Modified version of the file openapi-generator would usually put in
 // apis/request.rs
 
-use std::{collections::BTreeMap, time::Duration};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    time::Duration,
+};
 
+use chrono::{DateTime, Utc};
 use http::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
@@ -275,7 +279,7 @@ macro_rules! impl_query_param_value {
 }
 
 impl_query_param_value!(bool);
-impl_query_param_value!(i32);
+impl_query_param_value!(u64);
 impl_query_param_value!(String);
 impl_query_param_value!(models::BackgroundTaskStatus);
 impl_query_param_value!(models::BackgroundTaskType);
@@ -285,7 +289,19 @@ impl_query_param_value!(models::Ordering);
 impl_query_param_value!(models::StartingPosition);
 impl_query_param_value!(models::StatusCodeClass);
 
+impl QueryParamValue for DateTime<Utc> {
+    fn encode(&self) -> String {
+        self.to_rfc3339()
+    }
+}
+
 impl QueryParamValue for Vec<String> {
+    fn encode(&self) -> String {
+        self.iter().format(",").to_string()
+    }
+}
+
+impl QueryParamValue for BTreeSet<String> {
     fn encode(&self) -> String {
         self.iter().format(",").to_string()
     }
