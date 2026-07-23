@@ -18,7 +18,7 @@ from ..models import (
     EndpointSecretRotateIn,
     EndpointStats,
     EndpointTransformationIn,
-    EndpointUpdate,
+    EndpointUpsertIn,
     EventExampleIn,
     ListResponseEndpointOut,
     MessageOut,
@@ -195,7 +195,7 @@ class EndpointAsync(ApiBaseAsync):
         return EndpointOut.model_validate(response.json())
 
     async def upsert(
-        self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
+        self, app_id: str, endpoint_id: str, endpoint_upsert_in: EndpointUpsertIn
     ) -> EndpointOut:
         """Create or update an endpoint."""
         response = await self._request_asyncio(
@@ -205,7 +205,7 @@ class EndpointAsync(ApiBaseAsync):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_update.model_dump_json(
+            json_body=endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -547,7 +547,7 @@ class Endpoint(ApiBaseSync):
         return EndpointOut.model_validate(response.json())
 
     def upsert(
-        self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
+        self, app_id: str, endpoint_id: str, endpoint_upsert_in: EndpointUpsertIn
     ) -> EndpointOut:
         """Create or update an endpoint."""
         response = self._request_sync(
@@ -557,7 +557,7 @@ class Endpoint(ApiBaseSync):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_update.model_dump_json(
+            json_body=endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

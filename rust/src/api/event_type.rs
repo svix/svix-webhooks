@@ -121,11 +121,11 @@ impl<'a> EventType<'a> {
     pub async fn upsert(
         &self,
         event_type_name: String,
-        event_type_update: EventTypeUpdate,
+        event_type_upsert_in: EventTypeUpsertIn,
     ) -> Result<EventTypeOut> {
         crate::request::Request::new(http::Method::PUT, "/api/v1/event-type/{event_type_name}")
             .with_path_param("event_type_name", event_type_name)
-            .with_body_param(event_type_update)
+            .with_body_param(event_type_upsert_in)
             .execute(self.cfg)
             .await
     }

@@ -11,7 +11,7 @@ from ..models import (
     OperationalWebhookEndpointOut,
     OperationalWebhookEndpointSecretIn,
     OperationalWebhookEndpointSecretOut,
-    OperationalWebhookEndpointUpdate,
+    OperationalWebhookEndpointUpsertIn,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
@@ -110,7 +110,7 @@ class OperationalWebhookEndpointAsync(ApiBaseAsync):
     async def upsert(
         self,
         endpoint_id: str,
-        operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
+        operational_webhook_endpoint_upsert_in: OperationalWebhookEndpointUpsertIn,
     ) -> OperationalWebhookEndpointOut:
         """Create or update an operational webhook endpoint."""
         response = await self._request_asyncio(
@@ -119,7 +119,7 @@ class OperationalWebhookEndpointAsync(ApiBaseAsync):
             path_params={
                 "endpoint_id": endpoint_id,
             },
-            json_body=operational_webhook_endpoint_update.model_dump_json(
+            json_body=operational_webhook_endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -255,7 +255,7 @@ class OperationalWebhookEndpoint(ApiBaseSync):
     def upsert(
         self,
         endpoint_id: str,
-        operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
+        operational_webhook_endpoint_upsert_in: OperationalWebhookEndpointUpsertIn,
     ) -> OperationalWebhookEndpointOut:
         """Create or update an operational webhook endpoint."""
         response = self._request_sync(
@@ -264,7 +264,7 @@ class OperationalWebhookEndpoint(ApiBaseSync):
             path_params={
                 "endpoint_id": endpoint_id,
             },
-            json_body=operational_webhook_endpoint_update.model_dump_json(
+            json_body=operational_webhook_endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

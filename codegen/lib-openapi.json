@@ -6052,7 +6052,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EndpointUpdate"
+                                "$ref": "#/components/schemas/EndpointUpsertIn"
                             }
                         }
                     },
@@ -6169,27 +6169,27 @@
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.endpoint.upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.endpoint.upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpsertIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.endpoint.upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.endpoint.upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpsertIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        channels=[\n            \"project_123\",\n            \"group_2\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Endpoint.Upsert(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tMetadata:     nil,\n\t},\n)"
+                        "source": "response, err := svix.Endpoint.Upsert(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointUpsertIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"user.signup\", \"user.deleted\"},\n\t\tChannels:     []string{\"project_123\", \"group_2\"},\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.upsert(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointUpdate(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.upsert(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EndpointUpsertIn(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"user.signup\", \"user.deleted\"),\n            channels = setOf(\"project_123\", \"group_2\"),\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpdate()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpsertIn()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -6199,17 +6199,17 @@
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .upsert(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .upsert(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointUpsertIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            channels: Some(vec![\"project_123\".to_string(), \"group_2\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Endpoint.Upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.Endpoint.Upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointUpsertIn\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"user.signup\", \"user.deleted\"],\n        Channels = [\"project_123\", \"group_2\"],\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->endpoint->upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->endpoint->upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointUpsertIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"user.signup\",\"user.deleted\"])\n    ->withChannels([\"project_123\",\"group_2\"])\n    ->withMetadata([])\n);"
                     },
                     {
                         "lang": "Shell",
@@ -12679,7 +12679,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/EventTypeUpdate"
+                                "$ref": "#/components/schemas/EventTypeUpsertIn"
                             }
                         }
                     },
@@ -12796,27 +12796,27 @@
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpdate(\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
+                        "source": "response = svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpsertIn(\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpdate(\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
+                        "source": "response = await svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpsertIn(\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.EventType.Upsert(\n\tctx,\n\t\"user.signup\",\n\tEventTypeUpdate{\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tGroupName:    new(\"user\"),\n\t},\n)"
+                        "source": "response, err := svix.EventType.Upsert(\n\tctx,\n\t\"user.signup\",\n\tEventTypeUpsertIn{\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tGroupName:    new(\"user\"),\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.eventType.upsert(\n        \"user.signup\",\n        EventTypeUpdate(\n            description = \"A user has signed up\",\n            archived = true,\n            deprecated = true,\n            schemas = mapOf(),\n            featureFlags = setOf(\"cool-new-feature\"),\n            groupName = \"user\",\n        ),\n    )"
+                        "source": "val response =\n    svix.eventType.upsert(\n        \"user.signup\",\n        EventTypeUpsertIn(\n            description = \"A user has signed up\",\n            archived = true,\n            deprecated = true,\n            schemas = mapOf(),\n            featureFlags = setOf(\"cool-new-feature\"),\n            groupName = \"user\",\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEventType()\n        .upsert(\n            \"user.signup\",\n            new EventTypeUpdate()\n                .description(\"A user has signed up\")\n                .archived(true)\n                .deprecated(true)\n                .schemas(Map.of())\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .groupName(\"user\"));"
+                        "source": "var response = svix.getEventType()\n        .upsert(\n            \"user.signup\",\n            new EventTypeUpsertIn()\n                .description(\"A user has signed up\")\n                .archived(true)\n                .deprecated(true)\n                .schemas(Map.of())\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .groupName(\"user\"));"
                     },
                     {
                         "lang": "Ruby",
@@ -12826,17 +12826,17 @@
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .event_type()\n    .upsert(\n        \"user.signup\".to_string(),\n        EventTypeUpdate {\n            description: \"A user has signed up\".to_string(),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: Some(\n                serde_json::json!(\n                    { \"1\" : { \"description\" : \"An invoice was paid by a user\",\n                    \"properties\" : { \"invoiceId\" : { \"description\" :\n                    \"The invoice id\", \"type\" : \"string\" }, \"userId\" : { \"description\"\n                    : \"The user id\", \"type\" : \"string\" } }, \"required\" :\n                    [\"invoiceId\", \"userId\"], \"title\" : \"Invoice Paid Event\", \"type\" :\n                    \"object\" } }\n                ),\n            ),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n            group_name: Some(\"user\".to_string()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .event_type()\n    .upsert(\n        \"user.signup\".to_string(),\n        EventTypeUpsertIn {\n            description: \"A user has signed up\".to_string(),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: Some(\n                serde_json::json!(\n                    { \"1\" : { \"description\" : \"An invoice was paid by a user\",\n                    \"properties\" : { \"invoiceId\" : { \"description\" :\n                    \"The invoice id\", \"type\" : \"string\" }, \"userId\" : { \"description\"\n                    : \"The user id\", \"type\" : \"string\" } }, \"required\" :\n                    [\"invoiceId\", \"userId\"], \"title\" : \"Invoice Paid Event\", \"type\" :\n                    \"object\" } }\n                ),\n            ),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n            group_name: Some(\"user\".to_string()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.EventType.Upsert(\n    \"user.signup\",\n    new EventTypeUpdate\n    {\n        Description = \"A user has signed up\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = [\"cool-new-feature\"],\n        GroupName = \"user\",\n    }\n);"
+                        "source": "var response = svix.EventType.Upsert(\n    \"user.signup\",\n    new EventTypeUpsertIn\n    {\n        Description = \"A user has signed up\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = [\"cool-new-feature\"],\n        GroupName = \"user\",\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->eventType->upsert(\n    \"user.signup\",\n    EventTypeUpdate::create(\n        description: \"A user has signed up\"\n    )\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withGroupName(\"user\")\n);"
+                        "source": "$response = $svix->eventType->upsert(\n    \"user.signup\",\n    EventTypeUpsertIn::create(\n        description: \"A user has signed up\"\n    )\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withGroupName(\"user\")\n);"
                     },
                     {
                         "lang": "Shell",
@@ -29264,7 +29264,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/OperationalWebhookEndpointUpdate"
+                                "$ref": "#/components/schemas/OperationalWebhookEndpointUpsertIn"
                             }
                         }
                     },
@@ -29371,27 +29371,27 @@
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.operational_webhook.endpoint.upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.operational_webhook.endpoint.upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpsertIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.operational_webhook.endpoint.upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.operational_webhook.endpoint.upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpsertIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        filter_types=[\n            \"message.attempt.failing\",\n        ],\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.OperationalWebhook.Endpoint.Upsert(\n\tctx,\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tOperationalWebhookEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"message.attempt.failing\"},\n\t\tMetadata:     nil,\n\t},\n)"
+                        "source": "response, err := svix.OperationalWebhook.Endpoint.Upsert(\n\tctx,\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tOperationalWebhookEndpointUpsertIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tFilterTypes:  []string{\"message.attempt.failing\"},\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.operationalWebhook.endpoint.upsert(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        OperationalWebhookEndpointUpdate(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"message.attempt.failing\"),\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.operationalWebhook.endpoint.upsert(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        OperationalWebhookEndpointUpsertIn(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            filterTypes = setOf(\"message.attempt.failing\"),\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .upsert(\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new OperationalWebhookEndpointUpdate()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"message.attempt.failing\"))\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .upsert(\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new OperationalWebhookEndpointUpsertIn()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .filterTypes(Set.of(\"message.attempt.failing\"))\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -29401,17 +29401,17 @@
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .operational_webhook()\n    .endpoint()\n    .upsert(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        OperationalWebhookEndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(vec![\"message.attempt.failing\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .operational_webhook()\n    .endpoint()\n    .upsert(\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        OperationalWebhookEndpointUpsertIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            filter_types: Some(vec![\"message.attempt.failing\".to_string()]),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.OperationalWebhook.Endpoint.Upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.OperationalWebhook.Endpoint.Upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new OperationalWebhookEndpointUpsertIn\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        FilterTypes = [\"message.attempt.failing\"],\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->operationalWebhook->endpoint->upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->operationalWebhook->endpoint->upsert(\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    OperationalWebhookEndpointUpsertIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withFilterTypes([\"message.attempt.failing\"])\n    ->withMetadata([])\n);"
                     },
                     {
                         "lang": "Shell",
@@ -30940,7 +30940,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/ConnectorUpdate"
+                                "$ref": "#/components/schemas/ConnectorUpsertIn"
                             }
                         }
                     },
@@ -31057,27 +31057,27 @@
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.connector.upsert(\n    \"connector_id\",\n    ConnectorUpdate(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind.CUSTOM,\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                        "source": "response = svix.connector.upsert(\n    \"connector_id\",\n    ConnectorUpsertIn(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind.CUSTOM,\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.connector.upsert(\n    \"connector_id\",\n    ConnectorUpdate(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind.CUSTOM,\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                        "source": "response = await svix.connector.upsert(\n    \"connector_id\",\n    ConnectorUpsertIn(\n        name=\"My first connector\",\n        logo=\"https://example.com/logo.png\",\n        description=\"Example connector description\",\n        kind=ConnectorKind.CUSTOM,\n        instructions=\"Markdown-formatted instructions\",\n        allowed_event_types=[\n            \"user.signup\",\n            \"user.deleted\",\n        ],\n        transformation=\"function handler(webhook) { /* ... */ }\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Connector.Upsert(\n\tctx,\n\t\"connector_id\",\n\tConnectorUpdate{\n\t\tName:              new(\"My first connector\"),\n\t\tLogo:              new(\"https://example.com/logo.png\"),\n\t\tDescription:       new(\"Example connector description\"),\n\t\tKind:              new(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      new(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{\"cool-new-feature\"},\n\t},\n)"
+                        "source": "response, err := svix.Connector.Upsert(\n\tctx,\n\t\"connector_id\",\n\tConnectorUpsertIn{\n\t\tName:              new(\"My first connector\"),\n\t\tLogo:              new(\"https://example.com/logo.png\"),\n\t\tDescription:       new(\"Example connector description\"),\n\t\tKind:              new(CONNECTORKIND_CUSTOM),\n\t\tInstructions:      new(\"Markdown-formatted instructions\"),\n\t\tAllowedEventTypes: []string{\"user.signup\", \"user.deleted\"},\n\t\tTransformation:    \"function handler(webhook) { /* ... */ }\",\n\t\tFeatureFlags:      []string{\"cool-new-feature\"},\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.connector.upsert(\n        \"connector_id\",\n        ConnectorUpdate(\n            name = \"My first connector\",\n            logo = \"https://example.com/logo.png\",\n            description = \"Example connector description\",\n            kind = ConnectorKind.CUSTOM,\n            instructions = \"Markdown-formatted instructions\",\n            allowedEventTypes = setOf(\"user.signup\", \"user.deleted\"),\n            transformation = \"function handler(webhook) { /* ... */ }\",\n            featureFlags = setOf(\"cool-new-feature\"),\n        ),\n    )"
+                        "source": "val response =\n    svix.connector.upsert(\n        \"connector_id\",\n        ConnectorUpsertIn(\n            name = \"My first connector\",\n            logo = \"https://example.com/logo.png\",\n            description = \"Example connector description\",\n            kind = ConnectorKind.CUSTOM,\n            instructions = \"Markdown-formatted instructions\",\n            allowedEventTypes = setOf(\"user.signup\", \"user.deleted\"),\n            transformation = \"function handler(webhook) { /* ... */ }\",\n            featureFlags = setOf(\"cool-new-feature\"),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getConnector()\n        .upsert(\n            \"connector_id\",\n            new ConnectorUpdate()\n                .name(\"My first connector\")\n                .logo(URI.create(\"https://example.com/logo.png\"))\n                .description(\"Example connector description\")\n                .kind(ConnectorKind.CUSTOM)\n                .instructions(\"Markdown-formatted instructions\")\n                .allowedEventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .transformation(\"function handler(webhook) { /* ... */ }\")\n                .featureFlags(Set.of(\"cool-new-feature\")));"
+                        "source": "var response = svix.getConnector()\n        .upsert(\n            \"connector_id\",\n            new ConnectorUpsertIn()\n                .name(\"My first connector\")\n                .logo(URI.create(\"https://example.com/logo.png\"))\n                .description(\"Example connector description\")\n                .kind(ConnectorKind.CUSTOM)\n                .instructions(\"Markdown-formatted instructions\")\n                .allowedEventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .transformation(\"function handler(webhook) { /* ... */ }\")\n                .featureFlags(Set.of(\"cool-new-feature\")));"
                     },
                     {
                         "lang": "Ruby",
@@ -31087,17 +31087,17 @@
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .connector()\n    .upsert(\n        \"connector_id\".to_string(),\n        ConnectorUpdate {\n            name: Some(\"My first connector\".to_string()),\n            logo: Some(\"https://example.com/logo.png\".to_string()),\n            description: Some(\"Example connector description\".to_string()),\n            kind: Some(ConnectorKind::Custom),\n            instructions: Some(\"Markdown-formatted instructions\".to_string()),\n            allowed_event_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            transformation: \"function handler(webhook) { /* ... */ }\".to_string(),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .connector()\n    .upsert(\n        \"connector_id\".to_string(),\n        ConnectorUpsertIn {\n            name: Some(\"My first connector\".to_string()),\n            logo: Some(\"https://example.com/logo.png\".to_string()),\n            description: Some(\"Example connector description\".to_string()),\n            kind: Some(ConnectorKind::Custom),\n            instructions: Some(\"Markdown-formatted instructions\".to_string()),\n            allowed_event_types: Some(\n                vec![\"user.signup\".to_string(), \"user.deleted\".to_string()],\n            ),\n            transformation: \"function handler(webhook) { /* ... */ }\".to_string(),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Connector.Upsert(\n    \"connector_id\",\n    new ConnectorUpdate\n    {\n        Name = \"My first connector\",\n        Logo = \"https://example.com/logo.png\",\n        Description = \"Example connector description\",\n        Kind = ConnectorKind.Custom,\n        Instructions = \"Markdown-formatted instructions\",\n        AllowedEventTypes = [\"user.signup\", \"user.deleted\"],\n        Transformation = \"function handler(webhook) { /* ... */ }\",\n        FeatureFlags = [\"cool-new-feature\"],\n    }\n);"
+                        "source": "var response = svix.Connector.Upsert(\n    \"connector_id\",\n    new ConnectorUpsertIn\n    {\n        Name = \"My first connector\",\n        Logo = \"https://example.com/logo.png\",\n        Description = \"Example connector description\",\n        Kind = ConnectorKind.Custom,\n        Instructions = \"Markdown-formatted instructions\",\n        AllowedEventTypes = [\"user.signup\", \"user.deleted\"],\n        Transformation = \"function handler(webhook) { /* ... */ }\",\n        FeatureFlags = [\"cool-new-feature\"],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->connector->upsert(\n    \"connector_id\",\n    ConnectorUpdate::create(\n        transformation: \"function handler(webhook) { /* ... */ }\"\n    )\n    ->withName(\"My first connector\")\n    ->withLogo(\"https://example.com/logo.png\")\n    ->withDescription(\"Example connector description\")\n    ->withKind(ConnectorKind::CUSTOM)\n    ->withInstructions(\"Markdown-formatted instructions\")\n    ->withAllowedEventTypes([\"user.signup\",\"user.deleted\"])\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
+                        "source": "$response = $svix->connector->upsert(\n    \"connector_id\",\n    ConnectorUpsertIn::create(\n        transformation: \"function handler(webhook) { /* ... */ }\"\n    )\n    ->withName(\"My first connector\")\n    ->withLogo(\"https://example.com/logo.png\")\n    ->withDescription(\"Example connector description\")\n    ->withKind(ConnectorKind::CUSTOM)\n    ->withInstructions(\"Markdown-formatted instructions\")\n    ->withAllowedEventTypes([\"user.signup\",\"user.deleted\"])\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
                     },
                     {
                         "lang": "Shell",
@@ -36361,9 +36361,9 @@
                 "tags": [
                     "Ingest Source"
                 ],
-                "summary": "Ingest Source Consumer Portal",
+                "summary": "Ingest Source Consumer Portal Access",
                 "description": "Get access to the Ingest Source Consumer Portal.",
-                "operationId": "v1.ingest.dashboard",
+                "operationId": "v1.ingest.authentication.consumer-portal-access",
                 "parameters": [
                     {
                         "in": "path",
@@ -36405,7 +36405,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/DashboardAccessOut"
+                                    "$ref": "#/components/schemas/AppPortalAccessOut"
                                 }
                             }
                         }
@@ -36490,62 +36490,62 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.ingest.dashboard(\"src_31Dc4Mx7vQVLfxFgArIhq\", {\n  expiry: 1,\n  readOnly: true,\n});"
+                        "source": "const response = await svix.ingest.authentication.consumerPortalAccess(\n  \"src_31Dc4Mx7vQVLfxFgArIhq\",\n  {\n    expiry: 1,\n    readOnly: true,\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.ingest.dashboard(\"src_31Dc4Mx7vQVLfxFgArIhq\", {\n  expiry: 1,\n  readOnly: true,\n});"
+                        "source": "const response = await svix.ingest.authentication.consumerPortalAccess(\n  \"src_31Dc4Mx7vQVLfxFgArIhq\",\n  {\n    expiry: 1,\n    readOnly: true,\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.ingest.dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
+                        "source": "response = svix.ingest.authentication.consumer_portal_access(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.ingest.dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
+                        "source": "response = await svix.ingest.authentication.consumer_portal_access(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn(\n        expiry=1,\n        read_only=True,\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Ingest.Dashboard(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceConsumerPortalAccessIn{Expiry: new(uint64(1)), ReadOnly: new(true)},\n\tnil,\n)"
+                        "source": "response, err := svix.Ingest.Authentication.ConsumerPortalAccess(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\tIngestSourceConsumerPortalAccessIn{Expiry: new(uint64(1)), ReadOnly: new(true)},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.ingest.dashboard(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\",\n        IngestSourceConsumerPortalAccessIn(expiry = 1u, readOnly = true),\n    )"
+                        "source": "val response =\n    svix.ingest.authentication.consumerPortalAccess(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\",\n        IngestSourceConsumerPortalAccessIn(expiry = 1u, readOnly = true),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getIngest()\n        .dashboard(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            new IngestSourceConsumerPortalAccessIn().expiry(1L).readOnly(true));"
+                        "source": "var response = svix.getIngest()\n        .getAuthentication()\n        .consumerPortalAccess(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            new IngestSourceConsumerPortalAccessIn().expiry(1L).readOnly(true));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix.ingest.dashboard(\"src_31Dc4Mx7vQVLfxFgArIhq\", {expiry: 1, readOnly: true})"
+                        "source": "response = svix.ingest.authentication.consumer_portal_access(\"src_31Dc4Mx7vQVLfxFgArIhq\", {expiry: 1, readOnly: true})"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .ingest()\n    .dashboard(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\".to_string(),\n        IngestSourceConsumerPortalAccessIn {\n            expiry: Some(1),\n            read_only: Some(true),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .ingest()\n    .authentication()\n    .consumer_portal_access(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\".to_string(),\n        IngestSourceConsumerPortalAccessIn {\n            expiry: Some(1),\n            read_only: Some(true),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Ingest.Dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestSourceConsumerPortalAccessIn { Expiry = 1, ReadOnly = true }\n);"
+                        "source": "var response = svix.Ingest.Authentication.ConsumerPortalAccess(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    new IngestSourceConsumerPortalAccessIn { Expiry = 1, ReadOnly = true }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->ingest->dashboard(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn::create()\n    ->withExpiry(1)\n    ->withReadOnly(true)\n);"
+                        "source": "$response = $svix->ingest->authentication->consumerPortalAccess(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    IngestSourceConsumerPortalAccessIn::create()\n    ->withExpiry(1)\n    ->withReadOnly(true)\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix ingest dashboard \"src_31Dc4Mx7vQVLfxFgArIhq\" '{\n    \"expiry\": 1,\n    \"readOnly\": true\n  }'"
+                        "source": "svix ingest authentication consumer-portal-access \"src_31Dc4Mx7vQVLfxFgArIhq\" '{\n    \"expiry\": 1,\n    \"readOnly\": true\n  }'"
                     },
                     {
                         "lang": "Shell",
@@ -37360,7 +37360,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/IngestEndpointUpdate"
+                                "$ref": "#/components/schemas/IngestEndpointUpsertIn"
                             }
                         }
                     },
@@ -37467,27 +37467,27 @@
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.ingest.endpoint.upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        metadata={},\n    ),\n)"
+                        "source": "response = svix.ingest.endpoint.upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpsertIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.ingest.endpoint.upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpdate(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        metadata={},\n    ),\n)"
+                        "source": "response = await svix.ingest.endpoint.upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpsertIn(\n        description=\"An example endpoint name\",\n        throttle_rate=1,\n        uid=\"unique-identifier\",\n        url=\"https://example.com/webhook/\",\n        disabled=True,\n        metadata={},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Ingest.Endpoint.Upsert(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointUpdate{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tMetadata:     nil,\n\t},\n)"
+                        "source": "response, err := svix.Ingest.Endpoint.Upsert(\n\tctx,\n\t\"src_31Dc4Mx7vQVLfxFgArIhq\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tIngestEndpointUpsertIn{\n\t\tDescription:  new(\"An example endpoint name\"),\n\t\tThrottleRate: new(uint16(1)),\n\t\tUid:          new(\"unique-identifier\"),\n\t\tUrl:          \"https://example.com/webhook/\",\n\t\tDisabled:     new(true),\n\t\tMetadata:     nil,\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.ingest.endpoint.upsert(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        IngestEndpointUpdate(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            metadata = mapOf(),\n        ),\n    )"
+                        "source": "val response =\n    svix.ingest.endpoint.upsert(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        IngestEndpointUpsertIn(\n            description = \"An example endpoint name\",\n            throttleRate = 1u,\n            uid = \"unique-identifier\",\n            url = \"https://example.com/webhook/\",\n            disabled = true,\n            metadata = mapOf(),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getIngest()\n        .getEndpoint()\n        .upsert(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new IngestEndpointUpdate()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getIngest()\n        .getEndpoint()\n        .upsert(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new IngestEndpointUpsertIn()\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .disabled(true)\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -37497,17 +37497,17 @@
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .ingest()\n    .endpoint()\n    .upsert(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        IngestEndpointUpdate {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .ingest()\n    .endpoint()\n    .upsert(\n        \"src_31Dc4Mx7vQVLfxFgArIhq\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        IngestEndpointUpsertIn {\n            description: Some(\"An example endpoint name\".to_string()),\n            throttle_rate: Some(1),\n            uid: Some(\"unique-identifier\".to_string()),\n            url: \"https://example.com/webhook/\".to_string(),\n            disabled: Some(true),\n            metadata: Some(HashMap::new()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Ingest.Endpoint.Upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new IngestEndpointUpdate\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        Metadata = [],\n    }\n);"
+                        "source": "var response = svix.Ingest.Endpoint.Upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new IngestEndpointUpsertIn\n    {\n        Description = \"An example endpoint name\",\n        ThrottleRate = 1,\n        Uid = \"unique-identifier\",\n        Url = \"https://example.com/webhook/\",\n        Disabled = true,\n        Metadata = [],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->ingest->endpoint->upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpdate::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withMetadata([])\n);"
+                        "source": "$response = $svix->ingest->endpoint->upsert(\n    \"src_31Dc4Mx7vQVLfxFgArIhq\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    IngestEndpointUpsertIn::create(\n        url: \"https://example.com/webhook/\"\n    )\n    ->withDescription(\"An example endpoint name\")\n    ->withThrottleRate(1)\n    ->withUid(\"unique-identifier\")\n    ->withDisabled(true)\n    ->withMetadata([])\n);"
                     },
                     {
                         "lang": "Shell",
@@ -41004,26 +41004,6 @@
                     "type"
                 ]
             },
-            "DashboardAccessOut": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "type": "string",
-                        "format": "uri",
-                        "minLength": 1,
-                        "maxLength": 65536,
-                        "example": "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl"
-                    },
-                    "token": {
-                        "type": "string",
-                        "example": "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"
-                    }
-                },
-                "required": [
-                    "token",
-                    "url"
-                ]
-            },
             "WhoamiOut": {
                 "type": "object",
                 "properties": {
@@ -42118,7 +42098,7 @@
                     "iterator"
                 ]
             },
-            "EndpointUpdate": {
+            "EndpointUpsertIn": {
                 "type": "object",
                 "properties": {
                     "description": {
@@ -44092,7 +44072,7 @@
                     "name"
                 ]
             },
-            "EventTypeUpdate": {
+            "EventTypeUpsertIn": {
                 "type": "object",
                 "properties": {
                     "description": {
@@ -49443,7 +49423,7 @@
                     "url"
                 ]
             },
-            "OperationalWebhookEndpointUpdate": {
+            "OperationalWebhookEndpointUpsertIn": {
                 "type": "object",
                 "properties": {
                     "description": {
@@ -49610,7 +49590,7 @@
                     "iterator"
                 ]
             },
-            "ConnectorUpdate": {
+            "ConnectorUpsertIn": {
                 "type": "object",
                 "properties": {
                     "name": {
@@ -52649,7 +52629,7 @@
                     "url"
                 ]
             },
-            "IngestEndpointUpdate": {
+            "IngestEndpointUpsertIn": {
                 "type": "object",
                 "properties": {
                     "description": {

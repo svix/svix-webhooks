@@ -1,23 +1,16 @@
 // this file is @generated
 
-import {
-  type DashboardAccessOut,
-  DashboardAccessOutSerializer,
-} from "../models/dashboardAccessOut";
-import {
-  type IngestSourceConsumerPortalAccessIn,
-  IngestSourceConsumerPortalAccessInSerializer,
-} from "../models/ingestSourceConsumerPortalAccessIn";
+import { IngestAuthentication } from "./ingestAuthentication";
 import { IngestEndpoint } from "./ingestEndpoint";
 import { IngestSource } from "./ingestSource";
-import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
-
-export interface IngestDashboardOptions {
-  idempotencyKey?: string;
-}
+import type { SvixRequestContext } from "../request";
 
 export class Ingest {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get authentication() {
+    return new IngestAuthentication(this.requestCtx);
+  }
 
   public get endpoint() {
     return new IngestEndpoint(this.requestCtx);
@@ -25,30 +18,5 @@ export class Ingest {
 
   public get source() {
     return new IngestSource(this.requestCtx);
-  }
-
-  /** Get access to the Ingest Source Consumer Portal. */
-  public async dashboard(
-    sourceId: string,
-    ingestSourceConsumerPortalAccessIn: IngestSourceConsumerPortalAccessIn = {},
-    options?: IngestDashboardOptions
-  ): Promise<DashboardAccessOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/ingest/api/v1/source/{source_id}/dashboard"
-    );
-
-    request.setPathParam("source_id", sourceId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(
-      IngestSourceConsumerPortalAccessInSerializer._toJsonObject(
-        ingestSourceConsumerPortalAccessIn
-      )
-    );
-
-    return await request.send(
-      this.requestCtx,
-      DashboardAccessOutSerializer._fromJsonObject
-    );
   }
 }

@@ -284,7 +284,7 @@ pub enum EndpointCommands {
     Upsert {
         app_id: String,
         id: String,
-        endpoint_update: crate::json::JsonOf<EndpointUpdate>,
+        endpoint_upsert_in: crate::json::JsonOf<EndpointUpsertIn>,
     },
     /// Delete an endpoint.
     #[command(help_template = concat!(
@@ -685,11 +685,11 @@ impl EndpointCommands {
             Self::Upsert {
                 app_id,
                 id,
-                endpoint_update,
+                endpoint_upsert_in,
             } => {
                 let resp = client
                     .endpoint()
-                    .upsert(app_id, id, endpoint_update.into_inner())
+                    .upsert(app_id, id, endpoint_upsert_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

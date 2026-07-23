@@ -12,7 +12,7 @@ import com.svix.kotlin.models.EndpointSecretOut
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.EndpointStats
 import com.svix.kotlin.models.EndpointTransformationIn
-import com.svix.kotlin.models.EndpointUpdate
+import com.svix.kotlin.models.EndpointUpsertIn
 import com.svix.kotlin.models.EventExampleIn
 import com.svix.kotlin.models.ListResponseEndpointOut
 import com.svix.kotlin.models.MessageOut
@@ -99,14 +99,14 @@ class Endpoint(private val client: SvixHttpClient) {
     suspend fun upsert(
         appId: String,
         endpointId: String,
-        endpointUpdate: EndpointUpdate,
+        endpointUpsertIn: EndpointUpsertIn,
     ): EndpointOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId")
 
-        return client.executeRequest<EndpointUpdate, EndpointOut>(
+        return client.executeRequest<EndpointUpsertIn, EndpointOut>(
             "PUT",
             url.build(),
-            reqBody = endpointUpdate,
+            reqBody = endpointUpsertIn,
         )
     }
 

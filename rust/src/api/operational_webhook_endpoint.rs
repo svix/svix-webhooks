@@ -82,14 +82,14 @@ impl<'a> OperationalWebhookEndpoint<'a> {
     pub async fn upsert(
         &self,
         endpoint_id: String,
-        operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
+        operational_webhook_endpoint_upsert_in: OperationalWebhookEndpointUpsertIn,
     ) -> Result<OperationalWebhookEndpointOut> {
         crate::request::Request::new(
             http::Method::PUT,
             "/api/v1/operational-webhook/endpoint/{endpoint_id}",
         )
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(operational_webhook_endpoint_update)
+        .with_body_param(operational_webhook_endpoint_upsert_in)
         .execute(self.cfg)
         .await
     }

@@ -115,12 +115,12 @@ func (operationalWebhookEndpoint OperationalWebhookEndpoint) Get(
 func (operationalWebhookEndpoint OperationalWebhookEndpoint) Upsert(
 	ctx context.Context,
 	endpointId string,
-	operationalWebhookEndpointUpdate models.OperationalWebhookEndpointUpdate,
+	operationalWebhookEndpointUpsertIn models.OperationalWebhookEndpointUpsertIn,
 ) (*models.OperationalWebhookEndpointOut, error) {
 	pathMap := map[string]string{
 		"endpoint_id": endpointId,
 	}
-	return internal.ExecuteRequest[models.OperationalWebhookEndpointUpdate, models.OperationalWebhookEndpointOut](
+	return internal.ExecuteRequest[models.OperationalWebhookEndpointUpsertIn, models.OperationalWebhookEndpointOut](
 		ctx,
 		operationalWebhookEndpoint.client,
 		"PUT",
@@ -128,7 +128,7 @@ func (operationalWebhookEndpoint OperationalWebhookEndpoint) Upsert(
 		pathMap,
 		nil,
 		nil,
-		&operationalWebhookEndpointUpdate,
+		&operationalWebhookEndpointUpsertIn,
 	)
 }
 

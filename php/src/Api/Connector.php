@@ -9,7 +9,7 @@ use Svix\Exception\ApiException;
 use Svix\Models\ConnectorIn;
 use Svix\Models\ConnectorOut;
 use Svix\Models\ConnectorPatch;
-use Svix\Models\ConnectorUpdate;
+use Svix\Models\ConnectorUpsertIn;
 use Svix\Models\ListResponseConnectorOut;
 use Svix\Request\SvixHttpClient;
 
@@ -76,10 +76,10 @@ class Connector
      */
     public function upsert(
         string $connectorId,
-        ConnectorUpdate $connectorUpdate,
+        ConnectorUpsertIn $connectorUpsertIn,
     ): ConnectorOut {
         $request = $this->client->newReq('PUT', "/api/v1/connector/{$connectorId}");
-        $request->setBody(json_encode($connectorUpdate));
+        $request->setBody(json_encode($connectorUpsertIn));
         $res = $this->client->send($request);
 
         return ConnectorOut::fromJson($res);

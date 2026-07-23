@@ -2,10 +2,7 @@
 package svix
 
 import (
-	"context"
-
 	"github.com/svix/svix-webhooks/go/internal"
-	"github.com/svix/svix-webhooks/go/models"
 )
 
 type Ingest struct {
@@ -16,45 +13,12 @@ func newIngest(client *internal.SvixHttpClient) Ingest {
 	return Ingest{client}
 }
 
+func (ingest Ingest) Authentication() IngestAuthentication {
+	return newIngestAuthentication(ingest.client)
+}
 func (ingest Ingest) Endpoint() IngestEndpoint {
 	return newIngestEndpoint(ingest.client)
 }
 func (ingest Ingest) Source() IngestSource {
 	return newIngestSource(ingest.client)
-}
-
-type IngestDashboardOptions struct {
-	IdempotencyKey *string
-}
-
-// Get access to the Ingest Source Consumer Portal.
-func (ingest Ingest) Dashboard(
-	ctx context.Context,
-	sourceId string,
-	ingestSourceConsumerPortalAccessIn models.IngestSourceConsumerPortalAccessIn,
-	o *IngestDashboardOptions,
-) (*models.DashboardAccessOut, error) {
-	var err error
-	pathMap := map[string]string{
-		"source_id": sourceId,
-	}
-	headerMap := map[string]string{}
-	if o == nil {
-		opts := IngestDashboardOptions{}
-		o = &opts
-	}
-	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-	if err != nil {
-		return nil, err
-	}
-	return internal.ExecuteRequest[models.IngestSourceConsumerPortalAccessIn, models.DashboardAccessOut](
-		ctx,
-		ingest.client,
-		"POST",
-		"/ingest/api/v1/source/{source_id}/dashboard",
-		pathMap,
-		nil,
-		headerMap,
-		&ingestSourceConsumerPortalAccessIn,
-	)
 }

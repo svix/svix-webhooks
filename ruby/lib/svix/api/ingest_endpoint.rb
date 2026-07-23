@@ -46,11 +46,11 @@ module Svix
       IngestEndpointOut.deserialize(res)
     end
 
-    def upsert(source_id, endpoint_id, ingest_endpoint_update)
+    def upsert(source_id, endpoint_id, ingest_endpoint_upsert_in)
       res = @client.execute_request(
         "PUT",
         "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}",
-        body: ingest_endpoint_update
+        body: ingest_endpoint_upsert_in
       )
       IngestEndpointOut.deserialize(res)
     end

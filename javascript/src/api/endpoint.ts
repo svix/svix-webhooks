@@ -29,7 +29,10 @@ import {
   type EndpointTransformationIn,
   EndpointTransformationInSerializer,
 } from "../models/endpointTransformationIn";
-import { type EndpointUpdate, EndpointUpdateSerializer } from "../models/endpointUpdate";
+import {
+  type EndpointUpsertIn,
+  EndpointUpsertInSerializer,
+} from "../models/endpointUpsertIn";
 import { type EventExampleIn, EventExampleInSerializer } from "../models/eventExampleIn";
 import {
   type ListResponseEndpointOut,
@@ -147,7 +150,7 @@ export class Endpoint {
   public async upsert(
     appId: string,
     endpointId: string,
-    endpointUpdate: EndpointUpdate
+    endpointUpsertIn: EndpointUpsertIn
   ): Promise<EndpointOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -156,7 +159,7 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setBody(EndpointUpdateSerializer._toJsonObject(endpointUpdate));
+    request.setBody(EndpointUpsertInSerializer._toJsonObject(endpointUpsertIn));
 
     return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }

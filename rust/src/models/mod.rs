@@ -36,11 +36,10 @@ mod connector_kind;
 mod connector_out;
 mod connector_patch;
 mod connector_product;
-mod connector_update;
+mod connector_upsert_in;
 mod create_stream_events_in;
 mod create_stream_events_out;
 mod cron_config;
-mod dashboard_access_out;
 mod docusign_config;
 mod docusign_config_out;
 mod easypost_config;
@@ -59,7 +58,7 @@ mod endpoint_stats;
 mod endpoint_transformation_in;
 mod endpoint_transformation_out;
 mod endpoint_transformation_patch;
-mod endpoint_update;
+mod endpoint_upsert_in;
 mod environment_in;
 mod environment_out;
 mod event_bridge_config;
@@ -75,7 +74,7 @@ mod event_type_import_open_api_out_data;
 mod event_type_in;
 mod event_type_out;
 mod event_type_patch;
-mod event_type_update;
+mod event_type_upsert_in;
 mod expunge_all_contents_out;
 mod github_config;
 mod github_config_out;
@@ -95,7 +94,7 @@ mod ingest_endpoint_secret_in;
 mod ingest_endpoint_secret_out;
 mod ingest_endpoint_transformation_out;
 mod ingest_endpoint_transformation_patch;
-mod ingest_endpoint_update;
+mod ingest_endpoint_upsert_in;
 mod ingest_source_consumer_portal_access_in;
 mod ingest_source_in;
 mod ingest_source_out;
@@ -140,7 +139,7 @@ mod operational_webhook_endpoint_in;
 mod operational_webhook_endpoint_out;
 mod operational_webhook_endpoint_secret_in;
 mod operational_webhook_endpoint_secret_out;
-mod operational_webhook_endpoint_update;
+mod operational_webhook_endpoint_upsert_in;
 mod ordering;
 mod orum_io_config;
 mod orum_io_config_out;
@@ -263,11 +262,10 @@ pub use self::{
     connector_out::ConnectorOut,
     connector_patch::ConnectorPatch,
     connector_product::ConnectorProduct,
-    connector_update::ConnectorUpdate,
+    connector_upsert_in::ConnectorUpsertIn,
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
     cron_config::CronConfig,
-    dashboard_access_out::DashboardAccessOut,
     docusign_config::DocusignConfig,
     docusign_config_out::DocusignConfigOut,
     easypost_config::EasypostConfig,
@@ -286,7 +284,7 @@ pub use self::{
     endpoint_transformation_in::EndpointTransformationIn,
     endpoint_transformation_out::EndpointTransformationOut,
     endpoint_transformation_patch::EndpointTransformationPatch,
-    endpoint_update::EndpointUpdate,
+    endpoint_upsert_in::EndpointUpsertIn,
     environment_in::EnvironmentIn,
     environment_out::EnvironmentOut,
     event_bridge_config::EventBridgeConfig,
@@ -302,7 +300,7 @@ pub use self::{
     event_type_in::EventTypeIn,
     event_type_out::EventTypeOut,
     event_type_patch::EventTypePatch,
-    event_type_update::EventTypeUpdate,
+    event_type_upsert_in::EventTypeUpsertIn,
     expunge_all_contents_out::ExpungeAllContentsOut,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
@@ -322,7 +320,7 @@ pub use self::{
     ingest_endpoint_secret_out::IngestEndpointSecretOut,
     ingest_endpoint_transformation_out::IngestEndpointTransformationOut,
     ingest_endpoint_transformation_patch::IngestEndpointTransformationPatch,
-    ingest_endpoint_update::IngestEndpointUpdate,
+    ingest_endpoint_upsert_in::IngestEndpointUpsertIn,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
     ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
     ingest_source_out::{IngestSourceOut, IngestSourceOutConfig},
@@ -367,7 +365,7 @@ pub use self::{
     operational_webhook_endpoint_out::OperationalWebhookEndpointOut,
     operational_webhook_endpoint_secret_in::OperationalWebhookEndpointSecretIn,
     operational_webhook_endpoint_secret_out::OperationalWebhookEndpointSecretOut,
-    operational_webhook_endpoint_update::OperationalWebhookEndpointUpdate,
+    operational_webhook_endpoint_upsert_in::OperationalWebhookEndpointUpsertIn,
     ordering::Ordering,
     orum_io_config::OrumIoConfig,
     orum_io_config_out::OrumIoConfigOut,

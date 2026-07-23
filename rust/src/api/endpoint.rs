@@ -128,7 +128,7 @@ impl<'a> Endpoint<'a> {
         &self,
         app_id: String,
         endpoint_id: String,
-        endpoint_update: EndpointUpdate,
+        endpoint_upsert_in: EndpointUpsertIn,
     ) -> Result<EndpointOut> {
         crate::request::Request::new(
             http::Method::PUT,
@@ -136,7 +136,7 @@ impl<'a> Endpoint<'a> {
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
-        .with_body_param(endpoint_update)
+        .with_body_param(endpoint_upsert_in)
         .execute(self.cfg)
         .await
     }

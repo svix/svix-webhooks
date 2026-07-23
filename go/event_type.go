@@ -162,12 +162,12 @@ func (eventType EventType) Get(
 func (eventType EventType) Upsert(
 	ctx context.Context,
 	eventTypeName string,
-	eventTypeUpdate models.EventTypeUpdate,
+	eventTypeUpsertIn models.EventTypeUpsertIn,
 ) (*models.EventTypeOut, error) {
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
-	return internal.ExecuteRequest[models.EventTypeUpdate, models.EventTypeOut](
+	return internal.ExecuteRequest[models.EventTypeUpsertIn, models.EventTypeOut](
 		ctx,
 		eventType.client,
 		"PUT",
@@ -175,7 +175,7 @@ func (eventType EventType) Upsert(
 		pathMap,
 		nil,
 		nil,
-		&eventTypeUpdate,
+		&eventTypeUpsertIn,
 	)
 }
 

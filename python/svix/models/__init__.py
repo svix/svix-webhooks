@@ -33,11 +33,10 @@ from .connector_kind import ConnectorKind
 from .connector_out import ConnectorOut
 from .connector_patch import ConnectorPatch
 from .connector_product import ConnectorProduct
-from .connector_update import ConnectorUpdate
+from .connector_upsert_in import ConnectorUpsertIn
 from .create_stream_events_in import CreateStreamEventsIn
 from .create_stream_events_out import CreateStreamEventsOut
 from .cron_config import CronConfig
-from .dashboard_access_out import DashboardAccessOut
 from .docusign_config import DocusignConfig
 from .docusign_config_out import DocusignConfigOut
 from .easypost_config import EasypostConfig
@@ -56,7 +55,7 @@ from .endpoint_stats import EndpointStats
 from .endpoint_transformation_in import EndpointTransformationIn
 from .endpoint_transformation_out import EndpointTransformationOut
 from .endpoint_transformation_patch import EndpointTransformationPatch
-from .endpoint_update import EndpointUpdate
+from .endpoint_upsert_in import EndpointUpsertIn
 from .environment_in import EnvironmentIn
 from .environment_out import EnvironmentOut
 from .event_bridge_config import EventBridgeConfig
@@ -72,7 +71,7 @@ from .event_type_import_open_api_out_data import EventTypeImportOpenApiOutData
 from .event_type_in import EventTypeIn
 from .event_type_out import EventTypeOut
 from .event_type_patch import EventTypePatch
-from .event_type_update import EventTypeUpdate
+from .event_type_upsert_in import EventTypeUpsertIn
 from .expunge_all_contents_out import ExpungeAllContentsOut
 from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
@@ -92,7 +91,7 @@ from .ingest_endpoint_secret_in import IngestEndpointSecretIn
 from .ingest_endpoint_secret_out import IngestEndpointSecretOut
 from .ingest_endpoint_transformation_out import IngestEndpointTransformationOut
 from .ingest_endpoint_transformation_patch import IngestEndpointTransformationPatch
-from .ingest_endpoint_update import IngestEndpointUpdate
+from .ingest_endpoint_upsert_in import IngestEndpointUpsertIn
 from .ingest_source_consumer_portal_access_in import IngestSourceConsumerPortalAccessIn
 from .ingest_source_in import IngestSourceIn
 from .ingest_source_out import IngestSourceOut
@@ -141,7 +140,7 @@ from .operational_webhook_endpoint_in import OperationalWebhookEndpointIn
 from .operational_webhook_endpoint_out import OperationalWebhookEndpointOut
 from .operational_webhook_endpoint_secret_in import OperationalWebhookEndpointSecretIn
 from .operational_webhook_endpoint_secret_out import OperationalWebhookEndpointSecretOut
-from .operational_webhook_endpoint_update import OperationalWebhookEndpointUpdate
+from .operational_webhook_endpoint_upsert_in import OperationalWebhookEndpointUpsertIn
 from .ordering import Ordering
 from .orum_io_config import OrumIoConfig
 from .orum_io_config_out import OrumIoConfigOut
@@ -256,11 +255,10 @@ __all__ = [
     "ConnectorOut",
     "ConnectorPatch",
     "ConnectorProduct",
-    "ConnectorUpdate",
+    "ConnectorUpsertIn",
     "CreateStreamEventsIn",
     "CreateStreamEventsOut",
     "CronConfig",
-    "DashboardAccessOut",
     "DocusignConfig",
     "DocusignConfigOut",
     "EasypostConfig",
@@ -279,7 +277,7 @@ __all__ = [
     "EndpointTransformationIn",
     "EndpointTransformationOut",
     "EndpointTransformationPatch",
-    "EndpointUpdate",
+    "EndpointUpsertIn",
     "EnvironmentIn",
     "EnvironmentOut",
     "EventBridgeConfig",
@@ -295,7 +293,7 @@ __all__ = [
     "EventTypeIn",
     "EventTypeOut",
     "EventTypePatch",
-    "EventTypeUpdate",
+    "EventTypeUpsertIn",
     "ExpungeAllContentsOut",
     "GithubConfig",
     "GithubConfigOut",
@@ -315,7 +313,7 @@ __all__ = [
     "IngestEndpointSecretOut",
     "IngestEndpointTransformationOut",
     "IngestEndpointTransformationPatch",
-    "IngestEndpointUpdate",
+    "IngestEndpointUpsertIn",
     "IngestSourceConsumerPortalAccessIn",
     "IngestSourceIn",
     "IngestSourceOut",
@@ -360,7 +358,7 @@ __all__ = [
     "OperationalWebhookEndpointOut",
     "OperationalWebhookEndpointSecretIn",
     "OperationalWebhookEndpointSecretOut",
-    "OperationalWebhookEndpointUpdate",
+    "OperationalWebhookEndpointUpsertIn",
     "Ordering",
     "OrumIoConfig",
     "OrumIoConfigOut",

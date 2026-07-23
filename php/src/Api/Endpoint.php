@@ -17,7 +17,7 @@ use Svix\Models\EndpointSecretOut;
 use Svix\Models\EndpointSecretRotateIn;
 use Svix\Models\EndpointStats;
 use Svix\Models\EndpointTransformationIn;
-use Svix\Models\EndpointUpdate;
+use Svix\Models\EndpointUpsertIn;
 use Svix\Models\EventExampleIn;
 use Svix\Models\ListResponseEndpointOut;
 use Svix\Models\MessageOut;
@@ -98,10 +98,10 @@ class Endpoint
     public function upsert(
         string $appId,
         string $endpointId,
-        EndpointUpdate $endpointUpdate,
+        EndpointUpsertIn $endpointUpsertIn,
     ): EndpointOut {
         $request = $this->client->newReq('PUT', "/api/v1/app/{$appId}/endpoint/{$endpointId}");
-        $request->setBody(json_encode($endpointUpdate));
+        $request->setBody(json_encode($endpointUpsertIn));
         $res = $this->client->send($request);
 
         return EndpointOut::fromJson($res);
