@@ -91,12 +91,24 @@ jobs:
           name: artifacts-plan-dist-manifest
           path: plan-dist-manifest.json
 
+  # Gate job: requests environment approval upfront so you don't wait until the end
+  # Manually added, needs to be re-applied whenever this file is re-generated.
+  gate:
+    needs:
+      - plan
+    if: ${{ needs.plan.outputs.publishing == 'true' }}
+    environment: "release"
+    runs-on: "ubuntu-22.04"
+    steps:
+      - run: echo "Release approved for ${{ needs.plan.outputs.tag }}"
+
   # Build and packages all the platform-specific things
   build-local-artifacts:
     name: build-local-artifacts (${{ join(matrix.targets, ', ') }})
     # Let the initial task tell us to not run (currently very blunt)
     needs:
       - plan
+      - gate
     if: ${{ fromJson(needs.plan.outputs.val).ci.github.artifacts_matrix.include != null && (needs.plan.outputs.publishing == 'true' || fromJson(needs.plan.outputs.val).ci.github.pr_run_mode == 'upload') || inputs.tag == 'dry-run' }}
     strategy:
       fail-fast: false
@@ -281,6 +293,8 @@ jobs:
           gh release edit "${{ needs.plan.outputs.tag }}" --target "$RELEASE_COMMIT" $PRERELEASE_FLAG --draft=false
 
   publish-homebrew-formula:
+    # FIXME: figure out if we can set this w/o `allow-dirty = ["ci"]` in dist-workspace.toml
+    environment: "release"
     needs:
       - plan
       - host
@@ -331,6 +345,11 @@ jobs:
       - plan
       - host
     runs-on: "ubuntu-22.04"
+    # FIXME: figure out if we can set env + permissions w/o `allow-dirty = ["ci"]` in dist-workspace.toml
+    environment: "release"
+    permissions:
+      id-token: write
+      contents: read
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PLAN: ${{ needs.plan.outputs.val }}
@@ -344,15 +363,17 @@ jobs:
           merge-multiple: true
       - uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
+          # Manually updated, needs to be re-applied whenever this file is re-generated.
+          node-version: '24.x'
           registry-url: 'https://registry.npmjs.org'
       - run: |
           for release in $(echo "$PLAN" | jq --compact-output '.releases[] | select([.artifacts[] | endswith("-npm-package.tar.gz")] | any)'); do
             pkg=$(echo "$release" | jq '.artifacts[] | select(endswith("-npm-package.tar.gz"))' --raw-output)
             npm publish --access public "./npm/${pkg}"
           done
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        # Manually removed, needs to be re-applied whenever this file is re-generated.
+        #env:
+        #  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   announce:
     needs:
