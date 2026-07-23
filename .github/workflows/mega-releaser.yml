@@ -8,10 +8,6 @@ permissions:
   packages: write
 
 jobs:
-  bridge:
-    uses: ./.github/workflows/bridge-release.yml
-    secrets: inherit
-
   cli-docker:
     uses: ./.github/workflows/cli-docker-release.yml
     secrets: inherit
@@ -46,10 +42,6 @@ jobs:
 
   rust:
     uses: ./.github/workflows/rust-release.yml
-    secrets: inherit
-
-  server:
-    uses: ./.github/workflows/server-release.yml
     secrets: inherit
 
   postman:
