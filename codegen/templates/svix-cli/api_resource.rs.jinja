@@ -101,9 +101,12 @@ use super::{{ sub.name | to_snake_case }}::{{ sub.name | to_upper_camel_case }}A
         #[derive(Args, Clone)]
         pub struct {{ param_struct_type_name }} {
             {% for p in op.query_params -%}
-                {% set ty = p.type.to_rust() -%}
-                {% if ty == "DateTime<Utc>" -%}
+                {% if p.type.is_datetime() -%}
                     {% set ty = "chrono::DateTime<chrono::Utc>" -%}
+                {% elif p.type.is_set() -%}
+                    {% set ty %}Vec<{{ p.type.inner_type().to_rust() }}>{% endset -%}
+                {% else %}
+                    {% set ty = p.type.to_rust() -%}
                 {% endif -%}
                 {% if not p.required %}{% set ty %}Option<{{ ty }}>{% endset %}{% endif -%}
                 {% if p.description is defined -%}
@@ -137,16 +140,15 @@ use super::{{ sub.name | to_snake_case }}::{{ sub.name | to_upper_camel_case }}A
                 } = value;
                 Self {
                     {% for p in op.query_params -%}
-                        {% if p.type.is_datetime() -%}
-                            {{ p.name | to_snake_case }}:
-                            {%- if p.required %}
-                            {{ p.name | to_snake_case }}.to_rfc3339(),
-                            {%- else %}
-                            {{ p.name | to_snake_case }}.map(|dt| dt.to_rfc3339()),
-                            {% endif -%}
-                        {% else -%}
-                            {{ p.name | to_snake_case }},
-                        {% endif -%}
+                        {{ p.name | to_snake_case }}
+                        {% if p.type.is_set() -%}
+                            : {{ p.name | to_snake_case }}
+                            {%- if p.required -%}
+                                .into_iter().collect()
+                            {%- else -%}
+                                .map(|list| list.into_iter().collect())
+                            {%- endif -%}
+                        {% endif -%},
                     {% endfor -%}
                     {% for p in op.header_params -%}
                         {{ p.name | to_snake_case }},

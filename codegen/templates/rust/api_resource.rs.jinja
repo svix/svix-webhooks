@@ -25,19 +25,14 @@ use super::{
     pub struct {{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options {
         {% for p in op.query_params -%}
             {% if p.type.is_datetime() -%}
-                {% set ty = "String" -%}
+                {# openapi-codegen now outputs jiff::Timestamp, we want to use chrono for now though -#}
+                {% set ty = "chrono::DateTime<chrono::Utc>" -%}
             {% else -%}
                 {% set ty = p.type.to_rust() -%}
             {% endif -%}
             {% if not p.required %}{% set ty %}Option<{{ ty }}>{% endset %}{% endif %}
             {% if p.description is defined -%}
                 {{ p.description | to_doc_comment(style="rust") }}
-                {# we currently use String for date-time params, for backwards compat -#}
-                {# document the format so it's not _that_ awkward -#}
-                {% if p.type.is_datetime() -%}
-                ///
-                /// RFC3339 date string.
-                {% endif -%}
             {% endif -%}
             pub {{ p.name | to_snake_case }}: {{ ty }},
         {% endfor -%}

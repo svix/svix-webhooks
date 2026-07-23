@@ -9,10 +9,10 @@ pub struct IntegrationOut {
     pub id: String,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     /// The set of feature flags the integration has access to.
     #[serde(rename = "featureFlags")]
@@ -21,7 +21,12 @@ pub struct IntegrationOut {
 }
 
 impl IntegrationOut {
-    pub fn new(name: String, id: String, created_at: String, updated_at: String) -> Self {
+    pub fn new(
+        name: String,
+        id: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
+    ) -> Self {
         Self {
             name,
             id,

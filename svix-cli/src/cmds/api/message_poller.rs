@@ -9,17 +9,20 @@ pub struct MessagePollerPollOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filters messages sent with this event type (optional).
     #[arg(long)]
     pub event_type: Option<String>,
+
     /// Filters messages sent with this channel (optional).
     #[arg(long)]
     pub channel: Option<String>,
     #[arg(long)]
-    pub after: Option<jiff::Timestamp>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<MessagePollerPollOptions> for svix::api::MessagePollerPollOptions {
@@ -36,7 +39,7 @@ impl From<MessagePollerPollOptions> for svix::api::MessagePollerPollOptions {
             iterator,
             event_type,
             channel,
-            after: after.map(|dt| dt.to_rfc3339()),
+            after,
         }
     }
 }
@@ -59,6 +62,7 @@ pub struct MessagePollerConsumerPollOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

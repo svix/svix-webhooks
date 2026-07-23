@@ -33,10 +33,10 @@ pub struct IngestSourceOut {
     pub ingest_url: Option<String>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     pub metadata: std::collections::BTreeMap<String, String>,
 

@@ -44,11 +44,9 @@ pub struct MessageIn {
     ///
     /// Note that this time is best-effort-only. Must be at least one minute and
     /// no more than 24 hours in the future.
-    ///
-    /// RFC3339 date string.
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub deliver_at: Option<String>,
+    pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Optional number of days to retain the message payload. Defaults to 90.
     /// Note that this is mutually exclusive with `payloadRetentionHours`.

@@ -9,35 +9,43 @@ pub struct MessageAttemptListByEndpointOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
+
     /// Filter response based on the HTTP status code
     #[arg(long)]
     pub status_code_class: Option<StatusCodeClass>,
+
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
+
     /// Filter response based on the tag
     #[arg(long)]
     pub tag: Option<String>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<jiff::Timestamp>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<jiff::Timestamp>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// When `true`, the message information is included in the response
     ///
     /// Note that message payloads are never included in the response, regardless of this flag.
     #[arg(long)]
     pub with_msg: Option<bool>,
+
     /// When `true`, return the Canceled (4) status in attempts.
     ///
     /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
@@ -45,7 +53,7 @@ pub struct MessageAttemptListByEndpointOptions {
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<Vec<String>>,
 }
 
 impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptListByEndpointOptions {
@@ -71,12 +79,12 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
             status_code_class,
             channel,
             tag,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             with_msg,
             expanded_statuses,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }
@@ -86,33 +94,41 @@ pub struct MessageAttemptListByMsgOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
+
     /// Filter response based on the HTTP status code
     #[arg(long)]
     pub status_code_class: Option<StatusCodeClass>,
+
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
+
     /// Filter response based on the tag
     #[arg(long)]
     pub tag: Option<String>,
+
     /// Filter the attempts based on the attempted endpoint
     #[arg(long)]
     pub endpoint_id: Option<String>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<jiff::Timestamp>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<jiff::Timestamp>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// When `true`, return the Canceled (4) status in attempts.
     ///
     /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
@@ -120,7 +136,7 @@ pub struct MessageAttemptListByMsgOptions {
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<Vec<String>>,
 }
 
 impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsgOptions {
@@ -147,11 +163,11 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
             channel,
             tag,
             endpoint_id,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             expanded_statuses,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }
@@ -161,27 +177,33 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filter response based on the channel
     #[arg(long)]
     pub channel: Option<String>,
+
     /// Filter response based on the message tags
     #[arg(long)]
     pub tag: Option<String>,
+
     /// Filter response based on the status of the attempt: Success (0), Pending (1), Failed (2), Sending (3), or Canceled (4)
     #[arg(long)]
     pub status: Option<MessageStatus>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<jiff::Timestamp>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<jiff::Timestamp>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
+
     /// When `true` message payloads are included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
+
     /// When `true`, return the Canceled (4) status in attempts.
     ///
     /// If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
@@ -189,7 +211,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<Vec<String>>,
 }
 
 impl From<MessageAttemptListAttemptedMessagesOptions>
@@ -214,11 +236,11 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
             channel,
             tag,
             status,
-            before: before.map(|dt| dt.to_rfc3339()),
-            after: after.map(|dt| dt.to_rfc3339()),
+            before,
+            after,
             with_content,
             expanded_statuses,
-            event_types,
+            event_types: event_types.map(|list| list.into_iter().collect()),
         }
     }
 }
@@ -228,6 +250,7 @@ pub struct MessageAttemptListAttemptedDestinationsOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

@@ -9,18 +9,23 @@ pub struct ApplicationListOptions {
     /// Exclude applications that have no endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_no_endpoints: Option<bool>,
+
     /// Exclude applications that have only disabled endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_disabled_endpoints: Option<bool>,
+
     /// Exclude applications that only have Svix Play endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_svix_play_endpoints: Option<bool>,
+
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,

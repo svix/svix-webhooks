@@ -36,10 +36,10 @@ pub struct EndpointOut {
     pub channels: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl EndpointOut {
@@ -48,8 +48,8 @@ impl EndpointOut {
         metadata: std::collections::BTreeMap<String, String>,
         description: String,
         url: String,
-        created_at: String,
-        updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             id,

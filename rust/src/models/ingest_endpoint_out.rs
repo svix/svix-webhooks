@@ -26,10 +26,10 @@ pub struct IngestEndpointOut {
     pub disabled: Option<bool>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     pub metadata: std::collections::BTreeMap<String, String>,
 }
@@ -39,8 +39,8 @@ impl IngestEndpointOut {
         id: String,
         description: String,
         url: String,
-        created_at: String,
-        updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
         metadata: std::collections::BTreeMap<String, String>,
     ) -> Self {
         Self {

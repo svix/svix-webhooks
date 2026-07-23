@@ -21,7 +21,7 @@ pub struct AppUsageStatsOut {
     pub task: BackgroundTaskType,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl AppUsageStatsOut {
@@ -30,7 +30,7 @@ impl AppUsageStatsOut {
         id: String,
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,
-        updated_at: String,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             unresolved_app_ids,

@@ -369,7 +369,7 @@ public class WiremockTests {
                 WireMock.patch(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
                         .willReturn(WireMock.ok().withBodyFile("EndpointOut.json")));
 
-        svx.getEndpoint().patch("ap", "endp", new EndpointPatch().throttleRate(123L));
+        svx.getEndpoint().patch("ap", "endp", new EndpointPatch().throttleRate((short) 123));
 
         wireMockRule.verify(
                 1,

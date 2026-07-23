@@ -38,7 +38,7 @@ pub struct MessageAttemptOut {
     /// The MessageAttempt's ID.
     pub id: String,
 
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub msg: Option<MessageOut>,
@@ -56,7 +56,7 @@ impl MessageAttemptOut {
         msg_id: String,
         endpoint_id: String,
         id: String,
-        timestamp: String,
+        timestamp: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             url,

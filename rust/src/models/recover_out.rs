@@ -15,7 +15,7 @@ pub struct RecoverOut {
     pub task: BackgroundTaskType,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl RecoverOut {
@@ -23,7 +23,7 @@ impl RecoverOut {
         id: String,
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,
-        updated_at: String,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             id,

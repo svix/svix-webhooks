@@ -17,7 +17,7 @@ pub struct BackgroundTaskOut {
     pub task: BackgroundTaskType,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 impl BackgroundTaskOut {
@@ -26,7 +26,7 @@ impl BackgroundTaskOut {
         id: String,
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,
-        updated_at: String,
+        updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             data,

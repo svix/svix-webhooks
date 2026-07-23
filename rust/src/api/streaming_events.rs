@@ -9,7 +9,7 @@ pub struct StreamingEventsGetOptions {
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
 
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Default)]

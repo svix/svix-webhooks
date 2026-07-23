@@ -9,15 +9,19 @@ pub struct EventTypeListOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
+
     /// When `true` archived (deleted but not expunged) items are included in the response.
     #[arg(long)]
     pub include_archived: Option<bool>,
+
     /// When `true` the full item (including the schema) is included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,

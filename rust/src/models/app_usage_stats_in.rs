@@ -3,9 +3,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct AppUsageStatsIn {
-    pub since: String,
+    pub since: chrono::DateTime<chrono::Utc>,
 
-    pub until: String,
+    pub until: chrono::DateTime<chrono::Utc>,
 
     /// Specific app IDs or UIDs to aggregate stats for.
     ///
@@ -17,7 +17,7 @@ pub struct AppUsageStatsIn {
 }
 
 impl AppUsageStatsIn {
-    pub fn new(since: String, until: String) -> Self {
+    pub fn new(since: chrono::DateTime<chrono::Utc>, until: chrono::DateTime<chrono::Utc>) -> Self {
         Self {
             since,
             until,

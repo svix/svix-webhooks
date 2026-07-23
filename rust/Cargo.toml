@@ -33,6 +33,7 @@ svix_beta = []
 
 [dependencies]
 base64 = "0.22.1"
+chrono = { version = "0.4.45", features = ["serde"] }
 hmac-sha256 = "1"
 http = "1.1.14"
 http-body-util = "0.1.0"

@@ -15,7 +15,7 @@ pub struct MessagePollerPollOptions {
     /// Filters messages sent with this channel (optional).
     pub channel: Option<String>,
 
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Default)]

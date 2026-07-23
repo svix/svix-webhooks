@@ -11,18 +11,18 @@ pub struct ApiTokenOut {
     pub name: Option<String>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "expiresAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub expires_at: Option<String>,
+    pub expires_at: Option<chrono::DateTime<chrono::Utc>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub scopes: Option<Vec<String>>,
 }
 
 impl ApiTokenOut {
-    pub fn new(token: String, id: String, created_at: String) -> Self {
+    pub fn new(token: String, id: String, created_at: chrono::DateTime<chrono::Utc>) -> Self {
         Self {
             token,
             id,

@@ -34,13 +34,13 @@ pub struct ConnectorOut {
     pub transformation: String,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "transformationUpdatedAt")]
-    pub transformation_updated_at: String,
+    pub transformation_updated_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -59,9 +59,9 @@ impl ConnectorOut {
         description: String,
         instructions: String,
         transformation: String,
-        created_at: String,
-        updated_at: String,
-        transformation_updated_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
+        updated_at: chrono::DateTime<chrono::Utc>,
+        transformation_updated_at: chrono::DateTime<chrono::Utc>,
         product_type: ConnectorProduct,
     ) -> Self {
         Self {

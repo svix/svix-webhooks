@@ -37,14 +37,10 @@ pub struct EndpointBulkReplayOptions {
 #[derive(Default)]
 pub struct EndpointGetStatsOptions {
     /// Filter the range to data starting from this date.
-    ///
-    /// RFC3339 date string.
-    pub since: Option<String>,
+    pub since: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Filter the range to data ending by this date.
-    ///
-    /// RFC3339 date string.
-    pub until: Option<String>,
+    pub until: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Default)]

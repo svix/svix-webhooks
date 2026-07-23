@@ -9,11 +9,12 @@ pub struct StreamingEventsGetOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
     #[arg(long)]
-    pub after: Option<jiff::Timestamp>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<StreamingEventsGetOptions> for svix::api::StreamingEventsGetOptions {
@@ -26,7 +27,7 @@ impl From<StreamingEventsGetOptions> for svix::api::StreamingEventsGetOptions {
         Self {
             limit,
             iterator,
-            after: after.map(|dt| dt.to_rfc3339()),
+            after,
         }
     }
 }

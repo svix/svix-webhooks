@@ -14,7 +14,7 @@ pub struct EndpointTransformationOut {
 
     #[serde(rename = "updatedAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl EndpointTransformationOut {

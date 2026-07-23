@@ -23,14 +23,10 @@ pub struct MessageAttemptListByEndpointOptions {
     pub tag: Option<String>,
 
     /// Only include items created before a certain date
-    ///
-    /// RFC3339 date string.
-    pub before: Option<String>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Only include items created after a certain date
-    ///
-    /// RFC3339 date string.
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 
     /// When `true` attempt content is included in the response
     pub with_content: Option<bool>,
@@ -76,14 +72,10 @@ pub struct MessageAttemptListByMsgOptions {
     pub endpoint_id: Option<String>,
 
     /// Only include items created before a certain date
-    ///
-    /// RFC3339 date string.
-    pub before: Option<String>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Only include items created after a certain date
-    ///
-    /// RFC3339 date string.
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 
     /// When `true` attempt content is included in the response
     pub with_content: Option<bool>,
@@ -117,14 +109,10 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub status: Option<MessageStatus>,
 
     /// Only include items created before a certain date
-    ///
-    /// RFC3339 date string.
-    pub before: Option<String>,
+    pub before: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Only include items created after a certain date
-    ///
-    /// RFC3339 date string.
-    pub after: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 
     /// When `true` message payloads are included in the response
     pub with_content: Option<bool>,

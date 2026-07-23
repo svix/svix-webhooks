@@ -10,9 +10,11 @@ pub struct EndpointListOptions {
     /// Limit the number of returned items
     #[arg(long)]
     pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -89,19 +91,16 @@ impl From<EndpointBulkReplayOptions> for svix::api::EndpointBulkReplayOptions {
 pub struct EndpointGetStatsOptions {
     /// Filter the range to data starting from this date.
     #[arg(long)]
-    pub since: Option<jiff::Timestamp>,
+    pub since: Option<chrono::DateTime<chrono::Utc>>,
     /// Filter the range to data ending by this date.
     #[arg(long)]
-    pub until: Option<jiff::Timestamp>,
+    pub until: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
     fn from(value: EndpointGetStatsOptions) -> Self {
         let EndpointGetStatsOptions { since, until } = value;
-        Self {
-            since: since.map(|dt| dt.to_rfc3339()),
-            until: until.map(|dt| dt.to_rfc3339()),
-        }
+        Self { since, until }
     }
 }
 

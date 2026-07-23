@@ -9,7 +9,7 @@ pub struct EnvironmentOut {
     pub version: Option<i64>,
 
     #[serde(rename = "createdAt")]
-    pub created_at: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
 
     #[serde(rename = "eventTypes")]
     pub event_types: Vec<EventTypeOut>,
@@ -22,7 +22,7 @@ pub struct EnvironmentOut {
 
 impl EnvironmentOut {
     pub fn new(
-        created_at: String,
+        created_at: chrono::DateTime<chrono::Utc>,
         event_types: Vec<EventTypeOut>,
         connectors: Vec<ConnectorOut>,
     ) -> Self {

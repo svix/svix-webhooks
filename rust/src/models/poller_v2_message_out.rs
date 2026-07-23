@@ -27,14 +27,14 @@ pub struct PollerV2MessageOut {
     /// The Message's ID.
     pub id: String,
 
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub deliver_at: Option<String>,
+    pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 impl PollerV2MessageOut {
@@ -43,7 +43,7 @@ impl PollerV2MessageOut {
         event_type: String,
         payload: serde_json::Value,
         id: String,
-        timestamp: String,
+        timestamp: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             offset,
