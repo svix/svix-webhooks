@@ -24,12 +24,12 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointOut {
     @JsonProperty private String id;
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> eventTypes;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private Map<String, String> metadata;
@@ -55,13 +55,32 @@ public class OperationalWebhookEndpointOut {
         this.id = id;
     }
 
+    public OperationalWebhookEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
     public OperationalWebhookEndpointOut description(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -114,25 +133,6 @@ public class OperationalWebhookEndpointOut {
         this.uid = uid;
     }
 
-    public OperationalWebhookEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
     public OperationalWebhookEndpointOut disabled(Boolean disabled) {
         this.disabled = disabled;
         return this;
@@ -152,32 +152,32 @@ public class OperationalWebhookEndpointOut {
         this.disabled = disabled;
     }
 
-    public OperationalWebhookEndpointOut filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public OperationalWebhookEndpointOut eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
         return this;
     }
 
-    public OperationalWebhookEndpointOut addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
+    public OperationalWebhookEndpointOut addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
         }
-        this.filterTypes.add(filterTypesItem);
+        this.eventTypes.add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypes
      *
-     * @return filterTypes
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
+    public Set<String> getEventTypes() {
+        return eventTypes;
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
     }
 
     public OperationalWebhookEndpointOut createdAt(OffsetDateTime createdAt) {

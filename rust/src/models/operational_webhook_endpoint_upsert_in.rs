@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct OperationalWebhookEndpointUpsertIn {
+    pub url: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
@@ -17,14 +19,12 @@ pub struct OperationalWebhookEndpointUpsertIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 
-    pub url: String,
-
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::BTreeMap<String, String>>,
@@ -33,12 +33,12 @@ pub struct OperationalWebhookEndpointUpsertIn {
 impl OperationalWebhookEndpointUpsertIn {
     pub fn new(url: String) -> Self {
         Self {
+            url,
             description: None,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             metadata: None,
         }
     }

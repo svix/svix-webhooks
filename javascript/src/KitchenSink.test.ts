@@ -49,14 +49,14 @@ test("e2e tests", { skip: client === null }, async (t) => {
       channels: ["ch0", "ch1"],
     });
     assert.deepEqual(epOut.channels?.sort(), ["ch0", "ch1"]);
-    assert.deepEqual(epOut.filterTypes || [], []);
+    assert.deepEqual(epOut.eventTypes || [], []);
 
     const epPatched = await client.endpoint.patch(appOut.id, epOut.id, {
-      filterTypes: ["event.started", "event.ended"],
+      eventTypes: ["event.started", "event.ended"],
     });
 
     assert.deepEqual(epPatched.channels?.sort(), ["ch0", "ch1"]);
-    assert.deepEqual(epPatched.filterTypes?.sort(), ["event.ended", "event.started"]);
+    assert.deepEqual(epPatched.eventTypes?.sort(), ["event.ended", "event.started"]);
 
     // Should not throw an error while trying to deserialize the empty body.
     await client.endpoint.delete(appOut.id, epOut.id);

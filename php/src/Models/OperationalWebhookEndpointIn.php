@@ -13,9 +13,9 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null       $uid         optional unique identifier for the endpoint
-     * @param list<string>|null $filterTypes
-     * @param string|null       $secret      The endpoint's verification secret.
+     * @param string|null       $uid        optional unique identifier for the endpoint
+     * @param list<string>|null $eventTypes
+     * @param string|null       $secret     The endpoint's verification secret.
      *
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
      * It is recommended to not set this and let the server generate the secret.
@@ -27,7 +27,7 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypes = null,
         public readonly ?string $secret = null,
         public readonly ?array $metadata = null,
         array $setFields = [],
@@ -42,12 +42,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         string $url,
     ): self {
         return new self(
+            url: $url,
             description: null,
             throttleRate: null,
             uid: null,
-            url: $url,
             disabled: null,
-            filterTypes: null,
+            eventTypes: null,
             secret: null,
             metadata: null,
             setFields: ['url' => true]
@@ -60,12 +60,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
+            url: $this->url,
             description: $description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             secret: $this->secret,
             metadata: $this->metadata,
             setFields: $setFields
@@ -78,12 +78,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             secret: $this->secret,
             metadata: $this->metadata,
             setFields: $setFields
@@ -96,12 +96,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             secret: $this->secret,
             metadata: $this->metadata,
             setFields: $setFields
@@ -114,30 +114,30 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['disabled'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             secret: $this->secret,
             metadata: $this->metadata,
             setFields: $setFields
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypes(?array $eventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypes'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypes: $eventTypes,
             secret: $this->secret,
             metadata: $this->metadata,
             setFields: $setFields
@@ -150,12 +150,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['secret'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             secret: $secret,
             metadata: $this->metadata,
             setFields: $setFields
@@ -168,12 +168,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         $setFields['metadata'] = true;
 
         return new self(
+            url: $this->url,
             description: $this->description,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
-            url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             secret: $this->secret,
             metadata: $metadata,
             setFields: $setFields
@@ -197,8 +197,8 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
         }
         if (isset($this->setFields['secret'])) {
             $data['secret'] = $this->secret;
@@ -216,12 +216,12 @@ class OperationalWebhookEndpointIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointIn'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'OperationalWebhookEndpointIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'OperationalWebhookEndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'OperationalWebhookEndpointIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OperationalWebhookEndpointIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'OperationalWebhookEndpointIn'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'OperationalWebhookEndpointIn'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'OperationalWebhookEndpointIn'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'OperationalWebhookEndpointIn'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'OperationalWebhookEndpointIn')
         );

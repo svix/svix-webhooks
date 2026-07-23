@@ -93,7 +93,7 @@ def create_svix_endpoint(
         EndpointIn(
             url=endpoint_url,
             uid=endpoint_uid,
-            filter_types=[event_type_name],
+            event_types=[event_type_name],
             channels=[channel] if channel else None,
             metadata=metadata,
             secret=secret,
@@ -190,7 +190,7 @@ def test_svix_endpoint_create(
     )
     assert endpoint.url == endpoint_url
     assert endpoint.uid == endpoint_uid
-    assert endpoint.filter_types == [event_type.name]
+    assert endpoint.event_types == [event_type.name]
     if with_channel:
         assert endpoint.channels == [channel]
     if with_metadata:

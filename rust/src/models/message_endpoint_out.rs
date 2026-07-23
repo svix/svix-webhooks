@@ -17,7 +17,8 @@ pub struct MessageEndpointOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub next_attempt: Option<chrono::DateTime<chrono::Utc>>,
 
-    /// An example endpoint name.
+    pub url: String,
+
     pub description: String,
 
     /// Maximum messages per second to send to this endpoint.
@@ -31,14 +32,12 @@ pub struct MessageEndpointOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 
-    pub url: String,
-
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -56,8 +55,8 @@ impl MessageEndpointOut {
         id: String,
         status: MessageStatus,
         status_text: MessageStatusText,
-        description: String,
         url: String,
+        description: String,
         created_at: chrono::DateTime<chrono::Utc>,
         updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
@@ -66,12 +65,12 @@ impl MessageEndpointOut {
             status,
             status_text,
             next_attempt: None,
+            url,
             description,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             channels: None,
             created_at,
             updated_at,

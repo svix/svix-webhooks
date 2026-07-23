@@ -18,6 +18,9 @@ namespace Svix.Models
         [JsonProperty("nextAttempt")]
         public DateTime? NextAttempt { get; set; } = null;
 
+        [JsonProperty("url", Required = Required.Always)]
+        public required string Url { get; set; }
+
         [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
@@ -27,14 +30,11 @@ namespace Svix.Models
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
-        [JsonProperty("url", Required = Required.Always)]
-        public required string Url { get; set; }
-
         [JsonProperty("disabled")]
         public bool? Disabled { get; set; } = null;
 
-        [JsonProperty("filterTypes")]
-        public List<string>? FilterTypes { get; set; } = null;
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
 
         [JsonProperty("channels")]
         public List<string>? Channels { get; set; } = null;
@@ -54,12 +54,12 @@ namespace Svix.Models
             sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  StatusText: ").Append(StatusText).Append('\n');
             sb.Append("  NextAttempt: ").Append(NextAttempt).Append('\n');
+            sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
-            sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Disabled: ").Append(Disabled).Append('\n');
-            sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
+            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
             sb.Append("  Channels: ").Append(Channels).Append('\n');
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');

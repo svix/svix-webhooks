@@ -22,16 +22,35 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointUpsertIn {
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Set<String> channels;
     @JsonProperty private Map<String, String> metadata;
 
     public EndpointUpsertIn() {}
+
+    public EndpointUpsertIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public EndpointUpsertIn description(String description) {
         this.description = description;
@@ -92,25 +111,6 @@ public class EndpointUpsertIn {
         this.uid = uid;
     }
 
-    public EndpointUpsertIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
     public EndpointUpsertIn disabled(Boolean disabled) {
         this.disabled = disabled;
         return this;
@@ -130,32 +130,32 @@ public class EndpointUpsertIn {
         this.disabled = disabled;
     }
 
-    public EndpointUpsertIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public EndpointUpsertIn eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
         return this;
     }
 
-    public EndpointUpsertIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
+    public EndpointUpsertIn addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
         }
-        this.filterTypes.add(filterTypesItem);
+        this.eventTypes.add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypes
      *
-     * @return filterTypes
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
+    public Set<String> getEventTypes() {
+        return eventTypes;
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
     }
 
     public EndpointUpsertIn channels(Set<String> channels) {

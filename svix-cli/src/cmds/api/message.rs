@@ -26,6 +26,8 @@ pub struct MessageListOptions {
     pub after: Option<chrono::DateTime<chrono::Utc>>,
 
     /// When `true` message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
 
@@ -65,6 +67,8 @@ impl From<MessageListOptions> for svix::api::MessageListOptions {
 #[derive(Args, Clone)]
 pub struct MessageCreateOptions {
     /// When `true`, message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
 
@@ -101,6 +105,8 @@ impl From<MessagePrecheckOptions> for svix::api::MessagePrecheckOptions {
 #[derive(Args, Clone)]
 pub struct MessageGetOptions {
     /// When `true` message payloads are included in the response.
+    ///
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
 }

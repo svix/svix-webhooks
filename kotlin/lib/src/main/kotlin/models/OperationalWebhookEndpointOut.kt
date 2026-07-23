@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class OperationalWebhookEndpointOut(
     /** The Endpoint's ID. */
     val id: String,
-    /** An example endpoint name. */
+    val url: String,
     val description: String,
     /**
      * Maximum messages per second to send to this endpoint.
@@ -18,9 +18,8 @@ data class OperationalWebhookEndpointOut(
     val throttleRate: UShort? = null,
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
-    val url: String,
     val disabled: Boolean? = null,
-    val filterTypes: Set<String>? = null,
+    val eventTypes: Set<String>? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
     val metadata: Map<String, String>,

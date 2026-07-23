@@ -9,8 +9,9 @@ class OperationalWebhookEndpointOut(BaseModel):
     id: str
     """The Endpoint's ID."""
 
+    url: str
+
     description: str
-    """An example endpoint name."""
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
@@ -20,11 +21,9 @@ class OperationalWebhookEndpointOut(BaseModel):
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""
 
-    url: str
-
     disabled: t.Optional[bool] = None
 
-    filter_types: t.Optional[t.List[str]] = None
+    event_types: t.Optional[t.List[str]] = None
 
     created_at: datetime
 

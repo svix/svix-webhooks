@@ -3,7 +3,7 @@
 export interface IngestEndpointOut {
   /** The Endpoint's ID. */
   id: string;
-  /** An example endpoint name. */
+  url: string;
   description: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -13,7 +13,6 @@ export interface IngestEndpointOut {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -24,10 +23,10 @@ export const IngestEndpointOutSerializer = {
   _fromJsonObject(object: any): IngestEndpointOut {
     return {
       id: object["id"],
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
       createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
@@ -38,10 +37,10 @@ export const IngestEndpointOutSerializer = {
   _toJsonObject(self: IngestEndpointOut): any {
     return {
       id: self.id,
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
       createdAt: self.createdAt,
       updatedAt: self.updatedAt,

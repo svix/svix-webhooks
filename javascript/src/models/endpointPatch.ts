@@ -12,7 +12,7 @@ export interface EndpointPatch {
   uid?: string | null;
   url?: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   channels?: string[] | null;
   metadata?: { [key: string]: string };
 }
@@ -25,7 +25,7 @@ export const EndpointPatchSerializer = {
       uid: object["uid"],
       url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       channels: object["channels"],
       metadata: object["metadata"],
     };
@@ -38,7 +38,7 @@ export const EndpointPatchSerializer = {
       uid: self.uid,
       url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       channels: self.channels,
       metadata: self.metadata,
     };

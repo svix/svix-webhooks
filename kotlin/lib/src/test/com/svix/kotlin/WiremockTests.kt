@@ -120,28 +120,28 @@ class WiremockTests {
             svx.endpoint.patch(
                 "ap",
                 "endp",
-                EndpointPatch(filterTypes = MaybeUnset.Present(setOf("ft1", "ft2"))),
+                EndpointPatch(eventTypes = MaybeUnset.Present(setOf("ft1", "ft2"))),
             )
             // MaybeUnset.Null
-            svx.endpoint.patch("ap", "endp", EndpointPatch(filterTypes = MaybeUnset.Null))
+            svx.endpoint.patch("ap", "endp", EndpointPatch(eventTypes = MaybeUnset.Null))
             // MaybeUnset.Unset
             svx.endpoint.patch(
                 "ap",
                 "endp",
-                EndpointPatch(filterTypes = MaybeUnset.Unset, disabled = false),
+                EndpointPatch(eventTypes = MaybeUnset.Unset, disabled = false),
             )
         }
         // MaybeUnset.Present
         wireMockServer.verify(
             1,
             patchRequestedFor(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
-                .withRequestBody(equalTo("""{"filterTypes":["ft1","ft2"]}""")),
+                .withRequestBody(equalTo("""{"eventTypes":["ft1","ft2"]}""")),
         )
         // MaybeUnset.Null
         wireMockServer.verify(
             1,
             patchRequestedFor(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
-                .withRequestBody(equalTo("""{"filterTypes":null}""")),
+                .withRequestBody(equalTo("""{"eventTypes":null}""")),
         )
         // MaybeUnset.Unset
         wireMockServer.verify(

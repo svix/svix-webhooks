@@ -5,6 +5,8 @@ from .common import BaseModel
 
 
 class OperationalWebhookEndpointIn(BaseModel):
+    url: str
+
     description: t.Optional[str] = None
 
     throttle_rate: t.Optional[int] = None
@@ -15,11 +17,9 @@ class OperationalWebhookEndpointIn(BaseModel):
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""
 
-    url: str
-
     disabled: t.Optional[bool] = None
 
-    filter_types: t.Optional[t.List[str]] = None
+    event_types: t.Optional[t.List[str]] = None
 
     secret: t.Optional[str] = None
     """The endpoint's verification secret.

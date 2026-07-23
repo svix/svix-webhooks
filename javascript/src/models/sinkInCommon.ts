@@ -18,7 +18,7 @@ export interface SinkInCommon {
    */
   secret?: string | null;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   /** List of message channels this sink listens to (omit for all). */
   channels?: string[] | null;
   metadata?: { [key: string]: string };
@@ -32,7 +32,7 @@ export const SinkInCommonSerializer = {
       uid: object["uid"],
       secret: object["secret"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       channels: object["channels"],
       metadata: object["metadata"],
     };
@@ -45,7 +45,7 @@ export const SinkInCommonSerializer = {
       uid: self.uid,
       secret: self.secret,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       channels: self.channels,
       metadata: self.metadata,
     };

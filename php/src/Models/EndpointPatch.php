@@ -13,8 +13,8 @@ class EndpointPatch implements \JsonSerializable
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null                $uid         the Endpoint's UID
-     * @param list<string>|null          $filterTypes
+     * @param string|null                $uid        the Endpoint's UID
+     * @param list<string>|null          $eventTypes
      * @param list<string>|null          $channels
      * @param array<string, string>|null $metadata
      */
@@ -24,7 +24,7 @@ class EndpointPatch implements \JsonSerializable
         public readonly ?string $uid = null,
         public readonly ?string $url = null,
         public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
+        public readonly ?array $eventTypes = null,
         public readonly ?array $channels = null,
         public readonly ?array $metadata = null,
         array $setFields = [],
@@ -43,7 +43,7 @@ class EndpointPatch implements \JsonSerializable
             uid: null,
             url: null,
             disabled: null,
-            filterTypes: null,
+            eventTypes: null,
             channels: null,
             metadata: null,
             setFields: []
@@ -61,7 +61,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -79,7 +79,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -97,7 +97,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -115,7 +115,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -133,17 +133,17 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
         );
     }
 
-    public function withFilterTypes(?array $filterTypes): self
+    public function withEventTypes(?array $eventTypes): self
     {
         $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
+        $setFields['eventTypes'] = true;
 
         return new self(
             description: $this->description,
@@ -151,7 +151,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $filterTypes,
+            eventTypes: $eventTypes,
             channels: $this->channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -169,7 +169,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $channels,
             metadata: $this->metadata,
             setFields: $setFields
@@ -187,7 +187,7 @@ class EndpointPatch implements \JsonSerializable
             uid: $this->uid,
             url: $this->url,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
             metadata: $metadata,
             setFields: $setFields
@@ -214,8 +214,8 @@ class EndpointPatch implements \JsonSerializable
         if (null !== $this->disabled) {
             $data['disabled'] = $this->disabled;
         }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
         }
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
@@ -238,7 +238,7 @@ class EndpointPatch implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointPatch'),
             url: \Svix\Utils::getValFromJson($data, 'url', false, 'EndpointPatch'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointPatch'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointPatch'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointPatch'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointPatch'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointPatch')
         );

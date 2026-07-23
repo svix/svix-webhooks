@@ -3,7 +3,7 @@
 export interface OperationalWebhookEndpointOut {
   /** The Endpoint's ID. */
   id: string;
-  /** An example endpoint name. */
+  url: string;
   description: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -13,9 +13,8 @@ export interface OperationalWebhookEndpointOut {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   createdAt: Date;
   updatedAt: Date;
   metadata: { [key: string]: string };
@@ -25,12 +24,12 @@ export const OperationalWebhookEndpointOutSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointOut {
     return {
       id: object["id"],
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
       metadata: object["metadata"],
@@ -40,12 +39,12 @@ export const OperationalWebhookEndpointOutSerializer = {
   _toJsonObject(self: OperationalWebhookEndpointOut): any {
     return {
       id: self.id,
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       createdAt: self.createdAt,
       updatedAt: self.updatedAt,
       metadata: self.metadata,

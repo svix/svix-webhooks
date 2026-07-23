@@ -1,6 +1,7 @@
 // this file is @generated
 
 export interface EndpointIn {
+  url: string;
   description?: string;
   /**
    * Maximum messages per second to send to this endpoint.
@@ -10,9 +11,8 @@ export interface EndpointIn {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
-  url: string;
   disabled?: boolean;
-  filterTypes?: string[] | null;
+  eventTypes?: string[] | null;
   /** List of message channels this endpoint listens to (omit for all). */
   channels?: string[] | null;
   /**
@@ -29,12 +29,12 @@ export interface EndpointIn {
 export const EndpointInSerializer = {
   _fromJsonObject(object: any): EndpointIn {
     return {
+      url: object["url"],
       description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
-      url: object["url"],
       disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
+      eventTypes: object["eventTypes"],
       channels: object["channels"],
       secret: object["secret"],
       metadata: object["metadata"],
@@ -44,12 +44,12 @@ export const EndpointInSerializer = {
 
   _toJsonObject(self: EndpointIn): any {
     return {
+      url: self.url,
       description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
-      url: self.url,
       disabled: self.disabled,
-      filterTypes: self.filterTypes,
+      eventTypes: self.eventTypes,
       channels: self.channels,
       secret: self.secret,
       metadata: self.metadata,

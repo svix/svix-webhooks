@@ -89,12 +89,12 @@ pub enum OperationalWebhookEndpointCommands {
 {
   \"data\": [{
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"url\": \"https://example.com/webhook/\",
     \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
-    \"url\": \"https://example.com/webhook/\",
     \"disabled\": false,
-    \"filterTypes\": [\"message.attempt.failing\"],
+    \"eventTypes\": [\"message.attempt.failing\"],
     \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
     \"metadata\": {\"key\": \"...\"}
@@ -118,23 +118,23 @@ pub enum OperationalWebhookEndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"An example endpoint name\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
@@ -156,12 +156,12 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(after_help = "Example response:
 {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
@@ -178,22 +178,22 @@ pub enum OperationalWebhookEndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"An example endpoint name\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
   \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
+  \"eventTypes\": [\"message.attempt.failing\"],
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}

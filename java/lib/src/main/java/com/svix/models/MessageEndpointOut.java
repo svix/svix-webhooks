@@ -25,12 +25,12 @@ public class MessageEndpointOut {
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
     @JsonProperty private OffsetDateTime nextAttempt;
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> eventTypes;
     @JsonProperty private Set<String> channels;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
@@ -113,13 +113,32 @@ public class MessageEndpointOut {
         this.nextAttempt = nextAttempt;
     }
 
+    public MessageEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
     public MessageEndpointOut description(String description) {
         this.description = description;
         return this;
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -172,25 +191,6 @@ public class MessageEndpointOut {
         this.uid = uid;
     }
 
-    public MessageEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
     public MessageEndpointOut disabled(Boolean disabled) {
         this.disabled = disabled;
         return this;
@@ -210,32 +210,32 @@ public class MessageEndpointOut {
         this.disabled = disabled;
     }
 
-    public MessageEndpointOut filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public MessageEndpointOut eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
         return this;
     }
 
-    public MessageEndpointOut addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
+    public MessageEndpointOut addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
         }
-        this.filterTypes.add(filterTypesItem);
+        this.eventTypes.add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypes
      *
-     * @return filterTypes
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
+    public Set<String> getEventTypes() {
+        return eventTypes;
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
     }
 
     public MessageEndpointOut channels(Set<String> channels) {

@@ -22,7 +22,7 @@ data class SinkInCommon(
      */
     val secret: String? = null,
     val disabled: Boolean? = null,
-    val filterTypes: Set<String>? = null,
+    val eventTypes: Set<String>? = null,
     /** List of message channels this sink listens to (omit for all). */
     val channels: Set<String>? = null,
     val metadata: Map<String, String>? = null,

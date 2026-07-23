@@ -91,7 +91,7 @@ async fn test_endpoint_crud() {
     let want_channels = BTreeSet::from_iter(["ch0".to_owned(), "ch1".to_owned()]);
     let got_channels = ep.channels.unwrap();
     assert_eq!(want_channels, got_channels);
-    assert_eq!(0, ep.filter_types.unwrap_or_default().len());
+    assert_eq!(0, ep.event_types.unwrap_or_default().len());
 
     let ep_patched = client
         .endpoint()
@@ -99,7 +99,7 @@ async fn test_endpoint_crud() {
             app.id.clone(),
             ep.id.clone(),
             EndpointPatch {
-                filter_types: JsOption::Some(BTreeSet::from_iter([
+                event_types: JsOption::Some(BTreeSet::from_iter([
                     String::from("event.started"),
                     String::from("event.ended"),
                 ])),
@@ -109,19 +109,18 @@ async fn test_endpoint_crud() {
         .await
         .unwrap();
 
-    let want_filter_types: HashSet<_> =
-        [String::from("event.started"), String::from("event.ended")]
-            .into_iter()
-            .collect();
+    let want_event_types: HashSet<_> = [String::from("event.started"), String::from("event.ended")]
+        .into_iter()
+        .collect();
     let got_channels = ep_patched.channels.clone().unwrap().into_iter().collect();
-    let got_filter_types = ep_patched
-        .filter_types
+    let got_event_types = ep_patched
+        .event_types
         .clone()
         .unwrap()
         .into_iter()
         .collect();
     assert_eq!(want_channels, got_channels);
-    assert_eq!(want_filter_types, got_filter_types);
+    assert_eq!(want_event_types, got_event_types);
 
     // Should complete without error if the deserialization handles empty bodies
     // correctly.

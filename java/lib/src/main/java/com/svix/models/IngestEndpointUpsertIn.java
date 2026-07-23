@@ -20,14 +20,33 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointUpsertIn {
+    @JsonProperty private URI url;
     @JsonProperty private String description;
     @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
     @JsonProperty private Map<String, String> metadata;
 
     public IngestEndpointUpsertIn() {}
+
+    public IngestEndpointUpsertIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public IngestEndpointUpsertIn description(String description) {
         this.description = description;
@@ -86,25 +105,6 @@ public class IngestEndpointUpsertIn {
 
     public void setUid(String uid) {
         this.uid = uid;
-    }
-
-    public IngestEndpointUpsertIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     public IngestEndpointUpsertIn disabled(Boolean disabled) {

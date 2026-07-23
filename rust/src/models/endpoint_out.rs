@@ -8,7 +8,8 @@ pub struct EndpointOut {
 
     pub metadata: std::collections::BTreeMap<String, String>,
 
-    /// An example endpoint name.
+    pub url: String,
+
     pub description: String,
 
     /// Maximum messages per second to send to this endpoint.
@@ -22,14 +23,12 @@ pub struct EndpointOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 
-    pub url: String,
-
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
 
-    #[serde(rename = "filterTypes")]
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<std::collections::BTreeSet<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -46,20 +45,20 @@ impl EndpointOut {
     pub fn new(
         id: String,
         metadata: std::collections::BTreeMap<String, String>,
-        description: String,
         url: String,
+        description: String,
         created_at: chrono::DateTime<chrono::Utc>,
         updated_at: chrono::DateTime<chrono::Utc>,
     ) -> Self {
         Self {
             id,
             metadata,
+            url,
             description,
             throttle_rate: None,
             uid: None,
-            url,
             disabled: None,
-            filter_types: None,
+            event_types: None,
             channels: None,
             created_at,
             updated_at,
