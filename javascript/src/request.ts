@@ -183,7 +183,7 @@ export class SvixRequest {
       },
       ctx.retryScheduleInMs,
       ctx.retryScheduleInMs?.[0],
-      ctx.retryScheduleInMs?.length || ctx.numRetries,
+      ctx.retryScheduleInMs?.length ?? ctx.numRetries,
       ctx.fetch
     );
     return filterResponseForErrors(response);
@@ -244,7 +244,7 @@ async function sendWithRetry(
 
   await sleep(nextInterval);
   init.headers["svix-retry-count"] = retryCount.toString();
-  nextInterval = retryScheduleInMs?.[retryCount] || nextInterval * 2;
+  nextInterval = retryScheduleInMs?.[retryCount] ?? nextInterval * 2;
   return await sendWithRetry(
     url,
     init,
