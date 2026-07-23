@@ -236,8 +236,8 @@ def update_changelog(new_version: str) -> None:
     changelog_path = REPO_ROOT / "ChangeLog.md"
     content = changelog_path.read_text()
     updated = content.replace(
-        "# Changelog\n\n## Next",
-        f"# Changelog\n\n## Next\n* \n\n## Version {new_version}",
+        "# Changelog\n\n## Unreleased",
+        f"# Changelog\n\n## Unreleased\n* \n\n## Version {new_version}",
     )
     if updated != content:
         changelog_path.write_text(updated)
