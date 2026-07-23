@@ -49,7 +49,7 @@ impl<'a> StreamingEventType<'a> {
             include_archived,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/stream/event-type")
+        crate::request::Request::new(http::Method::GET, "/api/v1/stream/event-type")
             .with_optional_query_param("limit", limit)
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)
@@ -66,7 +66,7 @@ impl<'a> StreamingEventType<'a> {
     ) -> Result<StreamEventTypeOut> {
         let StreamingEventTypeCreateOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/stream/event-type")
+        crate::request::Request::new(http::Method::POST, "/api/v1/stream/event-type")
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(stream_event_type_in)
             .execute(self.cfg)
@@ -75,7 +75,7 @@ impl<'a> StreamingEventType<'a> {
 
     /// Get an event type.
     pub async fn get(&self, name: String) -> Result<StreamEventTypeOut> {
-        crate::request::Request::new(http1::Method::GET, "/api/v1/stream/event-type/{name}")
+        crate::request::Request::new(http::Method::GET, "/api/v1/stream/event-type/{name}")
             .with_path_param("name", name)
             .execute(self.cfg)
             .await
@@ -87,7 +87,7 @@ impl<'a> StreamingEventType<'a> {
         name: String,
         stream_event_type_in: StreamEventTypeIn,
     ) -> Result<StreamEventTypeOut> {
-        crate::request::Request::new(http1::Method::PUT, "/api/v1/stream/event-type/{name}")
+        crate::request::Request::new(http::Method::PUT, "/api/v1/stream/event-type/{name}")
             .with_path_param("name", name)
             .with_body_param(stream_event_type_in)
             .execute(self.cfg)
@@ -102,7 +102,7 @@ impl<'a> StreamingEventType<'a> {
     ) -> Result<()> {
         let StreamingEventTypeDeleteOptions { expunge } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::DELETE, "/api/v1/stream/event-type/{name}")
+        crate::request::Request::new(http::Method::DELETE, "/api/v1/stream/event-type/{name}")
             .with_path_param("name", name)
             .with_optional_query_param("expunge", expunge)
             .returns_nothing()
@@ -116,7 +116,7 @@ impl<'a> StreamingEventType<'a> {
         name: String,
         stream_event_type_patch: StreamEventTypePatch,
     ) -> Result<StreamEventTypeOut> {
-        crate::request::Request::new(http1::Method::PATCH, "/api/v1/stream/event-type/{name}")
+        crate::request::Request::new(http::Method::PATCH, "/api/v1/stream/event-type/{name}")
             .with_path_param("name", name)
             .with_body_param(stream_event_type_patch)
             .execute(self.cfg)

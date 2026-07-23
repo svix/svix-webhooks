@@ -11,14 +11,12 @@ type Health struct {
 	client *internal.SvixHttpClient
 }
 
-func newHealth(client *internal.SvixHttpClient) *Health {
-	return &Health{
-		client: client,
-	}
+func newHealth(client *internal.SvixHttpClient) Health {
+	return Health{client}
 }
 
 // Verify the API server is up and running.
-func (health *Health) Get(
+func (health Health) Get(
 	ctx context.Context,
 ) error {
 	var err error

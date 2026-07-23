@@ -13,10 +13,8 @@ type MessagePoller struct {
 	client *internal.SvixHttpClient
 }
 
-func newMessagePoller(client *internal.SvixHttpClient) *MessagePoller {
-	return &MessagePoller{
-		client: client,
-	}
+func newMessagePoller(client *internal.SvixHttpClient) MessagePoller {
+	return MessagePoller{client}
 }
 
 type MessagePollerPollOptions struct {
@@ -43,7 +41,7 @@ type MessagePollerConsumerPollOptions struct {
 }
 
 // Reads the stream of created messages for an application, filtered on the Sink's event types and Channels.
-func (messagePoller *MessagePoller) Poll(
+func (messagePoller MessagePoller) Poll(
 	ctx context.Context,
 	appId string,
 	sinkId string,
@@ -80,7 +78,7 @@ func (messagePoller *MessagePoller) Poll(
 }
 
 // Sets the starting offset for the consumer of a polling endpoint.
-func (messagePoller *MessagePoller) ConsumerSeek(
+func (messagePoller MessagePoller) ConsumerSeek(
 	ctx context.Context,
 	appId string,
 	sinkId string,
@@ -117,7 +115,7 @@ func (messagePoller *MessagePoller) ConsumerSeek(
 
 // Reads the stream of created messages for an application, filtered on the Sink's event types and
 // Channels, using server-managed iterator tracking.
-func (messagePoller *MessagePoller) ConsumerPoll(
+func (messagePoller MessagePoller) ConsumerPoll(
 	ctx context.Context,
 	appId string,
 	sinkId string,

@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Configuration parameters for defining a Snowflake sink.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct SnowflakeConfig {
     /// Snowflake account identifier, which includes both the organization and
     /// account IDs separated by a hyphen.

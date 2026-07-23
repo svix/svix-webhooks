@@ -1,13 +1,14 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Default, Debug, PartialEq, Serialize, Deserialize)]
+use super::ValidationError;
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct HttpValidationError {
-    #[serde(rename = "detail")]
-    pub detail: Vec<super::ValidationError>,
+    pub detail: Vec<ValidationError>,
 }
 
 impl HttpValidationError {
-    pub fn new(detail: Vec<super::ValidationError>) -> HttpValidationError {
+    pub fn new(detail: Vec<ValidationError>) -> HttpValidationError {
         HttpValidationError { detail }
     }
 }

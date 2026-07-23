@@ -3,10 +3,9 @@
 
 use std::{fmt, time::Duration};
 
+use http::StatusCode;
 use http_body_util::BodyExt;
 use hyper::body::Incoming;
-
-use crate::http1_to_02_status_code;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -32,21 +31,21 @@ impl Error {
     }
 
     pub(crate) async fn from_response(
-        status_code: http1::StatusCode,
+        status_code: StatusCode,
         body: Incoming,
         timeout: Option<Duration>,
     ) -> Self {
         match body.collect().await {
             Ok(collected) => {
                 let bytes = collected.to_bytes();
-                if status_code == http1::StatusCode::UNPROCESSABLE_ENTITY {
+                if status_code == StatusCode::UNPROCESSABLE_ENTITY {
                     Self::Validation(HttpErrorContent {
-                        status: http02::StatusCode::UNPROCESSABLE_ENTITY,
+                        status: StatusCode::UNPROCESSABLE_ENTITY,
                         payload: serde_json::from_slice(&bytes).ok(),
                     })
                 } else {
                     Error::Http(HttpErrorContent {
-                        status: http1_to_02_status_code(status_code),
+                        status: status_code,
                         payload: serde_json::from_slice(&bytes).ok(),
                     })
                 }
@@ -58,13 +57,6 @@ impl Error {
             },
             Err(e) => Self::Generic(e.to_string()),
         }
-    }
-}
-
-// TODO: Remove for v2.0 of the library (very uncommon impl for an error type)
-impl From<Error> for String {
-    fn from(err: Error) -> Self {
-        err.to_string()
     }
 }
 
@@ -91,6 +83,6 @@ impl std::error::Error for Error {}
 
 #[derive(Debug, Clone)]
 pub struct HttpErrorContent<T> {
-    pub status: http02::StatusCode,
+    pub status: StatusCode,
     pub payload: Option<T>,
 }

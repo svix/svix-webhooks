@@ -11,7 +11,7 @@ use super::{
     snowflake_config::SnowflakeConfig, sns_config::SnsConfig, sqs_config::SqsConfig,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamSinkOut {
     #[serde(rename = "batchSize")]
     pub batch_size: i32,
@@ -88,11 +88,4 @@ pub enum StreamSinkOutConfig {
     RabbitMq(RabbitMqConfig),
     #[serde(rename = "redshift")]
     Redshift(RedshiftConfig),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for StreamSinkOutConfig {
-    fn default() -> Self {
-        Self::Poller
-    }
 }

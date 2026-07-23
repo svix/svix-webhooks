@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::application_in::ApplicationIn;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct MessageIn {
     /// Optionally creates a new application alongside the message.
     ///

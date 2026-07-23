@@ -200,7 +200,7 @@ impl<'a> MessageAttempt<'a> {
         } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/attempt/endpoint/{endpoint_id}",
         )
         .with_path_param("app_id", app_id)
@@ -250,7 +250,7 @@ impl<'a> MessageAttempt<'a> {
         } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/attempt/msg/{msg_id}",
         )
         .with_path_param("app_id", app_id)
@@ -302,7 +302,7 @@ impl<'a> MessageAttempt<'a> {
         } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/msg",
         )
         .with_path_param("app_id", app_id)
@@ -335,7 +335,7 @@ impl<'a> MessageAttempt<'a> {
             options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
         )
         .with_path_param("app_id", app_id)
@@ -357,7 +357,7 @@ impl<'a> MessageAttempt<'a> {
         let MessageAttemptGetOptions { expanded_statuses } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
         )
         .with_path_param("app_id", app_id)
@@ -380,7 +380,7 @@ impl<'a> MessageAttempt<'a> {
         attempt_id: String,
     ) -> Result<()> {
         crate::request::Request::new(
-            http1::Method::DELETE,
+            http::Method::DELETE,
             "/api/v1/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
         )
         .with_path_param("app_id", app_id)
@@ -402,7 +402,7 @@ impl<'a> MessageAttempt<'a> {
         let MessageAttemptResendOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
         )
         .with_path_param("app_id", app_id)

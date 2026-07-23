@@ -9,17 +9,18 @@ import (
 )
 
 type Ingest struct {
-	client   *internal.SvixHttpClient
-	Endpoint *IngestEndpoint
-	Source   *IngestSource
+	client *internal.SvixHttpClient
 }
 
-func newIngest(client *internal.SvixHttpClient) *Ingest {
-	return &Ingest{
-		client:   client,
-		Endpoint: newIngestEndpoint(client),
-		Source:   newIngestSource(client),
-	}
+func newIngest(client *internal.SvixHttpClient) Ingest {
+	return Ingest{client}
+}
+
+func (ingest Ingest) Endpoint() IngestEndpoint {
+	return newIngestEndpoint(ingest.client)
+}
+func (ingest Ingest) Source() IngestSource {
+	return newIngestSource(ingest.client)
 }
 
 type IngestDashboardOptions struct {
@@ -27,7 +28,7 @@ type IngestDashboardOptions struct {
 }
 
 // Get access to the Ingest Source Consumer Portal.
-func (ingest *Ingest) Dashboard(
+func (ingest Ingest) Dashboard(
 	ctx context.Context,
 	sourceId string,
 	ingestSourceConsumerPortalAccessIn models.IngestSourceConsumerPortalAccessIn,

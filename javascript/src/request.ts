@@ -56,6 +56,61 @@ export type SvixRequestContext = {
   }
 >;
 
+export type SvixRequestContextOptions = {
+  serverUrl?: string;
+  requestTimeout?: number;
+  fetch?: typeof fetch;
+} & XOR<
+  {
+    retryScheduleInMs?: number[];
+  },
+  {
+    numRetries?: number;
+  }
+>;
+
+const REGIONS = [
+  { region: "us", url: "https://api.us.svix.com" },
+  { region: "eu", url: "https://api.eu.svix.com" },
+  { region: "in", url: "https://api.in.svix.com" },
+  { region: "ca", url: "https://api.ca.svix.com" },
+  { region: "au", url: "https://api.au.svix.com" },
+];
+
+/** Shared by `Svix` and `api_internal` so the latter need not import the package barrel. */
+export function createSvixRequestContext(
+  token: string,
+  options: SvixRequestContextOptions = {}
+): SvixRequestContext {
+  const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
+  const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
+
+  if (options.retryScheduleInMs) {
+    return {
+      baseUrl,
+      token,
+      timeout: options.requestTimeout,
+      retryScheduleInMs: options.retryScheduleInMs,
+      fetch: options.fetch,
+    };
+  }
+  if (options.numRetries) {
+    return {
+      baseUrl,
+      token,
+      timeout: options.requestTimeout,
+      numRetries: options.numRetries,
+      fetch: options.fetch,
+    };
+  }
+  return {
+    baseUrl,
+    token,
+    timeout: options.requestTimeout,
+    fetch: options.fetch,
+  };
+}
+
 type QueryParameter = string | boolean | number | Date | string[] | null | undefined;
 
 export class SvixRequest {

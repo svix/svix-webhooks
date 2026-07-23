@@ -13,10 +13,8 @@ type MessageAttempt struct {
 	client *internal.SvixHttpClient
 }
 
-func newMessageAttempt(client *internal.SvixHttpClient) *MessageAttempt {
-	return &MessageAttempt{
-		client: client,
-	}
+func newMessageAttempt(client *internal.SvixHttpClient) MessageAttempt {
+	return MessageAttempt{client}
 }
 
 type MessageAttemptListByEndpointOptions struct {
@@ -133,7 +131,7 @@ type MessageAttemptResendOptions struct {
 // relative to now or, if an iterator is provided, 90 days before/after the time indicated
 // by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 // set the `before` or `after` parameter as appropriate.
-func (messageAttempt *MessageAttempt) ListByEndpoint(
+func (messageAttempt MessageAttempt) ListByEndpoint(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -182,7 +180,7 @@ func (messageAttempt *MessageAttempt) ListByEndpoint(
 // relative to now or, if an iterator is provided, 90 days before/after the time indicated
 // by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 // set the `before` or `after` parameter as appropriate.
-func (messageAttempt *MessageAttempt) ListByMsg(
+func (messageAttempt MessageAttempt) ListByMsg(
 	ctx context.Context,
 	appId string,
 	msgId string,
@@ -234,7 +232,7 @@ func (messageAttempt *MessageAttempt) ListByMsg(
 // relative to now or, if an iterator is provided, 90 days before/after the time indicated
 // by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 // set the `before` or `after` parameter as appropriate.
-func (messageAttempt *MessageAttempt) ListAttemptedMessages(
+func (messageAttempt MessageAttempt) ListAttemptedMessages(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -279,7 +277,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedMessages(
 //
 // Additionally includes metadata about the latest message attempt.
 // By default, endpoints are listed in ascending order by ID.
-func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
+func (messageAttempt MessageAttempt) ListAttemptedDestinations(
 	ctx context.Context,
 	appId string,
 	msgId string,
@@ -313,7 +311,7 @@ func (messageAttempt *MessageAttempt) ListAttemptedDestinations(
 }
 
 // `msg_id`: Use a message id or a message `eventId`
-func (messageAttempt *MessageAttempt) Get(
+func (messageAttempt MessageAttempt) Get(
 	ctx context.Context,
 	appId string,
 	msgId string,
@@ -351,7 +349,7 @@ func (messageAttempt *MessageAttempt) Get(
 //
 // Useful when an endpoint accidentally returned sensitive content.
 // The message can't be replayed or resent once its payload has been deleted or expired.
-func (messageAttempt *MessageAttempt) ExpungeContent(
+func (messageAttempt MessageAttempt) ExpungeContent(
 	ctx context.Context,
 	appId string,
 	msgId string,
@@ -377,7 +375,7 @@ func (messageAttempt *MessageAttempt) ExpungeContent(
 }
 
 // Resend a message to the specified endpoint.
-func (messageAttempt *MessageAttempt) Resend(
+func (messageAttempt MessageAttempt) Resend(
 	ctx context.Context,
 	appId string,
 	msgId string,

@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::stream_event_type_out::StreamEventTypeOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseStreamEventTypeOut {
     pub data: Vec<StreamEventTypeOut>,
 

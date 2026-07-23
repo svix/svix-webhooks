@@ -12,10 +12,8 @@ type IngestSource struct {
 	client *internal.SvixHttpClient
 }
 
-func newIngestSource(client *internal.SvixHttpClient) *IngestSource {
-	return &IngestSource{
-		client: client,
-	}
+func newIngestSource(client *internal.SvixHttpClient) IngestSource {
+	return IngestSource{client}
 }
 
 type IngestSourceListOptions struct {
@@ -37,7 +35,7 @@ type IngestSourceRotateTokenOptions struct {
 }
 
 // List of all the organization's Ingest Sources.
-func (ingestSource *IngestSource) List(
+func (ingestSource IngestSource) List(
 	ctx context.Context,
 	o *IngestSourceListOptions,
 ) (*models.ListResponseIngestSourceOut, error) {
@@ -66,7 +64,7 @@ func (ingestSource *IngestSource) List(
 }
 
 // Create Ingest Source.
-func (ingestSource *IngestSource) Create(
+func (ingestSource IngestSource) Create(
 	ctx context.Context,
 	ingestSourceIn models.IngestSourceIn,
 	o *IngestSourceCreateOptions,
@@ -94,7 +92,7 @@ func (ingestSource *IngestSource) Create(
 }
 
 // Get an Ingest Source by id or uid.
-func (ingestSource *IngestSource) Get(
+func (ingestSource IngestSource) Get(
 	ctx context.Context,
 	sourceId string,
 ) (*models.IngestSourceOut, error) {
@@ -114,7 +112,7 @@ func (ingestSource *IngestSource) Get(
 }
 
 // Create or update an Ingest Source.
-func (ingestSource *IngestSource) Update(
+func (ingestSource IngestSource) Update(
 	ctx context.Context,
 	sourceId string,
 	ingestSourceIn models.IngestSourceIn,
@@ -135,7 +133,7 @@ func (ingestSource *IngestSource) Update(
 }
 
 // Delete an Ingest Source.
-func (ingestSource *IngestSource) Delete(
+func (ingestSource IngestSource) Delete(
 	ctx context.Context,
 	sourceId string,
 ) error {
@@ -162,7 +160,7 @@ func (ingestSource *IngestSource) Delete(
 // construct the unique `ingestUrl` for the source. Previous tokens
 // will remain valid for 48 hours after rotation. The token can be
 // rotated a maximum of three times within the 48-hour period.
-func (ingestSource *IngestSource) RotateToken(
+func (ingestSource IngestSource) RotateToken(
 	ctx context.Context,
 	sourceId string,
 	o *IngestSourceRotateTokenOptions,

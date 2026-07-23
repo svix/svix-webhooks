@@ -3,7 +3,7 @@
 
 use std::{collections::BTreeMap, time::Duration};
 
-use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
+use http::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
 use itertools::Itertools as _;
@@ -24,7 +24,7 @@ pub(crate) enum Auth {
 /// OpenAPI definition does not include an authorization scheme.
 #[derive(Clone)]
 pub(crate) struct Request {
-    method: http1::Method,
+    method: http::Method,
     path: &'static str,
     query_params: Vec<(&'static str, String)>,
     no_return_type: bool,
@@ -35,7 +35,7 @@ pub(crate) struct Request {
 }
 
 impl Request {
-    pub fn new(method: http1::Method, path: &'static str) -> Self {
+    pub fn new(method: http::Method, path: &'static str) -> Self {
         Request {
             method,
             path,
@@ -108,7 +108,7 @@ impl Request {
 
     async fn execute_with_backoff(mut self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
         let no_return_type = self.no_return_type;
-        if self.method == http1::Method::POST && !self.header_params.contains_key("idempotency-key")
+        if self.method == http::Method::POST && !self.header_params.contains_key("idempotency-key")
         {
             self.header_params
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
@@ -188,7 +188,7 @@ impl Request {
         }
     }
 
-    fn build_request(self, conf: &Configuration) -> Result<http1::Request<Full<Bytes>>, Error> {
+    fn build_request(self, conf: &Configuration) -> Result<http::Request<Full<Bytes>>, Error> {
         const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
         const PATH: &AsciiSet = &FRAGMENT.add(b'#').add(b'?').add(b'{').add(b'}');
         const PATH_SEGMENT: &AsciiSet = &PATH.add(b'/').add(b'%');
@@ -214,8 +214,8 @@ impl Request {
             uri += &query_string_str;
         }
 
-        let uri = http1::Uri::try_from(uri).map_err(Error::generic)?;
-        let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
+        let uri = http::Uri::try_from(uri).map_err(Error::generic)?;
+        let mut req_builder = http::Request::builder().uri(uri).method(self.method);
 
         let mut request = if let Some(body) = self.serialized_body {
             let req_headers = req_builder.headers_mut().unwrap();

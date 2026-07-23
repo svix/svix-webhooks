@@ -12,7 +12,7 @@ impl<'a> Health<'a> {
 
     /// Verify the API server is up and running.
     pub async fn get(&self) -> Result<()> {
-        crate::request::Request::new(http1::Method::GET, "/api/v1/health")
+        crate::request::Request::new(http::Method::GET, "/api/v1/health")
             .returns_nothing()
             .execute(self.cfg)
             .await

@@ -2,7 +2,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Configuration for a SNS sink.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct SnsConfig {
     #[serde(rename = "accessKeyId")]
     pub access_key_id: String,

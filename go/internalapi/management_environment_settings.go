@@ -12,14 +12,12 @@ type ManagementEnvironmentSettings struct {
 	client *internal.SvixHttpClient
 }
 
-func newManagementEnvironmentSettings(client *internal.SvixHttpClient) *ManagementEnvironmentSettings {
-	return &ManagementEnvironmentSettings{
-		client: client,
-	}
+func newManagementEnvironmentSettings(client *internal.SvixHttpClient) ManagementEnvironmentSettings {
+	return ManagementEnvironmentSettings{client}
 }
 
 // Get the environments's settings
-func (managementEnvironmentSettings *ManagementEnvironmentSettings) Get(
+func (managementEnvironmentSettings ManagementEnvironmentSettings) Get(
 	ctx context.Context,
 ) (*models.SettingsInternalOut, error) {
 	return internal.ExecuteRequest[any, models.SettingsInternalOut](
@@ -35,7 +33,7 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) Get(
 }
 
 // Update the environment's settings
-func (managementEnvironmentSettings *ManagementEnvironmentSettings) Update(
+func (managementEnvironmentSettings ManagementEnvironmentSettings) Update(
 	ctx context.Context,
 	settingsInternalIn models.SettingsInternalIn,
 ) (*models.SettingsInternalUpdateOut, error) {
@@ -52,7 +50,7 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) Update(
 }
 
 // Patch environment settings
-func (managementEnvironmentSettings *ManagementEnvironmentSettings) Patch(
+func (managementEnvironmentSettings ManagementEnvironmentSettings) Patch(
 	ctx context.Context,
 	settingsInternalPatch models.SettingsInternalPatch,
 ) (*models.SettingsInternalOut, error) {
@@ -69,7 +67,7 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) Patch(
 }
 
 // Get customer otel config.
-func (managementEnvironmentSettings *ManagementEnvironmentSettings) GetOtelConfig(
+func (managementEnvironmentSettings ManagementEnvironmentSettings) GetOtelConfig(
 	ctx context.Context,
 ) (*models.OtelConfigOut, error) {
 	return internal.ExecuteRequest[any, models.OtelConfigOut](
@@ -85,7 +83,7 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) GetOtelConfi
 }
 
 // Update customer otel config.
-func (managementEnvironmentSettings *ManagementEnvironmentSettings) UpdateOtelConfig(
+func (managementEnvironmentSettings ManagementEnvironmentSettings) UpdateOtelConfig(
 	ctx context.Context,
 	otelConfig models.OtelConfig,
 ) error {
@@ -104,7 +102,7 @@ func (managementEnvironmentSettings *ManagementEnvironmentSettings) UpdateOtelCo
 }
 
 // Delete customer otel config.
-func (managementEnvironmentSettings *ManagementEnvironmentSettings) DeleteOtelConfig(
+func (managementEnvironmentSettings ManagementEnvironmentSettings) DeleteOtelConfig(
 	ctx context.Context,
 ) error {
 	var err error

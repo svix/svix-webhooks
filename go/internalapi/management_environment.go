@@ -12,10 +12,8 @@ type ManagementEnvironment struct {
 	client *internal.SvixHttpClient
 }
 
-func newManagementEnvironment(client *internal.SvixHttpClient) *ManagementEnvironment {
-	return &ManagementEnvironment{
-		client: client,
-	}
+func newManagementEnvironment(client *internal.SvixHttpClient) ManagementEnvironment {
+	return ManagementEnvironment{client}
 }
 
 type ManagementEnvironmentListOptions struct {
@@ -33,7 +31,7 @@ type ManagementEnvironmentCreateOptions struct {
 }
 
 // List all environments.
-func (managementEnvironment *ManagementEnvironment) List(
+func (managementEnvironment ManagementEnvironment) List(
 	ctx context.Context,
 	o *ManagementEnvironmentListOptions,
 ) (*models.ListResponseEnvironmentModelOut, error) {
@@ -62,7 +60,7 @@ func (managementEnvironment *ManagementEnvironment) List(
 }
 
 // Create a new environment.
-func (managementEnvironment *ManagementEnvironment) Create(
+func (managementEnvironment ManagementEnvironment) Create(
 	ctx context.Context,
 	environmentModelIn models.EnvironmentModelIn,
 	o *ManagementEnvironmentCreateOptions,
@@ -90,7 +88,7 @@ func (managementEnvironment *ManagementEnvironment) Create(
 }
 
 // Get an environment.
-func (managementEnvironment *ManagementEnvironment) Get(
+func (managementEnvironment ManagementEnvironment) Get(
 	ctx context.Context,
 	envId string,
 ) (*models.EnvironmentModelOut, error) {
@@ -110,7 +108,7 @@ func (managementEnvironment *ManagementEnvironment) Get(
 }
 
 // Update an environment.
-func (managementEnvironment *ManagementEnvironment) Update(
+func (managementEnvironment ManagementEnvironment) Update(
 	ctx context.Context,
 	envId string,
 	environmentModelUpdate models.EnvironmentModelUpdate,
@@ -131,7 +129,7 @@ func (managementEnvironment *ManagementEnvironment) Update(
 }
 
 // Delete an environment.
-func (managementEnvironment *ManagementEnvironment) Delete(
+func (managementEnvironment ManagementEnvironment) Delete(
 	ctx context.Context,
 	envId string,
 ) error {

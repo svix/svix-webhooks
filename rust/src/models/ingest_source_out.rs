@@ -17,7 +17,7 @@ use super::{
     vgs_config_out::VgsConfigOut, zoom_config_out::ZoomConfigOut,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestSourceOut {
     #[serde(rename = "createdAt")]
     pub created_at: String,
@@ -133,11 +133,4 @@ pub enum IngestSourceOutConfig {
     Airwallex(AirwallexConfigOut),
     #[serde(rename = "vgs")]
     Vgs(VgsConfigOut),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for IngestSourceOutConfig {
-    fn default() -> Self {
-        Self::GenericWebhook
-    }
 }

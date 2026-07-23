@@ -2,7 +2,7 @@
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ApplicationPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
@@ -38,5 +38,11 @@ impl ApplicationPatch {
             throttle_rate: JsOption::Undefined,
             uid: JsOption::Undefined,
         }
+    }
+}
+
+impl Default for ApplicationPatch {
+    fn default() -> Self {
+        Self::new()
     }
 }
