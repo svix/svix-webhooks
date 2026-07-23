@@ -1064,7 +1064,7 @@ sdist = { url = "https://files.pythonhosted.org/packages/c4/7d/04fc3aa177403472d
 
 [[package]]
 name = "svix"
-version = "1.99.0"
+version = "1.99.1"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
