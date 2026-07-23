@@ -6,10 +6,10 @@
 # ]
 # ///
 """
-Version management for the svix-webhooks monorepo.
+Version management for the Svix SDKs (and CLI).
 
 Usage:
-  uv run tools/bump_version.py check         # verify all tracked files match .version
+  uv run tools/bump_version.py check         # verify all tracked files match .sdk-version
   uv run tools/bump_version.py bump <ver>    # propagate new version into all tracked files
 """
 
@@ -33,13 +33,12 @@ class VersionFile:
 
 
 POST_BUMP_COMMANDS = [
-    # Rust
-    "cargo update --workspace --manifest-path=server/Cargo.toml",
+    # Rust - also include bridge because it has a path dependency on the Rust SDK
     "cargo update --workspace --manifest-path=bridge/Cargo.toml",
     "cargo update --workspace --manifest-path=svix-cli/Cargo.toml",
     # JavaScript
     "cd javascript && npm i --package-lock-only --ignore-scripts",
-    # python
+    # Python
     "cd python && uv sync",
 ]
 
@@ -55,22 +54,6 @@ VERSION_FILES = [
     VersionFile(
         "svix-cli/README.md",
         [r"(download/v)(\d+\.\d+\.\d+)(/svix-cli-installer)"],
-    ),
-    # Server
-    VersionFile(
-        "server/Cargo.toml",
-        [
-            r'(\[workspace\.package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
-        ],
-        re.DOTALL,
-    ),
-    # Bridge
-    VersionFile(
-        "bridge/Cargo.toml",
-        [
-            r'(\[workspace\.package\][\s\S]*?\nversion\s*=\s*")([^"]*)(")',
-        ],
-        re.DOTALL,
     ),
     # Rust client
     VersionFile(
@@ -178,13 +161,6 @@ VERSION_FILES = [
     ),
 ]
 
-OLD_VERSION_FILES = [
-    VersionFile(
-        "client-integration-tests/docker-compose.yml",
-        [r"(image: docker.io/svix/svix-server:v)(.+)"],
-    ),
-]
-
 
 def read_file(path: Path) -> tuple[str, bool]:
     raw = path.read_bytes()
@@ -199,7 +175,7 @@ def write_file(path: Path, content: str, had_crlf: bool) -> None:
 
 
 def read_canonical_version() -> str:
-    return (REPO_ROOT / ".version").read_text().strip()
+    return (REPO_ROOT / ".sdk-version").read_text().strip()
 
 
 def cmd_check() -> int:
@@ -223,7 +199,7 @@ def cmd_check() -> int:
 
     if errors:
         print(
-            f"\nERROR: {errors} version mismatch(es) found. All versions must match .version ({expected}).",
+            f"\nERROR: {errors} version mismatch(es) found. All versions must match .sdk-version ({expected}).",
             file=sys.stderr,
         )
         return 1
@@ -233,11 +209,11 @@ def cmd_check() -> int:
 
 
 def update_changelog(new_version: str) -> None:
-    changelog_path = REPO_ROOT / "ChangeLog.md"
+    changelog_path = REPO_ROOT / "SdkChangeLog.md"
     content = changelog_path.read_text()
     updated = content.replace(
-        "# Changelog\n\n## Next",
-        f"# Changelog\n\n## Next\n* \n\n## Version {new_version}",
+        "\n## Unreleased\n",
+        f"\n## Unreleased\n* \n\n## Version {new_version}\n",
     )
     if updated != content:
         changelog_path.write_text(updated)
@@ -284,7 +260,7 @@ def cmd_bump(new_version: str) -> int:
         )
         return 1
 
-    (REPO_ROOT / ".version").write_text(new_version + "\n")
+    (REPO_ROOT / ".sdk-version").write_text(new_version + "\n")
 
     for vf in VERSION_FILES:
         update_version_file(vf, new_version)
@@ -308,11 +284,11 @@ def cmd_bump(new_version: str) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="svix-webhooks version management")
+    parser = argparse.ArgumentParser(description="svix SDK version management")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("check", help="verify all tracked files match .version")
+    sub.add_parser("check", help="verify all tracked files match .sdk-version")
     bump_parser = sub.add_parser(
-        "bump", help="set new version in .version and propagate to all tracked files"
+        "bump", help="set new version in .sdk-version and propagate to all tracked files"
     )
     bump_parser.add_argument("version", help="new semver version to set (e.g. 1.2.3)")
 

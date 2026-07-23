@@ -1,29 +1,25 @@
 # Changelog
 
+## Note: Server and Bridge changelogs
+
+The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.md).
+The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
+
 ## Unreleased
 
 ## Version 1.99.0
-* Server: Fix warning when opentelemetry is disabled
-* Bridge: Include the Kafka partition in consumer idempotency keys
 * CLI: Use [wolfi](https://github.com/wolfi-dev) as the image base instead of Debian, shrinking the Docker image by 77% and removing all open CVEs
 * Libs/C#: Fix a bug that made the 'canceled' message-attempt status opt-in unreliable (see also changelog for 1.95.0)
 
 ## Version 1.98.0
-* CLI, Server, Bridge: Set OCI metadata on Docker images
-* CLI, Server, Bridge: Embed package metadata in compiled binaries on Linux
-* Server: Improve validation of endpoint URLs (SVIXSEC-2026-0001)
+* CLI: Set OCI metadata on Docker images
+* CLI: Embed package metadata in compiled binaries on Linux
 
 ## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output
 * Libs/All: Support customizing expiration (grace period) of old endpoint secret when rotating
 * Libs/Python: Bump minimum-supported Python interpreter version to 3.9
 * Libs/Python: Fix memory and file-descriptor leak from excessively constructing httpx clients
-* Server: Add `statusText` to `EndpointMessageOut` (the response type for `v1.message-attempt.list-attempted-messages`), matching the cloud version
-* Server: Add `statusText` to `MessageEndpointOut` (the response type for `v1.message-attempt.list-attempted-destinations`), matching the cloud version
-* Server: Add `canceled` to `EndpointStatsOut`, matching the cloud version. This is always 0 in the OSS server, which doesn't currently track message cancellations
-* Server: Add `updatedAt` to `RecoverOut` (the response type for `v1.endpoint.recover`), matching the cloud version. Note that EE does not support incrementally checking background job status, so this always contains the timestamp at which the job was created
-* Server: Add `gracePeriodSeconds` to `EndpointSecretRotateIn`, allowing users to customize how long the old key is still valid for (in a range from 0, which means immediate expiry, to 7 days)
-* Server, Bridge, CLI: Update dependencies
 
 ## Version 1.96.1
 * Libs/Java: Upgrade jackson dependency to v2.21.4
@@ -61,8 +57,6 @@
 * Libs/Java: Restore compatibility with Java 1.8 in Webhooks verification
 
 ## Version 1.93.0
-* Server: Warn when Redis pending timeout is shorter than worker request timeout + buffer (thanks [@vinay0826])
-* Server: Add missing messageattempt index (as a new kind of background migration)
 * CLI: Show input / output JSON examples in `--help` output
 * Libs/Java: Restore compatibility with Java 1.8
 
@@ -75,22 +69,12 @@
 * Fix docker build
 
 ## Version 1.91.0
-* Server: Remove old endpoint secrets on rotation
 * Libs/Ruby: various fixes to the ruby sdk
 
 ## Version 1.90.0
-* Server: Add `throttleRate` to endpoint and application
-  * This replaces `rateLimit` because the name caused some confusion
-    (but is kept as a deprecated field for backwards compatibility)
 * Libs/All: Update to latest Svix Cloud spec
 
 ## Version 1.89.0
-* Server: Add a prune helper command to delete old data
-* Server: Invalidate CMA cache when creating/updating endpoints or apps
-* Server: Return empty JSON object from v1.message-attempt.resend
-* Server: Build Docker image with Rust 1.94
-* Bridge: Add support for PLAIN sasl auth for confluent cloud
-* Bridge: Build Docker image with Rust 1.94
 * Libs/Python: Set `__str__` on errors
 
 ## Version 1.88.0
@@ -99,14 +83,7 @@
 
 [@piotrdomagalski]: https://github.com/piotrdomagalski
 
-## Version 1.87.0
-* Server: Respect `retry-after` header on error responses (within limits) (thanks [@vinay0826])
-
-[@vinay0826]: https://github.com/vinay0826
-
 ## Version 1.86.0
-* Server: Fix non-determinism with regards to overrides of specific header names
-* Server: Bump MSRV to 1.88.0
 * Libs/All: Add support for `v1.message.create-precheck` (Svix Cloud exclusive endpoint)
 
 ## Version 1.85.0
@@ -124,8 +101,6 @@
 * CLI: support disabling TLS verification when relaying requests (`svix listen`)
 
 ## Version 1.83.0
-* Server: Add `status_text` field to `MessageAttemptOut` to match Svix Cloud
-  * Makes current versions of the SDKs work with endpoints using this type again
 * Libs/PHP: Add `MessageIn::createRaw`, allows you to create a raw (non-json) message
 
 ## Version 1.82.0
@@ -133,7 +108,6 @@
 * CLI: Add support for the Connector API
 * CLI: Add `-v --verbose` flag
 * CLI: Fix a bug in config file saving
-* Server: Allow specifying queue prefix (thanks @turip)
 
 ## Version 1.81.0
 * Libs/All: Add support for the new [Connector API](https://api.svix.com/docs#tag/Connector)
@@ -147,7 +121,6 @@
 * Libs/Kotlin: Add `SvixOptions` to the `com.svix.kotlin` namespace
   * The un-namespaced symbol is kept as a `typealias` for backwards compatibility
 * Libs/Javascript: Add option to configure the fetch method
-* Server: Add support for creating applications in the `POST /api/v1/app/{app_id}/msg` and the `POST /api/v1/auth/app-portal-access/{app_id}` API calls
 
 ## Version 1.78.0
 * Libs/Python: Fix bug preventing the generic webhook ingest source from being deserialized
@@ -157,7 +130,6 @@
 * Libs/All: Add API for the new [Svix Stream](https://www.svix.com/stream/)
 * Libs/PHP: Fix bug causing empty objects to be serialized as `[]` instead of `{}`
 * Libs/Rust: Upgrade rustls dependency version (thanks @GodTamIt)
-* Server: DB refactor, improves performance of a few API endpoints
 
 ## Version 1.76.1
 * Libs/Go: Fix bug causing 422 errors on `message.create` with messages created using the `NewMessageInRaw` helper
@@ -170,31 +142,22 @@
 * Libs/All: Allow deleting endpoint headers through new `deleteHeaders` field in `EndpointHeadersPatchIn`
 
 ## Version 1.75.0
-* Bridge, CLI, Server: Modify Dockerfiles to use cache mounts for improved build time; these now require Docker 1.2 or later to build
+* CLI: Modify Dockerfiles to use cache mounts for improved build time; these now require Docker 1.2 or later to build
 * Libs/JS: Add support for custom retry schedule (thanks @KranzAklilu)
 
 ## Version 1.74.1
-* Bridge, CLI: Fix installation of ca-certificates in Docker images
+* CLI: Fix installation of ca-certificates in Docker images
   * These images were broken as of v1.72.0
 
 ## Version 1.74.0
 * Libs/Rust: Add support for custom retry schedule (thanks @KranzAklilu)
 * Libs/Rust: Add support for connecting to the API through a proxy
-* Server: Upgrade some core dependencies
-* Bridge: Add support for connecting to the Svix API through a proxy
 
 ## Version 1.73.0
 * Libs/(Java and Kotlin): Fix bug causing runtime exceptions when unknown fields were sent from the server
 
 ## Version 1.72.0
 * Libs/JavaScript: Use native `fetch` API
-* Server: Upgrade Docker base image to Debian Trixie
-* Bridge: Add a default `user-agent` to requests made by the new `http` output
-* Bridge: Upgrade Docker base image to Debian Trixie
-
-## Version 1.71.0
-* Bridge: Add `http` output to `receivers`
-  * See [`bridge/svix-bridge.example.receivers.yaml`](./bridge/svix-bridge.example.receivers.yaml) for a usage example
 
 ## Version 1.70.1
 * Libs/All: Re-add `endpoint.transformationPartialUpdate` as a deprecated operation
@@ -211,12 +174,9 @@
   * This is a breaking change, but based on server statistics this method is barely used by anybody
 
 ## Version 1.69.0
-* Server: Reduce allocations (thanks @fluiderson!)
-* Server: Add healthcheck command (thanks @y-nk!)
 * Libs/Rust: Don't panic on invalid inputs to request building
 
 ## Version 1.68.0
-* Server: Ensure messagecontent expiration is set
 * Libs/PHP: Handle Badly Formatted Signatures by @rodnaph in https://github.com/svix/svix-webhooks/pull/1942
 * Libs/All: Automatically send an idempotency key on all outgoing post requests
 
@@ -228,7 +188,6 @@
 ## Version 1.66.0
 * Libs/JavaScript: Fix response processing code for endpoints with an optional datetime field in the response body
 * Libs/PHP: Update minimum version of PHP to 8.0
-* Server: Support sending raw (pre-formatted) JSON payloads
 
 ## Version 1.65.0
 * Libs/Python: Bring back the (deprecated) sync `dashboard_access` method, which was accidentally
@@ -238,12 +197,9 @@
 * Libs/(Ruby and Kotlin): Add doc comments to class attributes
 * Libs/Go: Added a new `<Enum>From<UnderlyingType>` map to all enums. For example `BackgroundTaskStatusFromString["running"]` will result in `BACKGROUNDTASKSTATUS_RUNNING`
 * Libs/Go: Fixed bug where the correct `content-type` was not set on `PUT` requests
-* Bridge: Add `/health` endpoint by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1903
-* Server: Add URL validation to operational server webhooks by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1887
 
 ## Version 1.64.1
 * Libs/JavaScript: Add `HTTPValidationError`, `HttpErrorOut`, `ValidationError` and `ApiException` to the top level exports.
-* Server: Add response duration tracking to webhook message attempts by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1877
 * Libs/Python: Specify minimum version of pydantic `pydantic >=2.10` in setup.py.
 
 ## Version 1.64.0
@@ -386,7 +342,6 @@ This version contains a big overhaul of the client libraries, with improved typi
   from it should not change though ([#1587])
 * Libs/Rust: Add `api::Authentication::expire_all` ([#1584])
 * Libs/Rust: Rename some `Options` types. The old names remain as deprecated type aliases ([#1584])
-* Server: Fix Dockerfile exposed port to be 8071 ([#1596])
 
 [#1568]: https://github.com/svix/svix-webhooks/pull/1568
 [#1571]: https://github.com/svix/svix-webhooks/pull/1571
@@ -423,13 +378,11 @@ This version contains a big overhaul of the client libraries, with improved typi
 [#1549]: https://github.com/svix/svix-webhooks/pull/1549
 
 ## Version 1.42.0
-* Server: Return 413 on large payloads ([#1530])
 * Libs/Python: Fix sync / async mismatch for op-webhook-endpoint API ([#1535])
 * Libs/Rust: Fix types of `iterator` fields ([#1534])
 * Libs/Kotlin: Add convenient construction of messages with pre-serialized payload ([#1531])
 * Libs/Rust: Add convenient construction of messages with pre-serialized payload ([#1533])
 
-[#1530]: https://github.com/svix/svix-webhooks/pull/1530
 [#1531]: https://github.com/svix/svix-webhooks/pull/1531
 [#1533]: https://github.com/svix/svix-webhooks/pull/1533
 [#1534]: https://github.com/svix/svix-webhooks/pull/1534
@@ -439,28 +392,15 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/JS: Allow `iterator` and date parameters on list endpoints to be `null` (in addition to `undefined`)
 * Libs/JS: Fix serialization of message `status` query parameters
 * Libs/Rust: Revert many pointless type changes from `Option<T>` to `Option<Option<T>>` that came with 1.39.0
-* Server: Improve error messages for configuration loading
 
 ## Version 1.40.0
 * Libs(JS): downgrade `@stablelib/base64` avoiding `ERR_REQUIRE_ESM` by @svix-onelson in https://github.com/svix/svix-webhooks/pull/1506
-* Bridge: update ca-certificates by @jaymell in https://github.com/svix/svix-webhooks/pull/1507
-* Server: exit early if endpoints don't exist by @jaymell in https://github.com/svix/svix-webhooks/pull/1515
 
 ## Version 1.39.0
 * Libs: Add operational webhook endpoint API
 * Libs/Rust: **[Breaking]** Models for PATCH endpoints now have `Option<Option<T>>` fields to allow explicitly sending nulls to unset those fields.
 * Libs/Go: **[Breaking]** Nullable arrays are once again represented by `[]T` instead of `*[]T`. Serialization handles the empty case correctly.
 * Libs: Upgrade `openapi-generator` to 7.9.0, with dependency upgrades and internal changes in the SDKs.
-* Server: Add Redis sentinel support
-* Server: Add OTEL metrics for Redis queues
-* Server: Add Redis DLQ support
-* Server: Several dependency upgrades and CI improvements
-
-## Version 1.38.0
-* Server: Increase max endpoint rotations
-* Server: Return 409 on duplicate message insert
-* Server: Add `expunge` parameter to event-type deletion endpoint
-* Server: Add `message.attempt.recovered` operational webhook
 
 ## Version 1.37.0
 * Libs(Go): `EndpointUpdate` and `EndpointPatch` allow null for channels, filter types
@@ -474,26 +414,15 @@ This version contains a big overhaul of the client libraries, with improved typi
 ## Version 1.34.0
 * Libs/Rust: Add missing export of `V1MessageEventsParams`
 
-## Version 1.33.0
-* Server: Add support for deprecating event types
-* Server: Add support for HTTP(S) proxies
-
 ## Version 1.32.0
 * Libs/Go Remove modules no longer produced by the generator
-* Server: Fix parsing proxy config from process environment
 
 ## Version 1.31.0
-* Bridge: remove Beta tag
 * Libs/Go: prune out unused import for "time" in codegen output
 * Libs/C#: Fix appId, endpointId order in RotateSecretWithHttpInfoAsync
 * Libs: Support passing `application` to `app-portal-access` endpoint
 
-## Version 1.30.0
-* Server: Support filtering by before and after at the same time
-
 ## Version 1.29.0
-* Bridge: Rebuild RabbitMQ producer on error
-* Server: Add support for SOCKS5 proxies
 * Libs/C#: add GetAppPortalAccess* methods to IAuthentication interface
 * Libs/Go: expose `with_content` for `Message.List`
 * Libs/Go: expose `with_msg` param on `MessageAttempt.ListByEndpoint`
@@ -509,17 +438,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 ## Version 1.27.0
 * Libs/Python: add missing 'get_stats' function
 
-## Version 1.26.0
-* Server: add configuration to for changing service name on OpenTelemetry
-* Bridge: add `/events` poller
-* Bridge: log svix client errors as error, not trace
-
 ## Version 1.25.0
-* Server: Enable redis `tcp_nodelay`
-* Server: Improve database error classification
-* Server: Update dependencies
-* Bridge: Upgrade omniqueue and other dependencies
-* Bridge: Add Kafka as an input
 * Libs/Javascript: Apply workaround for incomplete fetch support in Cloudflare Worker
 * Libs/Go: Add NullableBool function
 * Libs/Python: Update dependencies and switch to ruff
@@ -527,8 +446,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/PHP: Replace ctype_digit for PHP 8.1 deprecation of non-string arguments
 
 ## Version 1.24.0
-* Server: Update redis health check
-* Server: Clean up tracing spans for HTTP requests
 * Libs: Update OpenAPI
 
 ## Version 1.23.0
@@ -536,22 +453,12 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Add oauth support to javascript
 
 ## Version 1.22.0
-* Server: Don't require trailing slash at the end of request paths
-* Server: Improve testing performance and reduce redundant test runs
-* Server: Improve performance of `/api/v1/openapi.json` route
-* Server: Upgrade dependencies and improve code formatting
-* Server: Upgrade to Docker Compose v2
 * Libs/Ruby: Add PATCH endpoints
 
 ## Version 1.21.0
-* Server: Improve error information on failed assertions in Redis module
-* Server: Use omniqueue for Redis queue implementation
-* Server: Upgrade OpenTelemetry dependencies
-* Bridge: Upgrade dependencies
 * Libs/Rust: Print more detailed error messages for generic errors
 
 ## Version 1.20.0
-* Server and Bridge: Performance improvements in test setup
 * Libs/C#: don't serialize nulls in PATCH endpoints
 * Libs/Rust: Make API method Future implement Send/Sync
 
@@ -560,21 +467,16 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Rust: Make request timeout configurable
 
 ## Version 1.18.0
-* Server: upgrade dependencies
-* Server: adopt omniqueue as a queue backend
 * Libs/C#: **[Breaking]** Return iterator information in list endpoints. Changes the return type of list endpoints.
 * Libs/Java: don't serialize nulls in PATCH endpoint methods
 * Libs/Rust: upgrade and clean up dependencies
 * Libs/Rust: switch from reqwest to hyper 1.0
 
 ## Version 1.17.0
-* Server: Upgrade hyper to 0.14.28
 * Libs/Rust: **[Important]** Fix a bug in the webhook signature verification method where certain signatures could bypass the verification.
 * Libs/Java: **[Breaking]** Use Java time instead of threetenbp. This removes the need to import threetenbp to use the library. Depending on how the lib is used, it might require migrating uses of threetenbp to Java 8 Date-Time APIs.
 
 ## Version 1.16.0
-* Server: Add `tag` parameter to list-message for Go, JavaScript, and Python.
-* Server: improvements to the expired message cleaner.
 * Libs: update OpenAPI spec and libs.
 * Libs/Javascript: Fix thrown error message when API status code is unknown.
 
@@ -582,7 +484,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs: update OpenAPI spec and libs.
 
 ## Version 1.14.0
-* Server: separate out the message content to its own model.
 * Libs: expose two new Statistics endpoints.
 * Libs/Csharp: implement "hard delete" event types.
 * Libs/Ruby: accept additional options on message get.
@@ -590,71 +491,43 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Kotlin: fix errors with APIs that return no content (like endpoint delete).
 
 ## Version 1.13.0
-* Server: Fix tracking of backtrace in some error cases.
 * Libs/Go: expose `EventType.DeleteWithOptions`
 
 ## Version 1.12.0
 * Libs: update OpenAPI spec
 
 ## Version 1.11.0
-* Server: update Docker image to Debian bookworm.
-* Server: update dependencies.
 * Libs: add functions to import event types from OpenAPI specs
 * Libs: update OpenAPI spec
 
-## Version 1.10.0
-* Server: fix docker image.
-* Server: release arm64 version!
-
 ## Version 1.9.0
-* Server: add missing field documentation for query params.
-* Server: warn people trying to use the JWT secret as an auth token.
-* Server: allow disabling TLS verification.
-* Server: use jemalloc as the global allocator.
-* Server: add Sentry support.
-* Server: update dependencies.
-* Server: update Docker base image and rust version.
 * Libs/Go: export missing types
-* Bridge: switch to the Omniqueue library
-* Bridge: use jemalloc as the global allocator.
-* Bridge: update Docker base image and rust version.
 
 ## Version 1.8.1
-* Server: correctly disconnect the tracing provider when shutting down in some rare scenarios.
 * Libs: update OpenAPI spec
 
 ## Version 1.8.0
 * Libs/Go: fix behavior of `NullableInt32` and `NullableString`
-* Server: Add `with_content` to attempt listing endpoints
-* Bridge: better js transformations
 
 ## Version 1.7.0
-* Server: update Docker image to use latest Rust version
-* Server: support additional JWT signing algorithms (including asymmetric!).
-* Server: Avoid panics when using the wait-for option (better errors printing).
 * Libs/Rust: fix handling of integer enums (was causing failures for some endpoints).
 
 ## Version 1.6.0
-* Server: add 'event_types' query param to 'list-attempted-messages'
 * Libs: implement the `patch` endpoints for partial updates
 
 ## Version 1.5.2
 * Libs/JavaScript: Fix regression in previous release and allow passing `Buffer` to sign/verify.
 
 ## Version 1.5.1
-* Server: Implement the send-example route.
 * Libs/JavaScript: Add an explicit check that payload is a string.
 * Libs: Fix a bug with integration key creation.
 
 ## Version 1.5.0
-* Server: update OpenSSL dep and fix an incredibly slow memory leak.
 * Libs/Go: support passing `WithContent` to `List Attempted Messages`
 * Libs/Python: fix regression in Python library (causing some functions not to work).
 
 ## Version 1.4.12
 * Sync OSS package version with our internal version.
-* Server: support comma separated array query params
-* Bridge: initial release
 * Libs: update OpenAPI spec
 * Libs: add support for "Background Task" endpoints
 * Libs: add support for since/until to endpoint stats
@@ -666,7 +539,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs: update OpenAPI spec
 
 ## Version 0.85.0
-* Server: add a missing migration for operational webhooks event types.
 * Libs/Ruby: fix the library failing to load due to missing dependency.
 * Libs: **[Semi-breaking]** we changed the return value of the transformation simulation endpoint. It's technically a breaking page, though the API is private so it shouldn't affect people.
 
@@ -674,29 +546,17 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs: regenerate libs from the correct openapi spec (could have caused potential authentication issues)
 
 ## Version 0.84.0
-* Server: add (beta) RabbitMQ implementation
-* Server: upgrade redis-rs and a few other dependencies
-* Server: improve OpenAPI generation
-* Server: fix issue with Redis being required in the docker image
 * Libs/Rust: support choosing the wanted TLS implementation
 
 ## Version 0.83.1
 * Libs: update OpenAPI spec
 
 ## Version 0.83.0
-* Server: bump deps
 * Libs: Add `send-example` wrapper to libraries
 * Libs/Go: alias missing types from internal dir / openapi package
 
 ## Version 0.82.1
 * Libs/Java: serialize nulls when making HTTP requests
-
-## Version 0.82.0
-* Server: refactor expired message cleaner to be incremental (prevent locks)
-* Server: improve OpenAPI generation
-* Server: Fix handling of very large numbers in json (larger than i64)
-* Server: do not throw error on missing payload in worker
-* Server: update dependencies
 
 ## Version 0.81.0
 * Libs: add support for creating application when creating a message
@@ -708,51 +568,27 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/C#: **[Breaking]** change default value for `SvixOptions.Throw` to `true`
 
 ## Version 0.79.0
-* Server: support prev_iterator for application and event type listing
-* Server: fix returning of 409 (CONFLICT) when inserting/patching an application with a conflicting `uid`
 * Libs/Ruby: require (reexport) app portal models in ruby (fixing errors)
 * Libs/C#: fix MessageAttempt querying when not filtering by status and code
 
 ## Version 0.78.0
-* Server: add `order` query parameter for sorting endpoints
-* Server: fix default sort order of endpoints to `desc` to match prod
 * Libs: add support for `prev_iterator` for application and endpoints
 * Libs/JS: fix sign function to support non-round dates
 * Libs/Go: **[Breaking]** accept a context parameter in all Go lib methods
 
 ## Version 0.77.0
-* Server: fix event_type array query parsing
-* Server: fix bad `?channel=` queries
-* Server: fire operational webhook on endpoint secret rotation
-* Server: implement bidirectional pagination for endpoints
 * Libs/Rust: glob-reexport all generated models in Rust
 
 ## Version 0.76.1
-* Server: fix `/attempt/endpoint`'s broken `?channel=` query
 * Libs/Rust: add missing exports to a few API endpoints
 * Libs: fix naming of replay-missing methods in libraries (all but Rust)
 
 ## Version 0.76.0
-* Server: add org_id and app_id to main tracing span
-* Server: make `wait_for` timeout early and retry
-* Server: add since/until query params to endpoint stats
-* Server: add endpoints to expunge payload and response
-* Server: clarify error message and documentation around filtered IP addresses
-* Server: fix error message with endpoint filter types validation
-* Server: fix `?after=<time>` ID Parsing in paginated endpoints
 * Libs: add endpoints to expunge payload and response
 * Libs: add replay missing messages functions
 * Libs: add transformations APIs
 
 ## Version 0.75.0
-* Server: add built in SSRF support (no need for an external proxy)
-* Server: many worker improvements (see #704 for details)
-* Server: fix Span HTTP Routes
-* Server: update deps
-* Server: add Length limit validation to EndpointHeader value
-* Server: add missing root CAs to default docker image
-* Server: add updated app-portal-access API endpoint (to replace the deprecated dashboard-access)
-* Server: add feature flag gating to event types
 * Libs/Rust: Enable TLS support in `reqwest` by default
 * Libs: support the new feature flag gating of event types
 
@@ -763,90 +599,45 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Rust: make `ListOptions` and `PostOptions` fields public
 * Libs/Rust: fix Webhook verification to accept &str
 
-## Version 0.73.0
-* Server: fix issue with potentially incorrect signatures for very small payloads.
-* Server: fix Docker image to use `exec` so that svix-server will accept container process signals.
-
 ## Version 0.72.0
-* Server: add metadata field to Endpoint endpoints
-* Server: add missing msg id index causing some queries to be slow
-* Server: make sensitive header detection in the `headers` API case insensitive
-* Server: omit prevIterator from responses when `null`
-* Server: fix string collation for some fields in the db (improves performance)
-* Server: expose attempted URL on MessageAttemptOut
-* Server: fix graceful server shutdown even when connection to queue is lost
-* Server: fix listing and getting event-types permission regression (give app tokens access)
-* Server: various code cleanups
-* Server: update axum to 0.6
 * JavaScript: make signature comparison constant time (thanks @arjunyel)
 
 ## Version 0.71.0
-* Server: Add metadata to application CRUD
-* Server: Update Rust, sea_orm, and other deps
 * Libs: Update OpenAPI spec
 
 ## Version 0.70.0
-* Server: create subcommand for wiping an organization's data
-* Server: internal code improvements
 * Libs/Java: fix issue with automatic region detection not working
 
 ## Version 0.69.0
-* Server: ensure QueueTasks are deleted after acknowledgement
-* Server: better handling of failures in streaming responses
-* Server: update event-type schemas validation to be stricter
 * Libs/Kotlin: support configuring retry schedule
 * Libs: fix metadata field in Go and Python
 
 ## Version 0.68.1
-* Server: update the event-type CRUD endpoints to be more strict about the schema type.
-* Server: fix typo in error messages for unimplemented errors.
 * Libs/Java: fix issue with creating multiple Svix instances in parallel.
 
 ## Version 0.68.0
-* Server: add file/line information to errors for easier debugging.
-* Server: update dependencies.
 * Libs: add application/endpoint metadata fields.
 * Libs/C#: Add netstandard2.0 support.
 * Add gitleaks config to ignore test auth tokens.
 
-## Version 0.67.0
-* Server: include idempotency key in log spans.
-* Server: correct trace ID handling in tracing spans.
-
 ## Version 0.66.0
-* Server: add unique IDs when tracing worker tasks.
-* Server: allow enabling extra tracing for db operations.
-* Server: ensure tracing spans are recorded for all log levels.
-* Server: reduce idempotency key lock time from 20s to 5s.
 * Libs: expose endpoint stats function.
 
 ## Version 0.65.1
-* Server: fix validation errors to be more informative.
-* Server: more strict message payload validation to match the libs.
-* Server: fix issue with messages being signed with expired keys in some situations (not a security concern, just superfluous data being sent).
-* Server: attach a unique ID to a request (used in logs) when none is provided in headers.
 * Libs/Python: fix typo in Python lib causing auto-detection of EU servers to fail.
 * Libs/C#: make logger optional when creating SvixClient.
 
 ## Version 0.65.0
-* Server: support "upsert" of entities on PUT methods.
-* Server: support PATCH methods on entities for partial updates.
-* Server: allow overriding redis_dsn for separate queue and cache DSNs.
 * Libs: support "upsert" of entities on PUT methods.
 * Libs/Ruby: fix region auto-detection.
 
 ## Version 0.64.2
-* Server: change the dashboard authentication payload to note that the server is self hosted.
 * Libs/JavaScript: fix issue when signing/verifying payloads with high Unicode codepoints (e.g. some new emoji)
 
 ## Version 0.64.1
 * Libs/Go: export missing `svix.NullableString` utility.
 
 ## Version 0.64.0
-* Server: disable endpoints on repeated failures.
-* Server: add retry functionality to the Redis queue (to be more resistant minor networking hiccups).
-* Server: improve the delayed queue processing to be resilient to errors and better support concurrent processing.
-* Server: gracefully shutdown the server on SIGTERM.
 * Libs/Kotlin: fix compilation issues.
 * Libs: automatically detect region (and URL) from auth token.
 
@@ -854,41 +645,15 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Lib/JavaScript: fix setting string webhook secrets.
 
 ## Version 0.63.0
-* Server: add support for encrypting webhook secrets in the database.
-* Server: include the error message in the attempt's response for non HTTP errors.
-* Server: change the CORS headers to be more strictly compliant.
-* Server: wait-for db before attempting to run migrations.
-* Server: add retry functionality to Redis cache.
 * Libs: update libraries to accept a raw webhook secret.
 
 ## Version 0.62.1
 * Libs: fix Kotlin and Java build
 
 ## Version 0.62.0
-* Server: add support for asymmetric signatures.
-* Server: ensure msg content exists before attempting resend.
-* Server: Improve HTTP error response logging.
-* Server: fix docker builds due to changes to Redis SSL.
 * Libs: fix nullable fields to be marked as such (fixes parsing errors in some clients).
 
-## Version 0.61.0
-* Server: add OpenTelemetry support
-* Server: send operational ("incoming") webhooks about events happening on the server.
-* Server: enable TLS support for Redis
-* Server: use correct timestamp for attempt's id and created.
-* Server: add jitter to message retry times.
-* Server: fix endpoint spelling in some error messages and comments.
-* Server: add built in support for waiting for dependencies (database, redis) to be ready (instead of using a script).
-
 ## Version 0.60.0
-* Server: normalize health status output to be in lowercase.
-* Server: implement application portal endpoint and limited access tokens for it.
-* Server: add endpoint stats endpoint for getting endpoint statistics.
-* Server: add support for JSON log format for use in cloud environments.
-* Server: add configuration options for the max pool size for DB and Redis connection pools.
-* Server: add CORS headers and support pre-flight requests for use from the browser.
-* Server: add a configuration option to only allow https endpoint URLs.
-* Server: support passing an org_id when generating JWTs (`svix-server jwt generate`).
 * Lib/Python: update httpx dependency to the latest version.
 * Lib/Rust: fix mixup with validation errors marked as HTTP errors and vice-versa.
 
@@ -896,83 +661,32 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Csharp: expose missing getters which prevented a lot of the lib's functionality to be used.
 
 ## Version 0.59.0
-* Server: make the `health` endpoint more useful by adding more status checks to it.
-* Server: parse `retry_schedule` as an array rather than string.
-  * People should use the next syntax: `[1, 2]`, though the old syntax is still supported for backwards compatibility.
-* Server: add validation to ensure endpoint URL scheme is either http or https.
 * Libs/Python: show a more useful error for obviously malformed secrets.
 * Libs/JavaScript: show a more useful error for obviously malformed secrets.
 
 ## Version 0.58.2
-* Libs and server: update OpenAPI spec
-
-## Version 0.58.1
-* Server: Fix logging configuration in production builds to actually be respected.
-* Server: improve how we run Redis migrations.
+* Libs: update OpenAPI spec
 
 ## Version 0.58.0
 * Lib/Rust: add a Rust API client + webhook verification library!
 * Lib/Python: fix package installation on Windows.
 * Lib/Csharp: make some parameters optional for better ergonomics.
-* Server: remove `updated_at` field from static entities.
-* Server: change to a more efficient first message dispatch.
-* Server: change the redis queue to use redis streams.
-* Server: serve nice API docs under `/docs`.
-* Server: start version tagging the Docker images. (`latest`, `x`, and `x.y`).
-* Server: allow PATCH to delete header values by passing null.
-* Server: make it possible to change the hard pagination limits to be soft.
-* Server: make the redis queue implementation automatically recover from redis crashes.
-* Server: add a `--run-migrations` flag to automatically run migrations (flag still passed in Docker).
-* Server: fix worker to not follow HTTP redirects when calling webhooks.
 
 ## Version 0.57.2
-* Server: add support for get-or-create when creating applications.
-* C#: fix library compilation (broke in the previous release.
+* Libs/C#: fix library compilation (broke in the previous release.
 
 ## Version 0.57.1
 * Libs: fix all libraries to handle 429 (rate limiting).
-* Server: update docker image to use Rust 1.60
-* Server: preserve header name capitalization for custom endpoint headers.
-* Server: gracefully handle non-textual webhook responses (so endpoints returning non strings).
-* Server: delete message content after the specified retention period.
 
 ## Version 0.57.0
-* Server: add support for idempotency.
-* Server: add prev_iterator support to endpoints that should support it.
-* Server: make parameter validation stricter in various places.
-* Server: improve error messages for bad configurations.
-* Server: support for Redis clusters.
-* Server: add a memory cache backend.
-* Server: fix health endpoint to return an empty response to match its status code (204).
-* Server: fix issue that can cause messages to be sent more than once when clients timeout.
-* Server: fix support for endpoint id in the list attempted messages and list attempted destinations APIs.
-* C#: add C# API client library.
+* Libs/C#: add C# API client library.
 
 ## Version 0.56.0
 * Libs/Python: fix user agent to actually work.
 * Libs/Python: increase read timeout.
-* Server: extend prev_iterator implementation to allow for before and after.
-* Server: update Axum dep to latest version.
-* Server: add more tests to the suite.
-
-## Version 0.55.0
-* Server: fix marking of some HTTP errors as failed.
-* Server: change base docker image to debian-slim
-* Server: update deps.
-* Server: added missing list attempts endpoints and missing query parameters to some endpoints.
-* Server: switch to KsuidMs for extra precision.
-* Server: add missing validation for `IdOrUid` so that they return 422.
-
-## Version 0.54.2
-* Server: fix release CI round 2
-
-## Version 0.54.1
-* Server: fix release CI
 
 ## Version 0.54.0
 * Libs: add retry and request-id headers for easier debugging.
-* Server: add more release targets (macOS and aarch64).
-* Server: make 422 errors compatible with the Svix service.
 
 ## Version 0.53.2
 * Ruby: Fix CI to not include Vendor data in package.
@@ -991,9 +705,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/JS: Fix for setting Idempotency-Key when one isn't set  🐞
 * Libs/All: Add `msg_id` to attempt list responses (`MessageAttemptOut`)
 * Libs/All: New GetOrCreate application function 🆕
-* Server: Remove deprecated axum API usage
-* Server: Implement PATCH for endpoint headers API 🆕
-* Server: Add support for an endpoint cache for improved performance when sending 🚀
 
 ## Version 0.51.0
 * Libs: Support for passing an idempotency key to post commands
@@ -1002,22 +713,16 @@ This version contains a big overhaul of the client libraries, with improved typi
 * JS: fix for API calls using a default idempotency key when one isn't set 🐞
 
 ## Version 0.50.0
-* Server: Set custom endpoint headers when sending via worker
 * Libs: Add support for filtering by StatusCodeClass in attempts API
 
 ## Version 0.49.0
-*  Libs: Add support for reverse iteration (prev_iterator) & after param in list commands ⬅️
-*  Server: Add support for adding & managing custom Endpoint Headers 🆕
+* Libs: Add support for reverse iteration (prev_iterator) & after param in list commands ⬅️
 
 ## Version 0.48.0
 * Libs: Support for new `/attempt/` API via list_for_msg and list_for_endpoint. 🚀
 * **Deprecation warning:** `message_attempt.list` is deprecated in favor of this new API. ❌
 
-## Version 0.47.1
-* CI: Autorelease server artifacts on github releases 🆕
-
 ## Version 0.47.0
-* **Initial OSS release of Svix Server!** 🚀
 * Java & Kotlin: Minor binding fixes to bring them up to date with other libs 🐞
 
 ## Version 0.46.0
