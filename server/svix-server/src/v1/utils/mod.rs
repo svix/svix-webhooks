@@ -223,8 +223,8 @@ where
         query = query.filter(sort_column.gt(I::start_id(after)));
     }
 
-    let (mut query, iter_direction) = match (&iterator, before, after) {
-        (Some(ReversibleIterator::Prev(_)), _, _) | (None, None, Some(_)) => {
+    let (mut query, iter_direction) = match &iterator {
+        Some(ReversibleIterator::Prev(_)) => {
             (query.order_by_asc(sort_column), IteratorDirection::Prev)
         }
         _ => (query.order_by_desc(sort_column), IteratorDirection::Normal),
