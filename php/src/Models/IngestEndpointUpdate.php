@@ -11,7 +11,6 @@ class IngestEndpointUpdate implements \JsonSerializable
 
     /**
      * @param array<string, string>|null $metadata
-     * @param int|null                   $rateLimit    deprecated, use `throttleRate` instead
      * @param int|null                   $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
@@ -22,7 +21,6 @@ class IngestEndpointUpdate implements \JsonSerializable
         public readonly ?string $description = null,
         public readonly ?bool $disabled = null,
         public readonly ?array $metadata = null,
-        public readonly ?int $rateLimit = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
         array $setFields = [],
@@ -40,7 +38,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: null,
             disabled: null,
             metadata: null,
-            rateLimit: null,
             throttleRate: null,
             uid: null,
             url: $url,
@@ -57,7 +54,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: $description,
             disabled: $this->disabled,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
@@ -74,7 +70,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: $this->description,
             disabled: $disabled,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
@@ -91,24 +86,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: $this->description,
             disabled: $this->disabled,
             metadata: $metadata,
-            rateLimit: $this->rateLimit,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withRateLimit(?int $rateLimit): self
-    {
-        $setFields = $this->setFields;
-        $setFields['rateLimit'] = true;
-
-        return new self(
-            description: $this->description,
-            disabled: $this->disabled,
-            metadata: $this->metadata,
-            rateLimit: $rateLimit,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
             url: $this->url,
@@ -125,7 +102,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: $this->description,
             disabled: $this->disabled,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $throttleRate,
             uid: $this->uid,
             url: $this->url,
@@ -142,7 +118,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: $this->description,
             disabled: $this->disabled,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             throttleRate: $this->throttleRate,
             uid: $uid,
             url: $this->url,
@@ -164,9 +139,6 @@ class IngestEndpointUpdate implements \JsonSerializable
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;
         }
-        if (isset($this->setFields['rateLimit'])) {
-            $data['rateLimit'] = $this->rateLimit;
-        }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
         }
@@ -186,7 +158,6 @@ class IngestEndpointUpdate implements \JsonSerializable
             description: \Svix\Utils::deserializeString($data, 'description', false, 'IngestEndpointUpdate'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'IngestEndpointUpdate'),
             metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'IngestEndpointUpdate'),
-            rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'IngestEndpointUpdate'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'IngestEndpointUpdate'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'IngestEndpointUpdate'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointUpdate')

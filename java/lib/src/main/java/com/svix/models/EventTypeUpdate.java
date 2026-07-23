@@ -22,7 +22,6 @@ public class EventTypeUpdate {
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
     @JsonProperty private String description;
-    @JsonProperty private String featureFlag;
     @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String groupName;
     @JsonProperty private Object schemas;
@@ -84,28 +83,6 @@ public class EventTypeUpdate {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Deprecated
-    public EventTypeUpdate featureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `featureFlags` instead.
-     *
-     * @return featureFlag
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public String getFeatureFlag() {
-        return featureFlag;
-    }
-
-    @Deprecated
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
     }
 
     public EventTypeUpdate featureFlags(Set<String> featureFlags) {

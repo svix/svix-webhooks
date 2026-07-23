@@ -26,7 +26,6 @@ public class IngestEndpointOut {
     @JsonProperty private Boolean disabled;
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private OffsetDateTime updatedAt;
@@ -136,28 +135,6 @@ public class IngestEndpointOut {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    @Deprecated
-    public IngestEndpointOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
     }
 
     public IngestEndpointOut throttleRate(Long throttleRate) {

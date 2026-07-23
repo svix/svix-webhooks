@@ -28,12 +28,9 @@ public class EndpointPatch {
     @JsonProperty private Boolean disabled;
     @JsonProperty private MaybeUnset<Set<String>> filterTypes;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private MaybeUnset<Long> rateLimit;
-    @JsonProperty private MaybeUnset<String> secret;
     @JsonProperty private MaybeUnset<Long> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
 
     public EndpointPatch() {}
 
@@ -165,59 +162,6 @@ public class EndpointPatch {
         this.metadata = metadata;
     }
 
-    @Deprecated
-    public EndpointPatch rateLimit(Long rateLimit) {
-        this.rateLimit = new MaybeUnset<>(rateLimit);
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        if (rateLimit == null) {
-            return null;
-        }
-        return rateLimit.getValue();
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = new MaybeUnset<>(rateLimit);
-    }
-
-    @Deprecated
-    public EndpointPatch secret(String secret) {
-        this.secret = new MaybeUnset<>(secret);
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public String getSecret() {
-        if (secret == null) {
-            return null;
-        }
-        return secret.getValue();
-    }
-
-    @Deprecated
-    public void setSecret(String secret) {
-        this.secret = new MaybeUnset<>(secret);
-    }
-
     public EndpointPatch throttleRate(Long throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
         return this;
@@ -281,28 +225,6 @@ public class EndpointPatch {
 
     public void setUrl(URI url) {
         this.url = url;
-    }
-
-    @Deprecated
-    public EndpointPatch version(Long version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Long version) {
-        this.version = version;
     }
 
     /**

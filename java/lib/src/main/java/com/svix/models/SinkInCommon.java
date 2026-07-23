@@ -26,7 +26,6 @@ public class SinkInCommon {
     @JsonProperty private Boolean disabled;
     @JsonProperty private Set<String> filterTypes;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private String secret;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
@@ -153,28 +152,6 @@ public class SinkInCommon {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    @Deprecated
-    public SinkInCommon rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
     }
 
     public SinkInCommon secret(String secret) {

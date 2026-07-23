@@ -20,9 +20,6 @@ class OperationalWebhookEndpointOut(BaseModel):
 
     metadata: t.Dict[str, str]
 
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
-
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
 

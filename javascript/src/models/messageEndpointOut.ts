@@ -13,12 +13,6 @@ export interface MessageEndpointOut {
   /** The Endpoint's ID. */
   id: string;
   nextAttempt?: Date | null;
-  /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
   status: MessageStatus;
   statusText: MessageStatusText;
   /**
@@ -31,7 +25,6 @@ export interface MessageEndpointOut {
   uid?: string | null;
   updatedAt: Date;
   url: string;
-  version: number;
 }
 
 export const MessageEndpointOutSerializer = {
@@ -44,14 +37,12 @@ export const MessageEndpointOutSerializer = {
       filterTypes: object["filterTypes"],
       id: object["id"],
       nextAttempt: object["nextAttempt"] ? new Date(object["nextAttempt"]) : null,
-      rateLimit: object["rateLimit"],
       status: MessageStatusSerializer._fromJsonObject(object["status"]),
       statusText: MessageStatusTextSerializer._fromJsonObject(object["statusText"]),
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       updatedAt: new Date(object["updatedAt"]),
       url: object["url"],
-      version: object["version"],
     };
   },
 
@@ -64,14 +55,12 @@ export const MessageEndpointOutSerializer = {
       filterTypes: self.filterTypes,
       id: self.id,
       nextAttempt: self.nextAttempt,
-      rateLimit: self.rateLimit,
       status: MessageStatusSerializer._toJsonObject(self.status),
       statusText: MessageStatusTextSerializer._toJsonObject(self.statusText),
       throttleRate: self.throttleRate,
       uid: self.uid,
       updatedAt: self.updatedAt,
       url: self.url,
-      version: self.version,
     };
   },
 };

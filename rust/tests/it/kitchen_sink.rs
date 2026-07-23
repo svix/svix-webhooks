@@ -42,8 +42,6 @@ async fn test_endpoint_crud() {
                 description: "Something started".to_owned(),
                 archived: None,
                 deprecated: None,
-                #[expect(deprecated)]
-                feature_flag: None,
                 feature_flags: None,
                 group_name: None,
                 schemas: None,
@@ -63,8 +61,6 @@ async fn test_endpoint_crud() {
                 description: "Something ended".to_owned(),
                 archived: None,
                 deprecated: None,
-                #[expect(deprecated)]
-                feature_flag: None,
                 feature_flags: None,
                 group_name: None,
                 schemas: None,

@@ -13,8 +13,6 @@ data class IngestEndpointOut(
     /** The Endpoint's ID. */
     val id: String,
     val metadata: Map<String, String>,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     /**
      * Maximum messages per second to send to this endpoint.
      *

@@ -12,8 +12,6 @@ data class EndpointIn(
     val filterTypes: Set<String>? = null,
     val headers: Map<String, String>? = null,
     val metadata: Map<String, String>? = null,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     /**
      * The endpoint's verification secret.
      *
@@ -30,5 +28,4 @@ data class EndpointIn(
     /** Optional unique identifier for the endpoint. */
     val uid: String? = null,
     val url: String,
-    val version: UShort? = null,
 )

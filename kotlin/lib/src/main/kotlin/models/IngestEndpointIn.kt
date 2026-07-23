@@ -8,8 +8,6 @@ data class IngestEndpointIn(
     val description: String? = null,
     val disabled: Boolean? = null,
     val metadata: Map<String, String>? = null,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     /**
      * The endpoint's verification secret.
      *

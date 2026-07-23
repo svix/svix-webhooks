@@ -8,9 +8,8 @@ import (
 )
 
 type ApplicationPatch struct {
-	Metadata  *map[string]string     `json:"metadata,omitempty"`
-	Name      *string                `json:"name,omitempty"`
-	RateLimit utils.Nullable[uint16] `json:"rateLimit"` // Deprecated, use `throttleRate` instead.
+	Metadata *map[string]string `json:"metadata,omitempty"`
+	Name     *string            `json:"name,omitempty"`
 	// Maximum messages per second to send to this application.
 	//
 	// Outgoing messages will be throttled to this rate.
@@ -25,9 +24,6 @@ func (o ApplicationPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.Name != nil {
 		toSerialize["name"] = o.Name
-	}
-	if o.RateLimit.IsSet() {
-		toSerialize["rateLimit"] = o.RateLimit
 	}
 	if o.ThrottleRate.IsSet() {
 		toSerialize["throttleRate"] = o.ThrottleRate

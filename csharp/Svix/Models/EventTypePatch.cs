@@ -21,11 +21,6 @@ namespace Svix.Models
 
         public bool ShouldSerializeDescription() => Description != null;
 
-        [JsonProperty("featureFlag")]
-        public MaybeUnset<string?> FeatureFlag { get; set; } = MaybeUnset<string?>.Unset();
-
-        public bool ShouldSerializeFeatureFlag() => !FeatureFlag.IsUnset;
-
         [JsonProperty("featureFlags")]
         public MaybeUnset<List<string>?> FeatureFlags { get; set; } =
             MaybeUnset<List<string>?>.Unset();
@@ -50,7 +45,6 @@ namespace Svix.Models
             sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
-            sb.Append("  FeatureFlag: ").Append(FeatureFlag).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
             sb.Append("  GroupName: ").Append(GroupName).Append('\n');
             sb.Append("  Schemas: ").Append(Schemas).Append('\n');

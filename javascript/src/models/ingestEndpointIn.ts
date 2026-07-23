@@ -5,12 +5,6 @@ export interface IngestEndpointIn {
   disabled?: boolean;
   metadata?: { [key: string]: string };
   /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
-  /**
    * The endpoint's verification secret.
    *
    * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
@@ -34,7 +28,6 @@ export const IngestEndpointInSerializer = {
       description: object["description"],
       disabled: object["disabled"],
       metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
       secret: object["secret"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
@@ -47,7 +40,6 @@ export const IngestEndpointInSerializer = {
       description: self.description,
       disabled: self.disabled,
       metadata: self.metadata,
-      rateLimit: self.rateLimit,
       secret: self.secret,
       throttleRate: self.throttleRate,
       uid: self.uid,

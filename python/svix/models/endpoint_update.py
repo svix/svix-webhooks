@@ -16,9 +16,6 @@ class EndpointUpdate(BaseModel):
 
     metadata: t.Optional[t.Dict[str, str]] = None
 
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
-
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
 
@@ -28,5 +25,3 @@ class EndpointUpdate(BaseModel):
     """Optional unique identifier for the endpoint."""
 
     url: str
-
-    version: t.Optional[int] = None

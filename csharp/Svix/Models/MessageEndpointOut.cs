@@ -27,9 +27,6 @@ namespace Svix.Models
         [JsonProperty("nextAttempt")]
         public DateTime? NextAttempt { get; set; } = null;
 
-        [JsonProperty("rateLimit")]
-        public ushort? RateLimit { get; set; } = null;
-
         [JsonProperty("status", Required = Required.Always)]
         public required MessageStatus Status { get; set; }
 
@@ -48,9 +45,6 @@ namespace Svix.Models
         [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
 
-        [JsonProperty("version", Required = Required.Always)]
-        public required int Version { get; set; }
-
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -63,14 +57,12 @@ namespace Svix.Models
             sb.Append("  FilterTypes: ").Append(FilterTypes).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  NextAttempt: ").Append(NextAttempt).Append('\n');
-            sb.Append("  RateLimit: ").Append(RateLimit).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  StatusText: ").Append(StatusText).Append('\n');
             sb.Append("  ThrottleRate: ").Append(ThrottleRate).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
-            sb.Append("  Version: ").Append(Version).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

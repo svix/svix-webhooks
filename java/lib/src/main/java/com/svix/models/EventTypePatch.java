@@ -23,7 +23,6 @@ public class EventTypePatch {
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
     @JsonProperty private String description;
-    @JsonProperty private MaybeUnset<String> featureFlag;
     @JsonProperty private MaybeUnset<Set<String>> featureFlags;
     @JsonProperty private MaybeUnset<String> groupName;
     @JsonProperty private MaybeUnset<Object> schemas;
@@ -85,31 +84,6 @@ public class EventTypePatch {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    @Deprecated
-    public EventTypePatch featureFlag(String featureFlag) {
-        this.featureFlag = new MaybeUnset<>(featureFlag);
-        return this;
-    }
-
-    /**
-     * Deprecated, use `featureFlags` instead.
-     *
-     * @return featureFlag
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public String getFeatureFlag() {
-        if (featureFlag == null) {
-            return null;
-        }
-        return featureFlag.getValue();
-    }
-
-    @Deprecated
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = new MaybeUnset<>(featureFlag);
     }
 
     public EventTypePatch featureFlags(Set<String> featureFlags) {

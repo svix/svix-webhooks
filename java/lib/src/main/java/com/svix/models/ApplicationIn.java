@@ -21,7 +21,6 @@ import java.util.Map;
 public class ApplicationIn {
     @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
 
@@ -72,28 +71,6 @@ public class ApplicationIn {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Deprecated
-    public ApplicationIn rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
     }
 
     public ApplicationIn throttleRate(Long throttleRate) {
