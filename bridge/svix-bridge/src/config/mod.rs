@@ -4,7 +4,7 @@ use std::{
 };
 
 use anyhow::anyhow;
-use serde::Deserialize;
+use serde::{Deserialize, Deserializer};
 use shellexpand::LookupError;
 #[cfg(feature = "kafka")]
 use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaOutputOpts};
@@ -17,11 +17,41 @@ use tracing::Level;
 
 use crate::http_output::HttpOutputOpts;
 
-#[derive(Deserialize)]
-#[serde(untagged)]
 pub enum EitherReceiver {
     Webhook(WebhookReceiverConfig),
     Poller(PollerReceiverConfig),
+}
+
+impl<'de> Deserialize<'de> for EitherReceiver {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = serde_yaml::Value::deserialize(deserializer)?;
+        let input_type = value
+            .as_mapping()
+            .and_then(|m| m.get("input"))
+            .and_then(|v| v.as_mapping())
+            .and_then(|m| m.get("type"))
+            .and_then(serde_yaml::Value::as_str)
+            .ok_or_else(|| {
+                serde::de::Error::custom(
+                    "missing field 'type' in receiver 'input', expected one of: webhook, svix-webhook, svix-message-poller",
+                )
+            })?
+            .to_owned();
+        match input_type.as_str() {
+            "webhook" | "svix-webhook" => serde_yaml::from_value(value)
+                .map(EitherReceiver::Webhook)
+                .map_err(serde::de::Error::custom),
+            "svix-message-poller" => serde_yaml::from_value(value)
+                .map(EitherReceiver::Poller)
+                .map_err(serde::de::Error::custom),
+            other => Err(serde::de::Error::custom(format!(
+                "unknown receiver input type '{other}', expected one of: webhook, svix-webhook, svix-message-poller"
+            ))),
+        }
+    }
 }
 
 #[derive(Deserialize)]
@@ -157,12 +187,54 @@ pub struct WebhookSenderConfig {
     pub output: SenderOutputOpts,
 }
 
-#[derive(Deserialize)]
-#[serde(untagged)]
 pub enum SenderInputOpts {
     #[cfg(feature = "kafka")]
     Kafka(KafkaInputOpts),
     Queue(QueueInputOpts),
+}
+
+impl<'de> Deserialize<'de> for SenderInputOpts {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = serde_yaml::Value::deserialize(deserializer)?;
+        let type_val = value
+            .as_mapping()
+            .and_then(|m| m.get("type"))
+            .and_then(serde_yaml::Value::as_str)
+            .ok_or_else(|| {
+                let valid = if cfg!(feature = "kafka") {
+                    "kafka, rabbitmq, redis, sqs, gcp-pubsub"
+                } else {
+                    "rabbitmq, redis, sqs, gcp-pubsub"
+                };
+                serde::de::Error::custom(format!(
+                    "missing field 'type' in sender input, expected one of: {valid}"
+                ))
+            })?
+            .to_owned();
+
+        match type_val.as_str() {
+            #[cfg(feature = "kafka")]
+            "kafka" => serde_yaml::from_value(value)
+                .map(SenderInputOpts::Kafka)
+                .map_err(serde::de::Error::custom),
+            "rabbitmq" | "redis" | "sqs" | "gcp-pubsub" => serde_yaml::from_value(value)
+                .map(SenderInputOpts::Queue)
+                .map_err(serde::de::Error::custom),
+            other => {
+                let valid = if cfg!(feature = "kafka") {
+                    "kafka, rabbitmq, redis, sqs, gcp-pubsub"
+                } else {
+                    "rabbitmq, redis, sqs, gcp-pubsub"
+                };
+                Err(serde::de::Error::custom(format!(
+                    "unknown sender input type '{other}', expected one of {valid}"
+                )))
+            }
+        }
+    }
 }
 
 impl WebhookSenderConfig {
@@ -214,14 +286,59 @@ pub struct WebhookReceiverConfig {
     pub output: ReceiverOutputOpts,
 }
 
-#[derive(Deserialize)]
 #[allow(clippy::large_enum_variant)] // we're talking a couple hundred bytes only
-#[serde(untagged)]
 pub enum ReceiverOutputOpts {
     Http(HttpOutputOpts),
     #[cfg(feature = "kafka")]
     Kafka(KafkaOutputOpts),
     Queue(QueueOutputOpts),
+}
+
+impl<'de> Deserialize<'de> for ReceiverOutputOpts {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let value = serde_yaml::Value::deserialize(deserializer)?;
+        let value_type = value
+            .as_mapping()
+            .and_then(|m| m.get("type"))
+            .and_then(serde_yaml::Value::as_str)
+            .ok_or_else(|| {
+                let valid = if cfg!(feature = "kafka") {
+                    "http, kafka, rabbitmq, redis, sqs, gcp-pubsub"
+                } else {
+                    "http, rabbitmq, redis, sqs, gcp-pubsub"
+                };
+                serde::de::Error::custom(format!(
+                    "missing field `type` in receiver output; expected one of: {valid}"
+                ))
+            })?
+            .to_owned();
+
+        match value_type.as_str() {
+            "http" => serde_yaml::from_value(value)
+                .map(ReceiverOutputOpts::Http)
+                .map_err(serde::de::Error::custom),
+            #[cfg(feature = "kafka")]
+            "kafka" => serde_yaml::from_value(value)
+                .map(ReceiverOutputOpts::Kafka)
+                .map_err(serde::de::Error::custom),
+            "rabbitmq" | "redis" | "sqs" | "gcp-pubsub" => serde_yaml::from_value(value)
+                .map(ReceiverOutputOpts::Queue)
+                .map_err(serde::de::Error::custom),
+            other => {
+                let valid = if cfg!(feature = "kafka") {
+                    "http, kafka, rabbitmq, redis, sqs, gcp-pubsub"
+                } else {
+                    "http, rabbitmq, redis, sqs, gcp-pubsub"
+                };
+                Err(serde::de::Error::custom(format!(
+                    "unknown receiver output type `{other}`, expected one of: {valid}"
+                )))
+            }
+        }
+    }
 }
 
 impl WebhookReceiverConfig {
