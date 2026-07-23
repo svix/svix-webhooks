@@ -1,6 +1,5 @@
 package com.svix.kotlin
 
-import com.svix.kotlin.models.BackgroundTaskFinishedEvent
 import com.svix.kotlin.models.CronConfig
 import com.svix.kotlin.models.IngestSourceIn
 import com.svix.kotlin.models.IngestSourceInConfig
@@ -57,14 +56,5 @@ class SerializationTests {
         assertIs<IngestSourceInConfig.Cron>(sourceIn.config)
         // the assertIs smart casted for us
         assertEquals("* * * * *", sourceIn.config.cron.schedule)
-    }
-
-    @Test
-    fun opWebhookModels() {
-        val jsonString =
-            """{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":"null","messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}"""
-        val loadedFromJson =
-            Json.decodeFromString(BackgroundTaskFinishedEvent.serializer(), jsonString)
-        assertEquals(Json.encodeToString(loadedFromJson), jsonString)
     }
 }

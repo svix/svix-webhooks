@@ -21,8 +21,6 @@ pub mod authentication_source;
 pub mod auto_config_sink_type;
 pub mod azure_blob_storage_config;
 pub mod azure_blob_storage_patch_config;
-pub mod background_task_finished_event;
-pub mod background_task_finished_event2;
 pub mod background_task_out;
 pub mod background_task_status;
 pub mod background_task_type;
@@ -48,15 +46,6 @@ pub mod docusign_config_out;
 pub mod easypost_config;
 pub mod easypost_config_out;
 pub mod empty_response;
-pub mod endpoint_created_event;
-pub mod endpoint_created_event_data;
-pub mod endpoint_deleted_event;
-pub mod endpoint_deleted_event_data;
-pub mod endpoint_disabled_event;
-pub mod endpoint_disabled_event_data;
-pub mod endpoint_disabled_trigger;
-pub mod endpoint_enabled_event;
-pub mod endpoint_enabled_event_data;
 pub mod endpoint_headers_in;
 pub mod endpoint_headers_out;
 pub mod endpoint_headers_patch_in;
@@ -71,8 +60,6 @@ pub mod endpoint_transformation_in;
 pub mod endpoint_transformation_out;
 pub mod endpoint_transformation_patch;
 pub mod endpoint_update;
-pub mod endpoint_updated_event;
-pub mod endpoint_updated_event_data;
 pub mod environment_in;
 pub mod environment_out;
 pub mod event_bridge_config;
@@ -96,13 +83,10 @@ pub mod google_cloud_pub_sub_config;
 pub mod google_cloud_pub_sub_patch_config;
 pub mod google_cloud_storage_config;
 pub mod google_cloud_storage_patch_config;
-pub mod http_attempt_times;
 pub mod http_patch_config;
 pub mod http_sink_headers_patch_in;
 pub mod hubspot_config;
 pub mod hubspot_config_out;
-pub mod ingest_endpoint_disabled_event;
-pub mod ingest_endpoint_disabled_event_data;
 pub mod ingest_endpoint_headers_in;
 pub mod ingest_endpoint_headers_out;
 pub mod ingest_endpoint_in;
@@ -112,12 +96,6 @@ pub mod ingest_endpoint_secret_out;
 pub mod ingest_endpoint_transformation_out;
 pub mod ingest_endpoint_transformation_patch;
 pub mod ingest_endpoint_update;
-pub mod ingest_message_attempt_exhausted_event;
-pub mod ingest_message_attempt_exhausted_event_data;
-pub mod ingest_message_attempt_failing_event;
-pub mod ingest_message_attempt_failing_event_data;
-pub mod ingest_message_attempt_recovered_event;
-pub mod ingest_message_attempt_recovered_event_data;
 pub mod ingest_source_consumer_portal_access_in;
 pub mod ingest_source_in;
 pub mod ingest_source_out;
@@ -141,16 +119,7 @@ pub mod list_response_operational_webhook_endpoint_out;
 pub mod list_response_stream_event_type_out;
 pub mod list_response_stream_out;
 pub mod list_response_stream_sink_out;
-pub mod message_attempt_exhausted_event;
-pub mod message_attempt_exhausted_event_data;
-pub mod message_attempt_failed_data;
-pub mod message_attempt_failing_event;
-pub mod message_attempt_failing_event_data;
-pub mod message_attempt_log;
-pub mod message_attempt_log_event;
 pub mod message_attempt_out;
-pub mod message_attempt_recovered_event;
-pub mod message_attempt_recovered_event_data;
 pub mod message_attempt_trigger_type;
 pub mod message_endpoint_out;
 pub mod message_in;
@@ -280,8 +249,6 @@ pub use self::{
     auto_config_sink_type::AutoConfigSinkType,
     azure_blob_storage_config::AzureBlobStorageConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
-    background_task_finished_event::BackgroundTaskFinishedEvent,
-    background_task_finished_event2::BackgroundTaskFinishedEvent2,
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
@@ -307,15 +274,6 @@ pub use self::{
     easypost_config::EasypostConfig,
     easypost_config_out::EasypostConfigOut,
     empty_response::EmptyResponse,
-    endpoint_created_event::EndpointCreatedEvent,
-    endpoint_created_event_data::EndpointCreatedEventData,
-    endpoint_deleted_event::EndpointDeletedEvent,
-    endpoint_deleted_event_data::EndpointDeletedEventData,
-    endpoint_disabled_event::EndpointDisabledEvent,
-    endpoint_disabled_event_data::EndpointDisabledEventData,
-    endpoint_disabled_trigger::EndpointDisabledTrigger,
-    endpoint_enabled_event::EndpointEnabledEvent,
-    endpoint_enabled_event_data::EndpointEnabledEventData,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
     endpoint_headers_patch_in::EndpointHeadersPatchIn,
@@ -330,8 +288,6 @@ pub use self::{
     endpoint_transformation_out::EndpointTransformationOut,
     endpoint_transformation_patch::EndpointTransformationPatch,
     endpoint_update::EndpointUpdate,
-    endpoint_updated_event::EndpointUpdatedEvent,
-    endpoint_updated_event_data::EndpointUpdatedEventData,
     environment_in::EnvironmentIn,
     environment_out::EnvironmentOut,
     event_bridge_config::EventBridgeConfig,
@@ -355,13 +311,10 @@ pub use self::{
     google_cloud_pub_sub_patch_config::GoogleCloudPubSubPatchConfig,
     google_cloud_storage_config::GoogleCloudStorageConfig,
     google_cloud_storage_patch_config::GoogleCloudStoragePatchConfig,
-    http_attempt_times::HttpAttemptTimes,
     http_patch_config::HttpPatchConfig,
     http_sink_headers_patch_in::HttpSinkHeadersPatchIn,
     hubspot_config::HubspotConfig,
     hubspot_config_out::HubspotConfigOut,
-    ingest_endpoint_disabled_event::IngestEndpointDisabledEvent,
-    ingest_endpoint_disabled_event_data::IngestEndpointDisabledEventData,
     ingest_endpoint_headers_in::IngestEndpointHeadersIn,
     ingest_endpoint_headers_out::IngestEndpointHeadersOut,
     ingest_endpoint_in::IngestEndpointIn,
@@ -371,12 +324,6 @@ pub use self::{
     ingest_endpoint_transformation_out::IngestEndpointTransformationOut,
     ingest_endpoint_transformation_patch::IngestEndpointTransformationPatch,
     ingest_endpoint_update::IngestEndpointUpdate,
-    ingest_message_attempt_exhausted_event::IngestMessageAttemptExhaustedEvent,
-    ingest_message_attempt_exhausted_event_data::IngestMessageAttemptExhaustedEventData,
-    ingest_message_attempt_failing_event::IngestMessageAttemptFailingEvent,
-    ingest_message_attempt_failing_event_data::IngestMessageAttemptFailingEventData,
-    ingest_message_attempt_recovered_event::IngestMessageAttemptRecoveredEvent,
-    ingest_message_attempt_recovered_event_data::IngestMessageAttemptRecoveredEventData,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
     ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
     ingest_source_out::{IngestSourceOut, IngestSourceOutConfig},
@@ -400,16 +347,7 @@ pub use self::{
     list_response_stream_event_type_out::ListResponseStreamEventTypeOut,
     list_response_stream_out::ListResponseStreamOut,
     list_response_stream_sink_out::ListResponseStreamSinkOut,
-    message_attempt_exhausted_event::MessageAttemptExhaustedEvent,
-    message_attempt_exhausted_event_data::MessageAttemptExhaustedEventData,
-    message_attempt_failed_data::MessageAttemptFailedData,
-    message_attempt_failing_event::MessageAttemptFailingEvent,
-    message_attempt_failing_event_data::MessageAttemptFailingEventData,
-    message_attempt_log::MessageAttemptLog,
-    message_attempt_log_event::MessageAttemptLogEvent,
     message_attempt_out::MessageAttemptOut,
-    message_attempt_recovered_event::MessageAttemptRecoveredEvent,
-    message_attempt_recovered_event_data::MessageAttemptRecoveredEventData,
     message_attempt_trigger_type::MessageAttemptTriggerType,
     message_endpoint_out::MessageEndpointOut,
     message_in::MessageIn,

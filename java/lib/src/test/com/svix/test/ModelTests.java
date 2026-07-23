@@ -65,16 +65,4 @@ public class ModelTests {
     assertEquals(
         "asd", ((IngestSourceInConfig.Cron) sourceIn.getConfig()).getCron().getContentType());
   }
-
-  @Test
-  public void opWebhookModels() throws JsonProcessingException {
-    String jsonString =
-        "{\"data\":{\"data\":{\"appStats\":[{\"appId\":\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\"appUid\":nu"
-            + "ll,\"messageDestinations\":343}]},\"status\":\"finished\",\"task\":\"application.stat"
-            + "s\",\"taskId\":\"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\"},\"type\":\"background_task.finished\"}";
-    BackgroundTaskFinishedEvent backgroundTask = BackgroundTaskFinishedEvent.fromJson(jsonString);
-
-    assertEquals(jsonString, backgroundTask.toJson());
-    assertEquals(BackgroundTaskFinishedEvent.fromJson(jsonString), backgroundTask);
-  }
 }

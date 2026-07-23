@@ -320,17 +320,6 @@ namespace Svix.Tests
         }
 
         [Fact]
-        public void OpWebhookModels()
-        {
-            var jsonString =
-                """{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":null,"messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}""";
-            var loadedFromJson = JsonConvert.DeserializeObject<BackgroundTaskFinishedEvent>(
-                jsonString
-            );
-            Assert.Equal(jsonString, JsonConvert.SerializeObject(loadedFromJson));
-        }
-
-        [Fact]
         public void IdempotencyKeyIsSentForCreateRequest()
         {
             stub.Given(Request.Create().WithPath("/api/v1/app"))
