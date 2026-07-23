@@ -1,19 +1,19 @@
 # Changelog
 
-## Note: Server changelog
+## Note: Server and Bridge changelogs
 
-The server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.md).
+The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.md).
+The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
 
 ## Version 1.99.0
-* Bridge: Include the Kafka partition in consumer idempotency keys
 * CLI: Use [wolfi](https://github.com/wolfi-dev) as the image base instead of Debian, shrinking the Docker image by 77% and removing all open CVEs
 * Libs/C#: Fix a bug that made the 'canceled' message-attempt status opt-in unreliable (see also changelog for 1.95.0)
 
 ## Version 1.98.0
-* CLI, Bridge: Set OCI metadata on Docker images
-* CLI, Bridge: Embed package metadata in compiled binaries on Linux
+* CLI: Set OCI metadata on Docker images
+* CLI: Embed package metadata in compiled binaries on Linux
 
 ## Version 1.97.0
 * CLI: Ignore `EPIPE` when printing output
@@ -75,8 +75,6 @@ The server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.md).
 * Libs/All: Update to latest Svix Cloud spec
 
 ## Version 1.89.0
-* Bridge: Add support for PLAIN sasl auth for confluent cloud
-* Bridge: Build Docker image with Rust 1.94
 * Libs/Python: Set `__str__` on errors
 
 ## Version 1.88.0
@@ -144,29 +142,22 @@ The server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.md).
 * Libs/All: Allow deleting endpoint headers through new `deleteHeaders` field in `EndpointHeadersPatchIn`
 
 ## Version 1.75.0
-* Bridge, CLI: Modify Dockerfiles to use cache mounts for improved build time; these now require Docker 1.2 or later to build
+* CLI: Modify Dockerfiles to use cache mounts for improved build time; these now require Docker 1.2 or later to build
 * Libs/JS: Add support for custom retry schedule (thanks @KranzAklilu)
 
 ## Version 1.74.1
-* Bridge, CLI: Fix installation of ca-certificates in Docker images
+* CLI: Fix installation of ca-certificates in Docker images
   * These images were broken as of v1.72.0
 
 ## Version 1.74.0
 * Libs/Rust: Add support for custom retry schedule (thanks @KranzAklilu)
 * Libs/Rust: Add support for connecting to the API through a proxy
-* Bridge: Add support for connecting to the Svix API through a proxy
 
 ## Version 1.73.0
 * Libs/(Java and Kotlin): Fix bug causing runtime exceptions when unknown fields were sent from the server
 
 ## Version 1.72.0
 * Libs/JavaScript: Use native `fetch` API
-* Bridge: Add a default `user-agent` to requests made by the new `http` output
-* Bridge: Upgrade Docker base image to Debian Trixie
-
-## Version 1.71.0
-* Bridge: Add `http` output to `receivers`
-  * See [`bridge/svix-bridge.example.receivers.yaml`](./bridge/svix-bridge.example.receivers.yaml) for a usage example
 
 ## Version 1.70.1
 * Libs/All: Re-add `endpoint.transformationPartialUpdate` as a deprecated operation
@@ -206,7 +197,6 @@ The server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.md).
 * Libs/(Ruby and Kotlin): Add doc comments to class attributes
 * Libs/Go: Added a new `<Enum>From<UnderlyingType>` map to all enums. For example `BackgroundTaskStatusFromString["running"]` will result in `BACKGROUNDTASKSTATUS_RUNNING`
 * Libs/Go: Fixed bug where the correct `content-type` was not set on `PUT` requests
-* Bridge: Add `/health` endpoint by @CodeMan62 in https://github.com/svix/svix-webhooks/pull/1903
 
 ## Version 1.64.1
 * Libs/JavaScript: Add `HTTPValidationError`, `HttpErrorOut`, `ValidationError` and `ApiException` to the top level exports.
@@ -405,7 +395,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 
 ## Version 1.40.0
 * Libs(JS): downgrade `@stablelib/base64` avoiding `ERR_REQUIRE_ESM` by @svix-onelson in https://github.com/svix/svix-webhooks/pull/1506
-* Bridge: update ca-certificates by @jaymell in https://github.com/svix/svix-webhooks/pull/1507
 
 ## Version 1.39.0
 * Libs: Add operational webhook endpoint API
@@ -429,13 +418,11 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Go Remove modules no longer produced by the generator
 
 ## Version 1.31.0
-* Bridge: remove Beta tag
 * Libs/Go: prune out unused import for "time" in codegen output
 * Libs/C#: Fix appId, endpointId order in RotateSecretWithHttpInfoAsync
 * Libs: Support passing `application` to `app-portal-access` endpoint
 
 ## Version 1.29.0
-* Bridge: Rebuild RabbitMQ producer on error
 * Libs/C#: add GetAppPortalAccess* methods to IAuthentication interface
 * Libs/Go: expose `with_content` for `Message.List`
 * Libs/Go: expose `with_msg` param on `MessageAttempt.ListByEndpoint`
@@ -451,13 +438,7 @@ This version contains a big overhaul of the client libraries, with improved typi
 ## Version 1.27.0
 * Libs/Python: add missing 'get_stats' function
 
-## Version 1.26.0
-* Bridge: add `/events` poller
-* Bridge: log svix client errors as error, not trace
-
 ## Version 1.25.0
-* Bridge: Upgrade omniqueue and other dependencies
-* Bridge: Add Kafka as an input
 * Libs/Javascript: Apply workaround for incomplete fetch support in Cloudflare Worker
 * Libs/Go: Add NullableBool function
 * Libs/Python: Update dependencies and switch to ruff
@@ -475,7 +456,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 * Libs/Ruby: Add PATCH endpoints
 
 ## Version 1.21.0
-* Bridge: Upgrade dependencies
 * Libs/Rust: Print more detailed error messages for generic errors
 
 ## Version 1.20.0
@@ -522,16 +502,12 @@ This version contains a big overhaul of the client libraries, with improved typi
 
 ## Version 1.9.0
 * Libs/Go: export missing types
-* Bridge: switch to the Omniqueue library
-* Bridge: use jemalloc as the global allocator.
-* Bridge: update Docker base image and rust version.
 
 ## Version 1.8.1
 * Libs: update OpenAPI spec
 
 ## Version 1.8.0
 * Libs/Go: fix behavior of `NullableInt32` and `NullableString`
-* Bridge: better js transformations
 
 ## Version 1.7.0
 * Libs/Rust: fix handling of integer enums (was causing failures for some endpoints).
@@ -552,7 +528,6 @@ This version contains a big overhaul of the client libraries, with improved typi
 
 ## Version 1.4.12
 * Sync OSS package version with our internal version.
-* Bridge: initial release
 * Libs: update OpenAPI spec
 * Libs: add support for "Background Task" endpoints
 * Libs: add support for since/until to endpoint stats
