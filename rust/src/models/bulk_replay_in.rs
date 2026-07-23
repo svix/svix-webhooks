@@ -12,7 +12,7 @@ pub struct BulkReplayIn {
 
     #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub channel: Option<String>,

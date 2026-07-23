@@ -27,7 +27,7 @@ pub struct OperationalWebhookEndpointOut {
 
     #[serde(rename = "filterTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub filter_types: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "createdAt")]
     pub created_at: String,
@@ -35,7 +35,7 @@ pub struct OperationalWebhookEndpointOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
 
-    pub metadata: std::collections::HashMap<String, String>,
+    pub metadata: std::collections::BTreeMap<String, String>,
 }
 
 impl OperationalWebhookEndpointOut {
@@ -45,7 +45,7 @@ impl OperationalWebhookEndpointOut {
         url: String,
         created_at: String,
         updated_at: String,
-        metadata: std::collections::HashMap<String, String>,
+        metadata: std::collections::BTreeMap<String, String>,
     ) -> Self {
         Self {
             id,

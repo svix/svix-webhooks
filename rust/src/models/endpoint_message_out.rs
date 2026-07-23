@@ -29,7 +29,7 @@ pub struct EndpointMessageOut {
 
     /// List of free-form identifiers that endpoints can filter by
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     /// The Message's ID.
     pub id: String,
@@ -37,7 +37,7 @@ pub struct EndpointMessageOut {
     pub timestamp: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
+    pub tags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]

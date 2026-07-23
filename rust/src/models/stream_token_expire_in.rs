@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct StreamTokenExpireIn {
     /// How many seconds until the old key is expired.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry: Option<i32>,
+    pub expiry: Option<i64>,
 
     /// An optional list of session ids.
     ///

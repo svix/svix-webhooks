@@ -30,7 +30,7 @@ pub struct EventTypeOut {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "featureFlag")]
     #[serde(skip_serializing_if = "Option::is_none")]

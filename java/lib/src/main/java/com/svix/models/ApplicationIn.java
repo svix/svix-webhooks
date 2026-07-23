@@ -20,7 +20,7 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApplicationIn {
     @JsonProperty private String name;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private Map<String, String> metadata;
 
@@ -45,7 +45,7 @@ public class ApplicationIn {
         this.name = name;
     }
 
-    public ApplicationIn throttleRate(Long throttleRate) {
+    public ApplicationIn throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -58,11 +58,11 @@ public class ApplicationIn {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

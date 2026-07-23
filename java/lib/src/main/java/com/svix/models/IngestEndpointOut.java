@@ -23,7 +23,7 @@ import java.util.Map;
 public class IngestEndpointOut {
     @JsonProperty private String id;
     @JsonProperty private String description;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -71,7 +71,7 @@ public class IngestEndpointOut {
         this.description = description;
     }
 
-    public IngestEndpointOut throttleRate(Long throttleRate) {
+    public IngestEndpointOut throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -84,11 +84,11 @@ public class IngestEndpointOut {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

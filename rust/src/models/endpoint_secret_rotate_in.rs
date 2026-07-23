@@ -17,7 +17,7 @@ pub struct EndpointSecretRotateIn {
     /// 24 hours.
     #[serde(rename = "gracePeriodSeconds")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub grace_period_seconds: Option<i32>,
+    pub grace_period_seconds: Option<u32>,
 }
 
 impl EndpointSecretRotateIn {

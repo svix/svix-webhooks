@@ -17,7 +17,7 @@ pub struct MessageAttemptOut {
 
     /// Response duration in milliseconds.
     #[serde(rename = "responseDurationMs")]
-    pub response_duration_ms: i32,
+    pub response_duration_ms: i64,
 
     pub status: MessageStatus,
 
@@ -49,7 +49,7 @@ impl MessageAttemptOut {
         url: String,
         response: String,
         response_status_code: i16,
-        response_duration_ms: i32,
+        response_duration_ms: i64,
         status: MessageStatus,
         status_text: MessageStatusText,
         trigger_type: MessageAttemptTriggerType,

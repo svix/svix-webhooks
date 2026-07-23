@@ -9,7 +9,7 @@ use super::endpoint_transformation::EndpointTransformationArgs;
 pub struct EndpointListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
@@ -89,10 +89,10 @@ impl From<EndpointBulkReplayOptions> for svix::api::EndpointBulkReplayOptions {
 pub struct EndpointGetStatsOptions {
     /// Filter the range to data starting from this date.
     #[arg(long)]
-    pub since: Option<chrono::DateTime<chrono::Utc>>,
+    pub since: Option<jiff::Timestamp>,
     /// Filter the range to data ending by this date.
     #[arg(long)]
-    pub until: Option<chrono::DateTime<chrono::Utc>>,
+    pub until: Option<jiff::Timestamp>,
 }
 
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {

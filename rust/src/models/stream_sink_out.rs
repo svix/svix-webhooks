@@ -49,7 +49,7 @@ pub struct StreamSinkOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub next_retry_at: Option<String>,
 
-    pub metadata: std::collections::HashMap<String, String>,
+    pub metadata: std::collections::BTreeMap<String, String>,
 
     #[serde(flatten)]
     pub config: StreamSinkOutConfig,

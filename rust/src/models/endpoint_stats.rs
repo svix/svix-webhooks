@@ -3,19 +3,19 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointStats {
-    pub success: i32,
+    pub success: i64,
 
-    pub pending: i32,
+    pub pending: i64,
 
-    pub sending: i32,
+    pub sending: i64,
 
-    pub fail: i32,
+    pub fail: i64,
 
-    pub canceled: i32,
+    pub canceled: i64,
 }
 
 impl EndpointStats {
-    pub fn new(success: i32, pending: i32, sending: i32, fail: i32, canceled: i32) -> Self {
+    pub fn new(success: i64, pending: i64, sending: i64, fail: i64, canceled: i64) -> Self {
         Self {
             success,
             pending,

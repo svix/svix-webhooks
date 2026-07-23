@@ -22,7 +22,7 @@ pub struct IngestSourceIn {
     pub uid: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
+    pub metadata: Option<std::collections::BTreeMap<String, String>>,
 
     #[serde(flatten)]
     pub config: IngestSourceInConfig,

@@ -13,7 +13,7 @@ pub struct AppUsageStatsIn {
     /// will be given.
     #[serde(rename = "appIds")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub app_ids: Option<Vec<String>>,
+    pub app_ids: Option<std::collections::BTreeSet<String>>,
 }
 
 impl AppUsageStatsIn {

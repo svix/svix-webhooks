@@ -8,7 +8,7 @@ use svix::models::*;
 pub struct MessagePollerPollOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
@@ -19,7 +19,7 @@ pub struct MessagePollerPollOptions {
     #[arg(long)]
     pub channel: Option<String>,
     #[arg(long)]
-    pub after: Option<chrono::DateTime<chrono::Utc>>,
+    pub after: Option<jiff::Timestamp>,
 }
 
 impl From<MessagePollerPollOptions> for svix::api::MessagePollerPollOptions {
@@ -58,7 +58,7 @@ impl From<MessagePollerConsumerSeekOptions> for svix::api::MessagePollerConsumer
 pub struct MessagePollerConsumerPollOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

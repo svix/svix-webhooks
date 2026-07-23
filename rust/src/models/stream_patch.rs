@@ -13,7 +13,7 @@ pub struct StreamPatch {
     pub uid: JsOption<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
+    pub metadata: Option<std::collections::BTreeMap<String, String>>,
 }
 
 impl StreamPatch {

@@ -6,7 +6,7 @@ use super::{connector_out::ConnectorOut, event_type_out::EventTypeOut};
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EnvironmentOut {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub version: Option<i32>,
+    pub version: Option<i64>,
 
     #[serde(rename = "createdAt")]
     pub created_at: String,

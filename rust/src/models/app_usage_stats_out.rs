@@ -11,7 +11,7 @@ pub struct AppUsageStatsOut {
     ///
     /// Stats will be produced for all the others.
     #[serde(rename = "unresolvedAppIds")]
-    pub unresolved_app_ids: Vec<String>,
+    pub unresolved_app_ids: std::collections::BTreeSet<String>,
 
     /// The QueueBackgroundTask's ID.
     pub id: String,
@@ -26,7 +26,7 @@ pub struct AppUsageStatsOut {
 
 impl AppUsageStatsOut {
     pub fn new(
-        unresolved_app_ids: Vec<String>,
+        unresolved_app_ids: std::collections::BTreeSet<String>,
         id: String,
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,

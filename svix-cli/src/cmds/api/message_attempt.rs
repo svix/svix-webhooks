@@ -8,7 +8,7 @@ use svix::models::*;
 pub struct MessageAttemptListByEndpointOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
@@ -26,10 +26,10 @@ pub struct MessageAttemptListByEndpointOptions {
     pub tag: Option<String>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<chrono::DateTime<chrono::Utc>>,
+    pub before: Option<jiff::Timestamp>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<chrono::DateTime<chrono::Utc>>,
+    pub after: Option<jiff::Timestamp>,
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -45,7 +45,7 @@ pub struct MessageAttemptListByEndpointOptions {
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptListByEndpointOptions {
@@ -85,7 +85,7 @@ impl From<MessageAttemptListByEndpointOptions> for svix::api::MessageAttemptList
 pub struct MessageAttemptListByMsgOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
@@ -106,10 +106,10 @@ pub struct MessageAttemptListByMsgOptions {
     pub endpoint_id: Option<String>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<chrono::DateTime<chrono::Utc>>,
+    pub before: Option<jiff::Timestamp>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<chrono::DateTime<chrono::Utc>>,
+    pub after: Option<jiff::Timestamp>,
     /// When `true` attempt content is included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -120,7 +120,7 @@ pub struct MessageAttemptListByMsgOptions {
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsgOptions {
@@ -160,7 +160,7 @@ impl From<MessageAttemptListByMsgOptions> for svix::api::MessageAttemptListByMsg
 pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
@@ -175,10 +175,10 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub status: Option<MessageStatus>,
     /// Only include items created before a certain date
     #[arg(long)]
-    pub before: Option<chrono::DateTime<chrono::Utc>>,
+    pub before: Option<jiff::Timestamp>,
     /// Only include items created after a certain date
     #[arg(long)]
-    pub after: Option<chrono::DateTime<chrono::Utc>>,
+    pub after: Option<jiff::Timestamp>,
     /// When `true` message payloads are included in the response
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -189,7 +189,7 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub expanded_statuses: Option<bool>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 impl From<MessageAttemptListAttemptedMessagesOptions>
@@ -227,7 +227,7 @@ impl From<MessageAttemptListAttemptedMessagesOptions>
 pub struct MessageAttemptListAttemptedDestinationsOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

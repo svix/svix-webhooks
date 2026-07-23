@@ -43,18 +43,18 @@ pub struct AppPortalAccessIn {
     /// By default, the token will get all capabilities if the capabilities are
     /// not explicitly specified.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub capabilities: Option<Vec<AppPortalCapability>>,
+    pub capabilities: Option<std::collections::BTreeSet<AppPortalCapability>>,
 
     /// The set of feature flags the created token will have access to.
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 
     /// How long the token will be valid for, in seconds.
     ///
     /// Valid values are between 1 hour and 7 days. The default is 7 days.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub expiry: Option<i32>,
+    pub expiry: Option<u64>,
 
     /// An optional session ID to attach to the token.
     ///

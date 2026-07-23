@@ -38,11 +38,11 @@ pub struct MessageEndpointOut {
 
     #[serde(rename = "filterTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
+    pub filter_types: Option<std::collections::BTreeSet<String>>,
 
     /// List of message channels this endpoint listens to (omit for all).
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "createdAt")]
     pub created_at: String,

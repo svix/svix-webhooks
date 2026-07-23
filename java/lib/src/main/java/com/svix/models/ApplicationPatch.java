@@ -21,7 +21,7 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApplicationPatch {
     @JsonProperty private String name;
-    @JsonProperty private MaybeUnset<Long> throttleRate;
+    @JsonProperty private MaybeUnset<Short> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private Map<String, String> metadata;
 
@@ -46,7 +46,7 @@ public class ApplicationPatch {
         this.name = name;
     }
 
-    public ApplicationPatch throttleRate(Long throttleRate) {
+    public ApplicationPatch throttleRate(Short throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
         return this;
     }
@@ -59,14 +59,14 @@ public class ApplicationPatch {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         if (throttleRate == null) {
             return null;
         }
         return throttleRate.getValue();
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
     }
 

@@ -26,7 +26,7 @@ public class MessageEndpointOut {
     @JsonProperty private MessageStatusText statusText;
     @JsonProperty private OffsetDateTime nextAttempt;
     @JsonProperty private String description;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -132,7 +132,7 @@ public class MessageEndpointOut {
         this.description = description;
     }
 
-    public MessageEndpointOut throttleRate(Long throttleRate) {
+    public MessageEndpointOut throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -145,11 +145,11 @@ public class MessageEndpointOut {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

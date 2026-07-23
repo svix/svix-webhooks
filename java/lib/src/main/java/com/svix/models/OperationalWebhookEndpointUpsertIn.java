@@ -23,7 +23,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointUpsertIn {
     @JsonProperty private String description;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -51,7 +51,7 @@ public class OperationalWebhookEndpointUpsertIn {
         this.description = description;
     }
 
-    public OperationalWebhookEndpointUpsertIn throttleRate(Long throttleRate) {
+    public OperationalWebhookEndpointUpsertIn throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -64,11 +64,11 @@ public class OperationalWebhookEndpointUpsertIn {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

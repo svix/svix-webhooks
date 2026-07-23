@@ -17,7 +17,7 @@ pub struct ApplicationListOptions {
     pub exclude_apps_with_svix_play_endpoints: Option<bool>,
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

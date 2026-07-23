@@ -21,7 +21,7 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointUpsertIn {
     @JsonProperty private String description;
-    @JsonProperty private Long throttleRate;
+    @JsonProperty private Short throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -48,7 +48,7 @@ public class IngestEndpointUpsertIn {
         this.description = description;
     }
 
-    public IngestEndpointUpsertIn throttleRate(Long throttleRate) {
+    public IngestEndpointUpsertIn throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -61,11 +61,11 @@ public class IngestEndpointUpsertIn {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 

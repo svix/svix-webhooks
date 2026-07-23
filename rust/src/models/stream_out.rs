@@ -20,7 +20,7 @@ pub struct StreamOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
 
-    pub metadata: std::collections::HashMap<String, String>,
+    pub metadata: std::collections::BTreeMap<String, String>,
 }
 
 impl StreamOut {
@@ -28,7 +28,7 @@ impl StreamOut {
         id: String,
         created_at: String,
         updated_at: String,
-        metadata: std::collections::HashMap<String, String>,
+        metadata: std::collections::BTreeMap<String, String>,
     ) -> Self {
         Self {
             id,

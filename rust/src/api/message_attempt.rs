@@ -4,7 +4,7 @@ use crate::{error::Result, models::*, Configuration};
 #[derive(Default)]
 pub struct MessageAttemptListByEndpointOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
@@ -48,13 +48,13 @@ pub struct MessageAttemptListByEndpointOptions {
     pub expanded_statuses: Option<bool>,
 
     /// Filter response based on the event type
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 #[derive(Default)]
 pub struct MessageAttemptListByMsgOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
@@ -95,13 +95,13 @@ pub struct MessageAttemptListByMsgOptions {
     pub expanded_statuses: Option<bool>,
 
     /// Filter response based on the event type
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 #[derive(Default)]
 pub struct MessageAttemptListAttemptedMessagesOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
@@ -136,13 +136,13 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
     pub expanded_statuses: Option<bool>,
 
     /// Filter response based on the event type
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 #[derive(Default)]
 pub struct MessageAttemptListAttemptedDestinationsOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,

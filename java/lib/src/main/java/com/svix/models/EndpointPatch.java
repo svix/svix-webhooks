@@ -24,7 +24,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointPatch {
     @JsonProperty private String description;
-    @JsonProperty private MaybeUnset<Long> throttleRate;
+    @JsonProperty private MaybeUnset<Short> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private URI url;
     @JsonProperty private Boolean disabled;
@@ -53,7 +53,7 @@ public class EndpointPatch {
         this.description = description;
     }
 
-    public EndpointPatch throttleRate(Long throttleRate) {
+    public EndpointPatch throttleRate(Short throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
         return this;
     }
@@ -66,14 +66,14 @@ public class EndpointPatch {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         if (throttleRate == null) {
             return null;
         }
         return throttleRate.getValue();
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = new MaybeUnset<>(throttleRate);
     }
 

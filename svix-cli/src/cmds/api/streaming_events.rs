@@ -8,12 +8,12 @@ use svix::models::*;
 pub struct StreamingEventsGetOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
     #[arg(long)]
-    pub after: Option<chrono::DateTime<chrono::Utc>>,
+    pub after: Option<jiff::Timestamp>,
 }
 
 impl From<StreamingEventsGetOptions> for svix::api::StreamingEventsGetOptions {

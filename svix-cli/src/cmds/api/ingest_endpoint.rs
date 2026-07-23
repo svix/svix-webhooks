@@ -9,7 +9,7 @@ use super::ingest_endpoint_transformation::IngestEndpointTransformationArgs;
 pub struct IngestEndpointListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,

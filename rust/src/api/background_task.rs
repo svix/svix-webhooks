@@ -10,7 +10,7 @@ pub struct BackgroundTaskListOptions {
     pub task: Option<BackgroundTaskType>,
 
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,

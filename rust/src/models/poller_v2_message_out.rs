@@ -4,10 +4,10 @@ use serde::{Deserialize, Serialize};
 /// The MessageOut equivalent of polling endpoint
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct PollerV2MessageOut {
-    pub offset: i32,
+    pub offset: u64,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub headers: Option<std::collections::HashMap<String, String>>,
+    pub headers: Option<std::collections::BTreeMap<String, String>>,
 
     /// Optional unique identifier for the message
     #[serde(rename = "eventId")]
@@ -22,7 +22,7 @@ pub struct PollerV2MessageOut {
 
     /// List of free-form identifiers that endpoints can filter by
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub channels: Option<std::collections::BTreeSet<String>>,
 
     /// The Message's ID.
     pub id: String,
@@ -30,7 +30,7 @@ pub struct PollerV2MessageOut {
     pub timestamp: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
+    pub tags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -39,7 +39,7 @@ pub struct PollerV2MessageOut {
 
 impl PollerV2MessageOut {
     pub fn new(
-        offset: i32,
+        offset: u64,
         event_type: String,
         payload: serde_json::Value,
         id: String,

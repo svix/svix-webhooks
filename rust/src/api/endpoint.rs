@@ -5,7 +5,7 @@ use crate::{error::Result, models::*, Configuration};
 #[derive(Default)]
 pub struct EndpointListOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,

@@ -29,7 +29,7 @@ pub struct ConnectorOut {
 
     #[serde(rename = "allowedEventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub allowed_event_types: Option<Vec<String>>,
+    pub allowed_event_types: Option<std::collections::BTreeSet<String>>,
 
     pub transformation: String,
 
@@ -44,7 +44,7 @@ pub struct ConnectorOut {
 
     #[serde(rename = "featureFlags")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
+    pub feature_flags: Option<std::collections::BTreeSet<String>>,
 
     #[serde(rename = "productType")]
     pub product_type: ConnectorProduct,

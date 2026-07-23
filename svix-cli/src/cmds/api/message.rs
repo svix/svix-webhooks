@@ -9,7 +9,7 @@ use super::message_poller::MessagePollerArgs;
 pub struct MessageListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
@@ -18,10 +18,10 @@ pub struct MessageListOptions {
     pub channel: Option<String>,
     /// Only include items created before a certain date.
     #[arg(long)]
-    pub before: Option<chrono::DateTime<chrono::Utc>>,
+    pub before: Option<jiff::Timestamp>,
     /// Only include items created after a certain date.
     #[arg(long)]
-    pub after: Option<chrono::DateTime<chrono::Utc>>,
+    pub after: Option<jiff::Timestamp>,
     /// When `true` message payloads are included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -30,7 +30,7 @@ pub struct MessageListOptions {
     pub tag: Option<String>,
     /// Filter response based on the event type
     #[arg(long)]
-    pub event_types: Option<Vec<String>>,
+    pub event_types: Option<std::collections::BTreeSet<String>>,
 }
 
 impl From<MessageListOptions> for svix::api::MessageListOptions {

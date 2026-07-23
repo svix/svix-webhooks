@@ -23,14 +23,14 @@ pub struct ConnectorPatch {
 
     #[serde(rename = "allowedEventTypes")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub allowed_event_types: JsOption<Vec<String>>,
+    pub allowed_event_types: JsOption<std::collections::BTreeSet<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub transformation: Option<String>,
 
     #[serde(rename = "featureFlags")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub feature_flags: JsOption<Vec<String>>,
+    pub feature_flags: JsOption<std::collections::BTreeSet<String>>,
 }
 
 impl ConnectorPatch {
