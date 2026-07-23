@@ -17,6 +17,10 @@ pub struct {{ type_name }} {
     {% include "types/struct_fields.rs.jinja" -%}
 }
 
+{#- skip ctors for Out types, they often have weird parameter order and would be
+    broken every time we add another field server-side just like struct literals #}
+{%- if type.name is not endingwith "Out" %}
+
 impl {{ type_name }} {
     pub fn new(
         {% for field in type.fields -%}
@@ -54,4 +58,6 @@ impl Default for {{ type_name }} {
         Self::new()
     }
 }
+{%- endif %}
+
 {%- endif %}

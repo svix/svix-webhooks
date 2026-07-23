@@ -36,26 +36,3 @@ pub struct EventTypeOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flag: Option<String>,
 }
-
-impl EventTypeOut {
-    pub fn new(
-        name: String,
-        description: String,
-        deprecated: bool,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            name,
-            description,
-            archived: None,
-            deprecated,
-            schemas: None,
-            created_at,
-            updated_at,
-            group_name: None,
-            feature_flags: None,
-            feature_flag: None,
-        }
-    }
-}

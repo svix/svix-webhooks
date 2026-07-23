@@ -36,26 +36,3 @@ pub struct PollerV2MessageOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 }
-
-impl PollerV2MessageOut {
-    pub fn new(
-        offset: u64,
-        event_type: String,
-        payload: serde_json::Value,
-        id: String,
-        timestamp: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            offset,
-            headers: None,
-            event_id: None,
-            event_type,
-            payload,
-            channels: None,
-            id,
-            timestamp,
-            tags: None,
-            deliver_at: None,
-        }
-    }
-}

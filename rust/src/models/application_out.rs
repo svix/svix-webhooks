@@ -28,23 +28,3 @@ pub struct ApplicationOut {
 
     pub metadata: std::collections::BTreeMap<String, String>,
 }
-
-impl ApplicationOut {
-    pub fn new(
-        name: String,
-        id: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-        metadata: std::collections::BTreeMap<String, String>,
-    ) -> Self {
-        Self {
-            uid: None,
-            name,
-            throttle_rate: None,
-            id,
-            created_at,
-            updated_at,
-            metadata,
-        }
-    }
-}

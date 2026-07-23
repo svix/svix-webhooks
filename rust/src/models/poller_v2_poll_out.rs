@@ -9,9 +9,3 @@ pub struct PollerV2PollOut {
 
     pub done: bool,
 }
-
-impl PollerV2PollOut {
-    pub fn new(data: Vec<PollerV2MessageOut>, done: bool) -> Self {
-        Self { data, done }
-    }
-}

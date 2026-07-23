@@ -17,19 +17,3 @@ pub struct RecoverOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
-
-impl RecoverOut {
-    pub fn new(
-        id: String,
-        status: BackgroundTaskStatus,
-        task: BackgroundTaskType,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            id,
-            status,
-            task,
-            updated_at,
-        }
-    }
-}

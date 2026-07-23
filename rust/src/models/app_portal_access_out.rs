@@ -7,9 +7,3 @@ pub struct AppPortalAccessOut {
 
     pub token: String,
 }
-
-impl AppPortalAccessOut {
-    pub fn new(url: String, token: String) -> Self {
-        Self { url, token }
-    }
-}

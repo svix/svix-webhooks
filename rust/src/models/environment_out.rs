@@ -19,19 +19,3 @@ pub struct EnvironmentOut {
 
     pub connectors: Vec<ConnectorOut>,
 }
-
-impl EnvironmentOut {
-    pub fn new(
-        created_at: chrono::DateTime<chrono::Utc>,
-        event_types: Vec<EventTypeOut>,
-        connectors: Vec<ConnectorOut>,
-    ) -> Self {
-        Self {
-            version: None,
-            created_at,
-            event_types,
-            settings: None,
-            connectors,
-        }
-    }
-}

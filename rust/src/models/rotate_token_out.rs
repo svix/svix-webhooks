@@ -6,9 +6,3 @@ pub struct RotateTokenOut {
     #[serde(rename = "ingestUrl")]
     pub ingest_url: String,
 }
-
-impl RotateTokenOut {
-    pub fn new(ingest_url: String) -> Self {
-        Self { ingest_url }
-    }
-}

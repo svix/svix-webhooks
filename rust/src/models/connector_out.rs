@@ -49,37 +49,3 @@ pub struct ConnectorOut {
     #[serde(rename = "productType")]
     pub product_type: ConnectorProduct,
 }
-
-impl ConnectorOut {
-    pub fn new(
-        id: String,
-        org_id: String,
-        kind: ConnectorKind,
-        name: String,
-        description: String,
-        instructions: String,
-        transformation: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-        transformation_updated_at: chrono::DateTime<chrono::Utc>,
-        product_type: ConnectorProduct,
-    ) -> Self {
-        Self {
-            id,
-            org_id,
-            uid: None,
-            kind,
-            name,
-            logo: None,
-            description,
-            instructions,
-            allowed_event_types: None,
-            transformation,
-            created_at,
-            updated_at,
-            transformation_updated_at,
-            feature_flags: None,
-            product_type,
-        }
-    }
-}

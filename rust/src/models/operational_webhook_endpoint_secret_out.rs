@@ -10,9 +10,3 @@ pub struct OperationalWebhookEndpointSecretOut {
     /// secret.
     pub key: String,
 }
-
-impl OperationalWebhookEndpointSecretOut {
-    pub fn new(key: String) -> Self {
-        Self { key }
-    }
-}

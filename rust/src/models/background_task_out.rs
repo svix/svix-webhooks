@@ -19,21 +19,3 @@ pub struct BackgroundTaskOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
-
-impl BackgroundTaskOut {
-    pub fn new(
-        data: serde_json::Value,
-        id: String,
-        status: BackgroundTaskStatus,
-        task: BackgroundTaskType,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            data,
-            id,
-            status,
-            task,
-            updated_at,
-        }
-    }
-}

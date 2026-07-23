@@ -11,13 +11,3 @@ pub struct PollingEndpointOut {
 
     pub done: bool,
 }
-
-impl PollingEndpointOut {
-    pub fn new(data: Vec<PollingEndpointMessageOut>, iterator: String, done: bool) -> Self {
-        Self {
-            data,
-            iterator,
-            done,
-        }
-    }
-}

@@ -11,12 +11,3 @@ pub struct EndpointHeadersOut {
 
     pub sensitive: std::collections::BTreeSet<String>,
 }
-
-impl EndpointHeadersOut {
-    pub fn new(
-        headers: std::collections::BTreeMap<String, String>,
-        sensitive: std::collections::BTreeSet<String>,
-    ) -> Self {
-        Self { headers, sensitive }
-    }
-}

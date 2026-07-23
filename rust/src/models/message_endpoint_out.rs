@@ -49,31 +49,3 @@ pub struct MessageEndpointOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
-
-impl MessageEndpointOut {
-    pub fn new(
-        id: String,
-        status: MessageStatus,
-        status_text: MessageStatusText,
-        url: String,
-        description: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            id,
-            status,
-            status_text,
-            next_attempt: None,
-            url,
-            description,
-            throttle_rate: None,
-            uid: None,
-            disabled: None,
-            event_types: None,
-            channels: None,
-            created_at,
-            updated_at,
-        }
-    }
-}

@@ -43,34 +43,3 @@ pub struct MessageAttemptOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub msg: Option<MessageOut>,
 }
-
-impl MessageAttemptOut {
-    pub fn new(
-        url: String,
-        response: String,
-        response_status_code: i16,
-        response_duration_ms: i64,
-        status: MessageStatus,
-        status_text: MessageStatusText,
-        trigger_type: MessageAttemptTriggerType,
-        msg_id: String,
-        endpoint_id: String,
-        id: String,
-        timestamp: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            url,
-            response,
-            response_status_code,
-            response_duration_ms,
-            status,
-            status_text,
-            trigger_type,
-            msg_id,
-            endpoint_id,
-            id,
-            timestamp,
-            msg: None,
-        }
-    }
-}

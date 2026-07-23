@@ -173,7 +173,7 @@ fn test_ingest_source_out() {
             name: "foo".to_owned(),
             uid: None,
             updated_at: "2006-01-02T15:04:05Z".parse().unwrap(),
-            config: IngestSourceOutConfig::Segment(SegmentConfigOut::new()),
+            config: IngestSourceOutConfig::Segment(SegmentConfigOut {}),
             metadata: BTreeMap::new(),
         },
     );

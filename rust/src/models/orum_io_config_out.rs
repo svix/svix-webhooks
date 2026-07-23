@@ -6,9 +6,3 @@ pub struct OrumIoConfigOut {
     #[serde(rename = "publicKey")]
     pub public_key: String,
 }
-
-impl OrumIoConfigOut {
-    pub fn new(public_key: String) -> Self {
-        Self { public_key }
-    }
-}

@@ -9,18 +9,3 @@ pub struct IngestEndpointTransformationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
 }
-
-impl IngestEndpointTransformationOut {
-    pub fn new() -> Self {
-        Self {
-            code: None,
-            enabled: None,
-        }
-    }
-}
-
-impl Default for IngestEndpointTransformationOut {
-    fn default() -> Self {
-        Self::new()
-    }
-}

@@ -34,24 +34,3 @@ pub struct PollingEndpointMessageOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 }
-
-impl PollingEndpointMessageOut {
-    pub fn new(
-        event_type: String,
-        payload: serde_json::Value,
-        id: String,
-        timestamp: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            headers: None,
-            event_id: None,
-            event_type,
-            payload,
-            channels: None,
-            id,
-            timestamp,
-            tags: None,
-            deliver_at: None,
-        }
-    }
-}

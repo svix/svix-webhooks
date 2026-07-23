@@ -23,21 +23,3 @@ pub struct AppUsageStatsOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
-
-impl AppUsageStatsOut {
-    pub fn new(
-        unresolved_app_ids: std::collections::BTreeSet<String>,
-        id: String,
-        status: BackgroundTaskStatus,
-        task: BackgroundTaskType,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            unresolved_app_ids,
-            id,
-            status,
-            task,
-            updated_at,
-        }
-    }
-}
