@@ -209,7 +209,7 @@ def cmd_check() -> int:
 
 
 def update_changelog(new_version: str) -> None:
-    changelog_path = REPO_ROOT / "SdkChangeLog.md"
+    changelog_path = REPO_ROOT / "ChangeLog.md"
     content = changelog_path.read_text()
     updated = content.replace(
         "\n## Unreleased\n",
