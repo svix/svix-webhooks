@@ -83,6 +83,8 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.withMsg != null) {
             url.addQueryParameter("with_msg", Utils.serializeQueryParam(options.withMsg));
@@ -158,6 +160,8 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
@@ -235,6 +239,8 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.expandedStatuses != null) {
             url.addQueryParameter(

@@ -101,7 +101,9 @@ test("mockttp tests", async (t) => {
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
     assert(
-      requests[0].url.endsWith("/api/v1/app/app1/msg?event_types=val8%2Cval1%2Cval5")
+      requests[0].url.endsWith(
+        "/api/v1/app/app1/msg?with_content=false&event_types=val8%2Cval1%2Cval5"
+      )
     );
   });
 
@@ -226,7 +228,7 @@ test("mockttp tests", async (t) => {
       .thenReply(200, ListResponseOperationalWebhookEndpointOut);
     const svx = new Svix("token", { serverUrl: mockServer.url });
 
-    await svx.operationalWebhookEndpoint.list();
+    await svx.operationalWebhook.endpoint.list();
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
@@ -384,7 +386,9 @@ test("mockttp tests", async (t) => {
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
-    assert(requests[0].url.endsWith("api/v1/app/app1/msg?tag=test%23test"));
+    assert(
+      requests[0].url.endsWith("api/v1/app/app1/msg?with_content=false&tag=test%23test")
+    );
   });
 
   await t.test("content-type application/json is sent on request with body", async () => {
@@ -555,38 +559,10 @@ test("mockttp tests", async (t) => {
       username: "test_user",
     };
     const response = await svx.message.create(appId, { eventType, payload });
-    assert.equal(response.payload, payload);
+    assert.deepStrictEqual(response.payload, { m: "FILTERED" });
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 1);
     assert(requests[0].url.endsWith(`api/v1/app/${appId}/msg?with_content=false`));
   });
-
-  await t.test(
-    "message.create preserves server payload when withContent=false",
-    async () => {
-      const appId = "app_1srOrx2ZWZBpBUvZwXKQmoEYga2";
-      const endpointMock = await mockServer
-        .forPost(`/api/v1/app/${appId}/msg`)
-        .thenReply(202, MessageCreateNoContentOut);
-      const svx = new Svix("token.eu", { serverUrl: mockServer.url });
-
-      const eventType = "user.signup";
-      const payload = {
-        email: "test@example.com",
-        type: eventType,
-        username: "test_user",
-      };
-      const response = await svx.message.create(
-        appId,
-        { eventType, payload },
-        { withContent: false }
-      );
-      assert.deepEqual(response.payload, { m: "FILTERED" });
-
-      const requests = await endpointMock.getSeenRequests();
-      assert.equal(requests.length, 1);
-      assert(requests[0].url.endsWith(`api/v1/app/${appId}/msg?with_content=false`));
-    }
-  );
 });

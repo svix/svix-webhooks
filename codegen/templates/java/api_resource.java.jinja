@@ -132,9 +132,14 @@ public class {{ resource_type_name }} {
             {% endif -%}
             );
         }
-        {#- HACK: default expanded_statuses to true, it only defaults to false
-            server-side because of backwards-compatibility for old SDKs #}
-        {%- if p.name == "expanded_statuses" %} else {
+        {#- default with_content to false, it only defaults to true
+            server-side because of backwards-compatibility #}
+        {%- if p.name == "with_content" %} else {
+            url.addQueryParameter("{{ p.name }}", "false");
+        }
+        {#- default expanded_statuses to true, it only defaults to false
+            server-side because of backwards-compatibility #}
+        {%- elif p.name == "expanded_statuses" %} else {
             url.addQueryParameter("{{ p.name }}", "true");
         }
         {%- endif %}

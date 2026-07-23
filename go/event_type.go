@@ -50,18 +50,19 @@ func (eventType *EventType) List(
 	ctx context.Context,
 	o *EventTypeListOptions,
 ) (*models.ListResponseEventTypeOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EventTypeListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseEventTypeOut](
 		ctx,
@@ -85,14 +86,15 @@ func (eventType *EventType) Create(
 	eventTypeIn models.EventTypeIn,
 	o *EventTypeCreateOptions,
 ) (*models.EventTypeOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EventTypeCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.EventTypeIn, models.EventTypeOut](
 		ctx,
@@ -116,14 +118,15 @@ func (eventType *EventType) ImportOpenapi(
 	eventTypeImportOpenApiIn models.EventTypeImportOpenApiIn,
 	o *EventTypeImportOpenapiOptions,
 ) (*models.EventTypeImportOpenApiOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EventTypeImportOpenapiOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.EventTypeImportOpenApiIn, models.EventTypeImportOpenApiOut](
 		ctx,
@@ -189,19 +192,20 @@ func (eventType *EventType) Delete(
 	eventTypeName string,
 	o *EventTypeDeleteOptions,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"event_type_name": eventTypeName,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := EventTypeDeleteOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		eventType.client,
 		"DELETE",

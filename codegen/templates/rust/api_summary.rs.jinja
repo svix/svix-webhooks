@@ -2,7 +2,6 @@
 #![warn(unreachable_pub)]
 
 mod client;
-mod deprecated;
 
 pub use self::client::{Svix, SvixOptions};
 pub use crate::models::*;
@@ -40,7 +39,6 @@ pub use self::{
         {{ resource_reexports(res) }}
     {% endfor -%}
 };
-pub use self::deprecated::*;
 
 impl Svix {
     {% for resource in api.resources -%}
@@ -49,9 +47,4 @@ impl Svix {
             {{ resource_type_name }}::new(&self.cfg)
         }
     {% endfor -%}
-
-    #[deprecated = "Use .operational_webhook().endpoint() instead"]
-    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
-        OperationalWebhookEndpoint::new(&self.cfg)
-    }
 }

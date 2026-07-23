@@ -73,24 +73,25 @@ func (message *Message) List(
 	appId string,
 	o *MessageListOptions,
 ) (*models.ListResponseMessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+	internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+	internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseMessageOut](
 		ctx,
@@ -119,21 +120,22 @@ func (message *Message) Create(
 	messageIn models.MessageIn,
 	o *MessageCreateOptions,
 ) (*models.MessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageCreateOptions{}
+		o = &opts
 	}
-	queryMap["with_content"] = "false"
-	response, err := internal.ExecuteRequest[models.MessageIn, models.MessageOut](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -143,13 +145,6 @@ func (message *Message) Create(
 		headerMap,
 		&messageIn,
 	)
-	if err != nil {
-		return nil, err
-	}
-	if o == nil || o.WithContent == nil || *o.WithContent {
-		response.Payload = messageIn.Payload
-	}
-	return response, nil
 }
 
 // A pre-check call for `message.create` that checks whether any active endpoints are
@@ -164,17 +159,18 @@ func (message *Message) Precheck(
 	messagePrecheckIn models.MessagePrecheckIn,
 	o *MessagePrecheckOptions,
 ) (*models.MessagePrecheckOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessagePrecheckOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.MessagePrecheckIn, models.MessagePrecheckOut](
 		ctx,
@@ -195,18 +191,19 @@ func (message *Message) Get(
 	msgId string,
 	o *MessageGetOptions,
 ) (*models.MessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageGetOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.MessageOut](
 		ctx,
@@ -229,11 +226,12 @@ func (message *Message) ExpungeContent(
 	appId string,
 	msgId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 		"msg_id": msgId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		message.client,
 		"DELETE",
@@ -268,17 +266,18 @@ func (message *Message) ExpungeAllContents(
 	appId string,
 	o *MessageExpungeAllContentsOptions,
 ) (*models.ExpungeAllContentsOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageExpungeAllContentsOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ExpungeAllContentsOut](
 		ctx,

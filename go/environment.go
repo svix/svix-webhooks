@@ -34,14 +34,15 @@ func (environment *Environment) Export(
 	ctx context.Context,
 	o *EnvironmentExportOptions,
 ) (*models.EnvironmentOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EnvironmentExportOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.EnvironmentOut](
 		ctx,
@@ -66,16 +67,17 @@ func (environment *Environment) Import(
 	environmentIn models.EnvironmentIn,
 	o *EnvironmentImportOptions,
 ) error {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := EnvironmentImportOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[models.EnvironmentIn, any](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[models.EnvironmentIn, any](
 		ctx,
 		environment.client,
 		"POST",

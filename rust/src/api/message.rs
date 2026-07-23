@@ -141,22 +141,13 @@ impl<'a> Message<'a> {
             idempotency_key,
         } = options.unwrap_or_default();
 
-        let payload = with_content
-            .unwrap_or(true)
-            .then(|| message_in.payload.clone());
-        let mut response: MessageOut =
-            crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
-                .with_path_param("app_id", app_id)
-                .with_query_param("with_content", false)
-                .with_optional_header_param("idempotency-key", idempotency_key)
-                .with_body_param(message_in)
-                .execute(self.cfg)
-                .await?;
-        if let Some(p) = payload {
-            response.payload = p;
-        }
-
-        Ok(response)
+        crate::request::Request::new(http1::Method::POST, "/api/v1/app/{app_id}/msg")
+            .with_path_param("app_id", app_id)
+            .with_optional_query_param("with_content", with_content)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(message_in)
+            .execute(self.cfg)
+            .await
     }
 
     /// A pre-check call for `message.create` that checks whether any active

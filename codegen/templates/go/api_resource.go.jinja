@@ -57,6 +57,7 @@ type {{ opt_struct_name }} struct {
 {% endfor -%}
 
 {% for op in resource.operations %}
+	{% set options_type = resource_type_name ~ op.name | to_upper_camel_case ~ "Options" -%}
 	{% if op.request_body_schema_name is defined -%}
 		{% set request_body_param = op.request_body_schema_name | to_lower_camel_case -%}
 	{% endif -%}
@@ -95,11 +96,13 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% endif -%}
 
 	{% if op | has_query_or_header_params -%}
-		o *{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options,
+		o *{{ options_type }},
 	{% endif -%}
 
 ) {{ func_ret_type }} {
-	{% set used_err = false -%}
+	{% if op | has_query_or_header_params or not has_return -%}
+	var err error
+	{% endif -%}
 
 	{# path params -#}
 	{% if op.path_params | length > 0 -%}
@@ -123,30 +126,23 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 	{% endif -%}
 
 	{% if op | has_query_or_header_params -%}
-	if o != nil {
-		var err error
-
-		{# header params -#}
-		{% if op.header_params | length > 0 -%}
-			{% for p in op.header_params -%}
-		internal.SerializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, headerMap, &err)
-			{% endfor -%}
-		{% endif -%}
-
-		{# query params -#}
-		{% if op.id != "v1.message.create" and op.query_params | length > 0 -%}
-			{% for p in op.query_params -%}
-		internal.SerializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, queryMap, &err)
-			{% endfor -%}
-		{% endif -%}
-
-		if err != nil {
-			return {% if has_return %}nil,{% endif %} err
-		}
+	if o == nil {
+		opts := {{ options_type }}{}
+		o = &opts
 	}
-	{% if op.id == "v1.message.create" -%}
-	queryMap["with_content"] = "false"
-	{% endif -%}
+	{# header params -#}
+	{% for p in op.header_params -%}
+	internal.SerializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, headerMap, &err)
+	{% endfor -%}
+
+	{# query params -#}
+	{% for p in op.query_params -%}
+	internal.SerializeParamToMap("{{ p.name }}", o.{{ p.name | to_upper_camel_case }}, queryMap, &err)
+	{% endfor -%}
+
+	if err != nil {
+		return {% if has_return %}nil,{% endif %} err
+	}
 	{% endif -%}
 
 	{# make template ugly, but generated code nice -#}
@@ -190,19 +186,11 @@ func ({{ resource_self_name }} *{{ resource_type_name }}) {{ op.name | to_upper_
 		{% endif -%}
 	)
 	{%- endset %}
-	{%- if op.id == "v1.message.create" -%}
-		response, err := {{ execute_request }}
-		if err != nil {
-			return nil, err
-		}
-		if o == nil || o.WithContent == nil || *o.WithContent {
-			response.Payload = messageIn.Payload
-		}
-		return response, nil
-	{%- elif has_return -%}
+
+	{%- if has_return -%}
 		return {{ execute_request }}
 	{%- else -%}
-		_, err := {{ execute_request }}
+		_, err = {{ execute_request }}
 		return err
 	{% endif -%}
 }

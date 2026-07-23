@@ -2,14 +2,11 @@
 import typing as t
 from dataclasses import dataclass
 
-from deprecated import deprecated
-
 from ..models import (
     ApiTokenOut,
     ApplicationTokenExpireIn,
     AppPortalAccessIn,
     AppPortalAccessOut,
-    DashboardAccessOut,
     RotatePollerTokenIn,
     StreamPortalAccessIn,
     StreamTokenExpireIn,
@@ -101,18 +98,6 @@ class AuthenticationRotateStreamPollerTokenOptions(BaseOptions):
         )
 
 
-@dataclass
-class AuthenticationDashboardAccessOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
 class AuthenticationAsync(ApiBaseAsync):
     async def app_portal_access(
         self,
@@ -170,24 +155,6 @@ class AuthenticationAsync(ApiBaseAsync):
                 exclude_unset=True, by_alias=True
             ),
         )
-
-    @deprecated
-    async def dashboard_access(
-        self,
-        app_id: str,
-        options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
-    ) -> DashboardAccessOut:
-        """Deprecated: Please use `app_portal_access` instead."""
-        response = await self._request_asyncio(
-            method="post",
-            path="/api/v1/auth/dashboard-access/{app_id}",
-            path_params={
-                "app_id": app_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return DashboardAccessOut.model_validate(response.json())
 
     async def stream_portal_access(
         self,
@@ -348,24 +315,6 @@ class Authentication(ApiBaseSync):
                 exclude_unset=True, by_alias=True
             ),
         )
-
-    @deprecated
-    def dashboard_access(
-        self,
-        app_id: str,
-        options: AuthenticationDashboardAccessOptions = AuthenticationDashboardAccessOptions(),
-    ) -> DashboardAccessOut:
-        """Deprecated: Please use `app_portal_access` instead."""
-        response = self._request_sync(
-            method="post",
-            path="/api/v1/auth/dashboard-access/{app_id}",
-            path_params={
-                "app_id": app_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return DashboardAccessOut.model_validate(response.json())
 
     def stream_portal_access(
         self,

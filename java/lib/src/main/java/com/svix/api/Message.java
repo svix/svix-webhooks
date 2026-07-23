@@ -85,6 +85,8 @@ public class Message {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.tag != null) {
             url.addQueryParameter("tag", options.tag);
@@ -142,6 +144,8 @@ public class Message {
                 this.client.newUrlBuilder().encodedPath(String.format("/api/v1/app/%s/msg", appId));
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         Map<String, String> headers = new HashMap<>();
         if (options.idempotencyKey != null) {
@@ -223,6 +227,8 @@ public class Message {
                         .encodedPath(String.format("/api/v1/app/%s/msg/%s", appId, msgId));
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         return this.client.executeRequest("GET", url.build(), null, null, MessageOut.class);
     }

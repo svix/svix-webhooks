@@ -56,7 +56,10 @@ async fn test_urlencoded_octothorpe() {
         .expect("we should have sent a request");
 
     assert_eq!(1, requests.len());
-    assert_eq!(Some("tag=test%23test"), requests[0].url.query());
+    assert_eq!(
+        Some("with_content=false&tag=test%23test"),
+        requests[0].url.query()
+    );
 }
 
 #[tokio::test]
@@ -191,12 +194,12 @@ async fn test_cmg_with_content_default() {
         .message()
         .create(
             app_id.to_owned(),
-            MessageIn::new(event_type.to_owned(), payload.clone()),
+            MessageIn::new(event_type.to_owned(), payload),
             None,
         )
         .await
         .unwrap();
 
-    assert_eq!(response.payload, payload);
+    assert_eq!(response.payload, json!({ "m": "FILTERED" }));
     mock_server.verify().await;
 }

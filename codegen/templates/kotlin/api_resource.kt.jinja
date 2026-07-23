@@ -101,9 +101,16 @@ suspend fun {{ op.name | to_lower_camel_case }}(
             {%- endif -%}
         {%- endfor %}
         {% for p in op.query_params -%}
-            {% if p.name == "expanded_statuses" %}
-                {#- HACK: default expanded_statuses to true, it only defaults to false
-                    server-side because of backwards-compatibility for old SDKs #}
+            {% if p.name == "with_content" %}
+                {#- default with_content to false, it only defaults to true
+                    server-side because of backwards-compatibility #}
+        url.addQueryParameter(
+            "{{ p.name }}",
+            options.{{ p.name | to_lower_camel_case }}?.let { serializeQueryParam(it) } ?: "false"
+        )
+            {% elif p.name == "expanded_statuses" %}
+                {#- default expanded_statuses to true, it only defaults to false
+                    server-side because of backwards-compatibility #}
         url.addQueryParameter(
             "{{ p.name }}",
             options.{{ p.name | to_lower_camel_case }}?.let { serializeQueryParam(it) } ?: "true"

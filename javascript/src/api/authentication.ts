@@ -25,10 +25,6 @@ import {
   type StreamTokenExpireIn,
   StreamTokenExpireInSerializer,
 } from "../models/streamTokenExpireIn";
-import {
-  type DashboardAccessOut,
-  DashboardAccessOutSerializer,
-} from "../models/dashboardAccessOut";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface AuthenticationAppPortalAccessOptions {
@@ -56,11 +52,6 @@ export interface AuthenticationStreamExpireAllOptions {
 }
 
 export interface AuthenticationRotateStreamPollerTokenOptions {
-  idempotencyKey?: string;
-}
-
-/** @deprecated */
-export interface AuthenticationDashboardAccessOptions {
   idempotencyKey?: string;
 }
 
@@ -119,22 +110,6 @@ export class Authentication {
     );
 
     return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  /** @deprecated Please use `appPortalAccess` instead. */
-  public dashboardAccess(
-    appId: string,
-    options?: AuthenticationDashboardAccessOptions
-  ): Promise<DashboardAccessOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/auth/dashboard-access/{app_id}"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return request.send(this.requestCtx, DashboardAccessOutSerializer._fromJsonObject);
   }
 
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */

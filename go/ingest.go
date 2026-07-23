@@ -33,17 +33,18 @@ func (ingest *Ingest) Dashboard(
 	ingestSourceConsumerPortalAccessIn models.IngestSourceConsumerPortalAccessIn,
 	o *IngestDashboardOptions,
 ) (*models.DashboardAccessOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"source_id": sourceId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := IngestDashboardOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.IngestSourceConsumerPortalAccessIn, models.DashboardAccessOut](
 		ctx,
