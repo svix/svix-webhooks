@@ -7,6 +7,10 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 
+## Version 1.99.1
+* Libs/JavaScript: Fix empty `retryScheduleInMs` not being honored
+* Libs/JavaScript: Fix `0` entries in `retryScheduleInMs` not being honored
+
 ## Version 1.99.0
 * CLI: Use [wolfi](https://github.com/wolfi-dev) as the image base instead of Debian, shrinking the Docker image by 77% and removing all open CVEs
 * Libs/C#: Fix a bug that made the 'canceled' message-attempt status opt-in unreliable (see also changelog for 1.95.0)
