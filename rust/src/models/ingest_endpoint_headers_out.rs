@@ -7,12 +7,3 @@ pub struct IngestEndpointHeadersOut {
 
     pub sensitive: std::collections::BTreeSet<String>,
 }
-
-impl IngestEndpointHeadersOut {
-    pub fn new(
-        headers: std::collections::BTreeMap<String, String>,
-        sensitive: std::collections::BTreeSet<String>,
-    ) -> Self {
-        Self { headers, sensitive }
-    }
-}

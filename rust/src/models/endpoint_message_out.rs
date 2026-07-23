@@ -43,28 +43,3 @@ pub struct EndpointMessageOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 }
-
-impl EndpointMessageOut {
-    pub fn new(
-        status: MessageStatus,
-        status_text: MessageStatusText,
-        event_type: String,
-        payload: serde_json::Value,
-        id: String,
-        timestamp: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            status,
-            status_text,
-            next_attempt: None,
-            event_id: None,
-            event_type,
-            payload,
-            channels: None,
-            id,
-            timestamp,
-            tags: None,
-            deliver_at: None,
-        }
-    }
-}

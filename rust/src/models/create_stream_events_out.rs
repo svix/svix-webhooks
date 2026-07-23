@@ -3,15 +3,3 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct CreateStreamEventsOut {}
-
-impl CreateStreamEventsOut {
-    pub fn new() -> Self {
-        Self {}
-    }
-}
-
-impl Default for CreateStreamEventsOut {
-    fn default() -> Self {
-        Self::new()
-    }
-}

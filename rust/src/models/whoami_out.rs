@@ -33,15 +33,3 @@ pub struct WhoamiOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub session_id: Option<String>,
 }
-
-impl WhoamiOut {
-    pub fn new(permission_source: AuthenticationSource) -> Self {
-        Self {
-            env_id: None,
-            app_id: None,
-            stream_app_id: None,
-            permission_source,
-            session_id: None,
-        }
-    }
-}

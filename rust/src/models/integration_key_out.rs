@@ -5,9 +5,3 @@ use serde::{Deserialize, Serialize};
 pub struct IntegrationKeyOut {
     pub key: String,
 }
-
-impl IntegrationKeyOut {
-    pub fn new(key: String) -> Self {
-        Self { key }
-    }
-}

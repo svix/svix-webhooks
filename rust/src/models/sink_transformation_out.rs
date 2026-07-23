@@ -8,12 +8,3 @@ pub struct SinkTransformationOut {
 
     pub enabled: bool,
 }
-
-impl SinkTransformationOut {
-    pub fn new(enabled: bool) -> Self {
-        Self {
-            code: None,
-            enabled,
-        }
-    }
-}

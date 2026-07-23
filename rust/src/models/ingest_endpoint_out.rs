@@ -32,26 +32,3 @@ pub struct IngestEndpointOut {
 
     pub metadata: std::collections::BTreeMap<String, String>,
 }
-
-impl IngestEndpointOut {
-    pub fn new(
-        id: String,
-        url: String,
-        description: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-        metadata: std::collections::BTreeMap<String, String>,
-    ) -> Self {
-        Self {
-            id,
-            url,
-            description,
-            throttle_rate: None,
-            uid: None,
-            disabled: None,
-            created_at,
-            updated_at,
-            metadata,
-        }
-    }
-}

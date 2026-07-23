@@ -7,9 +7,3 @@ pub struct MessagePrecheckOut {
     /// message.
     pub active: bool,
 }
-
-impl MessagePrecheckOut {
-    pub fn new(active: bool) -> Self {
-        Self { active }
-    }
-}

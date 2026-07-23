@@ -36,27 +36,3 @@ pub struct OperationalWebhookEndpointOut {
 
     pub metadata: std::collections::BTreeMap<String, String>,
 }
-
-impl OperationalWebhookEndpointOut {
-    pub fn new(
-        id: String,
-        url: String,
-        description: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-        metadata: std::collections::BTreeMap<String, String>,
-    ) -> Self {
-        Self {
-            id,
-            url,
-            description,
-            throttle_rate: None,
-            uid: None,
-            disabled: None,
-            event_types: None,
-            created_at,
-            updated_at,
-            metadata,
-        }
-    }
-}

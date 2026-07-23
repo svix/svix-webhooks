@@ -10,9 +10,3 @@ pub struct EndpointSecretOut {
     /// secret.
     pub key: String,
 }
-
-impl EndpointSecretOut {
-    pub fn new(key: String) -> Self {
-        Self { key }
-    }
-}

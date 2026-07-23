@@ -16,20 +16,3 @@ pub struct EndpointTransformationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub updated_at: Option<chrono::DateTime<chrono::Utc>>,
 }
-
-impl EndpointTransformationOut {
-    pub fn new() -> Self {
-        Self {
-            code: None,
-            enabled: None,
-            variables: None,
-            updated_at: None,
-        }
-    }
-}
-
-impl Default for EndpointTransformationOut {
-    fn default() -> Self {
-        Self::new()
-    }
-}

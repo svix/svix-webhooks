@@ -22,21 +22,3 @@ pub struct StreamOut {
 
     pub metadata: std::collections::BTreeMap<String, String>,
 }
-
-impl StreamOut {
-    pub fn new(
-        id: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-        metadata: std::collections::BTreeMap<String, String>,
-    ) -> Self {
-        Self {
-            id,
-            uid: None,
-            name: None,
-            created_at,
-            updated_at,
-            metadata,
-        }
-    }
-}

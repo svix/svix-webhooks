@@ -5,9 +5,3 @@ use serde::{Deserialize, Serialize};
 pub struct PollingEndpointConsumerSeekOut {
     pub iterator: String,
 }
-
-impl PollingEndpointConsumerSeekOut {
-    pub fn new(iterator: String) -> Self {
-        Self { iterator }
-    }
-}

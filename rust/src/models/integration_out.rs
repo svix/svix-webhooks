@@ -19,20 +19,3 @@ pub struct IntegrationOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_flags: Option<std::collections::BTreeSet<String>>,
 }
-
-impl IntegrationOut {
-    pub fn new(
-        name: String,
-        id: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            name,
-            id,
-            created_at,
-            updated_at,
-            feature_flags: None,
-        }
-    }
-}

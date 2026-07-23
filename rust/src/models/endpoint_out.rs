@@ -40,28 +40,3 @@ pub struct EndpointOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
-
-impl EndpointOut {
-    pub fn new(
-        id: String,
-        metadata: std::collections::BTreeMap<String, String>,
-        url: String,
-        description: String,
-        created_at: chrono::DateTime<chrono::Utc>,
-        updated_at: chrono::DateTime<chrono::Utc>,
-    ) -> Self {
-        Self {
-            id,
-            metadata,
-            url,
-            description,
-            throttle_rate: None,
-            uid: None,
-            disabled: None,
-            event_types: None,
-            channels: None,
-            created_at,
-            updated_at,
-        }
-    }
-}

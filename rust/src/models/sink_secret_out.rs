@@ -11,15 +11,3 @@ pub struct SinkSecretOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub key: Option<String>,
 }
-
-impl SinkSecretOut {
-    pub fn new() -> Self {
-        Self { key: None }
-    }
-}
-
-impl Default for SinkSecretOut {
-    fn default() -> Self {
-        Self::new()
-    }
-}
