@@ -6,12 +6,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ConnectorPatch(
-    val allowedEventTypes: MaybeUnset<Set<String>> = MaybeUnset.Unset,
-    val description: String? = null,
-    val featureFlags: MaybeUnset<Set<String>> = MaybeUnset.Unset,
-    val instructions: String? = null,
-    val kind: ConnectorKind? = null,
-    val logo: MaybeUnset<String> = MaybeUnset.Unset,
     val name: String? = null,
+    val logo: MaybeUnset<String> = MaybeUnset.Unset,
+    val description: String? = null,
+    val kind: ConnectorKind? = null,
+    val instructions: String? = null,
+    val allowedEventTypes: MaybeUnset<Set<String>> = MaybeUnset.Unset,
     val transformation: String? = null,
+    val featureFlags: MaybeUnset<Set<String>> = MaybeUnset.Unset,
 )

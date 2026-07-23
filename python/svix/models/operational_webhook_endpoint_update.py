@@ -7,12 +7,6 @@ from .common import BaseModel
 class OperationalWebhookEndpointUpdate(BaseModel):
     description: t.Optional[str] = None
 
-    disabled: t.Optional[bool] = None
-
-    filter_types: t.Optional[t.List[str]] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
-
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
 
@@ -22,3 +16,9 @@ class OperationalWebhookEndpointUpdate(BaseModel):
     """Optional unique identifier for the endpoint."""
 
     url: str
+
+    disabled: t.Optional[bool] = None
+
+    filter_types: t.Optional[t.List[str]] = None
+
+    metadata: t.Optional[t.Dict[str, str]] = None

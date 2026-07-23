@@ -125,20 +125,20 @@ pub enum AuthenticationCommands {
     #[command(after_help = "Example body:
 {
   \"application\": {
-    \"metadata\": {\"key\": \"...\"},
     \"name\": \"My first application\",
     \"throttleRate\": 123,
-    \"uid\": \"unique-identifier\"
+    \"uid\": \"unique-identifier\",
+    \"metadata\": {\"key\": \"...\"}
   },
-  \"capabilities\": [\"ViewBase\",\"ViewEndpointSecret\"],
-  \"expiry\": 123,
-  \"featureFlags\": [],
   \"readOnly\": true,
+  \"capabilities\": [\"ViewBase\",\"ViewEndpointSecret\"],
+  \"featureFlags\": [],
+  \"expiry\": 123,
   \"sessionId\": \"user_1FB8\"
 }\n\nExample response:
 {
-  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\",
-  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\"
+  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\",
+  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
 }\n")]
     AppPortalAccess {
         app_id: String,
@@ -157,11 +157,11 @@ pub enum AuthenticationCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"appId\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"envId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"appId\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"streamAppId\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
   \"permissionSource\": \"OidcJwt\",
-  \"sessionId\": \"user_1FB8\",
-  \"streamAppId\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\"
+  \"sessionId\": \"user_1FB8\"
 }\n")]
     Whoami {},
     /// Logout an app token.
@@ -210,13 +210,13 @@ pub enum AuthenticationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"expiry\": 123,
   \"featureFlags\": [],
+  \"expiry\": 123,
   \"sessionId\": \"user_1FB8\"
 }\n\nExample response:
 {
-  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\",
-  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\"
+  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\",
+  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
 }\n")]
     StreamPortalAccess {
         stream_id: String,
@@ -274,12 +274,12 @@ pub enum AuthenticationCommands {
   \"oldTokenExpiry\": 123
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"token\": \"...\",
   \"id\": \"...\",
   \"name\": \"...\",
-  \"scopes\": [\"...\"],
-  \"token\": \"...\"
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"scopes\": [\"...\"]
 }\n")]
     RotateStreamPollerToken {
         stream_id: String,
@@ -299,12 +299,12 @@ pub enum AuthenticationCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"token\": \"...\",
   \"id\": \"...\",
   \"name\": \"...\",
-  \"scopes\": [\"...\"],
-  \"token\": \"...\"
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"scopes\": [\"...\"]
 }\n")]
     GetStreamPollerToken { stream_id: String, sink_id: String },
 }

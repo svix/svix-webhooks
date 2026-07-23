@@ -5,43 +5,43 @@ use super::connector_kind::ConnectorKind;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ConnectorUpdate {
-    #[serde(rename = "allowedEventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub allowed_event_types: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
-
-    #[serde(rename = "featureFlags")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub feature_flags: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub instructions: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub kind: Option<ConnectorKind>,
+    pub name: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub logo: Option<String>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub description: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub kind: Option<ConnectorKind>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub instructions: Option<String>,
+
+    #[serde(rename = "allowedEventTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub allowed_event_types: Option<Vec<String>>,
 
     pub transformation: String,
+
+    #[serde(rename = "featureFlags")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub feature_flags: Option<Vec<String>>,
 }
 
 impl ConnectorUpdate {
     pub fn new(transformation: String) -> Self {
         Self {
-            allowed_event_types: None,
-            description: None,
-            feature_flags: None,
-            instructions: None,
-            kind: None,
-            logo: None,
             name: None,
+            logo: None,
+            description: None,
+            kind: None,
+            instructions: None,
+            allowed_event_types: None,
             transformation,
+            feature_flags: None,
         }
     }
 }

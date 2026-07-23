@@ -21,44 +21,16 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SinkInCommon {
-    @JsonProperty private Set<String> channels;
     @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private String secret;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
+    @JsonProperty private String secret;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private Map<String, String> metadata;
 
     public SinkInCommon() {}
-
-    public SinkInCommon channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public SinkInCommon addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of message channels this sink listens to (omit for all).
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
 
     public SinkInCommon description(String description) {
         this.description = description;
@@ -77,6 +49,68 @@ public class SinkInCommon {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public SinkInCommon throttleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public SinkInCommon uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the sink.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public SinkInCommon secret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    /**
+     * The endpoint's verification secret.
+     *
+     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
+     * to not set this and let the server generate the secret.
+     *
+     * @return secret
+     */
+    @javax.annotation.Nullable
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public SinkInCommon disabled(Boolean disabled) {
@@ -126,6 +160,34 @@ public class SinkInCommon {
         this.filterTypes = filterTypes;
     }
 
+    public SinkInCommon channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public SinkInCommon addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
+        return this;
+    }
+
+    /**
+     * List of message channels this sink listens to (omit for all).
+     *
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
+
     public SinkInCommon metadata(Map<String, String> metadata) {
         this.metadata = metadata;
         return this;
@@ -152,68 +214,6 @@ public class SinkInCommon {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public SinkInCommon secret(String secret) {
-        this.secret = secret;
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public SinkInCommon throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-    }
-
-    public SinkInCommon uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the sink.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     /**

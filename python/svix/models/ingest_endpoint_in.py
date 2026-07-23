@@ -7,16 +7,6 @@ from .common import BaseModel
 class IngestEndpointIn(BaseModel):
     description: t.Optional[str] = None
 
-    disabled: t.Optional[bool] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
-
-    secret: t.Optional[str] = None
-    """The endpoint's verification secret.
-
-    Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-    It is recommended to not set this and let the server generate the secret."""
-
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
 
@@ -26,3 +16,13 @@ class IngestEndpointIn(BaseModel):
     """Optional unique identifier for the endpoint."""
 
     url: str
+
+    disabled: t.Optional[bool] = None
+
+    secret: t.Optional[str] = None
+    """The endpoint's verification secret.
+
+    Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+    It is recommended to not set this and let the server generate the secret."""
+
+    metadata: t.Optional[t.Dict[str, str]] = None

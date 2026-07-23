@@ -8,6 +8,6 @@ from .event_out import EventOut
 class EventStreamOut(BaseModel):
     data: t.List[EventOut]
 
-    done: bool
-
     iterator: str
+
+    done: bool

@@ -5,8 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BigQueryPatchConfig(
-    val credentials: String? = null,
-    val datasetId: String? = null,
     val projectId: String? = null,
+    val datasetId: String? = null,
     val tableId: String? = null,
+    val credentials: String? = null,
 )

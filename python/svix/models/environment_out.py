@@ -8,7 +8,7 @@ from .event_type_out import EventTypeOut
 
 
 class EnvironmentOut(BaseModel):
-    connectors: t.List[ConnectorOut]
+    version: t.Optional[int] = None
 
     created_at: datetime
 
@@ -16,4 +16,4 @@ class EnvironmentOut(BaseModel):
 
     settings: t.Optional[t.Dict[str, t.Any]]
 
-    version: t.Optional[int] = None
+    connectors: t.List[ConnectorOut]

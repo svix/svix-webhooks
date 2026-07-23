@@ -67,16 +67,16 @@ pub enum StreamingStreamCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-    \"metadata\": {\"key\": \"...\"},
-    \"name\": \"...\",
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"name\": \"...\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -93,17 +93,17 @@ pub enum StreamingStreamCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         stream_in: crate::json::JsonOf<StreamIn>,
@@ -121,12 +121,12 @@ pub enum StreamingStreamCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { stream_id: String },
     /// Create or update a stream.
@@ -140,17 +140,17 @@ pub enum StreamingStreamCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Upsert {
         stream_id: String,
@@ -178,16 +178,16 @@ pub enum StreamingStreamCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
-  \"uid\": \"unique-identifier\"
+  \"uid\": \"unique-identifier\",
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Patch {
         stream_id: String,

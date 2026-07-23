@@ -21,11 +21,11 @@ import java.util.Map;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointUpdate {
     @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Map<String, String> metadata;
 
     public IngestEndpointUpdate() {}
 
@@ -46,53 +46,6 @@ public class IngestEndpointUpdate {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public IngestEndpointUpdate disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public IngestEndpointUpdate metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public IngestEndpointUpdate putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
     }
 
     public IngestEndpointUpdate throttleRate(Long throttleRate) {
@@ -152,6 +105,53 @@ public class IngestEndpointUpdate {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public IngestEndpointUpdate disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public IngestEndpointUpdate metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public IngestEndpointUpdate putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

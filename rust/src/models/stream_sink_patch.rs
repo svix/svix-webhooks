@@ -17,27 +17,27 @@ use super::{
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamSinkPatch {
+    /// The StreamSink's UID.
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub uid: JsOption<String>,
+
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub status: JsOption<SinkStatusIn>,
+
     #[serde(rename = "batchSize")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub batch_size: JsOption<u16>,
-
-    #[serde(rename = "eventTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub event_types: Option<Vec<String>>,
 
     #[serde(rename = "maxWaitSecs")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub max_wait_secs: JsOption<u16>,
 
+    #[serde(rename = "eventTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_types: Option<Vec<String>>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::HashMap<String, String>>,
-
-    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub status: JsOption<SinkStatusIn>,
-
-    /// The StreamSink's UID.
-    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub uid: JsOption<String>,
 
     #[serde(flatten)]
     pub config: StreamSinkPatchConfig,

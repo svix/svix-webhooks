@@ -3,20 +3,20 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct AzureBlobStorageConfig {
-    #[serde(rename = "accessKey")]
-    pub access_key: String,
+    pub container: String,
 
     pub account: String,
 
-    pub container: String,
+    #[serde(rename = "accessKey")]
+    pub access_key: String,
 }
 
 impl AzureBlobStorageConfig {
-    pub fn new(access_key: String, account: String, container: String) -> Self {
+    pub fn new(container: String, account: String, access_key: String) -> Self {
         Self {
-            access_key,
-            account,
             container,
+            account,
+            access_key,
         }
     }
 }

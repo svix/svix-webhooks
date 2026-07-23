@@ -3,4 +3,4 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class AppPortalAccessOut(val token: String, val url: String)
+@Serializable data class AppPortalAccessOut(val url: String, val token: String)

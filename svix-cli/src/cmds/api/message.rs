@@ -152,22 +152,22 @@ pub enum MessageCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
     \"eventId\": \"unique-identifier\",
     \"eventType\": \"user.signup\",
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"payload\": {
       \"email\": \"test@example.com\",
       \"type\": \"user.created\",
       \"username\": \"test_user\"
     },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         app_id: String,
@@ -193,39 +193,39 @@ pub enum MessageCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"eventId\": \"unique-identifier\",
+  \"eventType\": \"user.signup\",
+  \"payload\": {
+    \"email\": \"test@example.com\",
+    \"type\": \"user.created\",
+    \"username\": \"test_user\"
+  },
+  \"channels\": [\"project_123\",\"group_2\"],
   \"application\": {
-    \"metadata\": {\"key\": \"...\"},
     \"name\": \"My first application\",
     \"throttleRate\": 123,
-    \"uid\": \"unique-identifier\"
+    \"uid\": \"unique-identifier\",
+    \"metadata\": {\"key\": \"...\"}
   },
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"deliverAt\": \"2030-01-01T00:00:00Z\",
-  \"eventId\": \"unique-identifier\",
-  \"eventType\": \"user.signup\",
-  \"payload\": {
-    \"email\": \"test@example.com\",
-    \"type\": \"user.created\",
-    \"username\": \"test_user\"
-  },
-  \"payloadRetentionHours\": 123,
-  \"payloadRetentionPeriod\": 90,
   \"tags\": [\"my_tag\",\"other\"],
-  \"transformationsParams\": {\"key\": \"...\"}
+  \"transformationsParams\": {\"key\": \"...\"},
+  \"deliverAt\": \"2030-01-01T00:00:00Z\",
+  \"payloadRetentionPeriod\": 90,
+  \"payloadRetentionHours\": 123
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"deliverAt\": \"2030-01-01T00:00:00Z\",
   \"eventId\": \"unique-identifier\",
   \"eventType\": \"user.signup\",
-  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"payload\": {
     \"email\": \"test@example.com\",
     \"type\": \"user.created\",
     \"username\": \"test_user\"
   },
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"timestamp\": \"2030-01-01T00:00:00Z\",
   \"tags\": [\"...\"],
-  \"timestamp\": \"2030-01-01T00:00:00Z\"
+  \"deliverAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Create {
         app_id: String,
@@ -249,8 +249,8 @@ pub enum MessageCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"eventType\": \"user.signup\"
+  \"eventType\": \"user.signup\",
+  \"channels\": [\"project_123\",\"group_2\"]
 }\n\nExample response:
 {
   \"active\": true
@@ -272,18 +272,18 @@ pub enum MessageCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"deliverAt\": \"2030-01-01T00:00:00Z\",
   \"eventId\": \"unique-identifier\",
   \"eventType\": \"user.signup\",
-  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"payload\": {
     \"email\": \"test@example.com\",
     \"type\": \"user.created\",
     \"username\": \"test_user\"
   },
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"timestamp\": \"2030-01-01T00:00:00Z\",
   \"tags\": [\"...\"],
-  \"timestamp\": \"2030-01-01T00:00:00Z\"
+  \"deliverAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Get {
         app_id: String,

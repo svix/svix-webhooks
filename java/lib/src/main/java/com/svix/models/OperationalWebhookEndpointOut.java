@@ -23,36 +23,36 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointOut {
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
-    @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private String description;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
-    @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> filterTypes;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Map<String, String> metadata;
 
     public OperationalWebhookEndpointOut() {}
 
-    public OperationalWebhookEndpointOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public OperationalWebhookEndpointOut id(String id) {
+        this.id = id;
         return this;
     }
 
     /**
-     * Get createdAt
+     * The Endpoint's ID.
      *
-     * @return createdAt
+     * @return id
      */
     @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    public String getId() {
+        return id;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public OperationalWebhookEndpointOut description(String description) {
@@ -72,6 +72,65 @@ public class OperationalWebhookEndpointOut {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public OperationalWebhookEndpointOut throttleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Long getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Long throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public OperationalWebhookEndpointOut uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public OperationalWebhookEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
     public OperationalWebhookEndpointOut disabled(Boolean disabled) {
@@ -121,23 +180,42 @@ public class OperationalWebhookEndpointOut {
         this.filterTypes = filterTypes;
     }
 
-    public OperationalWebhookEndpointOut id(String id) {
-        this.id = id;
+    public OperationalWebhookEndpointOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 
     /**
-     * The Endpoint's ID.
+     * Get createdAt
      *
-     * @return id
+     * @return createdAt
      */
     @javax.annotation.Nonnull
-    public String getId() {
-        return id;
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public OperationalWebhookEndpointOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public OperationalWebhookEndpointOut metadata(Map<String, String> metadata) {
@@ -166,84 +244,6 @@ public class OperationalWebhookEndpointOut {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public OperationalWebhookEndpointOut throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-    }
-
-    public OperationalWebhookEndpointOut uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public OperationalWebhookEndpointOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public OperationalWebhookEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

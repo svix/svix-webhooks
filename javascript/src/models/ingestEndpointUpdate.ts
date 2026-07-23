@@ -2,8 +2,6 @@
 
 export interface IngestEndpointUpdate {
   description?: string;
-  disabled?: boolean;
-  metadata?: { [key: string]: string };
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -13,28 +11,30 @@ export interface IngestEndpointUpdate {
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   url: string;
+  disabled?: boolean;
+  metadata?: { [key: string]: string };
 }
 
 export const IngestEndpointUpdateSerializer = {
   _fromJsonObject(object: any): IngestEndpointUpdate {
     return {
       description: object["description"],
-      disabled: object["disabled"],
-      metadata: object["metadata"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
+      disabled: object["disabled"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: IngestEndpointUpdate): any {
     return {
       description: self.description,
-      disabled: self.disabled,
-      metadata: self.metadata,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
+      disabled: self.disabled,
+      metadata: self.metadata,
     };
   },
 };

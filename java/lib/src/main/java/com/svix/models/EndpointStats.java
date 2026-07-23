@@ -16,50 +16,31 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointStats {
-    @JsonProperty private Long canceled;
-    @JsonProperty private Long fail;
+    @JsonProperty private Long success;
     @JsonProperty private Long pending;
     @JsonProperty private Long sending;
-    @JsonProperty private Long success;
+    @JsonProperty private Long fail;
+    @JsonProperty private Long canceled;
 
     public EndpointStats() {}
 
-    public EndpointStats canceled(Long canceled) {
-        this.canceled = canceled;
+    public EndpointStats success(Long success) {
+        this.success = success;
         return this;
     }
 
     /**
-     * Get canceled
+     * Get success
      *
-     * @return canceled
+     * @return success
      */
     @javax.annotation.Nonnull
-    public Long getCanceled() {
-        return canceled;
+    public Long getSuccess() {
+        return success;
     }
 
-    public void setCanceled(Long canceled) {
-        this.canceled = canceled;
-    }
-
-    public EndpointStats fail(Long fail) {
-        this.fail = fail;
-        return this;
-    }
-
-    /**
-     * Get fail
-     *
-     * @return fail
-     */
-    @javax.annotation.Nonnull
-    public Long getFail() {
-        return fail;
-    }
-
-    public void setFail(Long fail) {
-        this.fail = fail;
+    public void setSuccess(Long success) {
+        this.success = success;
     }
 
     public EndpointStats pending(Long pending) {
@@ -100,23 +81,42 @@ public class EndpointStats {
         this.sending = sending;
     }
 
-    public EndpointStats success(Long success) {
-        this.success = success;
+    public EndpointStats fail(Long fail) {
+        this.fail = fail;
         return this;
     }
 
     /**
-     * Get success
+     * Get fail
      *
-     * @return success
+     * @return fail
      */
     @javax.annotation.Nonnull
-    public Long getSuccess() {
-        return success;
+    public Long getFail() {
+        return fail;
     }
 
-    public void setSuccess(Long success) {
-        this.success = success;
+    public void setFail(Long fail) {
+        this.fail = fail;
+    }
+
+    public EndpointStats canceled(Long canceled) {
+        this.canceled = canceled;
+        return this;
+    }
+
+    /**
+     * Get canceled
+     *
+     * @return canceled
+     */
+    @javax.annotation.Nonnull
+    public Long getCanceled() {
+        return canceled;
+    }
+
+    public void setCanceled(Long canceled) {
+        this.canceled = canceled;
     }
 
     /**

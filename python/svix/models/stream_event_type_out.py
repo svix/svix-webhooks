@@ -6,17 +6,17 @@ from .common import BaseModel
 
 
 class StreamEventTypeOut(BaseModel):
-    archived: bool
-
-    created_at: datetime
-
-    deprecated: bool
-
-    description: t.Optional[str] = None
-
-    feature_flags: t.Optional[t.List[str]] = None
-
     name: str
     """The event type's name"""
 
+    description: t.Optional[str] = None
+
+    created_at: datetime
+
     updated_at: datetime
+
+    deprecated: bool
+
+    archived: bool
+
+    feature_flags: t.Optional[t.List[str]] = None

@@ -5,16 +5,7 @@ from .common import BaseModel
 
 
 class EndpointUpdate(BaseModel):
-    channels: t.Optional[t.List[str]] = None
-    """List of message channels this endpoint listens to (omit for all)."""
-
     description: t.Optional[str] = None
-
-    disabled: t.Optional[bool] = None
-
-    filter_types: t.Optional[t.List[str]] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
@@ -25,3 +16,12 @@ class EndpointUpdate(BaseModel):
     """Optional unique identifier for the endpoint."""
 
     url: str
+
+    disabled: t.Optional[bool] = None
+
+    filter_types: t.Optional[t.List[str]] = None
+
+    channels: t.Optional[t.List[str]] = None
+    """List of message channels this endpoint listens to (omit for all)."""
+
+    metadata: t.Optional[t.Dict[str, str]] = None

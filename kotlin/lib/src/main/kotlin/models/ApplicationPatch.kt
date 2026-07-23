@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ApplicationPatch(
-    val metadata: Map<String, String>? = null,
     val name: String? = null,
     /**
      * Maximum messages per second to send to this application.
@@ -16,4 +15,5 @@ data class ApplicationPatch(
     val throttleRate: MaybeUnset<UShort> = MaybeUnset.Unset,
     /** The Application's UID. */
     val uid: MaybeUnset<String> = MaybeUnset.Unset,
+    val metadata: Map<String, String>? = null,
 )

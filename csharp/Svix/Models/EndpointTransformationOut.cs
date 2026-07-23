@@ -12,11 +12,11 @@ namespace Svix.Models
         [JsonProperty("enabled")]
         public bool? Enabled { get; set; } = null;
 
-        [JsonProperty("updatedAt")]
-        public DateTime? UpdatedAt { get; set; } = null;
-
         [JsonProperty("variables")]
         public Dictionary<string, string>? Variables { get; set; } = null;
+
+        [JsonProperty("updatedAt")]
+        public DateTime? UpdatedAt { get; set; } = null;
 
         public override string ToString()
         {
@@ -25,8 +25,8 @@ namespace Svix.Models
             sb.Append("class EndpointTransformationOut {\n");
             sb.Append("  Code: ").Append(Code).Append('\n');
             sb.Append("  Enabled: ").Append(Enabled).Append('\n');
-            sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("  Variables: ").Append(Variables).Append('\n');
+            sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

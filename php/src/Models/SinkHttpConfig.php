@@ -28,9 +28,9 @@ class SinkHttpConfig implements \JsonSerializable
         string $url,
     ): self {
         return new self(
+            url: $url,
             headers: null,
             key: null,
-            url: $url,
             setFields: ['url' => true]
         );
     }
@@ -41,9 +41,9 @@ class SinkHttpConfig implements \JsonSerializable
         $setFields['headers'] = true;
 
         return new self(
+            url: $this->url,
             headers: $headers,
             key: $this->key,
-            url: $this->url,
             setFields: $setFields
         );
     }
@@ -54,9 +54,9 @@ class SinkHttpConfig implements \JsonSerializable
         $setFields['key'] = true;
 
         return new self(
+            url: $this->url,
             headers: $this->headers,
             key: $key,
-            url: $this->url,
             setFields: $setFields
         );
     }
@@ -82,9 +82,9 @@ class SinkHttpConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'SinkHttpConfig'),
             headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'SinkHttpConfig'),
-            key: \Svix\Utils::deserializeString($data, 'key', false, 'SinkHttpConfig'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'SinkHttpConfig')
+            key: \Svix\Utils::deserializeString($data, 'key', false, 'SinkHttpConfig')
         );
     }
 

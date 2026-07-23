@@ -86,17 +86,17 @@ pub enum StreamingEventTypeCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"archived\": true,
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"deprecated\": true,
-    \"description\": \"...\",
-    \"featureFlags\": [\"cool-new-feature\"],
     \"name\": \"user.signup\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"description\": \"...\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"deprecated\": true,
+    \"archived\": true,
+    \"featureFlags\": [\"cool-new-feature\"]
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -113,20 +113,20 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"archived\": true,
-  \"deprecated\": true,
+  \"name\": \"user.signup\",
   \"description\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
-  \"name\": \"user.signup\"
+  \"deprecated\": true,
+  \"archived\": true
 }\n\nExample response:
 {
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Create {
         stream_event_type_in: crate::json::JsonOf<StreamEventTypeIn>,
@@ -144,13 +144,13 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Get { name: String },
     /// Create or update or create a event type for Streams.
@@ -164,20 +164,20 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"archived\": true,
-  \"deprecated\": true,
+  \"name\": \"user.signup\",
   \"description\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
-  \"name\": \"user.signup\"
+  \"deprecated\": true,
+  \"archived\": true
 }\n\nExample response:
 {
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Upsert {
         name: String,
@@ -208,19 +208,19 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"archived\": true,
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"]
-}\n\nExample response:
-{
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
   \"description\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
+  \"deprecated\": true,
+  \"archived\": true
+}\n\nExample response:
+{
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Patch {
         name: String,

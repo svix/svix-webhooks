@@ -1,31 +1,31 @@
 // this file is @generated
 
 export interface SnsPatchConfig {
-  accessKeyId?: string;
-  endpointUrl?: string | null;
-  region?: string;
-  secretAccessKey?: string;
   topicArn?: string;
+  region?: string;
+  accessKeyId?: string;
+  secretAccessKey?: string;
+  endpointUrl?: string | null;
 }
 
 export const SnsPatchConfigSerializer = {
   _fromJsonObject(object: any): SnsPatchConfig {
     return {
-      accessKeyId: object["accessKeyId"],
-      endpointUrl: object["endpointUrl"],
-      region: object["region"],
-      secretAccessKey: object["secretAccessKey"],
       topicArn: object["topicArn"],
+      region: object["region"],
+      accessKeyId: object["accessKeyId"],
+      secretAccessKey: object["secretAccessKey"],
+      endpointUrl: object["endpointUrl"],
     };
   },
 
   _toJsonObject(self: SnsPatchConfig): any {
     return {
-      accessKeyId: self.accessKeyId,
-      endpointUrl: self.endpointUrl,
-      region: self.region,
-      secretAccessKey: self.secretAccessKey,
       topicArn: self.topicArn,
+      region: self.region,
+      accessKeyId: self.accessKeyId,
+      secretAccessKey: self.secretAccessKey,
+      endpointUrl: self.endpointUrl,
     };
   },
 };

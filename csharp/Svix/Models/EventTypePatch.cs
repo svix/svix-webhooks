@@ -6,6 +6,11 @@ namespace Svix.Models
 {
     public class EventTypePatch
     {
+        [JsonProperty("description")]
+        public string? Description { get; set; } = null;
+
+        public bool ShouldSerializeDescription() => Description != null;
+
         [JsonProperty("archived")]
         public bool? Archived { get; set; } = null;
 
@@ -16,10 +21,10 @@ namespace Svix.Models
 
         public bool ShouldSerializeDeprecated() => Deprecated != null;
 
-        [JsonProperty("description")]
-        public string? Description { get; set; } = null;
+        [JsonProperty("schemas")]
+        public MaybeUnset<Object?> Schemas { get; set; } = MaybeUnset<Object?>.Unset();
 
-        public bool ShouldSerializeDescription() => Description != null;
+        public bool ShouldSerializeSchemas() => !Schemas.IsUnset;
 
         [JsonProperty("featureFlags")]
         public MaybeUnset<List<string>?> FeatureFlags { get; set; } =
@@ -32,22 +37,17 @@ namespace Svix.Models
 
         public bool ShouldSerializeGroupName() => !GroupName.IsUnset;
 
-        [JsonProperty("schemas")]
-        public MaybeUnset<Object?> Schemas { get; set; } = MaybeUnset<Object?>.Unset();
-
-        public bool ShouldSerializeSchemas() => !Schemas.IsUnset;
-
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class EventTypePatch {\n");
+            sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
-            sb.Append("  Description: ").Append(Description).Append('\n');
+            sb.Append("  Schemas: ").Append(Schemas).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
             sb.Append("  GroupName: ").Append(GroupName).Append('\n');
-            sb.Append("  Schemas: ").Append(Schemas).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

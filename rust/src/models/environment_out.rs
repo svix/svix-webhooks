@@ -5,7 +5,8 @@ use super::{connector_out::ConnectorOut, event_type_out::EventTypeOut};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EnvironmentOut {
-    pub connectors: Vec<ConnectorOut>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<i32>,
 
     #[serde(rename = "createdAt")]
     pub created_at: String,
@@ -16,22 +17,21 @@ pub struct EnvironmentOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub settings: Option<serde_json::Value>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub version: Option<i32>,
+    pub connectors: Vec<ConnectorOut>,
 }
 
 impl EnvironmentOut {
     pub fn new(
-        connectors: Vec<ConnectorOut>,
         created_at: String,
         event_types: Vec<EventTypeOut>,
+        connectors: Vec<ConnectorOut>,
     ) -> Self {
         Self {
-            connectors,
+            version: None,
             created_at,
             event_types,
             settings: None,
-            version: None,
+            connectors,
         }
     }
 }

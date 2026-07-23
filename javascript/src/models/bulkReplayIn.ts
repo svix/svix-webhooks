@@ -3,21 +3,23 @@ import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
 import { type StatusCodeClass, StatusCodeClassSerializer } from "./statusCodeClass";
 
 export interface BulkReplayIn {
-  channel?: string | null;
-  eventTypes?: string[] | null;
   since: Date;
+  until?: Date | null;
+  eventTypes?: string[] | null;
+  channel?: string | null;
+  tag?: string | null;
   status?: MessageStatus | null;
   statusCodeClass?: StatusCodeClass | null;
-  tag?: string | null;
-  until?: Date | null;
 }
 
 export const BulkReplayInSerializer = {
   _fromJsonObject(object: any): BulkReplayIn {
     return {
-      channel: object["channel"],
-      eventTypes: object["eventTypes"],
       since: new Date(object["since"]),
+      until: object["until"] ? new Date(object["until"]) : null,
+      eventTypes: object["eventTypes"],
+      channel: object["channel"],
+      tag: object["tag"],
       status:
         object["status"] != null
           ? MessageStatusSerializer._fromJsonObject(object["status"])
@@ -26,16 +28,16 @@ export const BulkReplayInSerializer = {
         object["statusCodeClass"] != null
           ? StatusCodeClassSerializer._fromJsonObject(object["statusCodeClass"])
           : undefined,
-      tag: object["tag"],
-      until: object["until"] ? new Date(object["until"]) : null,
     };
   },
 
   _toJsonObject(self: BulkReplayIn): any {
     return {
-      channel: self.channel,
-      eventTypes: self.eventTypes,
       since: self.since,
+      until: self.until,
+      eventTypes: self.eventTypes,
+      channel: self.channel,
+      tag: self.tag,
       status:
         self.status != null
           ? MessageStatusSerializer._toJsonObject(self.status)
@@ -44,8 +46,6 @@ export const BulkReplayInSerializer = {
         self.statusCodeClass != null
           ? StatusCodeClassSerializer._toJsonObject(self.statusCodeClass)
           : undefined,
-      tag: self.tag,
-      until: self.until,
     };
   },
 };

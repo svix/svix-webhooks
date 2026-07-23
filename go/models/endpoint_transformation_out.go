@@ -6,6 +6,6 @@ import "time"
 type EndpointTransformationOut struct {
 	Code      *string            `json:"code,omitempty"`
 	Enabled   *bool              `json:"enabled,omitempty"`
-	UpdatedAt *time.Time         `json:"updatedAt,omitempty"`
 	Variables *map[string]string `json:"variables,omitempty"`
+	UpdatedAt *time.Time         `json:"updatedAt,omitempty"`
 }

@@ -15,13 +15,13 @@ class ConnectorUpdate implements \JsonSerializable
      */
     private function __construct(
         public readonly string $transformation,
-        public readonly ?array $allowedEventTypes = null,
-        public readonly ?string $description = null,
-        public readonly ?array $featureFlags = null,
-        public readonly ?string $instructions = null,
-        public readonly ?ConnectorKind $kind = null,
-        public readonly ?string $logo = null,
         public readonly ?string $name = null,
+        public readonly ?string $logo = null,
+        public readonly ?string $description = null,
+        public readonly ?ConnectorKind $kind = null,
+        public readonly ?string $instructions = null,
+        public readonly ?array $allowedEventTypes = null,
+        public readonly ?array $featureFlags = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -34,104 +34,32 @@ class ConnectorUpdate implements \JsonSerializable
         string $transformation,
     ): self {
         return new self(
-            allowedEventTypes: null,
-            description: null,
-            featureFlags: null,
-            instructions: null,
-            kind: null,
-            logo: null,
             name: null,
+            logo: null,
+            description: null,
+            kind: null,
+            instructions: null,
+            allowedEventTypes: null,
             transformation: $transformation,
+            featureFlags: null,
             setFields: ['transformation' => true]
         );
     }
 
-    public function withAllowedEventTypes(?array $allowedEventTypes): self
+    public function withName(?string $name): self
     {
         $setFields = $this->setFields;
-        $setFields['allowedEventTypes'] = true;
+        $setFields['name'] = true;
 
         return new self(
-            allowedEventTypes: $allowedEventTypes,
+            name: $name,
+            logo: $this->logo,
             description: $this->description,
-            featureFlags: $this->featureFlags,
-            instructions: $this->instructions,
             kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withDescription(?string $description): self
-    {
-        $setFields = $this->setFields;
-        $setFields['description'] = true;
-
-        return new self(
-            allowedEventTypes: $this->allowedEventTypes,
-            description: $description,
-            featureFlags: $this->featureFlags,
             instructions: $this->instructions,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withFeatureFlags(?array $featureFlags): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlags'] = true;
-
-        return new self(
             allowedEventTypes: $this->allowedEventTypes,
-            description: $this->description,
-            featureFlags: $featureFlags,
-            instructions: $this->instructions,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
             transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withInstructions(?string $instructions): self
-    {
-        $setFields = $this->setFields;
-        $setFields['instructions'] = true;
-
-        return new self(
-            allowedEventTypes: $this->allowedEventTypes,
-            description: $this->description,
             featureFlags: $this->featureFlags,
-            instructions: $instructions,
-            kind: $this->kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
-            setFields: $setFields
-        );
-    }
-
-    public function withKind(?ConnectorKind $kind): self
-    {
-        $setFields = $this->setFields;
-        $setFields['kind'] = true;
-
-        return new self(
-            allowedEventTypes: $this->allowedEventTypes,
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            instructions: $this->instructions,
-            kind: $kind,
-            logo: $this->logo,
-            name: $this->name,
-            transformation: $this->transformation,
             setFields: $setFields
         );
     }
@@ -142,32 +70,104 @@ class ConnectorUpdate implements \JsonSerializable
         $setFields['logo'] = true;
 
         return new self(
-            allowedEventTypes: $this->allowedEventTypes,
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            instructions: $this->instructions,
-            kind: $this->kind,
-            logo: $logo,
             name: $this->name,
+            logo: $logo,
+            description: $this->description,
+            kind: $this->kind,
+            instructions: $this->instructions,
+            allowedEventTypes: $this->allowedEventTypes,
             transformation: $this->transformation,
+            featureFlags: $this->featureFlags,
             setFields: $setFields
         );
     }
 
-    public function withName(?string $name): self
+    public function withDescription(?string $description): self
     {
         $setFields = $this->setFields;
-        $setFields['name'] = true;
+        $setFields['description'] = true;
 
         return new self(
-            allowedEventTypes: $this->allowedEventTypes,
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            instructions: $this->instructions,
-            kind: $this->kind,
+            name: $this->name,
             logo: $this->logo,
-            name: $name,
+            description: $description,
+            kind: $this->kind,
+            instructions: $this->instructions,
+            allowedEventTypes: $this->allowedEventTypes,
             transformation: $this->transformation,
+            featureFlags: $this->featureFlags,
+            setFields: $setFields
+        );
+    }
+
+    public function withKind(?ConnectorKind $kind): self
+    {
+        $setFields = $this->setFields;
+        $setFields['kind'] = true;
+
+        return new self(
+            name: $this->name,
+            logo: $this->logo,
+            description: $this->description,
+            kind: $kind,
+            instructions: $this->instructions,
+            allowedEventTypes: $this->allowedEventTypes,
+            transformation: $this->transformation,
+            featureFlags: $this->featureFlags,
+            setFields: $setFields
+        );
+    }
+
+    public function withInstructions(?string $instructions): self
+    {
+        $setFields = $this->setFields;
+        $setFields['instructions'] = true;
+
+        return new self(
+            name: $this->name,
+            logo: $this->logo,
+            description: $this->description,
+            kind: $this->kind,
+            instructions: $instructions,
+            allowedEventTypes: $this->allowedEventTypes,
+            transformation: $this->transformation,
+            featureFlags: $this->featureFlags,
+            setFields: $setFields
+        );
+    }
+
+    public function withAllowedEventTypes(?array $allowedEventTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['allowedEventTypes'] = true;
+
+        return new self(
+            name: $this->name,
+            logo: $this->logo,
+            description: $this->description,
+            kind: $this->kind,
+            instructions: $this->instructions,
+            allowedEventTypes: $allowedEventTypes,
+            transformation: $this->transformation,
+            featureFlags: $this->featureFlags,
+            setFields: $setFields
+        );
+    }
+
+    public function withFeatureFlags(?array $featureFlags): self
+    {
+        $setFields = $this->setFields;
+        $setFields['featureFlags'] = true;
+
+        return new self(
+            name: $this->name,
+            logo: $this->logo,
+            description: $this->description,
+            kind: $this->kind,
+            instructions: $this->instructions,
+            allowedEventTypes: $this->allowedEventTypes,
+            transformation: $this->transformation,
+            featureFlags: $featureFlags,
             setFields: $setFields
         );
     }
@@ -177,26 +177,26 @@ class ConnectorUpdate implements \JsonSerializable
         $data = [
             'transformation' => $this->transformation];
 
-        if (isset($this->setFields['allowedEventTypes'])) {
-            $data['allowedEventTypes'] = $this->allowedEventTypes;
-        }
-        if (null !== $this->description) {
-            $data['description'] = $this->description;
-        }
-        if (isset($this->setFields['featureFlags'])) {
-            $data['featureFlags'] = $this->featureFlags;
-        }
-        if (null !== $this->instructions) {
-            $data['instructions'] = $this->instructions;
-        }
-        if (null !== $this->kind) {
-            $data['kind'] = $this->kind;
+        if (null !== $this->name) {
+            $data['name'] = $this->name;
         }
         if (isset($this->setFields['logo'])) {
             $data['logo'] = $this->logo;
         }
-        if (null !== $this->name) {
-            $data['name'] = $this->name;
+        if (null !== $this->description) {
+            $data['description'] = $this->description;
+        }
+        if (null !== $this->kind) {
+            $data['kind'] = $this->kind;
+        }
+        if (null !== $this->instructions) {
+            $data['instructions'] = $this->instructions;
+        }
+        if (isset($this->setFields['allowedEventTypes'])) {
+            $data['allowedEventTypes'] = $this->allowedEventTypes;
+        }
+        if (isset($this->setFields['featureFlags'])) {
+            $data['featureFlags'] = $this->featureFlags;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -208,14 +208,14 @@ class ConnectorUpdate implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            allowedEventTypes: \Svix\Utils::getValFromJson($data, 'allowedEventTypes', false, 'ConnectorUpdate'),
-            description: \Svix\Utils::deserializeString($data, 'description', false, 'ConnectorUpdate'),
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorUpdate'),
-            instructions: \Svix\Utils::deserializeString($data, 'instructions', false, 'ConnectorUpdate'),
-            kind: \Svix\Utils::deserializeObject($data, 'kind', false, 'ConnectorUpdate', [ConnectorKind::class, 'fromMixed']),
-            logo: \Svix\Utils::getValFromJson($data, 'logo', false, 'ConnectorUpdate'),
             name: \Svix\Utils::deserializeString($data, 'name', false, 'ConnectorUpdate'),
-            transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorUpdate')
+            logo: \Svix\Utils::getValFromJson($data, 'logo', false, 'ConnectorUpdate'),
+            description: \Svix\Utils::deserializeString($data, 'description', false, 'ConnectorUpdate'),
+            kind: \Svix\Utils::deserializeObject($data, 'kind', false, 'ConnectorUpdate', [ConnectorKind::class, 'fromMixed']),
+            instructions: \Svix\Utils::deserializeString($data, 'instructions', false, 'ConnectorUpdate'),
+            allowedEventTypes: \Svix\Utils::getValFromJson($data, 'allowedEventTypes', false, 'ConnectorUpdate'),
+            transformation: \Svix\Utils::deserializeString($data, 'transformation', true, 'ConnectorUpdate'),
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'ConnectorUpdate')
         );
     }
 

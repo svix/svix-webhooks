@@ -23,47 +23,16 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointPatch {
-    @JsonProperty private MaybeUnset<Set<String>> channels;
     @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private MaybeUnset<Set<String>> filterTypes;
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private MaybeUnset<Long> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
     @JsonProperty private URI url;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private MaybeUnset<Set<String>> filterTypes;
+    @JsonProperty private MaybeUnset<Set<String>> channels;
+    @JsonProperty private Map<String, String> metadata;
 
     public EndpointPatch() {}
-
-    public EndpointPatch channels(Set<String> channels) {
-        this.channels = new MaybeUnset<>(channels);
-        return this;
-    }
-
-    public EndpointPatch addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new MaybeUnset<>(new LinkedHashSet<>());
-        }
-        this.channels.getValue().add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * Get channels
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        if (channels == null) {
-            return null;
-        }
-        return channels.getValue();
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = new MaybeUnset<>(channels);
-    }
 
     public EndpointPatch description(String description) {
         this.description = description;
@@ -82,84 +51,6 @@ public class EndpointPatch {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public EndpointPatch disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public EndpointPatch filterTypes(Set<String> filterTypes) {
-        this.filterTypes = new MaybeUnset<>(filterTypes);
-        return this;
-    }
-
-    public EndpointPatch addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new MaybeUnset<>(new LinkedHashSet<>());
-        }
-        this.filterTypes.getValue().add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        if (filterTypes == null) {
-            return null;
-        }
-        return filterTypes.getValue();
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = new MaybeUnset<>(filterTypes);
-    }
-
-    public EndpointPatch metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public EndpointPatch putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
     }
 
     public EndpointPatch throttleRate(Long throttleRate) {
@@ -225,6 +116,115 @@ public class EndpointPatch {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public EndpointPatch disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public EndpointPatch filterTypes(Set<String> filterTypes) {
+        this.filterTypes = new MaybeUnset<>(filterTypes);
+        return this;
+    }
+
+    public EndpointPatch addFilterTypesItem(String filterTypesItem) {
+        if (this.filterTypes == null) {
+            this.filterTypes = new MaybeUnset<>(new LinkedHashSet<>());
+        }
+        this.filterTypes.getValue().add(filterTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get filterTypes
+     *
+     * @return filterTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getFilterTypes() {
+        if (filterTypes == null) {
+            return null;
+        }
+        return filterTypes.getValue();
+    }
+
+    public void setFilterTypes(Set<String> filterTypes) {
+        this.filterTypes = new MaybeUnset<>(filterTypes);
+    }
+
+    public EndpointPatch channels(Set<String> channels) {
+        this.channels = new MaybeUnset<>(channels);
+        return this;
+    }
+
+    public EndpointPatch addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new MaybeUnset<>(new LinkedHashSet<>());
+        }
+        this.channels.getValue().add(channelsItem);
+
+        return this;
+    }
+
+    /**
+     * Get channels
+     *
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        if (channels == null) {
+            return null;
+        }
+        return channels.getValue();
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = new MaybeUnset<>(channels);
+    }
+
+    public EndpointPatch metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public EndpointPatch putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

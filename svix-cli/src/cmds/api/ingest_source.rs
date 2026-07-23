@@ -80,9 +80,9 @@ pub enum IngestSourceCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{\"...\": \"...\"}],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -99,18 +99,18 @@ pub enum IngestSourceCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"ingestUrl\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"ingestUrl\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         ingest_source_in: crate::json::JsonOf<IngestSourceIn>,
@@ -128,13 +128,13 @@ pub enum IngestSourceCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"ingestUrl\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"...\",
+  \"ingestUrl\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { source_id: String },
     /// Create or update an Ingest Source.
@@ -148,18 +148,18 @@ pub enum IngestSourceCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"ingestUrl\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"ingestUrl\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Upsert {
         source_id: String,

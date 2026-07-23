@@ -4,29 +4,29 @@ require "json"
 
 module Svix
   class ConnectorIn
-    attr_accessor :allowed_event_types
-    attr_accessor :description
-    attr_accessor :feature_flags
-    attr_accessor :instructions
-    attr_accessor :kind
-    attr_accessor :logo
     attr_accessor :name
-    attr_accessor :product_type
-    attr_accessor :transformation
     # The Connector's UID.
     attr_accessor :uid
+    attr_accessor :logo
+    attr_accessor :description
+    attr_accessor :kind
+    attr_accessor :instructions
+    attr_accessor :allowed_event_types
+    attr_accessor :transformation
+    attr_accessor :feature_flags
+    attr_accessor :product_type
 
     ALL_FIELD ||= [
-      "allowed_event_types",
-      "description",
-      "feature_flags",
-      "instructions",
-      "kind",
-      "logo",
       "name",
-      "product_type",
+      "uid",
+      "logo",
+      "description",
+      "kind",
+      "instructions",
+      "allowed_event_types",
       "transformation",
-      "uid"
+      "feature_flags",
+      "product_type"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -48,34 +48,34 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["allowed_event_types"] = attributes["allowedEventTypes"]
-      attrs["description"] = attributes["description"]
-      attrs["feature_flags"] = attributes["featureFlags"]
-      attrs["instructions"] = attributes["instructions"]
-      attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"]) if attributes["kind"]
-      attrs["logo"] = attributes["logo"]
       attrs["name"] = attributes["name"]
+      attrs["uid"] = attributes["uid"]
+      attrs["logo"] = attributes["logo"]
+      attrs["description"] = attributes["description"]
+      attrs["kind"] = Svix::ConnectorKind.deserialize(attributes["kind"]) if attributes["kind"]
+      attrs["instructions"] = attributes["instructions"]
+      attrs["allowed_event_types"] = attributes["allowedEventTypes"]
+      attrs["transformation"] = attributes["transformation"]
+      attrs["feature_flags"] = attributes["featureFlags"]
       if attributes["productType"]
         attrs["product_type"] = Svix::ConnectorProduct.deserialize(attributes["productType"])
       end
 
-      attrs["transformation"] = attributes["transformation"]
-      attrs["uid"] = attributes["uid"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @allowed_event_types
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
-      out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
-      out["logo"] = Svix::serialize_primitive(@logo) if @logo
       out["name"] = Svix::serialize_primitive(@name) if @name
-      out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
-      out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
       out["uid"] = Svix::serialize_primitive(@uid) if @uid
+      out["logo"] = Svix::serialize_primitive(@logo) if @logo
+      out["description"] = Svix::serialize_primitive(@description) if @description
+      out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
+      out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
+      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @allowed_event_types
+      out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
+      out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
       out
     end
 

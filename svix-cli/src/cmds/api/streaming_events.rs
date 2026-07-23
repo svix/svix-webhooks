@@ -72,8 +72,8 @@ pub enum StreamingEventsCommands {
     \"payload\": \"...\",
     \"timestamp\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
-  \"iterator\": \"...\"
+  \"iterator\": \"...\",
+  \"done\": true
 }\n")]
     Get {
         stream_id: String,
@@ -94,9 +94,9 @@ pub enum StreamingEventsCommands {
 {
   \"events\": [{\"eventType\":\"user.signup\",\"payload\":\"{\\\"email\\\":\\\"test@example.com\\\",\\\"username\\\":\\\"test_user\\\"}\"}],
   \"stream\": {
-    \"metadata\": {\"key\": \"...\"},
     \"name\": \"...\",
-    \"uid\": \"unique-identifier\"
+    \"uid\": \"unique-identifier\",
+    \"metadata\": {\"key\": \"...\"}
   }
 }\n\nExample response:
 {

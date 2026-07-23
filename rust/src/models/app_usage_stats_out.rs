@@ -7,6 +7,12 @@ use super::{
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct AppUsageStatsOut {
+    /// Any app IDs or UIDs received in the request that weren't found.
+    ///
+    /// Stats will be produced for all the others.
+    #[serde(rename = "unresolvedAppIds")]
+    pub unresolved_app_ids: Vec<String>,
+
     /// The QueueBackgroundTask's ID.
     pub id: String,
 
@@ -14,29 +20,23 @@ pub struct AppUsageStatsOut {
 
     pub task: BackgroundTaskType,
 
-    /// Any app IDs or UIDs received in the request that weren't found.
-    ///
-    /// Stats will be produced for all the others.
-    #[serde(rename = "unresolvedAppIds")]
-    pub unresolved_app_ids: Vec<String>,
-
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
 }
 
 impl AppUsageStatsOut {
     pub fn new(
+        unresolved_app_ids: Vec<String>,
         id: String,
         status: BackgroundTaskStatus,
         task: BackgroundTaskType,
-        unresolved_app_ids: Vec<String>,
         updated_at: String,
     ) -> Self {
         Self {
+            unresolved_app_ids,
             id,
             status,
             task,
-            unresolved_app_ids,
             updated_at,
         }
     }

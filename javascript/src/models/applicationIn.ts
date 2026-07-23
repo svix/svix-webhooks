@@ -1,7 +1,6 @@
 // this file is @generated
 
 export interface ApplicationIn {
-  metadata?: { [key: string]: string };
   /** Application name for human consumption. */
   name: string;
   /**
@@ -12,24 +11,25 @@ export interface ApplicationIn {
   throttleRate?: number | null;
   /** Optional unique identifier for the application. */
   uid?: string | null;
+  metadata?: { [key: string]: string };
 }
 
 export const ApplicationInSerializer = {
   _fromJsonObject(object: any): ApplicationIn {
     return {
-      metadata: object["metadata"],
       name: object["name"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: ApplicationIn): any {
     return {
-      metadata: self.metadata,
       name: self.name,
       throttleRate: self.throttleRate,
       uid: self.uid,
+      metadata: self.metadata,
     };
   },
 };

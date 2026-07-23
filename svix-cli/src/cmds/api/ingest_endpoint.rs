@@ -82,19 +82,19 @@ pub enum IngestEndpointCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"disabled\": false,
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"metadata\": {\"key\": \"...\"},
+    \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
+    \"url\": \"https://example.com/webhook/\",
+    \"disabled\": false,
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\"
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         source_id: String,
@@ -113,23 +113,23 @@ pub enum IngestEndpointCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"metadata\": {\"key\": \"...\"},
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         source_id: String,
@@ -148,15 +148,15 @@ pub enum IngestEndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get {
         source_id: String,
@@ -174,22 +174,22 @@ pub enum IngestEndpointCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"metadata\": {\"key\": \"...\"},
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"url\": \"https://example.com/webhook/\",
+  \"disabled\": false,
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Upsert {
         source_id: String,

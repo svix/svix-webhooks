@@ -6,16 +6,6 @@ namespace Svix.Models
 {
     public class StreamEventTypePatch
     {
-        [JsonProperty("archived")]
-        public bool? Archived { get; set; } = null;
-
-        public bool ShouldSerializeArchived() => Archived != null;
-
-        [JsonProperty("deprecated")]
-        public bool? Deprecated { get; set; } = null;
-
-        public bool ShouldSerializeDeprecated() => Deprecated != null;
-
         [JsonProperty("description")]
         public MaybeUnset<string?> Description { get; set; } = MaybeUnset<string?>.Unset();
 
@@ -27,15 +17,25 @@ namespace Svix.Models
 
         public bool ShouldSerializeFeatureFlags() => !FeatureFlags.IsUnset;
 
+        [JsonProperty("deprecated")]
+        public bool? Deprecated { get; set; } = null;
+
+        public bool ShouldSerializeDeprecated() => Deprecated != null;
+
+        [JsonProperty("archived")]
+        public bool? Archived { get; set; } = null;
+
+        public bool ShouldSerializeArchived() => Archived != null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class StreamEventTypePatch {\n");
-            sb.Append("  Archived: ").Append(Archived).Append('\n');
-            sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
+            sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
+            sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

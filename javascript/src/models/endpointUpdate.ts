@@ -1,12 +1,7 @@
 // this file is @generated
 
 export interface EndpointUpdate {
-  /** List of message channels this endpoint listens to (omit for all). */
-  channels?: string[] | null;
   description?: string;
-  disabled?: boolean;
-  filterTypes?: string[] | null;
-  metadata?: { [key: string]: string };
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -16,32 +11,37 @@ export interface EndpointUpdate {
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   url: string;
+  disabled?: boolean;
+  filterTypes?: string[] | null;
+  /** List of message channels this endpoint listens to (omit for all). */
+  channels?: string[] | null;
+  metadata?: { [key: string]: string };
 }
 
 export const EndpointUpdateSerializer = {
   _fromJsonObject(object: any): EndpointUpdate {
     return {
-      channels: object["channels"],
       description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
+      disabled: object["disabled"],
+      filterTypes: object["filterTypes"],
+      channels: object["channels"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: EndpointUpdate): any {
     return {
-      channels: self.channels,
       description: self.description,
-      disabled: self.disabled,
-      filterTypes: self.filterTypes,
-      metadata: self.metadata,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
+      disabled: self.disabled,
+      filterTypes: self.filterTypes,
+      channels: self.channels,
+      metadata: self.metadata,
     };
   },
 };

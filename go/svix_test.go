@@ -264,7 +264,7 @@ func TestModelSerialization(t *testing.T) {
 	metadata := make(map[string]string)
 	ep_in.Uid = nil
 	ep_in.Metadata = &metadata
-	assertMarshalEq(ep_in, `{"metadata":{},"url":"http://example.local"}`, t)
+	assertMarshalEq(ep_in, `{"url":"http://example.local","metadata":{}}`, t)
 
 	ep_patch := models.EndpointPatch{}
 	assertMarshalEq(ep_patch, `{}`, t)
@@ -773,7 +773,7 @@ func TestListResponseOutModels(t *testing.T) {
 }
 
 func TestStructEnumWithFields(t *testing.T) {
-	expectedJson := `{"name":"Mendy","type":"cron","config":{"payload":"Hello from space","schedule":"0 0 0 * *"}}`
+	expectedJson := `{"name":"Mendy","type":"cron","config":{"schedule":"0 0 0 * *","payload":"Hello from space"}}`
 	sourceIn := models.IngestSourceIn{
 		Name: "Mendy",
 		Type: models.IngestSourceInTypeCron,

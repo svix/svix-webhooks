@@ -19,26 +19,26 @@ use super::{
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestSourceOut {
-    #[serde(rename = "createdAt")]
-    pub created_at: String,
-
     /// The Source's ID.
     pub id: String,
-
-    #[serde(rename = "ingestUrl")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub ingest_url: Option<String>,
-
-    pub metadata: std::collections::HashMap<String, String>,
-
-    pub name: String,
 
     /// The Source's UID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 
+    pub name: String,
+
+    #[serde(rename = "ingestUrl")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ingest_url: Option<String>,
+
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
+
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
+
+    pub metadata: std::collections::HashMap<String, String>,
 
     #[serde(flatten)]
     pub config: IngestSourceOutConfig,

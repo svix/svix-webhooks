@@ -2,16 +2,6 @@
 
 export interface OperationalWebhookEndpointIn {
   description?: string;
-  disabled?: boolean;
-  filterTypes?: string[] | null;
-  metadata?: { [key: string]: string };
-  /**
-   * The endpoint's verification secret.
-   *
-   * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-   * It is recommended to not set this and let the server generate the secret.
-   */
-  secret?: string | null;
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -21,32 +11,42 @@ export interface OperationalWebhookEndpointIn {
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
   url: string;
+  disabled?: boolean;
+  filterTypes?: string[] | null;
+  /**
+   * The endpoint's verification secret.
+   *
+   * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+   * It is recommended to not set this and let the server generate the secret.
+   */
+  secret?: string | null;
+  metadata?: { [key: string]: string };
 }
 
 export const OperationalWebhookEndpointInSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointIn {
     return {
       description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
-      metadata: object["metadata"],
-      secret: object["secret"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
       url: object["url"],
+      disabled: object["disabled"],
+      filterTypes: object["filterTypes"],
+      secret: object["secret"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: OperationalWebhookEndpointIn): any {
     return {
       description: self.description,
-      disabled: self.disabled,
-      filterTypes: self.filterTypes,
-      metadata: self.metadata,
-      secret: self.secret,
       throttleRate: self.throttleRate,
       uid: self.uid,
       url: self.url,
+      disabled: self.disabled,
+      filterTypes: self.filterTypes,
+      secret: self.secret,
+      metadata: self.metadata,
     };
   },
 };

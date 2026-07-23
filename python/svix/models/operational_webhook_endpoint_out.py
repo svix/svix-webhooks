@@ -6,19 +6,11 @@ from .common import BaseModel
 
 
 class OperationalWebhookEndpointOut(BaseModel):
-    created_at: datetime
-
-    description: str
-    """An example endpoint name."""
-
-    disabled: t.Optional[bool] = None
-
-    filter_types: t.Optional[t.List[str]] = None
-
     id: str
     """The Endpoint's ID."""
 
-    metadata: t.Dict[str, str]
+    description: str
+    """An example endpoint name."""
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this endpoint.
@@ -28,6 +20,14 @@ class OperationalWebhookEndpointOut(BaseModel):
     uid: t.Optional[str] = None
     """Optional unique identifier for the endpoint."""
 
+    url: str
+
+    disabled: t.Optional[bool] = None
+
+    filter_types: t.Optional[t.List[str]] = None
+
+    created_at: datetime
+
     updated_at: datetime
 
-    url: str
+    metadata: t.Dict[str, str]

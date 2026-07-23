@@ -25,19 +25,8 @@ import { type SnsConfig, SnsConfigSerializer } from "./snsConfig";
 import { type SqsConfig, SqsConfigSerializer } from "./sqsConfig";
 
 interface _StreamSinkInFields {
-  /** How many events will be batched in a request to the Sink. */
-  batchSize?: number;
-  /** A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events. */
-  eventTypes?: string[];
-  /**
-   * How long to wait before a batch of events is sent, if the `batchSize` is not reached.
-   *
-   * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
-   *
-   * Note that we will never send an empty batch of events to the Sink.
-   */
-  maxWaitSecs?: number;
-  metadata?: { [key: string]: string };
+  /** An optional unique identifier for the sink. */
+  uid?: string | null;
   /**
    * Whether the sink will receive events.
    *
@@ -46,8 +35,19 @@ interface _StreamSinkInFields {
    * If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
    */
   status?: SinkStatusIn;
-  /** An optional unique identifier for the sink. */
-  uid?: string | null;
+  /** How many events will be batched in a request to the Sink. */
+  batchSize?: number;
+  /**
+   * How long to wait before a batch of events is sent, if the `batchSize` is not reached.
+   *
+   * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
+   *
+   * Note that we will never send an empty batch of events to the Sink.
+   */
+  maxWaitSecs?: number;
+  /** A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events. */
+  eventTypes?: string[];
+  metadata?: { [key: string]: string };
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
@@ -191,15 +191,15 @@ export const StreamSinkInSerializer = {
     return {
       type,
       config: getConfig(type),
-      batchSize: object["batchSize"],
-      eventTypes: object["eventTypes"],
-      maxWaitSecs: object["maxWaitSecs"],
-      metadata: object["metadata"],
+      uid: object["uid"],
       status:
         object["status"] != null
           ? SinkStatusInSerializer._fromJsonObject(object["status"])
           : undefined,
-      uid: object["uid"],
+      batchSize: object["batchSize"],
+      maxWaitSecs: object["maxWaitSecs"],
+      eventTypes: object["eventTypes"],
+      metadata: object["metadata"],
     };
   },
 
@@ -257,15 +257,15 @@ export const StreamSinkInSerializer = {
     return {
       type: self.type,
       config: config,
-      batchSize: self.batchSize,
-      eventTypes: self.eventTypes,
-      maxWaitSecs: self.maxWaitSecs,
-      metadata: self.metadata,
+      uid: self.uid,
       status:
         self.status != null
           ? SinkStatusInSerializer._toJsonObject(self.status)
           : undefined,
-      uid: self.uid,
+      batchSize: self.batchSize,
+      maxWaitSecs: self.maxWaitSecs,
+      eventTypes: self.eventTypes,
+      metadata: self.metadata,
     };
   },
 };

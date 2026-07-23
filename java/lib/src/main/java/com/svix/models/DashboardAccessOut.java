@@ -18,29 +18,10 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class DashboardAccessOut {
-    @JsonProperty private String token;
     @JsonProperty private URI url;
+    @JsonProperty private String token;
 
     public DashboardAccessOut() {}
-
-    public DashboardAccessOut token(String token) {
-        this.token = token;
-        return this;
-    }
-
-    /**
-     * Get token
-     *
-     * @return token
-     */
-    @javax.annotation.Nonnull
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public DashboardAccessOut url(URI url) {
         this.url = url;
@@ -59,6 +40,25 @@ public class DashboardAccessOut {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public DashboardAccessOut token(String token) {
+        this.token = token;
+        return this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return token
+     */
+    @javax.annotation.Nonnull
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     /**

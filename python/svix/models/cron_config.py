@@ -5,11 +5,11 @@ from .common import BaseModel
 
 
 class CronConfig(BaseModel):
+    schedule: str
+
+    payload: str
+
     content_type: t.Optional[str] = None
     """Override the default content-type.
 
     Recommended if the payload is not JSON."""
-
-    payload: str
-
-    schedule: str

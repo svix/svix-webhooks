@@ -19,40 +19,12 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApplicationIn {
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
     @JsonProperty private Long throttleRate;
     @JsonProperty private String uid;
+    @JsonProperty private Map<String, String> metadata;
 
     public ApplicationIn() {}
-
-    public ApplicationIn metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
-
-    public ApplicationIn putMetadataItem(String key, String metadataItem) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, metadataItem);
-
-        return this;
-    }
-
-    /**
-     * Get metadata
-     *
-     * @return metadata
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getMetadata() {
-        return metadata;
-    }
-
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-    }
 
     public ApplicationIn name(String name) {
         this.name = name;
@@ -111,6 +83,34 @@ public class ApplicationIn {
 
     public void setUid(String uid) {
         this.uid = uid;
+    }
+
+    public ApplicationIn metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
+        return this;
+    }
+
+    public ApplicationIn putMetadataItem(String key, String metadataItem) {
+        if (this.metadata == null) {
+            this.metadata = new HashMap<>();
+        }
+        this.metadata.put(key, metadataItem);
+
+        return this;
+    }
+
+    /**
+     * Get metadata
+     *
+     * @return metadata
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Map<String, String> metadata) {
+        this.metadata = metadata;
     }
 
     /**

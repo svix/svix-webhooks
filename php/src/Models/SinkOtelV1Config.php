@@ -27,8 +27,8 @@ class SinkOtelV1Config implements \JsonSerializable
         string $url,
     ): self {
         return new self(
-            headers: null,
             url: $url,
+            headers: null,
             setFields: ['url' => true]
         );
     }
@@ -39,8 +39,8 @@ class SinkOtelV1Config implements \JsonSerializable
         $setFields['headers'] = true;
 
         return new self(
-            headers: $headers,
             url: $this->url,
+            headers: $headers,
             setFields: $setFields
         );
     }
@@ -63,8 +63,8 @@ class SinkOtelV1Config implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'SinkOtelV1Config'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'SinkOtelV1Config')
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'SinkOtelV1Config'),
+            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'SinkOtelV1Config')
         );
     }
 

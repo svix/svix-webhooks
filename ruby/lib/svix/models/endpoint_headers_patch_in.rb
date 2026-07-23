@@ -4,11 +4,11 @@ require "json"
 
 module Svix
   class EndpointHeadersPatchIn
+    attr_accessor :headers
     # A list of headers be be removed
     attr_accessor :delete_headers
-    attr_accessor :headers
 
-    ALL_FIELD ||= ["delete_headers", "headers"].freeze
+    ALL_FIELD ||= ["headers", "delete_headers"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,15 +32,15 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["delete_headers"] = attributes["deleteHeaders"]
       attrs["headers"] = attributes["headers"]
+      attrs["delete_headers"] = attributes["deleteHeaders"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["deleteHeaders"] = Svix::serialize_primitive(@delete_headers) if @delete_headers
       out["headers"] = Svix::serialize_primitive(@headers) if @headers
+      out["deleteHeaders"] = Svix::serialize_primitive(@delete_headers) if @delete_headers
       out
     end
 

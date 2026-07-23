@@ -25,12 +25,12 @@ import (
 //   - "sns": Use SnsPatchConfig
 //   - "sqs": Use SqsPatchConfig
 type StreamSinkPatch struct {
-	BatchSize   utils.Nullable[uint16]       `json:"batchSize"`
-	EventTypes  []string                     `json:"eventTypes,omitempty"`
-	MaxWaitSecs utils.Nullable[uint16]       `json:"maxWaitSecs"`
-	Metadata    *map[string]string           `json:"metadata,omitempty"`
-	Status      utils.Nullable[SinkStatusIn] `json:"status"`
 	Uid         utils.Nullable[string]       `json:"uid"` // The StreamSink's UID.
+	Status      utils.Nullable[SinkStatusIn] `json:"status"`
+	BatchSize   utils.Nullable[uint16]       `json:"batchSize"`
+	MaxWaitSecs utils.Nullable[uint16]       `json:"maxWaitSecs"`
+	EventTypes  []string                     `json:"eventTypes,omitempty"`
+	Metadata    *map[string]string           `json:"metadata,omitempty"`
 	Type        StreamSinkPatchType          `json:"type"`
 	Config      StreamSinkPatchConfig        `json:"config"`
 }

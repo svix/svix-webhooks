@@ -6,23 +6,23 @@ namespace Svix.Models
 {
     public class AppUsageStatsIn
     {
-        [JsonProperty("appIds")]
-        public List<string>? AppIds { get; set; } = null;
-
         [JsonProperty("since", Required = Required.Always)]
         public required DateTime Since { get; set; }
 
         [JsonProperty("until", Required = Required.Always)]
         public required DateTime Until { get; set; }
 
+        [JsonProperty("appIds")]
+        public List<string>? AppIds { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class AppUsageStatsIn {\n");
-            sb.Append("  AppIds: ").Append(AppIds).Append('\n');
             sb.Append("  Since: ").Append(Since).Append('\n');
             sb.Append("  Until: ").Append(Until).Append('\n');
+            sb.Append("  AppIds: ").Append(AppIds).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

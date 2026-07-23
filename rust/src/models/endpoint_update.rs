@@ -3,22 +3,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointUpdate {
-    /// List of message channels this endpoint listens to (omit for all).
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
-
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub disabled: Option<bool>,
-
-    #[serde(rename = "filterTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub filter_types: Option<Vec<String>>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
 
     /// Maximum messages per second to send to this endpoint.
     ///
@@ -32,19 +18,33 @@ pub struct EndpointUpdate {
     pub uid: Option<String>,
 
     pub url: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub disabled: Option<bool>,
+
+    #[serde(rename = "filterTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filter_types: Option<Vec<String>>,
+
+    /// List of message channels this endpoint listens to (omit for all).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 }
 
 impl EndpointUpdate {
     pub fn new(url: String) -> Self {
         Self {
-            channels: None,
             description: None,
-            disabled: None,
-            filter_types: None,
-            metadata: None,
             throttle_rate: None,
             uid: None,
             url,
+            disabled: None,
+            filter_types: None,
+            channels: None,
+            metadata: None,
         }
     }
 }

@@ -8,20 +8,20 @@ pub struct StreamPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
     /// An optional unique identifier for the stream.
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub uid: JsOption<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::HashMap<String, String>>,
 }
 
 impl StreamPatch {
     pub fn new() -> Self {
         Self {
             description: None,
-            metadata: None,
             uid: JsOption::Undefined,
+            metadata: None,
         }
     }
 }
