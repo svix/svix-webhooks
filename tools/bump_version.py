@@ -264,8 +264,6 @@ def cmd_bump(new_version: str) -> int:
 
     for vf in VERSION_FILES:
         update_version_file(vf, new_version)
-    for vf in OLD_VERSION_FILES:
-        update_version_file(vf, old_version)
 
     update_changelog(new_version)
     print(f"Updated all versions to: {new_version}")
