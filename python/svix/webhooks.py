@@ -11,7 +11,7 @@ class Webhook:
     def __init__(self, whsecret: t.Union[str, bytes]):
         self._inner = StdWh(whsecret)
 
-    def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> t.Any:
+    def verify(self, data: t.Union[bytes, str], headers: t.Dict[str, str]) -> None:
         headers = {k.lower(): v for k, v in headers.items()}
 
         headers["webhook-id"] = headers.get("svix-id", headers.get("webhook-id", ""))
@@ -22,7 +22,7 @@ class Webhook:
             "svix-timestamp", headers.get("webhook-timestamp", "")
         )
 
-        return self._inner.verify(data, headers)
+        self._inner.verify(data, headers, json_parse=False)
 
     def sign(self, msg_id: str, timestamp: datetime, data: str) -> str:
         return self._inner.sign(msg_id, timestamp, data)

@@ -240,8 +240,7 @@ def test_svix_message_create(
 
         webhook = Webhook(secret)
         headers: Dict[str, str] = dict(request.headers.items())
-        received_payload = webhook.verify(request.data, headers)
-        assert received_payload == payload
+        webhook.verify(request.data, headers)
 
         return Response("OK")
 

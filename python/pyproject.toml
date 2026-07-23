@@ -12,7 +12,7 @@ dependencies = [
     "pydantic >=2.10",
     "httpx >=0.23.0",
     "attrs >=21.3.0",
-    "standardwebhooks",
+    "standardwebhooks >=1.1.0",
     "python-dateutil",
     "Deprecated",
 ]

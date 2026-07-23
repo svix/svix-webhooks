@@ -99,16 +99,14 @@ def test_invalid_signature_raises_error():
         wh.verify(testPayload.payload, testPayload.header)
 
 
-def test_valid_signature_is_valid_and_returns_json():
+def test_valid_signature_is_valid():
     testPayload = PayloadForTesting()
 
     wh = Webhook(testPayload.secret)
-
-    json = wh.verify(testPayload.payload, testPayload.header)
-    assert json["test"] == 2432232314
+    wh.verify(testPayload.payload, testPayload.header)
 
 
-def test_valid_unbranded_signature_is_valid_and_returns_json():
+def test_valid_unbranded_signature_is_valid():
     testPayload = PayloadForTesting()
     unbrandedHeaders = {
         "webhook-id": testPayload.header["svix-id"],
@@ -118,9 +116,7 @@ def test_valid_unbranded_signature_is_valid_and_returns_json():
     testPayload.header = unbrandedHeaders
 
     wh = Webhook(testPayload.secret)
-
-    json = wh.verify(testPayload.payload, testPayload.header)
-    assert json["test"] == 2432232314
+    wh.verify(testPayload.payload, testPayload.header)
 
 
 def test_old_timestamp_fails():
@@ -156,22 +152,17 @@ def test_multi_sig_payload_is_valid():
     testPayload.header["svix-signature"] = " ".join(sigs)
 
     wh = Webhook(testPayload.secret)
-
-    json = wh.verify(testPayload.payload, testPayload.header)
-    assert json["test"] == 2432232314
+    wh.verify(testPayload.payload, testPayload.header)
 
 
 def test_signature_verification_with_and_without_prefix():
     testPayload = PayloadForTesting()
 
     wh = Webhook(testPayload.secret)
-    json = wh.verify(testPayload.payload, testPayload.header)
-    assert json["test"] == 2432232314
+    wh.verify(testPayload.payload, testPayload.header)
 
     wh = Webhook("whsec_" + testPayload.secret)
-
-    json = wh.verify(testPayload.payload, testPayload.header)
-    assert json["test"] == 2432232314
+    wh.verify(testPayload.payload, testPayload.header)
 
 
 def test_sign_function():
