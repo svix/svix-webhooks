@@ -15,8 +15,9 @@ module Svix
         "POST",
         "/api/v1/environment/export",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        }
+        }.compact
       )
       EnvironmentOut.deserialize(res)
     end
@@ -27,8 +28,9 @@ module Svix
         "POST",
         "/api/v1/environment/import",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: environment_in
       )
     end

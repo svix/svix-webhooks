@@ -9,10 +9,14 @@ module Svix
       @client = client
     end
 
-    def get
+    def get(options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "GET",
-        "/api/v1/health"
+        "/api/v1/health",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 

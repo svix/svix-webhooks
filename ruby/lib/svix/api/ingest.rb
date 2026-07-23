@@ -19,8 +19,9 @@ module Svix
         "POST",
         "/ingest/api/v1/source/#{source_id}/dashboard",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: ingest_source_consumer_portal_access_in
       )
       DashboardAccessOut.deserialize(res)

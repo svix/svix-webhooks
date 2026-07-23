@@ -18,7 +18,10 @@ module Svix
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "order" => options["order"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseOperationalWebhookEndpointOut.deserialize(res)
     end
@@ -29,41 +32,58 @@ module Svix
         "POST",
         "/api/v1/operational-webhook/endpoint",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: operational_webhook_endpoint_in
       )
       OperationalWebhookEndpointOut.deserialize(res)
     end
 
-    def get(endpoint_id)
+    def get(endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}"
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       OperationalWebhookEndpointOut.deserialize(res)
     end
 
-    def update(endpoint_id, operational_webhook_endpoint_update)
+    def update(endpoint_id, operational_webhook_endpoint_update, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PUT",
         "/api/v1/operational-webhook/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: operational_webhook_endpoint_update
       )
       OperationalWebhookEndpointOut.deserialize(res)
     end
 
-    def delete(endpoint_id)
+    def delete(endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "DELETE",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}"
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 
-    def get_secret(endpoint_id)
+    def get_secret(endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/secret"
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/secret",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       OperationalWebhookEndpointSecretOut.deserialize(res)
     end
@@ -74,24 +94,33 @@ module Svix
         "POST",
         "/api/v1/operational-webhook/endpoint/#{endpoint_id}/secret/rotate",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: operational_webhook_endpoint_secret_in
       )
     end
 
-    def get_headers(endpoint_id)
+    def get_headers(endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers"
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       OperationalWebhookEndpointHeadersOut.deserialize(res)
     end
 
-    def update_headers(endpoint_id, operational_webhook_endpoint_headers_in)
+    def update_headers(endpoint_id, operational_webhook_endpoint_headers_in, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "PUT",
         "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: operational_webhook_endpoint_headers_in
       )
     end

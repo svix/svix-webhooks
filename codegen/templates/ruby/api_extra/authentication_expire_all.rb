@@ -4,8 +4,9 @@ def dashboard_access(app_id, options = {})
     "POST",
     "/api/v1/auth/dashboard-access/#{app_id}",
     headers: {
+      "x-request-id" => options["request_id"],
       "idempotency-key" => options["idempotency-key"]
-    }
+    }.compact
   )
   DashboardAccessOut.deserialize(res)
 end

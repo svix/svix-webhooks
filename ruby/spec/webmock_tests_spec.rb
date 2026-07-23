@@ -167,6 +167,63 @@ describe "API Client" do
     )
   end
 
+  it "test request_id is sent for request with existing options" do
+    stub_request(:post, "#{host}/api/v1/app/app_id/msg")
+      .to_return(
+        status: 200,
+        body: MessageOut_JSON
+      )
+
+    svx.message.create("app_id", Svix::MessageIn.new(event_type: "event.type"), {request_id: "REQ-123"})
+    expect(WebMock).to(
+      have_requested(
+        :post,
+        "#{host}/api/v1/app/app_id/msg"
+      )
+        .with(
+          headers: {
+            "x-request-id" => "REQ-123"
+          }
+        )
+    )
+  end
+
+  it "test request_id is sent for request without existing options" do
+    stub_request(:delete, "#{host}/api/v1/app/app_id")
+      .to_return(
+        status: 204
+      )
+
+    svx.application.delete("app_id", {request_id: "REQ-456"})
+    expect(WebMock).to(
+      have_requested(
+        :delete,
+        "#{host}/api/v1/app/app_id"
+      )
+        .with(
+          headers: {
+            "x-request-id" => "REQ-456"
+          }
+        )
+    )
+  end
+
+  it "does not send request_id header when option is omitted" do
+    stub_request(:delete, "#{host}/api/v1/app/app_id")
+      .to_return(
+        status: 204
+      )
+
+    svx.application.delete("app_id")
+    expect(WebMock).to(
+      have_requested(
+        :delete,
+        "#{host}/api/v1/app/app_id"
+      )
+        .with { |request| !request.headers.key?("x-request-id") }
+    )
+  end
+
   it "no body in response does not return anything" do
     stub_request(:delete, "#{host}/api/v1/app/app_id")
       .to_return(

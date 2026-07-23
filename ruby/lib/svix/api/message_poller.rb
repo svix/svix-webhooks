@@ -20,7 +20,10 @@ module Svix
           "event_type" => options["event_type"],
           "channel" => options["channel"],
           "after" => options["after"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       PollingEndpointOut.deserialize(res)
     end
@@ -31,8 +34,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/poller/#{sink_id}/consumer/#{consumer_id}/seek",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: polling_endpoint_consumer_seek_in
       )
       PollingEndpointConsumerSeekOut.deserialize(res)
@@ -46,7 +50,10 @@ module Svix
         query_params: {
           "limit" => options["limit"],
           "iterator" => options["iterator"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       PollingEndpointOut.deserialize(res)
     end

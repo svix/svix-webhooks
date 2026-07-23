@@ -20,7 +20,10 @@ module Svix
           "order" => options["order"],
           "include_archived" => options["include_archived"],
           "with_content" => options["with_content"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseEventTypeOut.deserialize(res)
     end
@@ -31,8 +34,9 @@ module Svix
         "POST",
         "/api/v1/event-type",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: event_type_in
       )
       EventTypeOut.deserialize(res)
@@ -44,25 +48,34 @@ module Svix
         "POST",
         "/api/v1/event-type/import/openapi",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: event_type_import_open_api_in
       )
       EventTypeImportOpenApiOut.deserialize(res)
     end
 
-    def get(event_type_name)
+    def get(event_type_name, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "GET",
-        "/api/v1/event-type/#{event_type_name}"
+        "/api/v1/event-type/#{event_type_name}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EventTypeOut.deserialize(res)
     end
 
-    def update(event_type_name, event_type_update)
+    def update(event_type_name, event_type_update, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PUT",
         "/api/v1/event-type/#{event_type_name}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: event_type_update
       )
       EventTypeOut.deserialize(res)
@@ -75,14 +88,21 @@ module Svix
         "/api/v1/event-type/#{event_type_name}",
         query_params: {
           "expunge" => options["expunge"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 
-    def patch(event_type_name, event_type_patch)
+    def patch(event_type_name, event_type_patch, options = {})
+      options = options.transform_keys(&:to_s)
       res = @client.execute_request(
         "PATCH",
         "/api/v1/event-type/#{event_type_name}",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact,
         body: event_type_patch
       )
       EventTypeOut.deserialize(res)

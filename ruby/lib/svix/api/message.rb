@@ -53,7 +53,10 @@ module Svix
           "with_content" => options["with_content"],
           "tag" => options["tag"],
           "event_types" => options["event_types"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       ListResponseMessageOut.deserialize(res)
     end
@@ -67,8 +70,9 @@ module Svix
           "with_content" => options["with_content"]
         },
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: message_in
       )
       MessageOut.deserialize(res)
@@ -80,8 +84,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/msg/precheck/active",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: message_precheck_in
       )
       MessagePrecheckOut.deserialize(res)
@@ -94,15 +99,22 @@ module Svix
         "/api/v1/app/#{app_id}/msg/#{msg_id}",
         query_params: {
           "with_content" => options["with_content"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       MessageOut.deserialize(res)
     end
 
-    def expunge_content(app_id, msg_id)
+    def expunge_content(app_id, msg_id, options = {})
+      options = options.transform_keys(&:to_s)
       @client.execute_request(
         "DELETE",
-        "/api/v1/app/#{app_id}/msg/#{msg_id}/content"
+        "/api/v1/app/#{app_id}/msg/#{msg_id}/content",
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
     end
 
@@ -112,8 +124,9 @@ module Svix
         "POST",
         "/api/v1/app/#{app_id}/msg/expunge-all-contents",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        }
+        }.compact
       )
       ExpungeAllContentsOut.deserialize(res)
     end

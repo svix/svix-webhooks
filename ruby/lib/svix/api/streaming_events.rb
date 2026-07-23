@@ -18,7 +18,10 @@ module Svix
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "after" => options["after"]
-        }
+        },
+        headers: {
+          "x-request-id" => options["request_id"]
+        }.compact
       )
       EventStreamOut.deserialize(res)
     end
@@ -29,8 +32,9 @@ module Svix
         "POST",
         "/api/v1/stream/#{stream_id}/events",
         headers: {
+          "x-request-id" => options["request_id"],
           "idempotency-key" => options["idempotency-key"]
-        },
+        }.compact,
         body: create_stream_events_in
       )
       CreateStreamEventsOut.deserialize(res)

@@ -31,16 +31,12 @@ module Svix
       {%- if op.request_body_schema_name is defined -%}
       {{ op.request_body_schema_name | to_snake_case }},
       {%- endif -%}
-      {# header/query params -#}
-      {%- if op | has_query_or_header_params -%}
+      {# request options -#}
       options = {}
-      {%- endif -%}
     {% endset -%}
 
     def {{ op.name | to_snake_case }}({{ func_args | strip_trailing_comma }})
-      {% if op | has_query_or_header_params -%}
       options = options.transform_keys(&:to_s)
-      {% endif -%}
       {% if op.response_body_schema_name is defined -%}res = {% endif -%}
       @client.execute_request(
         "{{ op.method | upper }}",
@@ -52,13 +48,12 @@ module Svix
           {% endfor -%}
         },
         {% endif -%}
-        {% if op.header_params | length >0 -%}
         headers:{
+          "x-request-id" => options["request_id"],
           {% for p in op.header_params -%}
             "{{ p.name }}" => options["{{ p.name }}"],
           {% endfor -%}
-        },
-        {% endif -%}
+        }.compact{% if op.request_body_schema_name is defined %},{% endif %}
         {% if op.request_body_schema_name is defined -%}
         body: {{ op.request_body_schema_name | to_snake_case }},
         {% endif -%}
