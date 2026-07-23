@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+#[cfg(feature = "kafka")]
+use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaTransformationInput};
 use svix_bridge_plugin_queue::config::{QueueInputOpts, RabbitMqInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
@@ -343,6 +345,40 @@ fn test_senders_parses_ok() {
 fn test_omnibus_parses_ok() {
     let conf: Result<Config, _> = serde_yaml::from_str(OMNIBUS);
     conf.unwrap();
+}
+
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_transformation_input_defaults_to_payload() {
+    let config: Config = serde_yaml::from_str(
+        r#"
+senders:
+  - name: "kafka-example"
+    input:
+      type: "kafka"
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      kafka_security_protocol: "plaintext"
+    output:
+      type: "svix"
+      token: "XYZ"
+"#,
+    )
+    .unwrap();
+
+    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+        transformation_input,
+        ..
+    }) = &config.senders[0].input
+    else {
+        panic!("Expected Kafka input");
+    };
+
+    assert!(matches!(
+        transformation_input,
+        KafkaTransformationInput::Payload
+    ));
 }
 
 #[test]

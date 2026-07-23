@@ -27,6 +27,10 @@ pub enum KafkaInputOpts {
         #[serde(rename = "kafka_topic")]
         topic: String,
 
+        /// The input passed to JSON transformations.
+        #[serde(rename = "kafka_transformation_input", default)]
+        transformation_input: KafkaTransformationInput,
+
         /// The value for 'security.protocol' in the kafka config.
         #[serde(flatten)]
         security_protocol: KafkaSecurityProtocol,
@@ -36,6 +40,14 @@ pub enum KafkaInputOpts {
         #[serde(rename = "kafka_debug_contexts")]
         debug_contexts: Option<String>,
     },
+}
+
+#[derive(Clone, Copy, Default, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KafkaTransformationInput {
+    #[default]
+    Payload,
+    Envelope,
 }
 
 impl KafkaInputOpts {

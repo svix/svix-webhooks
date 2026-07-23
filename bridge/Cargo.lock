@@ -4642,6 +4642,7 @@ dependencies = [
 name = "svix-bridge-plugin-kafka"
 version = "1.99.0"
 dependencies = [
+ "base64",
  "ctor",
  "rdkafka",
  "serde",
