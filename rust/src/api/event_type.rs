@@ -118,7 +118,7 @@ impl<'a> EventType<'a> {
     }
 
     /// Create or update an event type.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         event_type_name: String,
         event_type_update: EventTypeUpdate,

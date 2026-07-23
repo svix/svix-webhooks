@@ -108,7 +108,7 @@ func (streamingStream StreamingStream) Get(
 }
 
 // Create or update a stream.
-func (streamingStream StreamingStream) Update(
+func (streamingStream StreamingStream) Upsert(
 	ctx context.Context,
 	streamId string,
 	streamIn models.StreamIn,

@@ -55,7 +55,7 @@ class StreamingStream(private val client: SvixHttpClient) {
     }
 
     /** Create or update a stream. */
-    suspend fun update(streamId: String, streamIn: StreamIn): StreamOut {
+    suspend fun upsert(streamId: String, streamIn: StreamIn): StreamOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/stream/$streamId")
 
         return client.executeRequest<StreamIn, StreamOut>("PUT", url.build(), reqBody = streamIn)

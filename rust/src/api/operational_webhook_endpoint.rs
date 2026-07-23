@@ -79,7 +79,7 @@ impl<'a> OperationalWebhookEndpoint<'a> {
     }
 
     /// Create or update an operational webhook endpoint.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         endpoint_id: String,
         operational_webhook_endpoint_update: OperationalWebhookEndpointUpdate,
@@ -162,7 +162,7 @@ impl<'a> OperationalWebhookEndpoint<'a> {
     }
 
     /// Set the additional headers to be sent with the operational webhook.
-    pub async fn update_headers(
+    pub async fn set_headers(
         &self,
         endpoint_id: String,
         operational_webhook_endpoint_headers_in: OperationalWebhookEndpointHeadersIn,

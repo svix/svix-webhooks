@@ -1,4 +1,5 @@
 // this file is @generated
+use super::StreamingSinkTransformation;
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -30,6 +31,10 @@ pub struct StreamingSink<'a> {
 impl<'a> StreamingSink<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn transformation(&self) -> StreamingSinkTransformation<'a> {
+        StreamingSinkTransformation::new(self.cfg)
     }
 
     /// List of all the stream's sinks.
@@ -83,7 +88,7 @@ impl<'a> StreamingSink<'a> {
     }
 
     /// Create or update a sink.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         stream_id: String,
         sink_id: String,
@@ -127,24 +132,6 @@ impl<'a> StreamingSink<'a> {
         .with_path_param("stream_id", stream_id)
         .with_path_param("sink_id", sink_id)
         .with_body_param(stream_sink_patch)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Set or unset the transformation code associated with this sink.
-    pub async fn transformation_partial_update(
-        &self,
-        stream_id: String,
-        sink_id: String,
-        sink_transform_in: SinkTransformIn,
-    ) -> Result<EmptyResponse> {
-        crate::request::Request::new(
-            http::Method::PATCH,
-            "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-        )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
-        .with_body_param(sink_transform_in)
         .execute(self.cfg)
         .await
     }

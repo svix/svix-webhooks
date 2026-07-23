@@ -108,7 +108,7 @@ class ApplicationAsync(ApiBaseAsync):
         )
         return ApplicationOut.model_validate(response.json())
 
-    async def update(
+    async def upsert(
         self, app_id: str, application_in: ApplicationIn
     ) -> ApplicationOut:
         """Create or update an application."""
@@ -205,7 +205,7 @@ class Application(ApiBaseSync):
         )
         return ApplicationOut.model_validate(response.json())
 
-    def update(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
+    def upsert(self, app_id: str, application_in: ApplicationIn) -> ApplicationOut:
         """Create or update an application."""
         response = self._request_sync(
             method="put",

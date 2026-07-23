@@ -93,7 +93,7 @@ export class Application {
   }
 
   /** Create or update an application. */
-  public async update(
+  public async upsert(
     appId: string,
     applicationIn: ApplicationIn
   ): Promise<ApplicationOut> {

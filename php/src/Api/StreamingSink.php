@@ -10,7 +10,6 @@ use Svix\Models\EmptyResponse;
 use Svix\Models\EndpointSecretRotateIn;
 use Svix\Models\ListResponseStreamSinkOut;
 use Svix\Models\SinkSecretOut;
-use Svix\Models\SinkTransformIn;
 use Svix\Models\StreamSinkIn;
 use Svix\Models\StreamSinkOut;
 use Svix\Models\StreamSinkPatch;
@@ -18,9 +17,12 @@ use Svix\Request\SvixHttpClient;
 
 class StreamingSink
 {
+    public StreamingSinkTransformation $transformation;
+
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->transformation = new StreamingSinkTransformation($client);
     }
 
     /**
@@ -79,7 +81,7 @@ class StreamingSink
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $streamId,
         string $sinkId,
         StreamSinkIn $streamSinkIn,
@@ -119,23 +121,6 @@ class StreamingSink
         $res = $this->client->send($request);
 
         return StreamSinkOut::fromJson($res);
-    }
-
-    /**
-     * Set or unset the transformation code associated with this sink.
-     *
-     * @throws ApiException
-     */
-    public function transformationPartialUpdate(
-        string $streamId,
-        string $sinkId,
-        SinkTransformIn $sinkTransformIn,
-    ): EmptyResponse {
-        $request = $this->client->newReq('PATCH', "/api/v1/stream/{$streamId}/sink/{$sinkId}/transformation");
-        $request->setBody(json_encode($sinkTransformIn));
-        $res = $this->client->send($request);
-
-        return EmptyResponse::fromJson($res);
     }
 
     /**

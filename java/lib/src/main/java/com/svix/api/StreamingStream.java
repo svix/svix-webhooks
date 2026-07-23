@@ -73,7 +73,7 @@ public class StreamingStream {
     }
 
     /** Create or update a stream. */
-    public StreamOut update(final String streamId, final StreamIn streamIn)
+    public StreamOut upsert(final String streamId, final StreamIn streamIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client

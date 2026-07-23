@@ -52,6 +52,11 @@ namespace Svix
     {
         readonly SvixClient _client = client;
 
+        public StreamingSinkTransformation Transformation
+        {
+            get => new StreamingSinkTransformation(_client);
+        }
+
         /// <summary>
         /// List of all the stream's sinks.
         /// </summary>
@@ -247,7 +252,7 @@ namespace Svix
         /// <summary>
         /// Create or update a sink.
         /// </summary>
-        public async Task<StreamSinkOut> UpdateAsync(
+        public async Task<StreamSinkOut> UpsertAsync(
             string streamId,
             string sinkId,
             StreamSinkIn streamSinkIn,
@@ -272,7 +277,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -281,7 +286,7 @@ namespace Svix
         /// <summary>
         /// Create or update a sink.
         /// </summary>
-        public StreamSinkOut Update(string streamId, string sinkId, StreamSinkIn streamSinkIn)
+        public StreamSinkOut Upsert(string streamId, string sinkId, StreamSinkIn streamSinkIn)
         {
             streamSinkIn = streamSinkIn ?? throw new ArgumentNullException(nameof(streamSinkIn));
             try
@@ -300,7 +305,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
@@ -422,74 +427,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Patch)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this sink.
-        /// </summary>
-        public async Task<EmptyResponse> TransformationPartialUpdateAsync(
-            string streamId,
-            string sinkId,
-            SinkTransformIn sinkTransformIn,
-            CancellationToken cancellationToken = default
-        )
-        {
-            sinkTransformIn =
-                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    content: sinkTransformIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this sink.
-        /// </summary>
-        public EmptyResponse TransformationPartialUpdate(
-            string streamId,
-            string sinkId,
-            SinkTransformIn sinkTransformIn
-        )
-        {
-            sinkTransformIn =
-                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    content: sinkTransformIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
 
                 throw;
             }

@@ -195,20 +195,6 @@ pub enum IntegrationCommands {
         #[clap(flatten)]
         options: IntegrationRotateKeyOptions,
     },
-    /// Get an integration's key.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix integration get-key app_abc000000000000000000000000 integ_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"key\": \"integsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
-}\n")]
-    GetKey { app_id: String, id: String },
 }
 
 impl IntegrationCommands {
@@ -263,11 +249,6 @@ impl IntegrationCommands {
                     .integration()
                     .rotate_key(app_id, id, Some(options.into()))
                     .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::GetKey { app_id, id } => {
-                #[allow(deprecated)]
-                let resp = client.integration().get_key(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
         }

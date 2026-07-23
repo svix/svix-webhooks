@@ -240,7 +240,7 @@ namespace Svix
         /// <summary>
         /// Create or update an operational webhook endpoint.
         /// </summary>
-        public async Task<OperationalWebhookEndpointOut> UpdateAsync(
+        public async Task<OperationalWebhookEndpointOut> UpsertAsync(
             string endpointId,
             OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate,
             CancellationToken cancellationToken = default
@@ -266,7 +266,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -275,7 +275,7 @@ namespace Svix
         /// <summary>
         /// Create or update an operational webhook endpoint.
         /// </summary>
-        public OperationalWebhookEndpointOut Update(
+        public OperationalWebhookEndpointOut Upsert(
             string endpointId,
             OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate
         )
@@ -295,7 +295,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
@@ -542,7 +542,7 @@ namespace Svix
         /// <summary>
         /// Set the additional headers to be sent with the operational webhook.
         /// </summary>
-        public async Task<bool> UpdateHeadersAsync(
+        public async Task<bool> SetHeadersAsync(
             string endpointId,
             OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn,
             CancellationToken cancellationToken = default
@@ -564,7 +564,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(SetHeadersAsync)} failed");
 
                 throw;
             }
@@ -573,7 +573,7 @@ namespace Svix
         /// <summary>
         /// Set the additional headers to be sent with the operational webhook.
         /// </summary>
-        public bool UpdateHeaders(
+        public bool SetHeaders(
             string endpointId,
             OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn
         )
@@ -593,7 +593,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
+                _client.Logger?.LogError(e, $"{nameof(SetHeaders)} failed");
 
                 throw;
             }

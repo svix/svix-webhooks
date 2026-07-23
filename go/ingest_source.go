@@ -112,7 +112,7 @@ func (ingestSource IngestSource) Get(
 }
 
 // Create or update an Ingest Source.
-func (ingestSource IngestSource) Update(
+func (ingestSource IngestSource) Upsert(
 	ctx context.Context,
 	sourceId string,
 	ingestSourceIn models.IngestSourceIn,

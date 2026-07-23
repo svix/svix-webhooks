@@ -141,7 +141,7 @@ pub enum IngestSourceCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix ingest source update src_abc000000000000000000 {...}\n",
+            "Example: svix ingest source upsert src_abc000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -161,7 +161,7 @@ pub enum IngestSourceCommands {
   \"uid\": \"unique-identifier\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         source_id: String,
         ingest_source_in: crate::json::JsonOf<IngestSourceIn>,
     },
@@ -226,14 +226,14 @@ impl IngestSourceCommands {
                 let resp = client.ingest().source().get(source_id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 source_id,
                 ingest_source_in,
             } => {
                 let resp = client
                     .ingest()
                     .source()
-                    .update(source_id, ingest_source_in.into_inner())
+                    .upsert(source_id, ingest_source_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

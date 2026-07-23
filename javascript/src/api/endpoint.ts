@@ -29,14 +29,6 @@ import {
   type EndpointTransformationIn,
   EndpointTransformationInSerializer,
 } from "../models/endpointTransformationIn";
-import {
-  type EndpointTransformationOut,
-  EndpointTransformationOutSerializer,
-} from "../models/endpointTransformationOut";
-import {
-  type EndpointTransformationPatch,
-  EndpointTransformationPatchSerializer,
-} from "../models/endpointTransformationPatch";
 import { type EndpointUpdate, EndpointUpdateSerializer } from "../models/endpointUpdate";
 import { type EventExampleIn, EventExampleInSerializer } from "../models/eventExampleIn";
 import {
@@ -49,6 +41,7 @@ import { type RecoverIn, RecoverInSerializer } from "../models/recoverIn";
 import { type RecoverOut, RecoverOutSerializer } from "../models/recoverOut";
 import { type ReplayIn, ReplayInSerializer } from "../models/replayIn";
 import { type ReplayOut, ReplayOutSerializer } from "../models/replayOut";
+import { EndpointTransformation } from "./endpointTransformation";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface EndpointListOptions {
@@ -93,6 +86,10 @@ export interface EndpointSendExampleOptions {
 
 export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get transformation() {
+    return new EndpointTransformation(this.requestCtx);
+  }
 
   /** List the application's endpoints. */
   public async list(
@@ -147,7 +144,7 @@ export class Endpoint {
   }
 
   /** Create or update an endpoint. */
-  public async update(
+  public async upsert(
     appId: string,
     endpointId: string,
     endpointUpdate: EndpointUpdate
@@ -262,7 +259,7 @@ export class Endpoint {
   }
 
   /** Set the additional headers to be sent with the webhook. */
-  public async updateHeaders(
+  public async setHeaders(
     appId: string,
     endpointId: string,
     endpointHeadersIn: EndpointHeadersIn
@@ -294,45 +291,6 @@ export class Endpoint {
     request.setPathParam("endpoint_id", endpointId);
     request.setBody(
       EndpointHeadersPatchInSerializer._toJsonObject(endpointHeadersPatchIn)
-    );
-
-    return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  /** Get the transformation code associated with this endpoint. */
-  public async transformationGet(
-    appId: string,
-    endpointId: string
-  ): Promise<EndpointTransformationOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-
-    return await request.send(
-      this.requestCtx,
-      EndpointTransformationOutSerializer._fromJsonObject
-    );
-  }
-
-  /** Set or unset the transformation code associated with this endpoint. */
-  public async patchTransformation(
-    appId: string,
-    endpointId: string,
-    endpointTransformationPatch: EndpointTransformationPatch
-  ): Promise<void> {
-    const request = new SvixRequest(
-      HttpMethod.PATCH,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-    request.setBody(
-      EndpointTransformationPatchSerializer._toJsonObject(endpointTransformationPatch)
     );
 
     return await request.sendNoResponseBody(this.requestCtx);

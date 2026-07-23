@@ -17,6 +17,10 @@ func newEndpoint(client *internal.SvixHttpClient) Endpoint {
 	return Endpoint{client}
 }
 
+func (endpoint Endpoint) Transformation() EndpointTransformation {
+	return newEndpointTransformation(endpoint.client)
+}
+
 type EndpointListOptions struct {
 	// Limit the number of returned items
 	Limit *uint64
@@ -148,7 +152,7 @@ func (endpoint Endpoint) Get(
 }
 
 // Create or update an endpoint.
-func (endpoint Endpoint) Update(
+func (endpoint Endpoint) Upsert(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -302,7 +306,7 @@ func (endpoint Endpoint) GetHeaders(
 }
 
 // Set the additional headers to be sent with the webhook.
-func (endpoint Endpoint) UpdateHeaders(
+func (endpoint Endpoint) SetHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -347,53 +351,6 @@ func (endpoint Endpoint) PatchHeaders(
 		nil,
 		nil,
 		&endpointHeadersPatchIn,
-	)
-	return err
-}
-
-// Get the transformation code associated with this endpoint.
-func (endpoint Endpoint) TransformationGet(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-) (*models.EndpointTransformationOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	return internal.ExecuteRequest[any, models.EndpointTransformationOut](
-		ctx,
-		endpoint.client,
-		"GET",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
-// Set or unset the transformation code associated with this endpoint.
-func (endpoint Endpoint) PatchTransformation(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	endpointTransformationPatch models.EndpointTransformationPatch,
-) error {
-	var err error
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	_, err = internal.ExecuteRequest[models.EndpointTransformationPatch, any](
-		ctx,
-		endpoint.client,
-		"PATCH",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-		pathMap,
-		nil,
-		nil,
-		&endpointTransformationPatch,
 	)
 	return err
 }

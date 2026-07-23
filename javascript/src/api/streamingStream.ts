@@ -67,7 +67,7 @@ export class StreamingStream {
   }
 
   /** Create or update a stream. */
-  public async update(streamId: string, streamIn: StreamIn): Promise<StreamOut> {
+  public async upsert(streamId: string, streamIn: StreamIn): Promise<StreamOut> {
     const request = new SvixRequest(HttpMethod.PUT, "/api/v1/stream/{stream_id}");
 
     request.setPathParam("stream_id", streamId);

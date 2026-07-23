@@ -5,8 +5,10 @@ require "net/http"
 
 module Svix
   class Endpoint
+    attr_accessor :transformation
     def initialize(client)
       @client = client
+      @transformation = EndpointTransformation.new(client)
     end
 
     def list(app_id, options = {})
@@ -44,7 +46,7 @@ module Svix
       EndpointOut.deserialize(res)
     end
 
-    def update(app_id, endpoint_id, endpoint_update)
+    def upsert(app_id, endpoint_id, endpoint_update)
       res = @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}",
@@ -97,7 +99,7 @@ module Svix
       EndpointHeadersOut.deserialize(res)
     end
 
-    def update_headers(app_id, endpoint_id, endpoint_headers_in)
+    def set_headers(app_id, endpoint_id, endpoint_headers_in)
       @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
@@ -110,22 +112,6 @@ module Svix
         "PATCH",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/headers",
         body: endpoint_headers_patch_in
-      )
-    end
-
-    def transformation_get(app_id, endpoint_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation"
-      )
-      EndpointTransformationOut.deserialize(res)
-    end
-
-    def patch_transformation(app_id, endpoint_id, endpoint_transformation_patch)
-      @client.execute_request(
-        "PATCH",
-        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/transformation",
-        body: endpoint_transformation_patch
       )
     end
 

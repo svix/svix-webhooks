@@ -157,7 +157,7 @@ pub enum StreamingEventTypeCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix streaming event-type update NAME {...}\n",
+            "Example: svix streaming event-type upsert NAME {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -179,7 +179,7 @@ pub enum StreamingEventTypeCommands {
   \"name\": \"user.signup\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         name: String,
         stream_event_type_in: crate::json::JsonOf<StreamEventTypeIn>,
     },
@@ -258,14 +258,14 @@ impl StreamingEventTypeCommands {
                 let resp = client.streaming().event_type().get(name).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 name,
                 stream_event_type_in,
             } => {
                 let resp = client
                     .streaming()
                     .event_type()
-                    .update(name, stream_event_type_in.into_inner())
+                    .upsert(name, stream_event_type_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

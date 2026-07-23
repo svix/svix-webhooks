@@ -108,7 +108,7 @@ public class Application {
     }
 
     /** Create or update an application. */
-    public ApplicationOut update(final String appId, final ApplicationIn applicationIn)
+    public ApplicationOut upsert(final String appId, final ApplicationIn applicationIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client.newUrlBuilder().encodedPath(String.format("/api/v1/app/%s", appId));

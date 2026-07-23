@@ -82,7 +82,7 @@ impl<'a> StreamingEventType<'a> {
     }
 
     /// Create or update or create a event type for Streams.
-    pub async fn update(
+    pub async fn upsert(
         &self,
         name: String,
         stream_event_type_in: StreamEventTypeIn,

@@ -113,6 +113,11 @@ namespace Svix
     {
         readonly SvixClient _client = client;
 
+        public EndpointTransformation Transformation
+        {
+            get => new EndpointTransformation(_client);
+        }
+
         /// <summary>
         /// List the application's endpoints.
         /// </summary>
@@ -309,7 +314,7 @@ namespace Svix
         /// <summary>
         /// Create or update an endpoint.
         /// </summary>
-        public async Task<EndpointOut> UpdateAsync(
+        public async Task<EndpointOut> UpsertAsync(
             string appId,
             string endpointId,
             EndpointUpdate endpointUpdate,
@@ -335,7 +340,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -344,7 +349,7 @@ namespace Svix
         /// <summary>
         /// Create or update an endpoint.
         /// </summary>
-        public EndpointOut Update(string appId, string endpointId, EndpointUpdate endpointUpdate)
+        public EndpointOut Upsert(string appId, string endpointId, EndpointUpdate endpointUpdate)
         {
             endpointUpdate =
                 endpointUpdate ?? throw new ArgumentNullException(nameof(endpointUpdate));
@@ -364,7 +369,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
@@ -700,7 +705,7 @@ namespace Svix
         /// <summary>
         /// Set the additional headers to be sent with the webhook.
         /// </summary>
-        public async Task<bool> UpdateHeadersAsync(
+        public async Task<bool> SetHeadersAsync(
             string appId,
             string endpointId,
             EndpointHeadersIn endpointHeadersIn,
@@ -726,7 +731,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(SetHeadersAsync)} failed");
 
                 throw;
             }
@@ -735,11 +740,7 @@ namespace Svix
         /// <summary>
         /// Set the additional headers to be sent with the webhook.
         /// </summary>
-        public bool UpdateHeaders(
-            string appId,
-            string endpointId,
-            EndpointHeadersIn endpointHeadersIn
-        )
+        public bool SetHeaders(string appId, string endpointId, EndpointHeadersIn endpointHeadersIn)
         {
             endpointHeadersIn =
                 endpointHeadersIn ?? throw new ArgumentNullException(nameof(endpointHeadersIn));
@@ -759,7 +760,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
+                _client.Logger?.LogError(e, $"{nameof(SetHeaders)} failed");
 
                 throw;
             }
@@ -830,134 +831,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(PatchHeaders)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the transformation code associated with this endpoint.
-        /// </summary>
-        public async Task<EndpointTransformationOut> TransformationGetAsync(
-            string appId,
-            string endpointId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response =
-                    await _client.SvixHttpClient.SendRequestAsync<EndpointTransformationOut>(
-                        method: HttpMethod.Get,
-                        path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                        pathParams: new Dictionary<string, string>
-                        {
-                            { "app_id", appId },
-                            { "endpoint_id", endpointId },
-                        },
-                        cancellationToken: cancellationToken
-                    );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationGetAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the transformation code associated with this endpoint.
-        /// </summary>
-        public EndpointTransformationOut TransformationGet(string appId, string endpointId)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<EndpointTransformationOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    }
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationGet)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this endpoint.
-        /// </summary>
-        public async Task<bool> PatchTransformationAsync(
-            string appId,
-            string endpointId,
-            EndpointTransformationPatch endpointTransformationPatch,
-            CancellationToken cancellationToken = default
-        )
-        {
-            endpointTransformationPatch =
-                endpointTransformationPatch
-                ?? throw new ArgumentNullException(nameof(endpointTransformationPatch));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    content: endpointTransformationPatch,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(PatchTransformationAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this endpoint.
-        /// </summary>
-        public bool PatchTransformation(
-            string appId,
-            string endpointId,
-            EndpointTransformationPatch endpointTransformationPatch
-        )
-        {
-            endpointTransformationPatch =
-                endpointTransformationPatch
-                ?? throw new ArgumentNullException(nameof(endpointTransformationPatch));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "endpoint_id", endpointId },
-                    },
-                    content: endpointTransformationPatch
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(PatchTransformation)} failed");
 
                 throw;
             }

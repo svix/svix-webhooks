@@ -286,7 +286,7 @@ namespace Svix
         /// <summary>
         /// Create or update an application.
         /// </summary>
-        public async Task<ApplicationOut> UpdateAsync(
+        public async Task<ApplicationOut> UpsertAsync(
             string appId,
             ApplicationIn applicationIn,
             CancellationToken cancellationToken = default
@@ -306,7 +306,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
@@ -315,7 +315,7 @@ namespace Svix
         /// <summary>
         /// Create or update an application.
         /// </summary>
-        public ApplicationOut Update(string appId, ApplicationIn applicationIn)
+        public ApplicationOut Upsert(string appId, ApplicationIn applicationIn)
         {
             applicationIn = applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
             try
@@ -330,7 +330,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
