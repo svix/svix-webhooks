@@ -36,6 +36,10 @@ pub enum KafkaInputOpts {
         #[serde(rename = "kafka_auto_offset_reset", default)]
         auto_offset_reset: KafkaAutoOffsetReset,
 
+        /// A namespace for idempotency keys from independent Kafka sources.
+        #[serde(rename = "kafka_idempotency_namespace")]
+        idempotency_namespace: Option<String>,
+
         /// The value for 'security.protocol' in the kafka config.
         #[serde(flatten)]
         security_protocol: KafkaSecurityProtocol,

@@ -127,7 +127,10 @@ impl KafkaConsumer {
         let CreateMessageRequest { app_id, message } = payload;
 
         let KafkaInputOpts::Inner {
-            group_id, topic, ..
+            group_id,
+            idempotency_namespace,
+            topic,
+            ..
         } = &self.opts;
 
         let options = MessageCreateOptions {
@@ -137,6 +140,7 @@ impl KafkaConsumer {
             // message doesn't end up creating a duplicate webhook in svix.
             idempotency_key: Some(kafka_idempotency_key(
                 group_id,
+                idempotency_namespace.as_deref(),
                 topic,
                 msg.partition(),
                 msg.offset(),
@@ -239,8 +243,21 @@ impl KafkaConsumer {
     }
 }
 
-fn kafka_idempotency_key(group_id: &str, topic: &str, partition: i32, offset: i64) -> String {
-    format!("svix_bridge_kafka_{group_id}_{topic}_{partition}_{offset}")
+fn kafka_idempotency_key(
+    group_id: &str,
+    idempotency_namespace: Option<&str>,
+    topic: &str,
+    partition: i32,
+    offset: i64,
+) -> String {
+    match idempotency_namespace {
+        Some(idempotency_namespace) => {
+            format!(
+                "svix_bridge_kafka_{group_id}_{idempotency_namespace}_{topic}_{partition}_{offset}"
+            )
+        }
+        None => format!("svix_bridge_kafka_{group_id}_{topic}_{partition}_{offset}"),
+    }
 }
 
 #[async_trait]
