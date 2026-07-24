@@ -4647,6 +4647,7 @@ dependencies = [
  "rdkafka",
  "serde",
  "serde_json",
+ "strum",
  "svix-bridge-types",
  "thiserror",
  "tokio",

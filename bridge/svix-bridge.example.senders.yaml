@@ -145,6 +145,8 @@ senders:
       # to JSON transformations. Headers preserve duplicate keys; values are null or base64 strings.
       # The record key is decoded as UTF-8 with invalid bytes replaced.
       # kafka_transformation_input: "envelope"
+      # Optional - defaults to "latest". Set to "earliest" to consume existing records.
+      # kafka_auto_offset_reset: "earliest"
       # Other valid values: "plaintext", "ssl"
       kafka_security_protocol: "sasl_ssl"
       # Only for SASL

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 #[cfg(feature = "kafka")]
-use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaTransformationInput};
+use svix_bridge_plugin_kafka::{KafkaAutoOffsetReset, KafkaInputOpts, KafkaTransformationInput};
 use svix_bridge_plugin_queue::config::{QueueInputOpts, RabbitMqInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
@@ -379,6 +379,73 @@ senders:
         transformation_input,
         KafkaTransformationInput::Payload
     ));
+}
+
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_auto_offset_reset_parses_ok() {
+    let config: Config = serde_yaml::from_str(
+        r#"
+senders:
+  - name: "kafka-default"
+    input:
+      type: "kafka"
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      kafka_security_protocol: "plaintext"
+    output:
+      type: "svix"
+      token: "XYZ"
+  - name: "kafka-earliest"
+    input:
+      type: "kafka"
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      kafka_auto_offset_reset: "earliest"
+      kafka_security_protocol: "plaintext"
+    output:
+      type: "svix"
+      token: "XYZ"
+"#,
+    )
+    .unwrap();
+
+    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+        auto_offset_reset: default_auto_offset_reset,
+        ..
+    }) = &config.senders[0].input
+    else {
+        panic!("Expected Kafka input");
+    };
+    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+        auto_offset_reset: explicit_auto_offset_reset,
+        ..
+    }) = &config.senders[1].input
+    else {
+        panic!("Expected Kafka input");
+    };
+
+    assert_eq!(default_auto_offset_reset, &KafkaAutoOffsetReset::Latest);
+    assert_eq!(explicit_auto_offset_reset, &KafkaAutoOffsetReset::Earliest);
+}
+
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_auto_offset_reset_rejects_invalid_value() {
+    let config = serde_yaml::from_str::<KafkaInputOpts>(
+        r#"
+type: "kafka"
+kafka_bootstrap_brokers: "localhost:9094"
+kafka_group_id: "kafka_example_consumer_group"
+kafka_topic: "foobar"
+kafka_auto_offset_reset: "invalid"
+kafka_security_protocol: "plaintext"
+"#,
+    );
+
+    assert!(config.is_err());
 }
 
 #[test]
