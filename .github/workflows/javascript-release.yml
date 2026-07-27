@@ -31,4 +31,13 @@ jobs:
 
       - name: Publish
         run: |
-          npm publish
+          version="$(node -p 'require("./package.json").version')"
+          # A semver prerelease (anything with a `-`) must not become the default
+          # `npm install svix`; publish it under the `next` dist-tag instead.
+          if [[ "$version" == *-* ]]; then
+            tag=next
+          else
+            tag=latest
+          fi
+          echo "Publishing svix@$version with dist-tag '$tag'"
+          npm publish --tag "$tag"
