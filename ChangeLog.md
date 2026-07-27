@@ -7,6 +7,10 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 
+## Version 2.0.0-rc.2
+
+* Libs/JS: Fix a publishing issue
+
 ## Version 2.0.0-rc.1
 
 **Breaking changes:**
