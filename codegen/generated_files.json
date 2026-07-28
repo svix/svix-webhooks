@@ -1156,6 +1156,9 @@
         "kotlin/lib/src/main/kotlin/StreamingStream.kt"
     ],
     [
+        "kotlin/lib/src/main/kotlin/Svix.kt"
+    ],
+    [
         "kotlin/lib/src/main/kotlin/internalapi/Endpoint.kt",
         "kotlin/lib/src/main/kotlin/internalapi/EndpointAutoConfig.kt",
         "kotlin/lib/src/main/kotlin/internalapi/Message.kt",

@@ -27,12 +27,7 @@ constructor(token: String, sinkIn: SinkInCommon) {
 
         val parsedUrl =
             content.serverUrl.toHttpUrlOrNull() ?: throw InvalidAutoConfigTokenException()
-        val defaultHeaders =
-            mapOf(
-                "User-Agent" to "svix-libs/${Version}/kotlin",
-                "Authorization" to "Bearer ${content.tokenPlaintext}",
-            )
-        this.httpClient = SvixHttpClient(parsedUrl, defaultHeaders, listOf(50, 100, 200))
+        this.httpClient = SvixHttpClient(content.tokenPlaintext, parsedUrl, listOf(50, 100, 200))
 
         this.appId = content.appId
         this.sinkId = content.endpointId

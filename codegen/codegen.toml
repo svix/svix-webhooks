@@ -289,6 +289,9 @@ extra_codegen_args = [
     "--include-op-id=v1.message.pollerv2.consumer-commit",
 ]
 [[kotlin.task]]
+template = "templates/kotlin/api_summary.kt.jinja"
+output_dir = "kotlin/lib/src/main/kotlin"
+[[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
 extra_codegen_args = ["--context={\"package\":\"com.svix.kotlin\"}"]
