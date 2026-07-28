@@ -17,26 +17,10 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val operationalWebhook: OperationalWebhook
 
     init {
-        val tokenParts = token.split(".")
-        if (options.baseUrl == null) {
-            val region = tokenParts.last()
-            when (region) {
-                "us" -> options.baseUrl = "https://api.us.svix.com"
-                "eu" -> options.baseUrl = "https://api.eu.svix.com"
-                "in" -> options.baseUrl = "https://api.in.svix.com"
-                "ca" -> options.baseUrl = "https://api.ca.svix.com"
-                "au" -> options.baseUrl = "https://api.au.svix.com"
-                else -> options.baseUrl = "https://api.svix.com"
-            }
-        }
-        val parsedUrl = options.baseUrl?.toHttpUrlOrNull() ?: throw Exception("Invalid base url")
-        var userAgent = "svix-libs/${Version}/kotlin kotlin/${KotlinVersion.CURRENT}"
-        val jreVersion = System.getProperty("java.runtime.version")
-        if (jreVersion != null) {
-            userAgent += " jre/${jreVersion}"
-        }
-        val defaultHeaders = mapOf("User-Agent" to userAgent, "Authorization" to "Bearer $token")
-        val httpClient = SvixHttpClient(parsedUrl, defaultHeaders, options.retrySchedule)
+        val baseUrl = options.baseUrl ?: baseUrlFromToken(token)
+        val parsedUrl = baseUrl.toHttpUrlOrNull() ?: throw Exception("Invalid base url")
+        val httpClient = SvixHttpClient(token, parsedUrl, options.retrySchedule)
+
         application = Application(httpClient)
         authentication = Authentication(httpClient)
         endpoint = Endpoint(httpClient)

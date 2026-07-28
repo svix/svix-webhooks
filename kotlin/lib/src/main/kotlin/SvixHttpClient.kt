@@ -6,17 +6,41 @@ import kotlin.random.nextULong
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import okhttp3.*
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
 
+internal fun baseUrlFromToken(token: String): String {
+    val region = token.split(".").last()
+    return when (region) {
+        "us" -> "https://api.us.svix.com"
+        "eu" -> "https://api.eu.svix.com"
+        "in" -> "https://api.in.svix.com"
+        "ca" -> "https://api.ca.svix.com"
+        "au" -> "https://api.au.svix.com"
+        else -> "https://api.svix.com"
+    }
+}
+
 open class SvixHttpClient
 internal constructor(
+    token: String,
     private val baseUrl: HttpUrl,
-    private val defaultHeaders: Map<String, String>,
     private val retrySchedule: List<Long>,
 ) {
+    private val defaultHeaders: Map<String, String>
     private val client: OkHttpClient = OkHttpClient()
     private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
+
+    init {
+        var userAgent = "svix-libs/${Version}/kotlin kotlin/${KotlinVersion.CURRENT}"
+        val jreVersion = System.getProperty("java.runtime.version")
+        if (jreVersion != null) {
+            userAgent += " jre/${jreVersion}"
+        }
+
+        defaultHeaders = mapOf("User-Agent" to userAgent, "Authorization" to "Bearer $token")
+    }
 
     fun newUrlBuilder(): HttpUrl.Builder {
         return HttpUrl.Builder().scheme(baseUrl.scheme).host(baseUrl.host).port(baseUrl.port)
