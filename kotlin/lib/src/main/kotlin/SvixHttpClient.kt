@@ -14,9 +14,9 @@ internal constructor(
     private val baseUrl: HttpUrl,
     private val defaultHeaders: Map<String, String>,
     private val retrySchedule: List<Long>,
-    private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
 ) {
     private val client: OkHttpClient = OkHttpClient()
+    private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
 
     fun newUrlBuilder(): HttpUrl.Builder {
         return HttpUrl.Builder().scheme(baseUrl.scheme).host(baseUrl.host).port(baseUrl.port)
