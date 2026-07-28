@@ -1,8 +1,9 @@
 use std::{sync::Arc, time::Duration};
 
+use hyper::body::Bytes;
 use hyper_util::{client::legacy::Client as HyperClient, rt::TokioExecutor};
 
-use crate::Configuration;
+use crate::connector::{make_connector, Connector};
 
 const CRATE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -56,6 +57,16 @@ impl Default for SvixOptions {
     }
 }
 
+pub(crate) struct Configuration {
+    pub base_path: String,
+    pub user_agent: Option<String>,
+    pub bearer_access_token: Option<String>,
+    pub timeout: Option<Duration>,
+    pub num_retries: u32,
+    pub retry_schedule: Option<Vec<Duration>>,
+    pub client: HyperClient<Connector, http_body_util::Full<Bytes>>,
+}
+
 /// Svix API client.
 #[derive(Clone)]
 pub struct Svix {
@@ -85,7 +96,7 @@ impl Svix {
         let cfg = Arc::new(Configuration {
             user_agent: Some(user_agent_fields.join(" ")),
             client: HyperClient::builder(TokioExecutor::new())
-                .build(crate::make_connector(options.proxy_address)),
+                .build(make_connector(options.proxy_address)),
             timeout: options.timeout,
             // These fields will be set by `with_token` below
             base_path: String::new(),
@@ -134,8 +145,13 @@ impl Svix {
         }
     }
 
-    pub fn cfg(&self) -> &Configuration {
+    pub(crate) fn cfg(&self) -> &Configuration {
         &self.cfg
+    }
+
+    /// Get back the access token used to construct this `Svix` client.
+    pub fn token(&self) -> Option<&str> {
+        self.cfg.bearer_access_token.as_deref()
     }
 }
 
