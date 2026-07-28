@@ -5,14 +5,16 @@ export const LIB_VERSION = "2.0.0-rc.2";
 
 function getUserAgent() {
   var fields = [`svix-libs/${LIB_VERSION}/javascript`];
-  if (process !== undefined) {
+  // `typeof`, not a bare reference: outside their own runtime these are
+  // undeclared, and reading an undeclared binding throws a ReferenceError.
+  if (typeof process !== "undefined") {
     if (process.version !== undefined) {
       fields.push(`node/${process.version}`);
     }
     if (process.platform !== undefined && process.arch !== undefined) {
       fields.push(`${process.platform}/${process.arch}`);
     }
-  } else if (navigator?.userAgent !== undefined) {
+  } else if (typeof navigator !== "undefined" && navigator.userAgent !== undefined) {
     fields.push(navigator.userAgent);
   }
   return fields.join(" ");
