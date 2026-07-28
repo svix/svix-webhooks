@@ -1,7 +1,7 @@
 // this file is @generated
 #![warn(unreachable_pub)]
 
-mod client;
+pub(crate) mod client;
 
 pub use self::client::{Svix, SvixOptions};
 
