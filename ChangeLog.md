@@ -8,6 +8,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 ## Unreleased
 * Libs/Rust **(Breaking)**: Remove `Configuration` from the public API
   * The access token can still be accessed using `svix.token()`, if you were using any of the other fields let us know!
+* Libs/Rust **(Breaking)**: Upgrade public dependency `js_option` to 0.2.0
 * Libs/Kotlin: Add missing APIs background-task, connector, environment, and health
 
 ## Version 2.0.0-rc.2
