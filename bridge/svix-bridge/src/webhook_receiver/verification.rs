@@ -106,7 +106,7 @@ mod tests {
             .uri("test.uri")
             .header("svix-id", "msg_valid")
             .header("svix-signature", signature.clone())
-            .header("svix-timestamp", &format!("{timestamp}"))
+            .header("svix-timestamp", format!("{timestamp}"))
             .body(axum::body::Body::from(payload))
             .unwrap();
 
@@ -118,7 +118,7 @@ mod tests {
             .uri("test.uri")
             .header("svix-id", "msg_invalid")
             .header("svix-signature", signature)
-            .header("svix-timestamp", &format!("{timestamp}"))
+            .header("svix-timestamp", format!("{timestamp}"))
             .body(axum::body::Body::from(payload))
             .unwrap();
 

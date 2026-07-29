@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 mod background_migrations;
 mod db;
 mod e2e_application;

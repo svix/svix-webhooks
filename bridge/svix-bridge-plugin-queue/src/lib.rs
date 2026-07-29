@@ -1,3 +1,5 @@
+#![recursion_limit = "256"]
+
 use std::time::{Duration, Instant};
 
 use omniqueue::{Delivery, DynConsumer, QueueError};

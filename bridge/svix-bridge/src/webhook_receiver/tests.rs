@@ -336,7 +336,7 @@ async fn test_forwarding_svix_verification_mismatch() {
                 .header("content-type", "application/json")
                 .header("svix-id", "msg_valid")
                 .header("svix-signature", signature.clone())
-                .header("svix-timestamp", &format!("{timestamp}"))
+                .header("svix-timestamp", format!("{timestamp}"))
                 .body(axum::body::Body::from(sent_payload_bytes))
                 .unwrap(),
         )
