@@ -141,7 +141,7 @@ pub fn router() -> ApiRouter<AppState> {
     ApiRouter::new()
         // use route / axum::routing to skip OpenAPI inclusion for the deprecated route
         .route(
-            "/auth/dashboard-access/:app_id",
+            "/auth/dashboard-access/{app_id}",
             axum::routing::post(dashboard_access),
         )
         .api_route_with(
@@ -150,7 +150,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/auth/app-portal-access/:app_id",
+            "/auth/app-portal-access/{app_id}",
             post_with(app_portal_access, app_portal_access_operation),
             tag,
         )

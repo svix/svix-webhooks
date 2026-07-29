@@ -3884,7 +3884,7 @@
                                 }
                             }
                         },
-                        "description": ""
+                        "description": "The value of the headers is returned in the `headers` field.\n\nSensitive headers that have been redacted are returned in the sensitive field."
                     },
                     "401": {
                         "content": {

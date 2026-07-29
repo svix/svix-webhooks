@@ -1,6 +1,5 @@
 use aide::OperationInput;
 use axum::{
-    async_trait,
     extract::{FromRequestParts, Path},
     http::request::Parts,
 };
@@ -20,7 +19,6 @@ pub struct ReadAll {
     pub feature_flags: AllowedFeatureFlags,
 }
 
-#[async_trait]
 impl FromRequestParts<AppState> for ReadAll {
     type Rejection = Error;
 
@@ -57,7 +55,6 @@ impl Permissions {
     }
 }
 
-#[async_trait]
 impl FromRequestParts<AppState> for Organization {
     type Rejection = Error;
 
@@ -77,7 +74,6 @@ pub struct Application {
     pub app: application::Model,
 }
 
-#[async_trait]
 impl FromRequestParts<AppState> for Application {
     type Rejection = Error;
 
@@ -107,7 +103,6 @@ pub struct OrganizationWithApplication {
 
 impl OperationInput for OrganizationWithApplication {}
 
-#[async_trait]
 impl FromRequestParts<AppState> for OrganizationWithApplication {
     type Rejection = Error;
 
@@ -133,7 +128,6 @@ pub struct ApplicationWithMetadata {
 
 impl OperationInput for ApplicationWithMetadata {}
 
-#[async_trait]
 impl FromRequestParts<AppState> for ApplicationWithMetadata {
     type Rejection = Error;
 

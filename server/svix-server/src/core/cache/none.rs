@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use axum::async_trait;
+use async_trait::async_trait;
 
 use super::{Cache, CacheBehavior, CacheKey, CacheValue, Result, StringCacheKey};
 

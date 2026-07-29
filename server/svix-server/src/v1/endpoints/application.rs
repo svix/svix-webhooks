@@ -470,7 +470,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id",
+            "/app/{app_id}",
             get_with(get_application, get_application_operation)
                 .put_with(update_application, update_application_operation)
                 .patch_with(patch_application, patch_application_operation)

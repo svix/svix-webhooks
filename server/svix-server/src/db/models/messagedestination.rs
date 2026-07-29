@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use async_trait::async_trait;
 use chrono::Utc;
 use sea_orm::{ActiveValue::Set, entity::prelude::*};
 
@@ -22,7 +23,7 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {}
 
-#[axum::async_trait]
+#[async_trait]
 impl ActiveModelBehavior for ActiveModel {
     fn new() -> Self {
         let timestamp = Utc::now();
