@@ -38,7 +38,7 @@ shellexpand = { version = "3.1.0", default-features = false, features = ["base-0
 svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafka" }
 svix-bridge-plugin-queue = { path = "../svix-bridge-plugin-queue" }
 svix-bridge-types.workspace = true
-svix-ksuid = "0.8.0"
+svix-ksuid.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 tracing-opentelemetry = "0.33.0"

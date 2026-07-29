@@ -3101,7 +3101,7 @@ dependencies = [
  "redis",
  "serde",
  "serde_json",
- "svix-ksuid",
+ "svix-ksuid 0.8.0",
  "sync_wrapper",
  "thiserror",
  "time",
@@ -4635,7 +4635,7 @@ dependencies = [
  "svix-bridge-plugin-kafka",
  "svix-bridge-plugin-queue",
  "svix-bridge-types",
- "svix-ksuid",
+ "svix-ksuid 0.10.0",
  "tikv-jemalloc-ctl",
  "tikv-jemallocator",
  "tokio",
@@ -4709,6 +4709,18 @@ dependencies = [
  "base-encode",
  "byteorder",
  "getrandom 0.2.17",
+ "time",
+]
+
+[[package]]
+name = "svix-ksuid"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef7ea3e998e0dbce512b1a87edf421dcf3eedbf59ab9396608e9624935869a90"
+dependencies = [
+ "base-encode",
+ "byteorder",
+ "getrandom 0.4.2",
  "time",
 ]
 
