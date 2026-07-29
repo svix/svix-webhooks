@@ -8,6 +8,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['8.3', '8.4', '8.5']
+        dependencies: ['highest', 'lowest']
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -18,8 +19,11 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           tools: composer
 
-      - name: Install deps
-        run: composer install
+      - name: Install Composer dependencies ${{ matrix.dependencies }}
+        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+        with:
+          dependency-versions: ${{ matrix.dependencies }}
+          composer-options: --prefer-dist --prefer-stable
 
       - name: Run unit tests
         run: vendor/bin/phpunit --configuration phpunit.xml
