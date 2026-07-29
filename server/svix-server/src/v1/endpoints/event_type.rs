@@ -450,7 +450,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/event-type/:event_type_name",
+            "/event-type/{event_type_name}",
             get_with(get_event_type, get_event_type_operation)
                 .put_with(update_event_type, update_event_type_operation)
                 .patch_with(patch_event_type, patch_event_type_operation)

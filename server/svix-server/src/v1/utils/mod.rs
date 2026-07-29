@@ -15,7 +15,6 @@ use aide::{
     transform::{TransformOperation, TransformPathItem},
 };
 use axum::{
-    async_trait,
     extract::{
         FromRequest, FromRequestParts, Query, Request,
         rejection::{BytesRejection, FailedToBufferBody},
@@ -515,7 +514,6 @@ pub fn validation_errors(
 #[aide(input_with = "axum::extract::Json<T>", json_schema)]
 pub struct ValidatedJson<T>(pub T);
 
-#[async_trait]
 impl<T, S> FromRequest<S> for ValidatedJson<T>
 where
     T: DeserializeOwned + Validate,
@@ -571,7 +569,6 @@ where
 #[derive(Debug, Clone, Copy, Default)]
 pub struct ValidatedQuery<T>(pub T);
 
-#[async_trait]
 impl<T, S> FromRequestParts<S> for ValidatedQuery<T>
 where
     T: DeserializeOwned + Validate,
@@ -599,7 +596,10 @@ impl<T> Deref for ValidatedQuery<T> {
 }
 
 impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
-    fn operation_input(ctx: &mut aide::gen::GenContext, operation: &mut aide::openapi::Operation) {
+    fn operation_input(
+        ctx: &mut aide::generate::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) {
         axum::extract::Query::<T>::operation_input(ctx, operation)
     }
 }
@@ -608,7 +608,6 @@ impl<T: JsonSchema> OperationInput for ValidatedQuery<T> {
 // handle url query param arrays as flexibly as we need to support in our API
 pub struct EventTypesQueryParams(pub Option<EventTypeNameSet>);
 
-#[async_trait]
 impl<S> FromRequestParts<S> for EventTypesQueryParams
 where
     S: Send + Sync,
@@ -643,7 +642,10 @@ where
 }
 
 impl OperationInput for EventTypesQueryParams {
-    fn operation_input(ctx: &mut aide::gen::GenContext, operation: &mut aide::openapi::Operation) {
+    fn operation_input(
+        ctx: &mut aide::generate::GenContext,
+        operation: &mut aide::openapi::Operation,
+    ) {
         // This struct must match what `EventTypesQuery` would be if we used a
         // simple `#[derive(Deserialize)]` on it.
         #[derive(JsonSchema)]
@@ -756,14 +758,14 @@ impl<const STATUS: u16, T: JsonSchema + Serialize> OperationOutput for JsonStatu
     type Inner = T;
 
     fn operation_response(
-        ctx: &mut aide::gen::GenContext,
+        ctx: &mut aide::generate::GenContext,
         operation: &mut aide::openapi::Operation,
     ) -> Option<aide::openapi::Response> {
         axum::extract::Json::<T>::operation_response(ctx, operation)
     }
 
     fn inferred_responses(
-        ctx: &mut aide::gen::GenContext,
+        ctx: &mut aide::generate::GenContext,
         operation: &mut aide::openapi::Operation,
     ) -> Vec<(Option<u16>, aide::openapi::Response)> {
         if let Some(resp) = Self::operation_response(ctx, operation) {
@@ -800,14 +802,14 @@ impl<T: JsonSchema + Serialize> OperationOutput for JsonStatusUpsert<T> {
     type Inner = T;
 
     fn operation_response(
-        ctx: &mut aide::gen::GenContext,
+        ctx: &mut aide::generate::GenContext,
         operation: &mut aide::openapi::Operation,
     ) -> Option<aide::openapi::Response> {
         axum::extract::Json::<T>::operation_response(ctx, operation)
     }
 
     fn inferred_responses(
-        ctx: &mut aide::gen::GenContext,
+        ctx: &mut aide::generate::GenContext,
         operation: &mut aide::openapi::Operation,
     ) -> Vec<(Option<u16>, aide::openapi::Response)> {
         if let Some(resp) = Self::operation_response(ctx, operation) {

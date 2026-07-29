@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use async_trait::async_trait;
 use chrono::Utc;
 use sea_orm::{ActiveValue::Set, Condition, entity::prelude::*};
 
@@ -84,7 +85,7 @@ impl Model {
     }
 }
 
-#[axum::async_trait]
+#[async_trait]
 impl ActiveModelBehavior for ActiveModel {
     async fn before_save<C>(mut self, _db: &C, _insert: bool) -> Result<Self, DbErr>
     where

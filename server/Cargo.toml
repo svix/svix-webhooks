@@ -3,7 +3,8 @@ members = ["svix-server", "svix-server-derive"]
 resolver = "2"
 
 [workspace.dependencies]
-hyper = { version = "=1.10.1", features = ["full"] }
+# pinned to ensure the [patch] below is used
+hyper = { version = "=1.11.0", features = ["full"] }
 
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
@@ -36,4 +37,4 @@ build-override.opt-level = 2
 svix-server-derive = { opt-level = 0 }
 
 [patch.crates-io]
-hyper = { git = "https://github.com/svix/hyper.git", rev = "0b8b37910862f6da9cf08717f753c052f5c087fd" }
+hyper = { git = "https://github.com/svix/hyper.git", rev = "7d3bff970b5c218d4cdaa0807ed27d22a4090fa4" }

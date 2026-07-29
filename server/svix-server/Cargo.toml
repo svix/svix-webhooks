@@ -22,10 +22,11 @@ jemalloc = ["dep:tikv-jemallocator"]
 tikv-jemallocator = { version = "0.7.0", optional = true }
 
 [dependencies]
-aide = { version = "0.13.4", features = ["axum", "redoc", "macros", "axum-headers"] }
+aide = { version = "0.14.2", features = ["axum", "axum-json", "axum-query", "redoc", "macros"] }
 anyhow = "1.0.56"
-axum = "0.7.9"
-axum-extra = { version = "0.9.3", features = ["typed-header"] }
+async-trait = "0.1.89"
+axum = "0.8.9"
+axum-extra = { version = "0.10.3", features = ["typed-header"] }
 base64 = "0.22"
 bb8 = "0.9.0"
 bb8-redis = "0.24.0"

@@ -3,7 +3,7 @@
 
 use std::{collections::HashMap, sync::Arc};
 
-use axum::async_trait;
+use async_trait::async_trait;
 use tokio::{
     sync::RwLock,
     task,
