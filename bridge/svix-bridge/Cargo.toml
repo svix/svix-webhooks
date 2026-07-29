@@ -17,7 +17,8 @@ tikv-jemallocator = { version = "0.6.0", optional = true }
 
 [dependencies]
 anyhow = "1"
-axum = { version = "0.7.7", features = ["macros"] }
+async-trait = "0.1.89"
+axum.workspace = true
 clap = { version = "4.2.4", features = ["env", "derive"] }
 deadpool = { version = "0.12.1", features = ["unmanaged", "rt_tokio_1"] }
 deno_ast = "0.53.0"
@@ -37,7 +38,7 @@ shellexpand = { version = "3.1.0", default-features = false, features = ["base-0
 svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafka" }
 svix-bridge-plugin-queue = { path = "../svix-bridge-plugin-queue" }
 svix-bridge-types.workspace = true
-svix-ksuid = "0.8.0"
+svix-ksuid.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 tracing-opentelemetry = "0.33.0"
