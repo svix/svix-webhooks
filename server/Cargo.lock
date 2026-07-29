@@ -5314,7 +5314,7 @@ dependencies = [
  "idna_adapter",
  "indexmap 2.14.0",
  "ipnet",
- "itertools 0.14.0",
+ "itertools 0.15.0",
  "jsonschema",
  "jwt-simple",
  "lapin",
