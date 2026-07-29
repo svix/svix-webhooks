@@ -1011,11 +1011,11 @@ dependencies = [
 
 [[package]]
 name = "js_option"
-version = "0.1.1"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68421373957a1593a767013698dbf206e2b221eefe97a44d98d18672ff38423c"
+checksum = "c7dd3e281add16813cf673bf74a32249b0aa0d1c8117519a17b3ada5e8552b3c"
 dependencies = [
- "serde",
+ "serde_core",
 ]
 
 [[package]]
