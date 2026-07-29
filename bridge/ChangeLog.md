@@ -3,6 +3,7 @@
 ## Unreleased
 * Add an opt-in Kafka record envelope for JSON transformations
 * Allow configuring Kafka consumer `auto.offset.reset`
+* Add an optional Kafka idempotency namespace for independent sources
 
 ## Version 1.99.0
 * Include the Kafka partition in consumer idempotency keys

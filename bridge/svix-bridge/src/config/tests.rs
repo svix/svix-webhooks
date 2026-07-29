@@ -448,6 +448,28 @@ kafka_security_protocol: "plaintext"
     assert!(config.is_err());
 }
 
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_idempotency_namespace_parses_ok() {
+    let config = serde_yaml::from_str::<KafkaInputOpts>(
+        r#"
+type: "kafka"
+kafka_bootstrap_brokers: "localhost:9094"
+kafka_group_id: "kafka_example_consumer_group"
+kafka_topic: "foobar"
+kafka_idempotency_namespace: "source-a"
+kafka_security_protocol: "plaintext"
+"#,
+    )
+    .unwrap();
+
+    let KafkaInputOpts::Inner {
+        idempotency_namespace,
+        ..
+    } = config;
+    assert_eq!(idempotency_namespace.as_deref(), Some("source-a"));
+}
+
 #[test]
 fn test_empty() {
     let conf: Config = serde_yaml::from_str("").unwrap();
