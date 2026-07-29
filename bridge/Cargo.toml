@@ -31,6 +31,7 @@ nonstandard_macro_braces = "warn"
 uninlined_format_args = "warn"
 
 [workspace.dependencies]
+axum = { version = "0.8.9", features = ["macros"] }
 opentelemetry = "0.32.0"
 opentelemetry-otlp = { version = "0.32.0", features = ["metrics", "grpc-tonic", "reqwest-client"] }
 opentelemetry_sdk = { version = "0.32.0", features = ["metrics", "rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
