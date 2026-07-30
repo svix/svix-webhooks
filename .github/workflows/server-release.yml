@@ -46,9 +46,12 @@ jobs:
           filter: tree:0
       - id: get-version-number
         run: |
-          echo "tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
+          version=$(cargo metadata --format-version 1 \
+            | jq -r '.packages[] | select(.name == "svix-server") | .version')
+          echo "version=v${version}" >> "$GITHUB_OUTPUT"
+        working-directory: server
     outputs:
-      version: ${{ steps.get-version-number.outputs.tag }}
+      version: ${{ steps.get-version-number.outputs.version }}
 
   build:
     needs: [get-version]
