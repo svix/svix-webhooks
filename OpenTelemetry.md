@@ -1,5 +1,5 @@
 # OpenTelemetry Configuration
-Svix supports sending tracing information to the OpenTelemetry collector at a configured address. This can be used to interface with many services such as DataDog or Sentry.
+Svix supports sending traces, metrics, and logs to an OpenTelemetry collector at a configured address. This can be used to interface with many services such as DataDog or Sentry.
 
 To set this up you can follow these steps:
 
@@ -8,3 +8,5 @@ To set this up you can follow these steps:
 3. Configure the Svix server including the `opentelemetry_address` field to point towards the gRPC address configured above.
 4. Optionally configure the `opentelemetry_sample_ratio` in the Svix server configuration. If not set, all traces will be sent to the external service.
 5. Ensure the OpenTelemetry Collector is running, start the Svix server, and watch the tracing information be received.
+
+Once `opentelemetry_address` is set, log events (in addition to traces and metrics) are exported to the collector alongside the existing stdout logging — stdout output is unaffected.

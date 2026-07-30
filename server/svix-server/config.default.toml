@@ -32,14 +32,14 @@ log_level = "info"
 # The log format that all output will follow. Supported: default, json
 log_format = "default"
 
-# The OpenTelemetry address to send trace information to. Disabled when omitted/null.
+# The OpenTelemetry address to send traces, metrics, and logs to. Disabled when omitted/null.
 # opentelemetry_address = "http://localhost:4317"
 
 # The ratio at which to sample spans when sending to OpenTelemetry. When not given it defaults to
 # always sending. If the OpenTelemetry address is not set, this will do nothing.
 # opentelemetry_sample_ratio = 1.0
 
-# The name of the service to use when sending spans to OpenTelemetry.
+# The name of the service to use when sending traces, metrics, and logs to OpenTelemetry.
 opentelemetry_service_name = "svix_server"
 
 # The Sentry DSN to use for error reporting. Disabled when omitted/null

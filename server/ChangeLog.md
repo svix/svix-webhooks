@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Send log events to the configured OpenTelemetry collector (`opentelemetry_address`), in addition to stdout
 
 ## Version 1.99.0
 * Fix warning when opentelemetry is disabled

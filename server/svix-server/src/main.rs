@@ -170,7 +170,7 @@ async fn main() -> anyhow::Result<()> {
 
     let cfg = cfg::load()?;
 
-    let (tracing_subscriber, _guard, otel_tracer_provider) =
+    let (tracing_subscriber, _guard, otel_tracer_provider, otel_logger_provider) =
         setup_tracing(&cfg, /* for_test = */ false);
     tracing_subscriber.init();
 
@@ -302,6 +302,13 @@ async fn main() -> anyhow::Result<()> {
     };
 
     if let Some(provider) = otel_tracer_provider {
+        _ = tokio::task::spawn_blocking(move || {
+            _ = provider.shutdown();
+        })
+        .await;
+    }
+
+    if let Some(provider) = otel_logger_provider {
         _ = tokio::task::spawn_blocking(move || {
             _ = provider.shutdown();
         })
