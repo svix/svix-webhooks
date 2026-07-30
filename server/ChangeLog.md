@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## Version 1.100.0
+* Upgrade dependencies
+
 ## Version 1.99.0
 * Fix warning when opentelemetry is disabled
 
