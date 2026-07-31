@@ -63,6 +63,9 @@ impl Step {
     }
 }
 
+/// Shown on the message step, and when the next step is reached for before it's ready.
+const UNLOCK_HINT: &str = "The next step will be unlocked after you send the message.";
+
 /// Work that talks to the API, run between frames so the UI can show it's busy.
 #[derive(Clone, Copy)]
 enum Action {
@@ -235,9 +238,19 @@ impl<'a> App<'a> {
         self.scroll = self.scroll.saturating_add(lines).min(max);
     }
 
+    /// The app portal is only worth looking at once there's a delivery in it, so it stays
+    /// shut until the message has gone out.
+    fn locked(&self, step: Step) -> bool {
+        step == Step::Portal && self.sent.is_none()
+    }
+
     fn go(&mut self, delta: isize) {
         let next = (self.step as isize + delta).clamp(0, STEPS.len() as isize - 1) as usize;
         if next == self.step {
+            return;
+        }
+        if self.locked(STEPS[next]) {
+            self.status = Some(UNLOCK_HINT.to_owned());
             return;
         }
         self.step = next;
@@ -544,7 +557,10 @@ impl App<'_> {
                     qs.app.id
                 )));
             }
-            (None, Some(_)) => lines.push(Line::styled("Press enter to send it.", HEADING)),
+            (None, Some(_)) => {
+                lines.push(Line::styled("Press enter to send it.", HEADING));
+                lines.push(Line::styled(UNLOCK_HINT, DIM));
+            }
             _ => {}
         }
 
@@ -695,6 +711,31 @@ mod tests {
         app.step = STEPS.len() - 1;
         app.on_key(KeyEvent::from(KeyCode::Right));
         assert_eq!(app.step, STEPS.len() - 1);
+    }
+
+    #[test]
+    fn the_app_portal_stays_locked_until_the_message_is_sent() {
+        let client = Svix::new("testsk_fake".to_owned(), None);
+        let cfg = Config::default();
+        let mut app = App::new(&client, &cfg);
+        app.pending = None;
+
+        let send = STEPS
+            .iter()
+            .position(|s| *s == Step::Send)
+            .expect("send step");
+        app.step = send;
+        app.on_key(KeyEvent::from(KeyCode::Right));
+        assert_eq!(app.step, send, "the portal is out of reach before sending");
+        assert!(app.status.is_some(), "and the wizard says why");
+
+        app.sent = Some("msg_123".to_owned());
+        app.on_key(KeyEvent::from(KeyCode::Right));
+        assert_eq!(app.step, send + 1, "sending unlocks it");
+
+        // Going back to a locked-behind step is always fine.
+        app.on_key(KeyEvent::from(KeyCode::Left));
+        assert_eq!(app.step, send);
     }
 
     #[test]
