@@ -18,6 +18,7 @@ use self::{
         open::OpenArgs,
         seed::SeedArgs,
         signature::SignatureArgs,
+        wizard::WizardArgs,
     },
     config::Config,
 };
@@ -116,6 +117,8 @@ enum RootCommands {
     ShowConfig,
     /// Get the version of the Svix CLI
     Version,
+    /// Guided setup flows for getting started with Svix
+    Wizard(WizardArgs),
 }
 
 #[tokio::main]
@@ -143,6 +146,7 @@ async fn main() -> Result<()> {
         RootCommands::Version => println!("{VERSION}"),
         RootCommands::Signature(args) => args.command.exec().await?,
         RootCommands::Open(args) => args.command.exec().await?,
+        RootCommands::Wizard(args) => args.command.exec().await?,
         // Remote API calls
         RootCommands::Application(args) => {
             let client = get_client(&cfg?)?;
