@@ -31,6 +31,8 @@
     {% endif -%}
     {% if type.name is endingwith "Patch" and field.nullable -%}
     out['{{ field.name }}'] = {{ val_expr }} if @__{{ field.name | to_snake_case }}_is_defined
+    {% elif type.name is endingwith "Patch" and field.type.is_bool() -%}
+    out['{{ field.name }}'] = {{ val_expr }} unless @{{ field.name | to_snake_case }}.nil?
     {% else -%}
     out['{{ field.name }}'] = {{ val_expr }} if @{{ field.name | to_snake_case }}
     {% endif -%}

@@ -39,7 +39,7 @@ module Svix
     def serialize
       out = Hash.new
       out["code"] = Svix::serialize_primitive(@code) if @__code_is_defined
-      out["enabled"] = Svix::serialize_primitive(@enabled) if @enabled
+      out["enabled"] = Svix::serialize_primitive(@enabled) unless @enabled.nil?
       out
     end
 
