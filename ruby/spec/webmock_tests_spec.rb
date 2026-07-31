@@ -277,6 +277,24 @@ describe "API Client" do
       )
         .with(body: "{}")
     )
+    # false is an explicit value for non-nullable booleans
+    svx.endpoint.patch("app_id", "endpoint_id", Svix::EndpointPatch.new(disabled: false))
+    expect(WebMock).to(
+      have_requested(
+        :patch,
+        "#{host}/api/v1/app/app_id/endpoint/endpoint_id"
+      )
+        .with(body: "{\"disabled\":false}")
+    )
+    # Ruby considers an empty string truthy, so it can clear a description.
+    svx.endpoint.patch("app_id", "endpoint_id", Svix::EndpointPatch.new(description: ""))
+    expect(WebMock).to(
+      have_requested(
+        :patch,
+        "#{host}/api/v1/app/app_id/endpoint/endpoint_id"
+      )
+        .with(body: "{\"description\":\"\"}")
+    )
     # nullable field set
     svx.endpoint.patch("app_id", "endpoint_id", Svix::EndpointPatch.new(channels: ["ch1", "ch2"]))
     expect(WebMock).to(
@@ -286,6 +304,17 @@ describe "API Client" do
       )
         .with(body: "{\"channels\":[\"ch1\",\"ch2\"]}")
     )
+  end
+
+  it "serializes false values in patch models" do
+    expect(Svix::EndpointTransformationPatch.new(enabled: false).serialize)
+      .to(eq({"enabled" => false}))
+    expect(Svix::IngestEndpointTransformationPatch.new(enabled: false).serialize)
+      .to(eq({"enabled" => false}))
+    expect(Svix::EventTypePatch.new(archived: false, deprecated: false).serialize)
+      .to(eq({"archived" => false, "deprecated" => false}))
+    expect(Svix::StreamEventTypePatch.new(archived: false, deprecated: false).serialize)
+      .to(eq({"archived" => false, "deprecated" => false}))
   end
 
   it "arbitrary json object body" do

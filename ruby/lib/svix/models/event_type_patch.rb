@@ -45,8 +45,8 @@ module Svix
     def serialize
       out = Hash.new
       out["description"] = Svix::serialize_primitive(@description) if @description
-      out["archived"] = Svix::serialize_primitive(@archived) if @archived
-      out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
+      out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
+      out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
       out["schemas"] = Svix::serialize_primitive(@schemas) if @__schemas_is_defined
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @__feature_flags_is_defined
       out["groupName"] = Svix::serialize_primitive(@group_name) if @__group_name_is_defined
