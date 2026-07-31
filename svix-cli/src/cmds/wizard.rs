@@ -52,7 +52,8 @@ async fn quickstart() -> anyhow::Result<()> {
 
     // The event type has to exist before the endpoint that filters on it is created.
     let message = sample_message(&client).await?;
-    create_application(&client, &message).await?;
+    let app = create_application(&client, &message).await?;
+    integrate_code(&cfg, &app, &message)?;
 
     Ok(())
 }
@@ -304,10 +305,15 @@ fn is_missing_field(err: &svix::error::Error, field: &str) -> bool {
 /// The message the quickstart sends, and that the code snippets show.
 struct SampleMessage {
     event_type: String,
+    payload: serde_json::Value,
 }
 
-/// Fallback matching the dashboard onboarding when the account has no event types yet.
+/// Fallbacks matching the dashboard onboarding when the account has no event types yet.
 const DEFAULT_EVENT_TYPE: &str = "invoice.paid";
+
+fn default_payload() -> serde_json::Value {
+    serde_json::json!({ "id": "invoice_WF7WtC", "status": "paid", "attempt": 1 })
+}
 
 /// Picks the message to send: the account's first event type if it has one, otherwise
 /// `invoice.paid`, which is created here so the endpoint can filter on it.
@@ -345,5 +351,181 @@ async fn sample_message(client: &Svix) -> anyhow::Result<SampleMessage> {
         }
     };
 
-    Ok(SampleMessage { event_type })
+    Ok(SampleMessage {
+        event_type,
+        payload: default_payload(),
+    })
+}
+
+/// A language the quickstart can show a "send a message" snippet for.
+struct Language {
+    name: &'static str,
+    /// How to add the Svix SDK to a project.
+    install: &'static str,
+    /// The snippet itself, rendered for the application and message created above.
+    snippet: fn(app_id: &str, msg: &SampleMessage, server_url: &str) -> String,
+}
+
+const LANGUAGES: &[Language] = &[
+    Language {
+        name: "Python",
+        install: "pip install svix",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"import os
+
+from svix.api import Svix, MessageIn
+
+svix = Svix(os.environ["SVIX_AUTH_TOKEN"])
+
+# Call this wherever the event actually happens in your code.
+svix.message.create(
+    "{app_id}",
+    MessageIn(event_type="{event_type}", payload={payload}),
+)"#
+            )
+        },
+    },
+    Language {
+        name: "JavaScript / TypeScript",
+        install: "npm install svix",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"import {{ Svix }} from "svix";
+
+const svix = new Svix(process.env.SVIX_AUTH_TOKEN);
+
+// Call this wherever the event actually happens in your code.
+await svix.message.create("{app_id}", {{
+  eventType: "{event_type}",
+  payload: {payload},
+}});"#
+            )
+        },
+    },
+    Language {
+        name: "Go",
+        install: "go get github.com/svix/svix-webhooks/go",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"svixClient, err := svix.New(os.Getenv("SVIX_AUTH_TOKEN"), nil)
+if err != nil {{
+    return err
+}}
+
+// Call this wherever the event actually happens in your code.
+var payload map[string]any
+json.Unmarshal([]byte(`{payload}`), &payload)
+
+_, err = svixClient.Message.Create(ctx, "{app_id}", models.MessageIn{{
+    EventType: "{event_type}",
+    Payload:   payload,
+}}, nil)"#
+            )
+        },
+    },
+    Language {
+        name: "Rust",
+        install: "cargo add svix",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"let svix = Svix::new(std::env::var("SVIX_AUTH_TOKEN")?, None);
+
+// Call this wherever the event actually happens in your code.
+svix.message()
+    .create(
+        "{app_id}".to_owned(),
+        MessageIn::new(
+            "{event_type}".to_owned(),
+            serde_json::json!({payload}),
+        ),
+        None,
+    )
+    .await?;"#
+            )
+        },
+    },
+    Language {
+        name: "cURL (any language)",
+        install: "no SDK needed",
+        snippet: |app_id, msg, server_url| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"curl -X POST "{server_url}/api/v1/app/{app_id}/msg" \
+  -H "Authorization: Bearer $SVIX_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{{
+    "eventType": "{event_type}",
+    "payload": {payload}
+  }}'"#
+            )
+        },
+    },
+];
+
+/// The public API URL to show in the curl snippet when the config doesn't override it.
+const DEFAULT_SERVER_URL: &str = "https://api.svix.com";
+
+/// Step 4 (manual): show where and what to change in the user's own code.
+fn integrate_code(cfg: &Config, app: &ApplicationOut, msg: &SampleMessage) -> anyhow::Result<()> {
+    println!("Step 4: Add Svix to your code");
+
+    let selection = dialoguer::Select::new()
+        .with_prompt("Which language is your app written in?")
+        .items(LANGUAGES.iter().map(|l| l.name).collect::<Vec<_>>())
+        .default(0)
+        .interact()?;
+    let language = &LANGUAGES[selection];
+
+    let server_url = cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
+
+    println!("\n1. Install the SDK:\n");
+    println!("   {}", green(language.install));
+    println!("\n2. Keep your API token out of source control. Export it where your app runs:\n");
+    println!("   {}", green("export SVIX_AUTH_TOKEN='<your-token>'"));
+    println!(
+        "\n   You can create environment-specific tokens in the dashboard: \
+         https://dashboard.svix.com"
+    );
+    println!(
+        "\n3. Send a message from the place in your code where the event happens — the same \
+         \n   spot you'd log it or fire an internal event:\n"
+    );
+
+    for line in (language.snippet)(&app.id, msg, server_url).lines() {
+        println!("   {line}");
+    }
+
+    println!(
+        "\nIn your real integration you'd create one application per customer and use \
+         \nthat customer's application ID (or uid) here, instead of the hardcoded one above.\n"
+    );
+
+    // Not a gate on anything, just a beat so the snippet doesn't scroll past.
+    let _ = dialoguer::Confirm::new()
+        .with_prompt("Ready to continue?")
+        .default(true)
+        .interact()?;
+    println!();
+
+    Ok(())
 }
