@@ -30,17 +30,13 @@ impl<'de> Deserialize<'de> for EitherReceiver {
         let value = serde_yaml::Value::deserialize(deserializer)?;
         let input_type = value
             .as_mapping()
-            .and_then(|m| m.get("input"))
-            .and_then(|v| v.as_mapping())
-            .and_then(|m| m.get("type"))
-            .and_then(serde_yaml::Value::as_str)
+            .and_then(|m| m.get("input")?.as_mapping()?.get("type")?.as_str())
             .ok_or_else(|| {
                 serde::de::Error::custom(
                     "missing field 'type' in receiver 'input', expected one of: webhook, svix-webhook, svix-message-poller",
                 )
-            })?
-            .to_owned();
-        match input_type.as_str() {
+            })?;
+        match input_type {
             "webhook" | "svix-webhook" => serde_yaml::from_value(value)
                 .map(EitherReceiver::Webhook)
                 .map_err(serde::de::Error::custom),
@@ -199,40 +195,31 @@ impl<'de> Deserialize<'de> for SenderInputOpts {
         D: Deserializer<'de>,
     {
         let value = serde_yaml::Value::deserialize(deserializer)?;
+        let valid = "kafka, rabbitmq, redis, sqs, gcp-pubsub";
         let type_val = value
             .as_mapping()
-            .and_then(|m| m.get("type"))
-            .and_then(serde_yaml::Value::as_str)
+            .and_then(|m| m.get("type")?.as_str())
             .ok_or_else(|| {
-                let valid = if cfg!(feature = "kafka") {
-                    "kafka, rabbitmq, redis, sqs, gcp-pubsub"
-                } else {
-                    "rabbitmq, redis, sqs, gcp-pubsub"
-                };
                 serde::de::Error::custom(format!(
                     "missing field 'type' in sender input, expected one of: {valid}"
                 ))
-            })?
-            .to_owned();
+            })?;
 
-        match type_val.as_str() {
+        match type_val {
             #[cfg(feature = "kafka")]
             "kafka" => serde_yaml::from_value(value)
                 .map(SenderInputOpts::Kafka)
                 .map_err(serde::de::Error::custom),
+            #[cfg(not(feature = "kafka"))]
+            "kafka" => Err(serde::de::Error::custom(
+                "'kafka' input type requires svix-bridge to be built with the 'kafka' feature enabled",
+            )),
             "rabbitmq" | "redis" | "sqs" | "gcp-pubsub" => serde_yaml::from_value(value)
                 .map(SenderInputOpts::Queue)
                 .map_err(serde::de::Error::custom),
-            other => {
-                let valid = if cfg!(feature = "kafka") {
-                    "kafka, rabbitmq, redis, sqs, gcp-pubsub"
-                } else {
-                    "rabbitmq, redis, sqs, gcp-pubsub"
-                };
-                Err(serde::de::Error::custom(format!(
-                    "unknown sender input type '{other}', expected one of {valid}"
-                )))
-            }
+            other => Err(serde::de::Error::custom(format!(
+                "unknown sender input type '{other}', expected one of: {valid}"
+            ))),
         }
     }
 }
@@ -300,23 +287,18 @@ impl<'de> Deserialize<'de> for ReceiverOutputOpts {
         D: Deserializer<'de>,
     {
         let value = serde_yaml::Value::deserialize(deserializer)?;
+
+        let valid = "http, kafka, rabbitmq, redis, sqs, gcp-pubsub";
         let value_type = value
             .as_mapping()
-            .and_then(|m| m.get("type"))
-            .and_then(serde_yaml::Value::as_str)
+            .and_then(|m| m.get("type")?.as_str())
             .ok_or_else(|| {
-                let valid = if cfg!(feature = "kafka") {
-                    "http, kafka, rabbitmq, redis, sqs, gcp-pubsub"
-                } else {
-                    "http, rabbitmq, redis, sqs, gcp-pubsub"
-                };
                 serde::de::Error::custom(format!(
                     "missing field `type` in receiver output; expected one of: {valid}"
                 ))
-            })?
-            .to_owned();
+            })?;
 
-        match value_type.as_str() {
+        match value_type {
             "http" => serde_yaml::from_value(value)
                 .map(ReceiverOutputOpts::Http)
                 .map_err(serde::de::Error::custom),
@@ -324,19 +306,16 @@ impl<'de> Deserialize<'de> for ReceiverOutputOpts {
             "kafka" => serde_yaml::from_value(value)
                 .map(ReceiverOutputOpts::Kafka)
                 .map_err(serde::de::Error::custom),
+            #[cfg(not(feature = "kafka"))]
+            "kafka" => Err(serde::de::Error::custom(
+                "'kafka' output type requires svix-bridge to be built with the 'kafka' feature enabled",
+            )),
             "rabbitmq" | "redis" | "sqs" | "gcp-pubsub" => serde_yaml::from_value(value)
                 .map(ReceiverOutputOpts::Queue)
                 .map_err(serde::de::Error::custom),
-            other => {
-                let valid = if cfg!(feature = "kafka") {
-                    "http, kafka, rabbitmq, redis, sqs, gcp-pubsub"
-                } else {
-                    "http, rabbitmq, redis, sqs, gcp-pubsub"
-                };
-                Err(serde::de::Error::custom(format!(
-                    "unknown receiver output type `{other}`, expected one of: {valid}"
-                )))
-            }
+            other => Err(serde::de::Error::custom(format!(
+                "unknown receiver output type `{other}`, expected one of: {valid}"
+            ))),
         }
     }
 }
