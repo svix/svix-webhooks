@@ -52,6 +52,11 @@ namespace Svix
     {
         readonly SvixClient _client = client;
 
+        public IngestEndpointTransformation Transformation
+        {
+            get => new IngestEndpointTransformation(_client);
+        }
+
         /// <summary>
         /// List ingest endpoints.
         /// </summary>
@@ -61,6 +66,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointListOptions();
+            }
             try
             {
                 var response =
@@ -68,8 +77,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/ingest/api/v1/source/{source_id}/endpoint",
                         pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -90,14 +99,18 @@ namespace Svix
             IngestEndpointListOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseIngestEndpointOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -119,6 +132,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointCreateOptions();
+            }
             ingestEndpointIn =
                 ingestEndpointIn ?? throw new ArgumentNullException(nameof(ingestEndpointIn));
             try
@@ -127,8 +144,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointIn,
                     cancellationToken: cancellationToken
                 );
@@ -151,6 +168,10 @@ namespace Svix
             IngestEndpointCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointCreateOptions();
+            }
             ingestEndpointIn =
                 ingestEndpointIn ?? throw new ArgumentNullException(nameof(ingestEndpointIn));
             try
@@ -159,8 +180,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/endpoint",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointIn
                 );
                 return response.Data;
@@ -231,18 +252,18 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an ingest endpoint.
+        /// Create or update an ingest endpoint.
         /// </summary>
-        public async Task<IngestEndpointOut> UpdateAsync(
+        public async Task<IngestEndpointOut> UpsertAsync(
             string sourceId,
             string endpointId,
-            IngestEndpointUpdate ingestEndpointUpdate,
+            IngestEndpointUpsertIn ingestEndpointUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            ingestEndpointUpdate =
-                ingestEndpointUpdate
-                ?? throw new ArgumentNullException(nameof(ingestEndpointUpdate));
+            ingestEndpointUpsertIn =
+                ingestEndpointUpsertIn
+                ?? throw new ArgumentNullException(nameof(ingestEndpointUpsertIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<IngestEndpointOut>(
@@ -253,31 +274,31 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    content: ingestEndpointUpdate,
+                    content: ingestEndpointUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Update an ingest endpoint.
+        /// Create or update an ingest endpoint.
         /// </summary>
-        public IngestEndpointOut Update(
+        public IngestEndpointOut Upsert(
             string sourceId,
             string endpointId,
-            IngestEndpointUpdate ingestEndpointUpdate
+            IngestEndpointUpsertIn ingestEndpointUpsertIn
         )
         {
-            ingestEndpointUpdate =
-                ingestEndpointUpdate
-                ?? throw new ArgumentNullException(nameof(ingestEndpointUpdate));
+            ingestEndpointUpsertIn =
+                ingestEndpointUpsertIn
+                ?? throw new ArgumentNullException(nameof(ingestEndpointUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<IngestEndpointOut>(
@@ -288,13 +309,13 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    content: ingestEndpointUpdate
+                    content: ingestEndpointUpsertIn
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
@@ -352,134 +373,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the additional headers to be sent with the ingest.
-        /// </summary>
-        public async Task<IngestEndpointHeadersOut> GetHeadersAsync(
-            string sourceId,
-            string endpointId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response =
-                    await _client.SvixHttpClient.SendRequestAsync<IngestEndpointHeadersOut>(
-                        method: HttpMethod.Get,
-                        path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                        pathParams: new Dictionary<string, string>
-                        {
-                            { "source_id", sourceId },
-                            { "endpoint_id", endpointId },
-                        },
-                        cancellationToken: cancellationToken
-                    );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the additional headers to be sent with the ingest.
-        /// </summary>
-        public IngestEndpointHeadersOut GetHeaders(string sourceId, string endpointId)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<IngestEndpointHeadersOut>(
-                    method: HttpMethod.Get,
-                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "source_id", sourceId },
-                        { "endpoint_id", endpointId },
-                    }
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set the additional headers to be sent to the endpoint.
-        /// </summary>
-        public async Task<bool> UpdateHeadersAsync(
-            string sourceId,
-            string endpointId,
-            IngestEndpointHeadersIn ingestEndpointHeadersIn,
-            CancellationToken cancellationToken = default
-        )
-        {
-            ingestEndpointHeadersIn =
-                ingestEndpointHeadersIn
-                ?? throw new ArgumentNullException(nameof(ingestEndpointHeadersIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Put,
-                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "source_id", sourceId },
-                        { "endpoint_id", endpointId },
-                    },
-                    content: ingestEndpointHeadersIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeadersAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set the additional headers to be sent to the endpoint.
-        /// </summary>
-        public bool UpdateHeaders(
-            string sourceId,
-            string endpointId,
-            IngestEndpointHeadersIn ingestEndpointHeadersIn
-        )
-        {
-            ingestEndpointHeadersIn =
-                ingestEndpointHeadersIn
-                ?? throw new ArgumentNullException(nameof(ingestEndpointHeadersIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Put,
-                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "source_id", sourceId },
-                        { "endpoint_id", endpointId },
-                    },
-                    content: ingestEndpointHeadersIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(UpdateHeaders)} failed");
 
                 throw;
             }
@@ -562,6 +455,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointRotateSecretOptions();
+            }
             ingestEndpointSecretIn =
                 ingestEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(ingestEndpointSecretIn));
@@ -575,8 +472,8 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointSecretIn,
                     cancellationToken: cancellationToken
                 );
@@ -602,6 +499,10 @@ namespace Svix
             IngestEndpointRotateSecretOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestEndpointRotateSecretOptions();
+            }
             ingestEndpointSecretIn =
                 ingestEndpointSecretIn
                 ?? throw new ArgumentNullException(nameof(ingestEndpointSecretIn));
@@ -615,8 +516,8 @@ namespace Svix
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestEndpointSecretIn
                 );
                 return response.Data;
@@ -630,9 +531,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get the transformation code associated with this ingest endpoint.
+        /// Get the additional headers to be sent with the ingest.
         /// </summary>
-        public async Task<IngestEndpointTransformationOut> GetTransformationAsync(
+        public async Task<IngestEndpointHeadersOut> GetHeadersAsync(
             string sourceId,
             string endpointId,
             CancellationToken cancellationToken = default
@@ -641,9 +542,9 @@ namespace Svix
             try
             {
                 var response =
-                    await _client.SvixHttpClient.SendRequestAsync<IngestEndpointTransformationOut>(
+                    await _client.SvixHttpClient.SendRequestAsync<IngestEndpointHeadersOut>(
                         method: HttpMethod.Get,
-                        path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
+                        path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
                         pathParams: new Dictionary<string, string>
                         {
                             { "source_id", sourceId },
@@ -655,22 +556,22 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(GetTransformationAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetHeadersAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Get the transformation code associated with this ingest endpoint.
+        /// Get the additional headers to be sent with the ingest.
         /// </summary>
-        public IngestEndpointTransformationOut GetTransformation(string sourceId, string endpointId)
+        public IngestEndpointHeadersOut GetHeaders(string sourceId, string endpointId)
         {
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<IngestEndpointTransformationOut>(
+                var response = _client.SvixHttpClient.SendRequest<IngestEndpointHeadersOut>(
                     method: HttpMethod.Get,
-                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
+                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
                     pathParams: new Dictionary<string, string>
                     {
                         { "source_id", sourceId },
@@ -681,77 +582,77 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(GetTransformation)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetHeaders)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Set or unset the transformation code associated with this ingest endpoint.
+        /// Set the additional headers to be sent to the endpoint.
         /// </summary>
-        public async Task<bool> SetTransformationAsync(
+        public async Task<bool> SetHeadersAsync(
             string sourceId,
             string endpointId,
-            IngestEndpointTransformationPatch ingestEndpointTransformationPatch,
+            IngestEndpointHeadersIn ingestEndpointHeadersIn,
             CancellationToken cancellationToken = default
         )
         {
-            ingestEndpointTransformationPatch =
-                ingestEndpointTransformationPatch
-                ?? throw new ArgumentNullException(nameof(ingestEndpointTransformationPatch));
+            ingestEndpointHeadersIn =
+                ingestEndpointHeadersIn
+                ?? throw new ArgumentNullException(nameof(ingestEndpointHeadersIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Patch,
-                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
+                    method: HttpMethod.Put,
+                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
                     pathParams: new Dictionary<string, string>
                     {
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    content: ingestEndpointTransformationPatch,
+                    content: ingestEndpointHeadersIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(SetTransformationAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(SetHeadersAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Set or unset the transformation code associated with this ingest endpoint.
+        /// Set the additional headers to be sent to the endpoint.
         /// </summary>
-        public bool SetTransformation(
+        public bool SetHeaders(
             string sourceId,
             string endpointId,
-            IngestEndpointTransformationPatch ingestEndpointTransformationPatch
+            IngestEndpointHeadersIn ingestEndpointHeadersIn
         )
         {
-            ingestEndpointTransformationPatch =
-                ingestEndpointTransformationPatch
-                ?? throw new ArgumentNullException(nameof(ingestEndpointTransformationPatch));
+            ingestEndpointHeadersIn =
+                ingestEndpointHeadersIn
+                ?? throw new ArgumentNullException(nameof(ingestEndpointHeadersIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Patch,
-                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/transformation",
+                    method: HttpMethod.Put,
+                    path: "/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/headers",
                     pathParams: new Dictionary<string, string>
                     {
                         { "source_id", sourceId },
                         { "endpoint_id", endpointId },
                     },
-                    content: ingestEndpointTransformationPatch
+                    content: ingestEndpointHeadersIn
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(SetTransformation)} failed");
+                _client.Logger?.LogError(e, $"{nameof(SetHeaders)} failed");
 
                 throw;
             }

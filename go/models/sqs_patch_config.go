@@ -2,9 +2,9 @@
 package models
 
 type SqsPatchConfig struct {
-	AccessKeyId     *string `json:"accessKeyId,omitempty"`
-	EndpointUrl     *string `json:"endpointUrl,omitempty"`
 	QueueUrl        *string `json:"queueUrl,omitempty"`
 	Region          *string `json:"region,omitempty"`
+	AccessKeyId     *string `json:"accessKeyId,omitempty"`
 	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+	EndpointUrl     *string `json:"endpointUrl,omitempty"`
 }

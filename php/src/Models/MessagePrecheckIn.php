@@ -10,8 +10,8 @@ class MessagePrecheckIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null $channels
      * @param string            $eventType The event type's name
+     * @param list<string>|null $channels
      */
     private function __construct(
         public readonly string $eventType,
@@ -28,8 +28,8 @@ class MessagePrecheckIn implements \JsonSerializable
         string $eventType,
     ): self {
         return new self(
-            channels: null,
             eventType: $eventType,
+            channels: null,
             setFields: ['eventType' => true]
         );
     }
@@ -40,8 +40,8 @@ class MessagePrecheckIn implements \JsonSerializable
         $setFields['channels'] = true;
 
         return new self(
-            channels: $channels,
             eventType: $this->eventType,
+            channels: $channels,
             setFields: $setFields
         );
     }
@@ -64,8 +64,8 @@ class MessagePrecheckIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'MessagePrecheckIn'),
-            eventType: \Svix\Utils::deserializeString($data, 'eventType', true, 'MessagePrecheckIn')
+            eventType: \Svix\Utils::deserializeString($data, 'eventType', true, 'MessagePrecheckIn'),
+            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'MessagePrecheckIn')
         );
     }
 

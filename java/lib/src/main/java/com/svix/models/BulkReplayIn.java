@@ -20,33 +20,52 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class BulkReplayIn {
-    @JsonProperty private String channel;
-    @JsonProperty private Set<String> eventTypes;
     @JsonProperty private OffsetDateTime since;
+    @JsonProperty private OffsetDateTime until;
+    @JsonProperty private Set<String> eventTypes;
+    @JsonProperty private String channel;
+    @JsonProperty private String tag;
     @JsonProperty private MessageStatus status;
     @JsonProperty private StatusCodeClass statusCodeClass;
-    @JsonProperty private String tag;
-    @JsonProperty private OffsetDateTime until;
 
     public BulkReplayIn() {}
 
-    public BulkReplayIn channel(String channel) {
-        this.channel = channel;
+    public BulkReplayIn since(OffsetDateTime since) {
+        this.since = since;
         return this;
     }
 
     /**
-     * Get channel
+     * Get since
      *
-     * @return channel
+     * @return since
      */
-    @javax.annotation.Nullable
-    public String getChannel() {
-        return channel;
+    @javax.annotation.Nonnull
+    public OffsetDateTime getSince() {
+        return since;
     }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
+    public void setSince(OffsetDateTime since) {
+        this.since = since;
+    }
+
+    public BulkReplayIn until(OffsetDateTime until) {
+        this.until = until;
+        return this;
+    }
+
+    /**
+     * Get until
+     *
+     * @return until
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getUntil() {
+        return until;
+    }
+
+    public void setUntil(OffsetDateTime until) {
+        this.until = until;
     }
 
     public BulkReplayIn eventTypes(Set<String> eventTypes) {
@@ -77,23 +96,42 @@ public class BulkReplayIn {
         this.eventTypes = eventTypes;
     }
 
-    public BulkReplayIn since(OffsetDateTime since) {
-        this.since = since;
+    public BulkReplayIn channel(String channel) {
+        this.channel = channel;
         return this;
     }
 
     /**
-     * Get since
+     * Get channel
      *
-     * @return since
+     * @return channel
      */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getSince() {
-        return since;
+    @javax.annotation.Nullable
+    public String getChannel() {
+        return channel;
     }
 
-    public void setSince(OffsetDateTime since) {
-        this.since = since;
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public BulkReplayIn tag(String tag) {
+        this.tag = tag;
+        return this;
+    }
+
+    /**
+     * Get tag
+     *
+     * @return tag
+     */
+    @javax.annotation.Nullable
+    public String getTag() {
+        return tag;
+    }
+
+    public void setTag(String tag) {
+        this.tag = tag;
     }
 
     public BulkReplayIn status(MessageStatus status) {
@@ -132,44 +170,6 @@ public class BulkReplayIn {
 
     public void setStatusCodeClass(StatusCodeClass statusCodeClass) {
         this.statusCodeClass = statusCodeClass;
-    }
-
-    public BulkReplayIn tag(String tag) {
-        this.tag = tag;
-        return this;
-    }
-
-    /**
-     * Get tag
-     *
-     * @return tag
-     */
-    @javax.annotation.Nullable
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    public BulkReplayIn until(OffsetDateTime until) {
-        this.until = until;
-        return this;
-    }
-
-    /**
-     * Get until
-     *
-     * @return until
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getUntil() {
-        return until;
-    }
-
-    public void setUntil(OffsetDateTime until) {
-        this.until = until;
     }
 
     /**

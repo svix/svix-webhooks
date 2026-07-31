@@ -1,25 +1,25 @@
 // this file is @generated
 
 export interface GoogleCloudPubSubPatchConfig {
-  credentials?: string;
   projectId?: string;
   topicId?: string;
+  credentials?: string;
 }
 
 export const GoogleCloudPubSubPatchConfigSerializer = {
   _fromJsonObject(object: any): GoogleCloudPubSubPatchConfig {
     return {
-      credentials: object["credentials"],
       projectId: object["projectId"],
       topicId: object["topicId"],
+      credentials: object["credentials"],
     };
   },
 
   _toJsonObject(self: GoogleCloudPubSubPatchConfig): any {
     return {
-      credentials: self.credentials,
       projectId: self.projectId,
       topicId: self.topicId,
+      credentials: self.credentials,
     };
   },
 };

@@ -18,70 +18,13 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ClickhousePatchConfig {
-    @JsonProperty private String database;
-    @JsonProperty private String password;
-    @JsonProperty private String tableName;
     @JsonProperty private URI url;
     @JsonProperty private String username;
+    @JsonProperty private String password;
+    @JsonProperty private String database;
+    @JsonProperty private String tableName;
 
     public ClickhousePatchConfig() {}
-
-    public ClickhousePatchConfig database(String database) {
-        this.database = database;
-        return this;
-    }
-
-    /**
-     * Get database
-     *
-     * @return database
-     */
-    @javax.annotation.Nullable
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public ClickhousePatchConfig password(String password) {
-        this.password = password;
-        return this;
-    }
-
-    /**
-     * Get password
-     *
-     * @return password
-     */
-    @javax.annotation.Nullable
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public ClickhousePatchConfig tableName(String tableName) {
-        this.tableName = tableName;
-        return this;
-    }
-
-    /**
-     * Get tableName
-     *
-     * @return tableName
-     */
-    @javax.annotation.Nullable
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
 
     public ClickhousePatchConfig url(URI url) {
         this.url = url;
@@ -119,6 +62,63 @@ public class ClickhousePatchConfig {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public ClickhousePatchConfig password(String password) {
+        this.password = password;
+        return this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return password
+     */
+    @javax.annotation.Nullable
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public ClickhousePatchConfig database(String database) {
+        this.database = database;
+        return this;
+    }
+
+    /**
+     * Get database
+     *
+     * @return database
+     */
+    @javax.annotation.Nullable
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public ClickhousePatchConfig tableName(String tableName) {
+        this.tableName = tableName;
+        return this;
+    }
+
+    /**
+     * Get tableName
+     *
+     * @return tableName
+     */
+    @javax.annotation.Nullable
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     /**

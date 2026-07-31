@@ -1,6 +1,4 @@
 // this file is @generated
-{% if type.kind == "struct" and type.fields | length == 0 -%}
-{% endif -%}
 {% if type.description is defined -%}
 {% set doc_comment = type.description | to_doc_comment(style="js") -%}
 {% endif -%}

@@ -32,7 +32,11 @@ export interface MessageListOptions {
   before?: Date | null;
   /** Only include items created after a certain date. */
   after?: Date | null;
-  /** When `true` message payloads are included in the response. */
+  /**
+   * When `true` message payloads are included in the response.
+   *
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   */
   withContent?: boolean;
   /** Filter messages matching the provided tag. */
   tag?: string;
@@ -41,12 +45,12 @@ export interface MessageListOptions {
 }
 
 export interface MessageCreateOptions {
-  /** When `true`, message payloads are included in the response. */
+  /**
+   * When `true`, message payloads are included in the response.
+   *
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   */
   withContent?: boolean;
-  idempotencyKey?: string;
-}
-
-export interface MessageExpungeAllContentsOptions {
   idempotencyKey?: string;
 }
 
@@ -55,8 +59,16 @@ export interface MessagePrecheckOptions {
 }
 
 export interface MessageGetOptions {
-  /** When `true` message payloads are included in the response. */
+  /**
+   * When `true` message payloads are included in the response.
+   *
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   */
   withContent?: boolean;
+}
+
+export interface MessageExpungeAllContentsOptions {
+  idempotencyKey?: string;
 }
 
 export class Message {
@@ -90,7 +102,7 @@ export class Message {
       channel: options?.channel,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       tag: options?.tag,
       event_types: options?.eventTypes,
     });
@@ -121,54 +133,12 @@ export class Message {
 
     request.setPathParam("app_id", appId);
     request.setQueryParams({
-      with_content: false,
+      with_content: options?.withContent ?? false,
     });
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
     request.setBody(MessageInSerializer._toJsonObject(messageIn));
 
-    const response = await request.send(
-      this.requestCtx,
-      MessageOutSerializer._fromJsonObject
-    );
-    if (options?.withContent ?? true) {
-      response.payload = messageIn.payload;
-    }
-    return response;
-  }
-
-  /**
-   * Delete all message payloads for the application.
-   *
-   * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-   *
-   * A completed task will return a payload like the following:
-   * ```json
-   * {
-   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-   *   "status": "finished",
-   *   "task": "application.purge_content",
-   *   "data": {
-   *     "messagesPurged": 150
-   *   }
-   * }
-   * ```
-   */
-  public async expungeAllContents(
-    appId: string,
-    options?: MessageExpungeAllContentsOptions
-  ): Promise<ExpungeAllContentsOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/app/{app_id}/msg/expunge-all-contents"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return await request.send(
-      this.requestCtx,
-      ExpungeAllContentsOutSerializer._fromJsonObject
-    );
+    return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
   }
 
   /**
@@ -210,7 +180,7 @@ export class Message {
     request.setPathParam("app_id", appId);
     request.setPathParam("msg_id", msgId);
     request.setQueryParams({
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
     });
 
     return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
@@ -232,6 +202,41 @@ export class Message {
     request.setPathParam("msg_id", msgId);
 
     return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /**
+   * Delete all message payloads for the application.
+   *
+   * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+   *
+   * A completed task will return a payload like the following:
+   * ```json
+   * {
+   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+   *   "status": "finished",
+   *   "task": "application.purge_content",
+   *   "data": {
+   *     "messagesPurged": 150
+   *   }
+   * }
+   * ```
+   */
+  public async expungeAllContents(
+    appId: string,
+    options?: MessageExpungeAllContentsOptions
+  ): Promise<ExpungeAllContentsOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/msg/expunge-all-contents"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return await request.send(
+      this.requestCtx,
+      ExpungeAllContentsOutSerializer._fromJsonObject
+    );
   }
 }
 

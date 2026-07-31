@@ -40,14 +40,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new BackgroundTaskListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseBackgroundTaskOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/background-task",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -65,13 +69,17 @@ namespace Svix
         /// </summary>
         public ListResponseBackgroundTaskOut List(BackgroundTaskListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new BackgroundTaskListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseBackgroundTaskOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/background-task",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

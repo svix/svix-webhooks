@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ListResponseMessageAttemptOut(
     val data: List<MessageAttemptOut>,
-    val done: Boolean,
     val iterator: String? = null,
     val prevIterator: String? = null,
+    val done: Boolean,
 )

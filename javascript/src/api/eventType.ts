@@ -12,9 +12,9 @@ import { type EventTypeIn, EventTypeInSerializer } from "../models/eventTypeIn";
 import { type EventTypeOut, EventTypeOutSerializer } from "../models/eventTypeOut";
 import { type EventTypePatch, EventTypePatchSerializer } from "../models/eventTypePatch";
 import {
-  type EventTypeUpdate,
-  EventTypeUpdateSerializer,
-} from "../models/eventTypeUpdate";
+  type EventTypeUpsertIn,
+  EventTypeUpsertInSerializer,
+} from "../models/eventTypeUpsertIn";
 import {
   type ListResponseEventTypeOut,
   ListResponseEventTypeOutSerializer,
@@ -60,7 +60,7 @@ export class EventType {
       iterator: options?.iterator,
       order: options?.order,
       include_archived: options?.includeArchived,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
     });
 
     return await request.send(
@@ -96,7 +96,7 @@ export class EventType {
    * top-level.
    */
   public async importOpenapi(
-    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn,
+    eventTypeImportOpenApiIn: EventTypeImportOpenApiIn = {},
     options?: EventTypeImportOpenapiOptions
   ): Promise<EventTypeImportOpenApiOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/event-type/import/openapi");
@@ -124,10 +124,10 @@ export class EventType {
     return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }
 
-  /** Update an event type. */
-  public async update(
+  /** Create or update an event type. */
+  public async upsert(
     eventTypeName: string,
-    eventTypeUpdate: EventTypeUpdate
+    eventTypeUpsertIn: EventTypeUpsertIn
   ): Promise<EventTypeOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -135,7 +135,7 @@ export class EventType {
     );
 
     request.setPathParam("event_type_name", eventTypeName);
-    request.setBody(EventTypeUpdateSerializer._toJsonObject(eventTypeUpdate));
+    request.setBody(EventTypeUpsertInSerializer._toJsonObject(eventTypeUpsertIn));
 
     return await request.send(this.requestCtx, EventTypeOutSerializer._fromJsonObject);
   }

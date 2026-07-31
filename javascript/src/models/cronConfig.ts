@@ -1,30 +1,30 @@
 // this file is @generated
 
 export interface CronConfig {
+  schedule: string;
+  payload: string;
   /**
    * Override the default content-type.
    *
    * Recommended if the payload is not JSON.
    */
   contentType?: string | null;
-  payload: string;
-  schedule: string;
 }
 
 export const CronConfigSerializer = {
   _fromJsonObject(object: any): CronConfig {
     return {
-      contentType: object["contentType"],
-      payload: object["payload"],
       schedule: object["schedule"],
+      payload: object["payload"],
+      contentType: object["contentType"],
     };
   },
 
   _toJsonObject(self: CronConfig): any {
     return {
-      contentType: self.contentType,
-      payload: self.payload,
       schedule: self.schedule,
+      payload: self.payload,
+      contentType: self.contentType,
     };
   },
 };

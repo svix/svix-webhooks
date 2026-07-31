@@ -11,7 +11,7 @@ export class EndpointAutoConfig {
   public async update(
     appId: string,
     endpointId: string,
-    subscribeIn: SubscribeIn
+    subscribeIn: SubscribeIn = {}
   ): Promise<EndpointOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,

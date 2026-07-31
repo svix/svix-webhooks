@@ -8,13 +8,6 @@ import {
     {{ c | to_upper_camel_case }}Serializer,
 } from '../models/{{ c | to_lower_camel_case }}';
 {% endfor -%}
-{# HACK: can't easily do this with api_extra files -#}
-{% if resource.name == "authentication" -%}
-import {
-    type DashboardAccessOut,
-    DashboardAccessOutSerializer,
-} from "../models/dashboardAccessOut";
-{% endif -%}
 {% for _, sub in resource.subresources | items -%}
 import { {{ sub.name | to_upper_camel_case}} } from './{{ sub.name | to_lower_camel_case }}';
 {% endfor -%}
@@ -46,19 +39,11 @@ import { type MessageIn, MessageInSerializer } from "../models/messageIn";
     {% endif -%}
 {% endfor -%}
 
-{% if resource.name == "authentication" %}
-/** @deprecated */
-export interface AuthenticationDashboardAccessOptions {
-    idempotencyKey?: string;
-}
-
-{% endif -%}
-
 export class {{ resource_type_name }} {
     public constructor(private readonly requestCtx: SvixRequestContext) {}
 
     {% for name, sub in resource.subresources | items -%}
-    public get {{ name | to_snake_case }}() {
+    public get {{ name | to_lower_camel_case }}() {
         return new {{ sub.name | to_upper_camel_case }}(this.requestCtx);
     }
 
@@ -76,8 +61,17 @@ export class {{ resource_type_name }} {
 
             {# body parameter interface -#}
             {% if op.request_body_schema_name is defined -%}
+                {# could also default to an empty object for Patch types but an empty PATCH
+                   is nonsensical, so we don't -#}
+                {% if op.request_body_schema_name is not endingwith "Patch" -%}
+                    {% set body_schema = api.types[op.request_body_schema_name] -%}
+                    {% set default_empty_object
+                        = body_schema.kind == "struct"
+                            and body_schema.fields | selectattr("required") | length == 0 -%}
+                {% endif -%}
                 {% set field_name = op.request_body_schema_name | to_lower_camel_case -%}
-                {{ field_name }}: {{ op.request_body_schema_name }},
+                {{ field_name }}: {{ op.request_body_schema_name }}
+                    {%- if default_empty_object %} = {}{% endif %},
             {% endif -%}
 
             {# query parameters -#}
@@ -100,14 +94,13 @@ export class {{ resource_type_name }} {
             request.setQueryParams({
                 {% for p in op.query_params -%}
                 "{{ p.name }}":
-                {%- if op.id == "v1.message.create" and p.name == "with_content" -%}
-                    false,
-                {%- else -%}
                 options{% if not p.required %}?{% endif %}.{{ p.name | to_lower_camel_case }}
-                    {#- HACK: default expanded_statuses to true, it only defaults to false
-                        server-side because of backwards-compatibility for old SDKs #}
-                    {%- if p.name == "expanded_statuses" %} ?? true{% endif %},
-                {%- endif %}
+                    {#- default with_content to false, it only defaults to true
+                        server-side because of backwards-compatibility #}
+                    {%- if p.name == "with_content" %} ?? false
+                    {#- default expanded_statuses to true, it only defaults to false
+                        server-side because of backwards-compatibility #}
+                    {%- elif p.name == "expanded_statuses" %} ?? true{% endif %},
                 {% endfor -%}
             });
             {% endif -%}
@@ -124,27 +117,16 @@ export class {{ resource_type_name }} {
                         {{ op.request_body_schema_name | to_lower_camel_case }},
                     )
                 );
-            {% endif -%}
+            {% endif %}
 
-            {% if op.response_body_schema_name is defined -%}
-                {% set send_request -%}
-                await request.send(
+            return await {% if op.response_body_schema_name is defined -%}
+                request.send(
                     this.requestCtx,
                     {{ op.response_body_schema_name | to_upper_camel_case }}Serializer._fromJsonObject,
                 )
-                {%- endset %}
-                {% if op.id == "v1.message.create" -%}
-                    const response = {{ send_request }};
-                    if (options?.withContent ?? true) {
-                        response.payload = messageIn.payload;
-                    }
-                    return response;
-                {% else -%}
-                    return {{ send_request }};
-                {% endif -%}
             {% else %}
-                return await request.sendNoResponseBody(this.requestCtx);
-            {% endif -%}
+                request.sendNoResponseBody(this.requestCtx)
+            {% endif -%};
         }
 
         {% set extra_path -%}

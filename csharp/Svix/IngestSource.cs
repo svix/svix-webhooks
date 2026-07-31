@@ -60,14 +60,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestSourceListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseIngestSourceOut>(
                         method: HttpMethod.Get,
                         path: "/ingest/api/v1/source",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -85,13 +89,17 @@ namespace Svix
         /// </summary>
         public ListResponseIngestSourceOut List(IngestSourceListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new IngestSourceListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseIngestSourceOut>(
                     method: HttpMethod.Get,
                     path: "/ingest/api/v1/source",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -112,6 +120,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestSourceCreateOptions();
+            }
             ingestSourceIn =
                 ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
             try
@@ -119,8 +131,8 @@ namespace Svix
                 var response = await _client.SvixHttpClient.SendRequestAsync<IngestSourceOut>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestSourceIn,
                     cancellationToken: cancellationToken
                 );
@@ -142,6 +154,10 @@ namespace Svix
             IngestSourceCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestSourceCreateOptions();
+            }
             ingestSourceIn =
                 ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
             try
@@ -149,8 +165,8 @@ namespace Svix
                 var response = _client.SvixHttpClient.SendRequest<IngestSourceOut>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: ingestSourceIn
                 );
                 return response.Data;
@@ -212,9 +228,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an Ingest Source.
+        /// Create or update an Ingest Source.
         /// </summary>
-        public async Task<IngestSourceOut> UpdateAsync(
+        public async Task<IngestSourceOut> UpsertAsync(
             string sourceId,
             IngestSourceIn ingestSourceIn,
             CancellationToken cancellationToken = default
@@ -235,16 +251,16 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Update an Ingest Source.
+        /// Create or update an Ingest Source.
         /// </summary>
-        public IngestSourceOut Update(string sourceId, IngestSourceIn ingestSourceIn)
+        public IngestSourceOut Upsert(string sourceId, IngestSourceIn ingestSourceIn)
         {
             ingestSourceIn =
                 ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
@@ -260,7 +276,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
@@ -328,14 +344,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new IngestSourceRotateTokenOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<RotateTokenOut>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/token/rotate",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -361,14 +381,18 @@ namespace Svix
             IngestSourceRotateTokenOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new IngestSourceRotateTokenOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<RotateTokenOut>(
                     method: HttpMethod.Post,
                     path: "/ingest/api/v1/source/{source_id}/token/rotate",
                     pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

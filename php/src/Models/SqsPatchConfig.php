@@ -10,11 +10,11 @@ class SqsPatchConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly ?string $accessKeyId = null,
-        public readonly ?string $endpointUrl = null,
         public readonly ?string $queueUrl = null,
         public readonly ?string $region = null,
+        public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -26,42 +26,12 @@ class SqsPatchConfig implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            accessKeyId: null,
-            endpointUrl: null,
             queueUrl: null,
             region: null,
+            accessKeyId: null,
             secretAccessKey: null,
+            endpointUrl: null,
             setFields: []
-        );
-    }
-
-    public function withAccessKeyId(?string $accessKeyId): self
-    {
-        $setFields = $this->setFields;
-        $setFields['accessKeyId'] = true;
-
-        return new self(
-            accessKeyId: $accessKeyId,
-            endpointUrl: $this->endpointUrl,
-            queueUrl: $this->queueUrl,
-            region: $this->region,
-            secretAccessKey: $this->secretAccessKey,
-            setFields: $setFields
-        );
-    }
-
-    public function withEndpointUrl(?string $endpointUrl): self
-    {
-        $setFields = $this->setFields;
-        $setFields['endpointUrl'] = true;
-
-        return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $endpointUrl,
-            queueUrl: $this->queueUrl,
-            region: $this->region,
-            secretAccessKey: $this->secretAccessKey,
-            setFields: $setFields
         );
     }
 
@@ -71,11 +41,11 @@ class SqsPatchConfig implements \JsonSerializable
         $setFields['queueUrl'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $this->endpointUrl,
             queueUrl: $queueUrl,
             region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
     }
@@ -86,11 +56,26 @@ class SqsPatchConfig implements \JsonSerializable
         $setFields['region'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $this->endpointUrl,
             queueUrl: $this->queueUrl,
             region: $region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withAccessKeyId(?string $accessKeyId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['accessKeyId'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
     }
@@ -101,11 +86,26 @@ class SqsPatchConfig implements \JsonSerializable
         $setFields['secretAccessKey'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $this->endpointUrl,
             queueUrl: $this->queueUrl,
             region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withEndpointUrl(?string $endpointUrl): self
+    {
+        $setFields = $this->setFields;
+        $setFields['endpointUrl'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $endpointUrl,
             setFields: $setFields
         );
     }
@@ -115,20 +115,20 @@ class SqsPatchConfig implements \JsonSerializable
         $data = [
         ];
 
-        if (null !== $this->accessKeyId) {
-            $data['accessKeyId'] = $this->accessKeyId;
-        }
-        if (isset($this->setFields['endpointUrl'])) {
-            $data['endpointUrl'] = $this->endpointUrl;
-        }
         if (null !== $this->queueUrl) {
             $data['queueUrl'] = $this->queueUrl;
         }
         if (null !== $this->region) {
             $data['region'] = $this->region;
         }
+        if (null !== $this->accessKeyId) {
+            $data['accessKeyId'] = $this->accessKeyId;
+        }
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
+        }
+        if (isset($this->setFields['endpointUrl'])) {
+            $data['endpointUrl'] = $this->endpointUrl;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -140,11 +140,11 @@ class SqsPatchConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SqsPatchConfig'),
-            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SqsPatchConfig'),
             queueUrl: \Svix\Utils::getValFromJson($data, 'queueUrl', false, 'SqsPatchConfig'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'SqsPatchConfig'),
-            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'SqsPatchConfig')
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SqsPatchConfig'),
+            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'SqsPatchConfig'),
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SqsPatchConfig')
         );
     }
 

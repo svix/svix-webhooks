@@ -33,9 +33,9 @@ namespace Svix
                     { "tag", Tag },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
+                    { "with_content", WithContent ?? false },
                     { "with_msg", WithMsg },
-                    { "expanded_statuses", ExpandedStatuses },
+                    { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
             );
@@ -71,8 +71,8 @@ namespace Svix
                     { "endpoint_id", EndpointId },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
-                    { "expanded_statuses", ExpandedStatuses },
+                    { "with_content", WithContent ?? false },
+                    { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
             );
@@ -104,22 +104,10 @@ namespace Svix
                     { "status", Status },
                     { "before", Before },
                     { "after", After },
-                    { "with_content", WithContent },
-                    { "expanded_statuses", ExpandedStatuses },
+                    { "with_content", WithContent ?? false },
+                    { "expanded_statuses", ExpandedStatuses ?? true },
                     { "event_types", EventTypes },
                 }
-            );
-        }
-    }
-
-    public class MessageAttemptGetOptions : SvixOptionsBase
-    {
-        public bool? ExpandedStatuses { get; set; }
-
-        public new Dictionary<string, string> QueryParams()
-        {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "expanded_statuses", ExpandedStatuses } }
             );
         }
     }
@@ -133,6 +121,21 @@ namespace Svix
         {
             return SerializeParams(
                 new Dictionary<string, object?> { { "limit", Limit }, { "iterator", Iterator } }
+            );
+        }
+    }
+
+    public class MessageAttemptGetOptions : SvixOptionsBase
+    {
+        public bool? ExpandedStatuses { get; set; }
+
+        public new Dictionary<string, string> QueryParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?>
+                {
+                    { "expanded_statuses", ExpandedStatuses ?? true },
+                }
             );
         }
     }
@@ -168,6 +171,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByEndpointOptions();
+            }
             try
             {
                 var response =
@@ -179,8 +186,8 @@ namespace Svix
                             { "app_id", appId },
                             { "endpoint_id", endpointId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -207,6 +214,10 @@ namespace Svix
             MessageAttemptListByEndpointOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByEndpointOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
@@ -217,8 +228,8 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -245,6 +256,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByMsgOptions();
+            }
             try
             {
                 var response =
@@ -256,8 +271,8 @@ namespace Svix
                             { "app_id", appId },
                             { "msg_id", msgId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -284,6 +299,10 @@ namespace Svix
             MessageAttemptListByMsgOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListByMsgOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseMessageAttemptOut>(
@@ -294,8 +313,8 @@ namespace Svix
                         { "app_id", appId },
                         { "msg_id", msgId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -325,6 +344,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedMessagesOptions();
+            }
             try
             {
                 var response =
@@ -336,8 +359,8 @@ namespace Svix
                             { "app_id", appId },
                             { "endpoint_id", endpointId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -367,6 +390,10 @@ namespace Svix
             MessageAttemptListAttemptedMessagesOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedMessagesOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseEndpointMessageOut>(
@@ -377,14 +404,95 @@ namespace Svix
                         { "app_id", appId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(ListAttemptedMessages)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// List endpoints attempted by a given message.
+        ///
+        /// Additionally includes metadata about the latest message attempt.
+        /// By default, endpoints are listed in ascending order by ID.
+        /// </summary>
+        public async Task<ListResponseMessageEndpointOut> ListAttemptedDestinationsAsync(
+            string appId,
+            string msgId,
+            MessageAttemptListAttemptedDestinationsOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedDestinationsOptions();
+            }
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseMessageEndpointOut>(
+                        method: HttpMethod.Get,
+                        path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "msg_id", msgId },
+                        },
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAttemptedDestinationsAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// List endpoints attempted by a given message.
+        ///
+        /// Additionally includes metadata about the latest message attempt.
+        /// By default, endpoints are listed in ascending order by ID.
+        /// </summary>
+        public ListResponseMessageEndpointOut ListAttemptedDestinations(
+            string appId,
+            string msgId,
+            MessageAttemptListAttemptedDestinationsOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new MessageAttemptListAttemptedDestinationsOptions();
+            }
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ListResponseMessageEndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "msg_id", msgId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ListAttemptedDestinations)} failed");
 
                 throw;
             }
@@ -401,6 +509,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptGetOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<MessageAttemptOut>(
@@ -412,8 +524,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "attempt_id", attemptId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -436,6 +548,10 @@ namespace Svix
             MessageAttemptGetOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptGetOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<MessageAttemptOut>(
@@ -447,8 +563,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "attempt_id", attemptId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -527,79 +643,6 @@ namespace Svix
         }
 
         /// <summary>
-        /// List endpoints attempted by a given message.
-        ///
-        /// Additionally includes metadata about the latest message attempt.
-        /// By default, endpoints are listed in ascending order by ID.
-        /// </summary>
-        public async Task<ListResponseMessageEndpointOut> ListAttemptedDestinationsAsync(
-            string appId,
-            string msgId,
-            MessageAttemptListAttemptedDestinationsOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response =
-                    await _client.SvixHttpClient.SendRequestAsync<ListResponseMessageEndpointOut>(
-                        method: HttpMethod.Get,
-                        path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-                        pathParams: new Dictionary<string, string>
-                        {
-                            { "app_id", appId },
-                            { "msg_id", msgId },
-                        },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
-                        cancellationToken: cancellationToken
-                    );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(ListAttemptedDestinationsAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// List endpoints attempted by a given message.
-        ///
-        /// Additionally includes metadata about the latest message attempt.
-        /// By default, endpoints are listed in ascending order by ID.
-        /// </summary>
-        public ListResponseMessageEndpointOut ListAttemptedDestinations(
-            string appId,
-            string msgId,
-            MessageAttemptListAttemptedDestinationsOptions? options = null
-        )
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<ListResponseMessageEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "msg_id", msgId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(ListAttemptedDestinations)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Resend a message to the specified endpoint.
         /// </summary>
         public async Task<EmptyResponse> ResendAsync(
@@ -610,6 +653,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptResendOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
@@ -621,8 +668,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -645,6 +692,10 @@ namespace Svix
             MessageAttemptResendOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessageAttemptResendOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
@@ -656,8 +707,8 @@ namespace Svix
                         { "msg_id", msgId },
                         { "endpoint_id", endpointId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }

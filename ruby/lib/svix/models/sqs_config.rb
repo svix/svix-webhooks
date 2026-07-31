@@ -5,13 +5,13 @@ require "json"
 module Svix
   # Configuration for an SQS sink.
   class SqsConfig
-    attr_accessor :access_key_id
-    attr_accessor :endpoint_url
     attr_accessor :queue_url
     attr_accessor :region
+    attr_accessor :access_key_id
     attr_accessor :secret_access_key
+    attr_accessor :endpoint_url
 
-    ALL_FIELD ||= ["access_key_id", "endpoint_url", "queue_url", "region", "secret_access_key"].freeze
+    ALL_FIELD ||= ["queue_url", "region", "access_key_id", "secret_access_key", "endpoint_url"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,21 +32,21 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["access_key_id"] = attributes["accessKeyId"]
-      attrs["endpoint_url"] = attributes["endpointUrl"]
       attrs["queue_url"] = attributes["queueUrl"]
       attrs["region"] = attributes["region"]
+      attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["endpoint_url"] = attributes["endpointUrl"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
       out["queueUrl"] = Svix::serialize_primitive(@queue_url) if @queue_url
       out["region"] = Svix::serialize_primitive(@region) if @region
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
+      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
       out
     end
 

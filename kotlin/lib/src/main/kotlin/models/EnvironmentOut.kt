@@ -2,14 +2,14 @@
 package com.svix.kotlin.models
 
 import com.svix.kotlin.StringAnyMapSerializer
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class EnvironmentOut(
-    val connectors: List<ConnectorOut>,
+    val version: Long? = null,
     val createdAt: Instant,
     val eventTypes: List<EventTypeOut>,
     @Serializable(with = StringAnyMapSerializer::class) val settings: Map<String, Any>? = null,
-    val version: Long? = null,
+    val connectors: List<ConnectorOut>,
 )

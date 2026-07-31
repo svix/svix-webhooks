@@ -20,13 +20,77 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ApplicationPatch {
-    @JsonProperty private Map<String, String> metadata;
     @JsonProperty private String name;
-    @JsonProperty private MaybeUnset<Long> rateLimit;
-    @JsonProperty private MaybeUnset<Long> throttleRate;
+    @JsonProperty private MaybeUnset<Short> throttleRate;
     @JsonProperty private MaybeUnset<String> uid;
+    @JsonProperty private Map<String, String> metadata;
 
     public ApplicationPatch() {}
+
+    public ApplicationPatch name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return name
+     */
+    @javax.annotation.Nullable
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public ApplicationPatch throttleRate(Short throttleRate) {
+        this.throttleRate = new MaybeUnset<>(throttleRate);
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this application.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Short getThrottleRate() {
+        if (throttleRate == null) {
+            return null;
+        }
+        return throttleRate.getValue();
+    }
+
+    public void setThrottleRate(Short throttleRate) {
+        this.throttleRate = new MaybeUnset<>(throttleRate);
+    }
+
+    public ApplicationPatch uid(String uid) {
+        this.uid = new MaybeUnset<>(uid);
+        return this;
+    }
+
+    /**
+     * The Application's UID.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        if (uid == null) {
+            return null;
+        }
+        return uid.getValue();
+    }
+
+    public void setUid(String uid) {
+        this.uid = new MaybeUnset<>(uid);
+    }
 
     public ApplicationPatch metadata(Map<String, String> metadata) {
         this.metadata = metadata;
@@ -54,96 +118,6 @@ public class ApplicationPatch {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public ApplicationPatch name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return name
-     */
-    @javax.annotation.Nullable
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Deprecated
-    public ApplicationPatch rateLimit(Long rateLimit) {
-        this.rateLimit = new MaybeUnset<>(rateLimit);
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        if (rateLimit == null) {
-            return null;
-        }
-        return rateLimit.getValue();
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = new MaybeUnset<>(rateLimit);
-    }
-
-    public ApplicationPatch throttleRate(Long throttleRate) {
-        this.throttleRate = new MaybeUnset<>(throttleRate);
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this application.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        if (throttleRate == null) {
-            return null;
-        }
-        return throttleRate.getValue();
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = new MaybeUnset<>(throttleRate);
-    }
-
-    public ApplicationPatch uid(String uid) {
-        this.uid = new MaybeUnset<>(uid);
-        return this;
-    }
-
-    /**
-     * The Application's UID.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        if (uid == null) {
-            return null;
-        }
-        return uid.getValue();
-    }
-
-    public void setUid(String uid) {
-        this.uid = new MaybeUnset<>(uid);
     }
 
     /**

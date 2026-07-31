@@ -11,8 +11,8 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 'latest'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "latest"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install modules
         run: |
@@ -23,6 +23,18 @@ jobs:
         run: |
           cd javascript
           npm run check
+
+      - name: Build
+        run: |
+          cd javascript
+          npm run build
+
+      - name: Check package.json is committed
+        run: |
+          if ! git diff --exit-code -- javascript/package.json; then
+            echo "package.json is out of date. Run 'npm run build' and commit the result."
+            exit 1
+          fi
 
       - name: Test
         run: |

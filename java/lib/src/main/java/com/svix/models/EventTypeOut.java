@@ -20,74 +20,36 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypeOut {
-    @JsonProperty private Boolean archived;
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private Boolean deprecated;
-    @JsonProperty private String description;
-    @JsonProperty private String featureFlag;
-    @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private String groupName;
     @JsonProperty private String name;
+    @JsonProperty private String description;
+    @JsonProperty private Boolean archived;
+    @JsonProperty private Boolean deprecated;
     @JsonProperty private Object schemas;
+    @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private String groupName;
+    @JsonProperty private Set<String> featureFlags;
+    @JsonProperty private String featureFlag;
 
     public EventTypeOut() {}
 
-    public EventTypeOut archived(Boolean archived) {
-        this.archived = archived;
+    public EventTypeOut name(String name) {
+        this.name = name;
         return this;
     }
 
     /**
-     * Get archived
+     * The event type's name
      *
-     * @return archived
-     */
-    @javax.annotation.Nullable
-    public Boolean getArchived() {
-        return archived;
-    }
-
-    public void setArchived(Boolean archived) {
-        this.archived = archived;
-    }
-
-    public EventTypeOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return createdAt
+     * @return name
      */
     @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    public String getName() {
+        return name;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public EventTypeOut deprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
-        return this;
-    }
-
-    /**
-     * Get deprecated
-     *
-     * @return deprecated
-     */
-    @javax.annotation.Nonnull
-    public Boolean getDeprecated() {
-        return deprecated;
-    }
-
-    public void setDeprecated(Boolean deprecated) {
-        this.deprecated = deprecated;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public EventTypeOut description(String description) {
@@ -109,23 +71,118 @@ public class EventTypeOut {
         this.description = description;
     }
 
-    public EventTypeOut featureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
+    public EventTypeOut archived(Boolean archived) {
+        this.archived = archived;
         return this;
     }
 
     /**
-     * Get featureFlag
+     * Get archived
      *
-     * @return featureFlag
+     * @return archived
      */
     @javax.annotation.Nullable
-    public String getFeatureFlag() {
-        return featureFlag;
+    public Boolean getArchived() {
+        return archived;
     }
 
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
+    public void setArchived(Boolean archived) {
+        this.archived = archived;
+    }
+
+    public EventTypeOut deprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
+        return this;
+    }
+
+    /**
+     * Get deprecated
+     *
+     * @return deprecated
+     */
+    @javax.annotation.Nonnull
+    public Boolean getDeprecated() {
+        return deprecated;
+    }
+
+    public void setDeprecated(Boolean deprecated) {
+        this.deprecated = deprecated;
+    }
+
+    public EventTypeOut schemas(Object schemas) {
+        this.schemas = schemas;
+        return this;
+    }
+
+    /**
+     * The schema for the event type for a specific version as a JSON schema.
+     *
+     * @return schemas
+     */
+    @javax.annotation.Nullable
+    public Object getSchemas() {
+        return schemas;
+    }
+
+    public void setSchemas(Object schemas) {
+        this.schemas = schemas;
+    }
+
+    public EventTypeOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return createdAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public EventTypeOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public EventTypeOut groupName(String groupName) {
+        this.groupName = groupName;
+        return this;
+    }
+
+    /**
+     * The event type group's name
+     *
+     * @return groupName
+     */
+    @javax.annotation.Nullable
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public EventTypeOut featureFlags(Set<String> featureFlags) {
@@ -156,80 +213,23 @@ public class EventTypeOut {
         this.featureFlags = featureFlags;
     }
 
-    public EventTypeOut groupName(String groupName) {
-        this.groupName = groupName;
+    public EventTypeOut featureFlag(String featureFlag) {
+        this.featureFlag = featureFlag;
         return this;
     }
 
     /**
-     * The event type group's name
+     * Get featureFlag
      *
-     * @return groupName
+     * @return featureFlag
      */
     @javax.annotation.Nullable
-    public String getGroupName() {
-        return groupName;
+    public String getFeatureFlag() {
+        return featureFlag;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public EventTypeOut name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * The event type's name
-     *
-     * @return name
-     */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public EventTypeOut schemas(Object schemas) {
-        this.schemas = schemas;
-        return this;
-    }
-
-    /**
-     * The schema for the event type for a specific version as a JSON schema.
-     *
-     * @return schemas
-     */
-    @javax.annotation.Nullable
-    public Object getSchemas() {
-        return schemas;
-    }
-
-    public void setSchemas(Object schemas) {
-        this.schemas = schemas;
-    }
-
-    public EventTypeOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setFeatureFlag(String featureFlag) {
+        this.featureFlag = featureFlag;
     }
 
     /**

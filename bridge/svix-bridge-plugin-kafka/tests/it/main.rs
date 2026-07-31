@@ -1,8 +1,8 @@
 use rdkafka::{
+    ClientConfig,
     admin::{AdminClient, NewTopic, TopicReplication},
     client::DefaultClientContext,
     types::RDKafkaErrorCode,
-    ClientConfig,
 };
 
 /// These tests assume a "vanilla" kafka instance, using the default port, creds, exchange...
@@ -21,10 +21,9 @@ async fn create_topic(admin_client: &AdminClient<DefaultClientContext>, topic: &
     if let Err(e) = admin_client
         .create_topics(&[new_topic], &Default::default())
         .await
+        && e.rdkafka_error_code() != Some(RDKafkaErrorCode::TopicAlreadyExists)
     {
-        if e.rdkafka_error_code() != Some(RDKafkaErrorCode::TopicAlreadyExists) {
-            panic!("{e}");
-        }
+        panic!("failed to create Kafka topic: {e}");
     }
 }
 

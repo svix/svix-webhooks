@@ -10,9 +10,9 @@ class AzureBlobStoragePatchConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly ?string $accessKey = null,
-        public readonly ?string $account = null,
         public readonly ?string $container = null,
+        public readonly ?string $account = null,
+        public readonly ?string $accessKey = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -24,22 +24,22 @@ class AzureBlobStoragePatchConfig implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            accessKey: null,
-            account: null,
             container: null,
+            account: null,
+            accessKey: null,
             setFields: []
         );
     }
 
-    public function withAccessKey(?string $accessKey): self
+    public function withContainer(?string $container): self
     {
         $setFields = $this->setFields;
-        $setFields['accessKey'] = true;
+        $setFields['container'] = true;
 
         return new self(
-            accessKey: $accessKey,
+            container: $container,
             account: $this->account,
-            container: $this->container,
+            accessKey: $this->accessKey,
             setFields: $setFields
         );
     }
@@ -50,22 +50,22 @@ class AzureBlobStoragePatchConfig implements \JsonSerializable
         $setFields['account'] = true;
 
         return new self(
-            accessKey: $this->accessKey,
-            account: $account,
             container: $this->container,
+            account: $account,
+            accessKey: $this->accessKey,
             setFields: $setFields
         );
     }
 
-    public function withContainer(?string $container): self
+    public function withAccessKey(?string $accessKey): self
     {
         $setFields = $this->setFields;
-        $setFields['container'] = true;
+        $setFields['accessKey'] = true;
 
         return new self(
-            accessKey: $this->accessKey,
+            container: $this->container,
             account: $this->account,
-            container: $container,
+            accessKey: $accessKey,
             setFields: $setFields
         );
     }
@@ -75,14 +75,14 @@ class AzureBlobStoragePatchConfig implements \JsonSerializable
         $data = [
         ];
 
-        if (null !== $this->accessKey) {
-            $data['accessKey'] = $this->accessKey;
+        if (null !== $this->container) {
+            $data['container'] = $this->container;
         }
         if (null !== $this->account) {
             $data['account'] = $this->account;
         }
-        if (null !== $this->container) {
-            $data['container'] = $this->container;
+        if (null !== $this->accessKey) {
+            $data['accessKey'] = $this->accessKey;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -94,9 +94,9 @@ class AzureBlobStoragePatchConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKey: \Svix\Utils::deserializeString($data, 'accessKey', false, 'AzureBlobStoragePatchConfig'),
+            container: \Svix\Utils::deserializeString($data, 'container', false, 'AzureBlobStoragePatchConfig'),
             account: \Svix\Utils::deserializeString($data, 'account', false, 'AzureBlobStoragePatchConfig'),
-            container: \Svix\Utils::deserializeString($data, 'container', false, 'AzureBlobStoragePatchConfig')
+            accessKey: \Svix\Utils::deserializeString($data, 'accessKey', false, 'AzureBlobStoragePatchConfig')
         );
     }
 

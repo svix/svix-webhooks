@@ -5,15 +5,15 @@ import "time"
 
 // A model containing information on a given message plus additional fields on the last attempt for that message.
 type EndpointMessageOut struct {
-	Channels    []string          `json:"channels,omitempty"` // List of free-form identifiers that endpoints can filter by
-	DeliverAt   *time.Time        `json:"deliverAt,omitempty"`
-	EventId     *string           `json:"eventId,omitempty"` // Optional unique identifier for the message
-	EventType   string            `json:"eventType"`         // The event type's name
-	Id          string            `json:"id"`                // The Message's ID.
-	NextAttempt *time.Time        `json:"nextAttempt,omitempty"`
-	Payload     map[string]any    `json:"payload"`
 	Status      MessageStatus     `json:"status"`
 	StatusText  MessageStatusText `json:"statusText"`
-	Tags        []string          `json:"tags,omitempty"`
+	NextAttempt *time.Time        `json:"nextAttempt,omitempty"`
+	EventId     *string           `json:"eventId,omitempty"` // Optional unique identifier for the message
+	EventType   string            `json:"eventType"`         // The event type's name
+	Payload     map[string]any    `json:"payload"`
+	Channels    []string          `json:"channels,omitempty"` // List of free-form identifiers that endpoints can filter by
+	Id          string            `json:"id"`                 // The Message's ID.
 	Timestamp   time.Time         `json:"timestamp"`
+	Tags        []string          `json:"tags,omitempty"`
+	DeliverAt   *time.Time        `json:"deliverAt,omitempty"`
 }

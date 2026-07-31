@@ -6,43 +6,43 @@ namespace Svix.Models
 {
     public class MessageOut
     {
-        [JsonProperty("channels")]
-        public List<string>? Channels { get; set; } = null;
-
-        [JsonProperty("deliverAt")]
-        public DateTime? DeliverAt { get; set; } = null;
-
         [JsonProperty("eventId")]
         public string? EventId { get; set; } = null;
 
         [JsonProperty("eventType", Required = Required.Always)]
         public required string EventType { get; set; }
 
+        [JsonProperty("payload", Required = Required.Always)]
+        public required Object Payload { get; set; }
+
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
+
         [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
 
-        [JsonProperty("payload", Required = Required.Always)]
-        public required Object Payload { get; set; }
+        [JsonProperty("timestamp", Required = Required.Always)]
+        public required DateTime Timestamp { get; set; }
 
         [JsonProperty("tags")]
         public List<string>? Tags { get; set; } = null;
 
-        [JsonProperty("timestamp", Required = Required.Always)]
-        public required DateTime Timestamp { get; set; }
+        [JsonProperty("deliverAt")]
+        public DateTime? DeliverAt { get; set; } = null;
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class MessageOut {\n");
-            sb.Append("  Channels: ").Append(Channels).Append('\n');
-            sb.Append("  DeliverAt: ").Append(DeliverAt).Append('\n');
             sb.Append("  EventId: ").Append(EventId).Append('\n');
             sb.Append("  EventType: ").Append(EventType).Append('\n');
-            sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Payload: ").Append(Payload).Append('\n');
-            sb.Append("  Tags: ").Append(Tags).Append('\n');
+            sb.Append("  Channels: ").Append(Channels).Append('\n');
+            sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Timestamp: ").Append(Timestamp).Append('\n');
+            sb.Append("  Tags: ").Append(Tags).Append('\n');
+            sb.Append("  DeliverAt: ").Append(DeliverAt).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

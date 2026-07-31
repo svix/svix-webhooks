@@ -6,9 +6,9 @@ use axum::{
 };
 use serde_json::json;
 use svix_bridge_types::{
-    async_trait, svix::webhooks::Webhook, BoxError, ForwardRequest, ReceiverOutput,
-    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
-    TransformerOutput,
+    BoxError, ForwardRequest, ReceiverOutput, TransformationConfig, TransformerInput,
+    TransformerInputFormat, TransformerJob, TransformerOutput, async_trait,
+    svix::webhooks::Webhook,
 };
 use tower::{Service, ServiceExt};
 
@@ -336,7 +336,7 @@ async fn test_forwarding_svix_verification_mismatch() {
                 .header("content-type", "application/json")
                 .header("svix-id", "msg_valid")
                 .header("svix-signature", signature.clone())
-                .header("svix-timestamp", &format!("{timestamp}"))
+                .header("svix-timestamp", format!("{timestamp}"))
                 .body(axum::body::Body::from(sent_payload_bytes))
                 .unwrap(),
         )

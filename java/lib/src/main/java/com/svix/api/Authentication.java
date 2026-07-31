@@ -61,63 +61,6 @@ public class Authentication {
                 AppPortalAccessOut.class);
     }
 
-    /** Expire all of the tokens associated with a specific application. */
-    public void expireAll(
-            final String appId, final ApplicationTokenExpireIn applicationTokenExpireIn)
-            throws IOException, ApiException {
-        this.expireAll(appId, applicationTokenExpireIn, new AuthenticationExpireAllOptions());
-    }
-
-    /** Expire all of the tokens associated with a specific application. */
-    public void expireAll(
-            final String appId,
-            final ApplicationTokenExpireIn applicationTokenExpireIn,
-            final AuthenticationExpireAllOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(String.format("/api/v1/auth/app/%s/expire-all", appId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), applicationTokenExpireIn, null);
-    }
-
-    /**
-     * @deprecated Please use appPortalAccess instead.
-     */
-    @Deprecated
-    public com.svix.models.DashboardAccessOut dashboardAccess(final String appId)
-            throws IOException, ApiException {
-        return this.dashboardAccess(appId, new AuthenticationDashboardAccessOptions());
-    }
-
-    /**
-     * @deprecated Please use appPortalAccess instead.
-     */
-    @Deprecated
-    public com.svix.models.DashboardAccessOut dashboardAccess(
-            final String appId, final AuthenticationDashboardAccessOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(String.format("/api/v1/auth/dashboard-access/%s", appId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST",
-                url.build(),
-                Headers.of(headers),
-                null,
-                com.svix.models.DashboardAccessOut.class);
-    }
-
     /**
      * Logout an app token.
      *
@@ -142,29 +85,29 @@ public class Authentication {
         this.client.executeRequest("POST", url.build(), Headers.of(headers), null, null);
     }
 
-    /**
-     * Logout a stream token.
-     *
-     * <p>Trying to log out other tokens will fail.
-     */
-    public void streamLogout() throws IOException, ApiException {
-
-        this.streamLogout(new AuthenticationStreamLogoutOptions());
+    /** Expire all of the tokens associated with a specific application. */
+    public void expireAll(
+            final String appId, final ApplicationTokenExpireIn applicationTokenExpireIn)
+            throws IOException, ApiException {
+        this.expireAll(appId, applicationTokenExpireIn, new AuthenticationExpireAllOptions());
     }
 
-    /**
-     * Logout a stream token.
-     *
-     * <p>Trying to log out other tokens will fail.
-     */
-    public void streamLogout(final AuthenticationStreamLogoutOptions options)
+    /** Expire all of the tokens associated with a specific application. */
+    public void expireAll(
+            final String appId,
+            final ApplicationTokenExpireIn applicationTokenExpireIn,
+            final AuthenticationExpireAllOptions options)
             throws IOException, ApiException {
-        HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath("/api/v1/auth/stream-logout");
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(String.format("/api/v1/auth/app/%s/expire-all", appId));
         Map<String, String> headers = new HashMap<>();
         if (options.idempotencyKey != null) {
             headers.put("idempotency-key", options.idempotencyKey);
         }
-        this.client.executeRequest("POST", url.build(), Headers.of(headers), null, null);
+        this.client.executeRequest(
+                "POST", url.build(), Headers.of(headers), applicationTokenExpireIn, null);
     }
 
     /**
@@ -204,6 +147,31 @@ public class Authentication {
                 AppPortalAccessOut.class);
     }
 
+    /**
+     * Logout a stream token.
+     *
+     * <p>Trying to log out other tokens will fail.
+     */
+    public void streamLogout() throws IOException, ApiException {
+
+        this.streamLogout(new AuthenticationStreamLogoutOptions());
+    }
+
+    /**
+     * Logout a stream token.
+     *
+     * <p>Trying to log out other tokens will fail.
+     */
+    public void streamLogout(final AuthenticationStreamLogoutOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url = this.client.newUrlBuilder().encodedPath("/api/v1/auth/stream-logout");
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        this.client.executeRequest("POST", url.build(), Headers.of(headers), null, null);
+    }
+
     /** Expire all of the tokens associated with a specific stream. */
     public void streamExpireAll(
             final String streamId, final StreamTokenExpireIn streamTokenExpireIn)
@@ -228,19 +196,6 @@ public class Authentication {
         }
         this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), streamTokenExpireIn, null);
-    }
-
-    /** Get the current auth token for the stream poller. */
-    public ApiTokenOut getStreamPollerToken(final String streamId, final String sinkId)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/auth/stream/%s/sink/%s/poller/token",
-                                        streamId, sinkId));
-        return this.client.executeRequest("GET", url.build(), null, null, ApiTokenOut.class);
     }
 
     /** Create a new auth token for the stream poller API. */
@@ -276,5 +231,18 @@ public class Authentication {
         }
         return this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), rotatePollerTokenIn, ApiTokenOut.class);
+    }
+
+    /** Get the current auth token for the stream poller. */
+    public ApiTokenOut getStreamPollerToken(final String streamId, final String sinkId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/auth/stream/%s/sink/%s/poller/token",
+                                        streamId, sinkId));
+        return this.client.executeRequest("GET", url.build(), null, null, ApiTokenOut.class);
     }
 }

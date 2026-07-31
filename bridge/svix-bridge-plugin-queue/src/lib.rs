@@ -1,9 +1,11 @@
+#![recursion_limit = "256"]
+
 use std::time::{Duration, Instant};
 
 use omniqueue::{Delivery, DynConsumer, QueueError};
 use svix_bridge_types::{
-    async_trait, svix::api::Svix, CreateMessageRequest, JsObject, TransformationConfig,
-    TransformerInput, TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
+    CreateMessageRequest, JsObject, TransformationConfig, TransformerInput, TransformerInputFormat,
+    TransformerJob, TransformerOutput, TransformerTx, async_trait, svix::api::Svix,
 };
 
 pub const PLUGIN_NAME: &str = env!("CARGO_PKG_NAME");

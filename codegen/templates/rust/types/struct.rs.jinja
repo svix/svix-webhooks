@@ -10,17 +10,22 @@ use super::{
     {% endfor -%}
 };
 
+{% set type_name = type.name | to_upper_camel_case -%}
 {{ doc_comment }}
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
-pub struct {{ type.name | to_upper_camel_case }} {
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct {{ type_name }} {
     {% include "types/struct_fields.rs.jinja" -%}
 }
 
-impl {{ type.name | to_upper_camel_case }} {
+{#- skip ctors for Out types, they often have weird parameter order and would be
+    broken every time we add another field server-side just like struct literals #}
+{%- if type.name is not endingwith "Out" %}
+
+impl {{ type_name }} {
     pub fn new(
         {% for field in type.fields -%}
             {% if field.type.is_datetime() -%}
-                {% set field_ty = "String" -%}
+                {% set field_ty = "chrono::DateTime<chrono::Utc>" -%}
             {% else -%}
                 {% set field_ty = field.type.to_rust() -%}
             {% endif -%}
@@ -45,3 +50,14 @@ impl {{ type.name | to_upper_camel_case }} {
         }
     }
 }
+
+{% set all_fields_optional = type.fields | selectattr("required") | length == 0 -%}
+{%- if all_fields_optional %}
+impl Default for {{ type_name }} {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+{%- endif %}
+
+{%- endif %}

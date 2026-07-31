@@ -34,13 +34,5 @@ module Svix
       EndpointHeadersOut.deserialize(res)
     end
 
-    def sink_transformation_get(stream_id, sink_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/stream/#{stream_id}/sink/#{sink_id}/transformation"
-      )
-      SinkTransformationOut.deserialize(res)
-    end
-
   end
 end

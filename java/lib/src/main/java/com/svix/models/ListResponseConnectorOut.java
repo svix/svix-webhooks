@@ -20,9 +20,9 @@ import java.util.List;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ListResponseConnectorOut {
     @JsonProperty private List<ConnectorOut> data;
-    @JsonProperty private Boolean done;
     @JsonProperty private String iterator;
     @JsonProperty private String prevIterator;
+    @JsonProperty private Boolean done;
 
     public ListResponseConnectorOut() {}
 
@@ -52,25 +52,6 @@ public class ListResponseConnectorOut {
 
     public void setData(List<ConnectorOut> data) {
         this.data = data;
-    }
-
-    public ListResponseConnectorOut done(Boolean done) {
-        this.done = done;
-        return this;
-    }
-
-    /**
-     * Get done
-     *
-     * @return done
-     */
-    @javax.annotation.Nonnull
-    public Boolean getDone() {
-        return done;
-    }
-
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     public ListResponseConnectorOut iterator(String iterator) {
@@ -109,6 +90,25 @@ public class ListResponseConnectorOut {
 
     public void setPrevIterator(String prevIterator) {
         this.prevIterator = prevIterator;
+    }
+
+    public ListResponseConnectorOut done(Boolean done) {
+        this.done = done;
+        return this;
+    }
+
+    /**
+     * Get done
+     *
+     * @return done
+     */
+    @javax.annotation.Nonnull
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
     }
 
     /**

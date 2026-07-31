@@ -4,10 +4,10 @@ package models
 import "time"
 
 type StreamOut struct {
-	CreatedAt time.Time         `json:"createdAt"`
-	Id        string            `json:"id"` // The stream's ID.
-	Metadata  map[string]string `json:"metadata"`
-	Name      *string           `json:"name,omitempty"` // The stream's name.
+	Id        string            `json:"id"`             // The stream's ID.
 	Uid       *string           `json:"uid,omitempty"`  // The stream's UID.
+	Name      *string           `json:"name,omitempty"` // The stream's name.
+	CreatedAt time.Time         `json:"createdAt"`
 	UpdatedAt time.Time         `json:"updatedAt"`
+	Metadata  map[string]string `json:"metadata"`
 }

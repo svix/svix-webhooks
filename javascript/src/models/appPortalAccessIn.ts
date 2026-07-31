@@ -13,6 +13,12 @@ export interface AppPortalAccessIn {
    */
   application?: ApplicationIn | null;
   /**
+   * Whether the app portal should be in read-only mode.
+   *
+   * @deprecated
+   */
+  readOnly?: boolean | null;
+  /**
    * Custom capabilities attached to the token, You can combine as many capabilities as necessary.
    *
    * The `ViewBase` capability is always required
@@ -32,20 +38,14 @@ export interface AppPortalAccessIn {
    * By default, the token will get all capabilities if the capabilities are not explicitly specified.
    */
   capabilities?: AppPortalCapability[] | null;
+  /** The set of feature flags the created token will have access to. */
+  featureFlags?: string[];
   /**
    * How long the token will be valid for, in seconds.
    *
    * Valid values are between 1 hour and 7 days. The default is 7 days.
    */
   expiry?: number | null;
-  /** The set of feature flags the created token will have access to. */
-  featureFlags?: string[];
-  /**
-   * Whether the app portal should be in read-only mode.
-   *
-   * @deprecated
-   */
-  readOnly?: boolean | null;
   /**
    * An optional session ID to attach to the token.
    *
@@ -61,12 +61,12 @@ export const AppPortalAccessInSerializer = {
         object["application"] != null
           ? ApplicationInSerializer._fromJsonObject(object["application"])
           : undefined,
+      readOnly: object["readOnly"],
       capabilities: object["capabilities"]?.map((item: AppPortalCapability) =>
         AppPortalCapabilitySerializer._fromJsonObject(item)
       ),
-      expiry: object["expiry"],
       featureFlags: object["featureFlags"],
-      readOnly: object["readOnly"],
+      expiry: object["expiry"],
       sessionId: object["sessionId"],
     };
   },
@@ -77,12 +77,12 @@ export const AppPortalAccessInSerializer = {
         self.application != null
           ? ApplicationInSerializer._toJsonObject(self.application)
           : undefined,
+      readOnly: self.readOnly,
       capabilities: self.capabilities?.map((item) =>
         AppPortalCapabilitySerializer._toJsonObject(item)
       ),
-      expiry: self.expiry,
       featureFlags: self.featureFlags,
-      readOnly: self.readOnly,
+      expiry: self.expiry,
       sessionId: self.sessionId,
     };
   },

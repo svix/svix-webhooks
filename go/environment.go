@@ -12,10 +12,8 @@ type Environment struct {
 	client *internal.SvixHttpClient
 }
 
-func newEnvironment(client *internal.SvixHttpClient) *Environment {
-	return &Environment{
-		client: client,
-	}
+func newEnvironment(client *internal.SvixHttpClient) Environment {
+	return Environment{client}
 }
 
 type EnvironmentExportOptions struct {
@@ -30,18 +28,19 @@ type EnvironmentImportOptions struct {
 //
 // Note that the schema for [`EnvironmentOut`] is subject to change. The fields
 // herein are provided for convenience but should be treated as JSON blobs.
-func (environment *Environment) Export(
+func (environment Environment) Export(
 	ctx context.Context,
 	o *EnvironmentExportOptions,
 ) (*models.EnvironmentOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EnvironmentExportOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.EnvironmentOut](
 		ctx,
@@ -61,21 +60,22 @@ func (environment *Environment) Export(
 //
 // Note that the schema for [`EnvironmentIn`] is subject to change. The fields
 // herein are provided for convenience but should be treated as JSON blobs.
-func (environment *Environment) Import(
+func (environment Environment) Import(
 	ctx context.Context,
 	environmentIn models.EnvironmentIn,
 	o *EnvironmentImportOptions,
 ) error {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := EnvironmentImportOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[models.EnvironmentIn, any](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[models.EnvironmentIn, any](
 		ctx,
 		environment.client,
 		"POST",

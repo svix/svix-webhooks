@@ -9,11 +9,14 @@ namespace Svix.Models
     /// <summary>
     public class EndpointMessageOut
     {
-        [JsonProperty("channels")]
-        public List<string>? Channels { get; set; } = null;
+        [JsonProperty("status", Required = Required.Always)]
+        public required MessageStatus Status { get; set; }
 
-        [JsonProperty("deliverAt")]
-        public DateTime? DeliverAt { get; set; } = null;
+        [JsonProperty("statusText", Required = Required.Always)]
+        public required MessageStatusText StatusText { get; set; }
+
+        [JsonProperty("nextAttempt")]
+        public DateTime? NextAttempt { get; set; } = null;
 
         [JsonProperty("eventId")]
         public string? EventId { get; set; } = null;
@@ -21,43 +24,40 @@ namespace Svix.Models
         [JsonProperty("eventType", Required = Required.Always)]
         public required string EventType { get; set; }
 
-        [JsonProperty("id", Required = Required.Always)]
-        public required string Id { get; set; }
-
-        [JsonProperty("nextAttempt")]
-        public DateTime? NextAttempt { get; set; } = null;
-
         [JsonProperty("payload", Required = Required.Always)]
         public required Object Payload { get; set; }
 
-        [JsonProperty("status", Required = Required.Always)]
-        public required MessageStatus Status { get; set; }
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
 
-        [JsonProperty("statusText", Required = Required.Always)]
-        public required MessageStatusText StatusText { get; set; }
+        [JsonProperty("id", Required = Required.Always)]
+        public required string Id { get; set; }
+
+        [JsonProperty("timestamp", Required = Required.Always)]
+        public required DateTime Timestamp { get; set; }
 
         [JsonProperty("tags")]
         public List<string>? Tags { get; set; } = null;
 
-        [JsonProperty("timestamp", Required = Required.Always)]
-        public required DateTime Timestamp { get; set; }
+        [JsonProperty("deliverAt")]
+        public DateTime? DeliverAt { get; set; } = null;
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class EndpointMessageOut {\n");
-            sb.Append("  Channels: ").Append(Channels).Append('\n');
-            sb.Append("  DeliverAt: ").Append(DeliverAt).Append('\n');
-            sb.Append("  EventId: ").Append(EventId).Append('\n');
-            sb.Append("  EventType: ").Append(EventType).Append('\n');
-            sb.Append("  Id: ").Append(Id).Append('\n');
-            sb.Append("  NextAttempt: ").Append(NextAttempt).Append('\n');
-            sb.Append("  Payload: ").Append(Payload).Append('\n');
             sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  StatusText: ").Append(StatusText).Append('\n');
-            sb.Append("  Tags: ").Append(Tags).Append('\n');
+            sb.Append("  NextAttempt: ").Append(NextAttempt).Append('\n');
+            sb.Append("  EventId: ").Append(EventId).Append('\n');
+            sb.Append("  EventType: ").Append(EventType).Append('\n');
+            sb.Append("  Payload: ").Append(Payload).Append('\n');
+            sb.Append("  Channels: ").Append(Channels).Append('\n');
+            sb.Append("  Id: ").Append(Id).Append('\n');
             sb.Append("  Timestamp: ").Append(Timestamp).Append('\n');
+            sb.Append("  Tags: ").Append(Tags).Append('\n');
+            sb.Append("  DeliverAt: ").Append(DeliverAt).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

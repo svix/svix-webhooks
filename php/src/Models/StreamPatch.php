@@ -11,13 +11,13 @@ class StreamPatch implements \JsonSerializable
 
     /**
      * @param string|null                $description the Stream's description
-     * @param array<string, string>|null $metadata
      * @param string|null                $uid         an optional unique identifier for the stream
+     * @param array<string, string>|null $metadata
      */
     private function __construct(
         public readonly ?string $description = null,
-        public readonly ?array $metadata = null,
         public readonly ?string $uid = null,
+        public readonly ?array $metadata = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -30,8 +30,8 @@ class StreamPatch implements \JsonSerializable
     ): self {
         return new self(
             description: null,
-            metadata: null,
             uid: null,
+            metadata: null,
             setFields: []
         );
     }
@@ -43,21 +43,8 @@ class StreamPatch implements \JsonSerializable
 
         return new self(
             description: $description,
+            uid: $this->uid,
             metadata: $this->metadata,
-            uid: $this->uid,
-            setFields: $setFields
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            description: $this->description,
-            metadata: $metadata,
-            uid: $this->uid,
             setFields: $setFields
         );
     }
@@ -69,8 +56,21 @@ class StreamPatch implements \JsonSerializable
 
         return new self(
             description: $this->description,
-            metadata: $this->metadata,
             uid: $uid,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            description: $this->description,
+            uid: $this->uid,
+            metadata: $metadata,
             setFields: $setFields
         );
     }
@@ -83,11 +83,11 @@ class StreamPatch implements \JsonSerializable
         if (null !== $this->description) {
             $data['description'] = $this->description;
         }
-        if (null !== $this->metadata) {
-            $data['metadata'] = $this->metadata;
-        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
+        }
+        if (null !== $this->metadata) {
+            $data['metadata'] = $this->metadata;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -100,8 +100,8 @@ class StreamPatch implements \JsonSerializable
     {
         return new self(
             description: \Svix\Utils::deserializeString($data, 'description', false, 'StreamPatch'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'StreamPatch'),
-            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'StreamPatch')
+            uid: \Svix\Utils::deserializeString($data, 'uid', false, 'StreamPatch'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'StreamPatch')
         );
     }
 

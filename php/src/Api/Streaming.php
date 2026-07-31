@@ -8,7 +8,6 @@ namespace Svix\Api;
 use Svix\Exception\ApiException;
 use Svix\Models\EndpointHeadersOut;
 use Svix\Models\HttpSinkHeadersPatchIn;
-use Svix\Models\SinkTransformationOut;
 use Svix\Request\SvixHttpClient;
 
 class Streaming
@@ -61,20 +60,5 @@ class Streaming
         $res = $this->client->send($request);
 
         return EndpointHeadersOut::fromJson($res);
-    }
-
-    /**
-     * Get the transformation code associated with this sink.
-     *
-     * @throws ApiException
-     */
-    public function sinkTransformationGet(
-        string $streamId,
-        string $sinkId,
-    ): SinkTransformationOut {
-        $request = $this->client->newReq('GET', "/api/v1/stream/{$streamId}/sink/{$sinkId}/transformation");
-        $res = $this->client->send($request);
-
-        return SinkTransformationOut::fromJson($res);
     }
 }

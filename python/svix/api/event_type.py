@@ -9,10 +9,10 @@ from ..models import (
     EventTypeIn,
     EventTypeOut,
     EventTypePatch,
-    EventTypeUpdate,
+    EventTypeUpsertIn,
     ListResponseEventTypeOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -35,7 +35,7 @@ class EventTypeListOptions(BaseOptions):
                 "iterator": self.iterator,
                 "order": self.order,
                 "include_archived": self.include_archived,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
             }
         )
 
@@ -77,7 +77,7 @@ class EventTypeDeleteOptions(BaseOptions):
         )
 
 
-class EventTypeAsync(ApiBase):
+class EventTypeAsync(ApiBaseAsync):
     async def list(
         self, options: EventTypeListOptions = (EventTypeListOptions())
     ) -> ListResponseEventTypeOut:
@@ -144,17 +144,17 @@ class EventTypeAsync(ApiBase):
         )
         return EventTypeOut.model_validate(response.json())
 
-    async def update(
-        self, event_type_name: str, event_type_update: EventTypeUpdate
+    async def upsert(
+        self, event_type_name: str, event_type_upsert_in: EventTypeUpsertIn
     ) -> EventTypeOut:
-        """Update an event type."""
+        """Create or update an event type."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/event-type/{event_type_name}",
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_update.model_dump_json(
+            json_body=event_type_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -198,7 +198,7 @@ class EventTypeAsync(ApiBase):
         return EventTypeOut.model_validate(response.json())
 
 
-class EventType(ApiBase):
+class EventType(ApiBaseSync):
     def list(
         self, options: EventTypeListOptions = (EventTypeListOptions())
     ) -> ListResponseEventTypeOut:
@@ -265,17 +265,17 @@ class EventType(ApiBase):
         )
         return EventTypeOut.model_validate(response.json())
 
-    def update(
-        self, event_type_name: str, event_type_update: EventTypeUpdate
+    def upsert(
+        self, event_type_name: str, event_type_upsert_in: EventTypeUpsertIn
     ) -> EventTypeOut:
-        """Update an event type."""
+        """Create or update an event type."""
         response = self._request_sync(
             method="put",
             path="/api/v1/event-type/{event_type_name}",
             path_params={
                 "event_type_name": event_type_name,
             },
-            json_body=event_type_update.model_dump_json(
+            json_body=event_type_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

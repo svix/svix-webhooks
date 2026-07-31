@@ -1,6 +1,5 @@
 package com.svix.kotlin
 
-import com.svix.kotlin.models.BackgroundTaskFinishedEvent
 import com.svix.kotlin.models.CronConfig
 import com.svix.kotlin.models.IngestSourceIn
 import com.svix.kotlin.models.IngestSourceInConfig
@@ -14,7 +13,7 @@ class SerializationTests {
     @Test
     fun structEnumWithFields() {
         val jsonSource =
-            """{"name":"name","uid":"uuiidd","type":"cron","config":{"contentType":"web-app/json","payload":"totally json fr fr","schedule":"* * * * *"}}"""
+            """{"name":"name","uid":"uuiidd","type":"cron","config":{"schedule":"* * * * *","payload":"totally json fr fr","contentType":"web-app/json"}}"""
         val sourceIn =
             IngestSourceIn(
                 name = "name",
@@ -57,14 +56,5 @@ class SerializationTests {
         assertIs<IngestSourceInConfig.Cron>(sourceIn.config)
         // the assertIs smart casted for us
         assertEquals("* * * * *", sourceIn.config.cron.schedule)
-    }
-
-    @Test
-    fun opWebhookModels() {
-        val jsonString =
-            """{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":"null","messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}"""
-        val loadedFromJson =
-            Json.decodeFromString(BackgroundTaskFinishedEvent.serializer(), jsonString)
-        assertEquals(Json.encodeToString(loadedFromJson), jsonString)
     }
 }

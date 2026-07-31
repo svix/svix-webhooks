@@ -1,8 +1,11 @@
 use js_option::JsOption;
-use std::{collections::HashSet, time::Duration};
+use std::{
+    collections::{BTreeSet, HashSet},
+    time::Duration,
+};
 use svix::{
-    api::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn},
     error::Error,
+    models::{ApplicationIn, EndpointIn, EndpointPatch, EventTypeIn},
 };
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
@@ -13,7 +16,7 @@ fn check_for_conflict(e: Error) {
         Error::Http(e) => {
             assert_eq!(
                 e.status,
-                http02::StatusCode::CONFLICT,
+                http::StatusCode::CONFLICT,
                 "conflicts are expected but other statuses are not"
             );
         }
@@ -30,13 +33,7 @@ async fn test_endpoint_crud() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await
         .unwrap();
 
@@ -44,9 +41,13 @@ async fn test_endpoint_crud() {
         .event_type()
         .create(
             EventTypeIn {
-                name: String::from("event.started"),
-                description: String::from("Something started"),
-                ..Default::default()
+                name: "event.started".to_owned(),
+                description: "Something started".to_owned(),
+                archived: None,
+                deprecated: None,
+                feature_flags: None,
+                group_name: None,
+                schemas: None,
             },
             None,
         )
@@ -59,9 +60,13 @@ async fn test_endpoint_crud() {
         .event_type()
         .create(
             EventTypeIn {
-                name: String::from("event.ended"),
-                description: String::from("Something ended"),
-                ..Default::default()
+                name: "event.ended".to_owned(),
+                description: "Something ended".to_owned(),
+                archived: None,
+                deprecated: None,
+                feature_flags: None,
+                group_name: None,
+                schemas: None,
             },
             None,
         )
@@ -75,21 +80,18 @@ async fn test_endpoint_crud() {
         .create(
             app.id.clone(),
             EndpointIn {
-                channels: Some(vec![String::from("ch0"), String::from("ch1")]),
-                url: String::from("https://example.svix.com/"),
-                ..Default::default()
+                channels: Some(BTreeSet::from_iter(["ch0".to_owned(), "ch1".to_owned()])),
+                ..EndpointIn::new("https://example.svix.com/".to_owned())
             },
             None,
         )
         .await
         .unwrap();
 
-    let want_channels: HashSet<_> = [String::from("ch0"), String::from("ch1")]
-        .into_iter()
-        .collect();
-    let got_channels = ep.channels.clone().unwrap().into_iter().collect();
+    let want_channels = BTreeSet::from_iter(["ch0".to_owned(), "ch1".to_owned()]);
+    let got_channels = ep.channels.unwrap();
     assert_eq!(want_channels, got_channels);
-    assert_eq!(0, ep.filter_types.unwrap_or_default().len());
+    assert_eq!(0, ep.event_types.unwrap_or_default().len());
 
     let ep_patched = client
         .endpoint()
@@ -97,29 +99,28 @@ async fn test_endpoint_crud() {
             app.id.clone(),
             ep.id.clone(),
             EndpointPatch {
-                filter_types: JsOption::Some(vec![
+                event_types: JsOption::Some(BTreeSet::from_iter([
                     String::from("event.started"),
                     String::from("event.ended"),
-                ]),
-                ..Default::default()
+                ])),
+                ..EndpointPatch::new()
             },
         )
         .await
         .unwrap();
 
-    let want_filter_types: HashSet<_> =
-        [String::from("event.started"), String::from("event.ended")]
-            .into_iter()
-            .collect();
+    let want_event_types: HashSet<_> = [String::from("event.started"), String::from("event.ended")]
+        .into_iter()
+        .collect();
     let got_channels = ep_patched.channels.clone().unwrap().into_iter().collect();
-    let got_filter_types = ep_patched
-        .filter_types
+    let got_event_types = ep_patched
+        .event_types
         .clone()
         .unwrap()
         .into_iter()
         .collect();
     assert_eq!(want_channels, got_channels);
-    assert_eq!(want_filter_types, got_filter_types);
+    assert_eq!(want_event_types, got_event_types);
 
     // Should complete without error if the deserialization handles empty bodies
     // correctly.
@@ -172,13 +173,7 @@ async fn test_default_retries() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await;
     assert!(app.is_err());
 
@@ -222,13 +217,7 @@ async fn test_custom_retries() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await;
     assert!(app.is_err());
 
@@ -274,13 +263,7 @@ async fn test_custom_retry_schedule() {
 
     let app = client
         .application()
-        .create(
-            ApplicationIn {
-                name: "app".to_string(),
-                ..Default::default()
-            },
-            None,
-        )
+        .create(ApplicationIn::new("app".to_owned()), None)
         .await;
     assert!(app.is_err());
 

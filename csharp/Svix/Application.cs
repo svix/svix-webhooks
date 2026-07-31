@@ -54,14 +54,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new ApplicationListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseApplicationOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/app",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -79,13 +83,17 @@ namespace Svix
         /// </summary>
         public ListResponseApplicationOut List(ApplicationListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new ApplicationListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseApplicationOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -106,14 +114,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new ApplicationCreateOptions();
+            }
             applicationIn = applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ApplicationOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: applicationIn,
                     cancellationToken: cancellationToken
                 );
@@ -135,14 +147,18 @@ namespace Svix
             ApplicationCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new ApplicationCreateOptions();
+            }
             applicationIn = applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ApplicationOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: applicationIn
                 );
                 return response.Data;
@@ -268,9 +284,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update an application.
+        /// Create or update an application.
         /// </summary>
-        public async Task<ApplicationOut> UpdateAsync(
+        public async Task<ApplicationOut> UpsertAsync(
             string appId,
             ApplicationIn applicationIn,
             CancellationToken cancellationToken = default
@@ -290,16 +306,16 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Update an application.
+        /// Create or update an application.
         /// </summary>
-        public ApplicationOut Update(string appId, ApplicationIn applicationIn)
+        public ApplicationOut Upsert(string appId, ApplicationIn applicationIn)
         {
             applicationIn = applicationIn ?? throw new ArgumentNullException(nameof(applicationIn));
             try
@@ -314,7 +330,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }

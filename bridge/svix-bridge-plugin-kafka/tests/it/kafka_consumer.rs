@@ -5,24 +5,27 @@
 use std::time::Duration;
 
 use rdkafka::{
+    ClientConfig,
+    message::{Header, OwnedHeaders},
     producer::{FutureProducer, FutureRecord},
     util::Timeout,
-    ClientConfig,
 };
 use serde_json::json;
-use svix_bridge_plugin_kafka::{KafkaConsumer, KafkaInputOpts};
+use svix_bridge_plugin_kafka::{
+    KafkaAutoOffsetReset, KafkaConsumer, KafkaInputOpts, KafkaTransformationInput,
+};
 use svix_bridge_types::{
-    svix::api::MessageIn, CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions,
-    SvixSenderOutputOpts, TransformationConfig, TransformerInput, TransformerInputFormat,
-    TransformerJob, TransformerOutput,
+    CreateMessageRequest, SenderInput, SenderOutputOpts, SvixOptions, SvixSenderOutputOpts,
+    TransformationConfig, TransformerInput, TransformerInputFormat, TransformerJob,
+    TransformerOutput, svix::models::MessageIn,
 };
 use tracing::info;
 use wiremock::{
-    matchers::{body_partial_json, method},
     Mock, MockServer, ResponseTemplate,
+    matchers::{body_partial_json, header, method},
 };
 
-use crate::{create_topic, delete_topic, kafka_admin_client, BROKER_HOST};
+use crate::{BROKER_HOST, create_topic, delete_topic, kafka_admin_client};
 
 #[ctor::ctor]
 fn test_setup() {
@@ -51,6 +54,70 @@ fn get_test_plugin(
     topic: &str,
     use_transformation: Option<TransformerInputFormat>,
 ) -> KafkaConsumer {
+    get_test_plugin_with_transformation_input(
+        svix_url,
+        topic,
+        use_transformation,
+        KafkaTransformationInput::Payload,
+    )
+}
+
+fn get_test_plugin_with_transformation_input(
+    svix_url: String,
+    topic: &str,
+    use_transformation: Option<TransformerInputFormat>,
+    transformation_input: KafkaTransformationInput,
+) -> KafkaConsumer {
+    get_test_plugin_with_kafka_options(
+        svix_url,
+        topic,
+        use_transformation,
+        transformation_input,
+        KafkaAutoOffsetReset::Latest,
+        None,
+    )
+}
+
+fn get_test_plugin_with_auto_offset_reset(
+    svix_url: String,
+    topic: &str,
+    use_transformation: Option<TransformerInputFormat>,
+    auto_offset_reset: KafkaAutoOffsetReset,
+) -> KafkaConsumer {
+    get_test_plugin_with_kafka_options(
+        svix_url,
+        topic,
+        use_transformation,
+        KafkaTransformationInput::Payload,
+        auto_offset_reset,
+        None,
+    )
+}
+
+fn get_test_plugin_with_idempotency_namespace(
+    svix_url: String,
+    topic: &str,
+    use_transformation: Option<TransformerInputFormat>,
+    idempotency_namespace: &str,
+) -> KafkaConsumer {
+    get_test_plugin_with_kafka_options(
+        svix_url,
+        topic,
+        use_transformation,
+        KafkaTransformationInput::Payload,
+        KafkaAutoOffsetReset::Latest,
+        Some(idempotency_namespace),
+    )
+}
+
+fn get_test_plugin_with_kafka_options(
+    svix_url: String,
+    topic: &str,
+    use_transformation: Option<TransformerInputFormat>,
+    transformation_input: KafkaTransformationInput,
+    auto_offset_reset: KafkaAutoOffsetReset,
+    idempotency_namespace: Option<&str>,
+) -> KafkaConsumer {
     KafkaConsumer::new(
         "test".into(),
         KafkaInputOpts::Inner {
@@ -58,6 +125,9 @@ fn get_test_plugin(
             // All tests use different topics, so it's fine to have only one consumer group ID
             group_id: "svix_bridge_test_group_id".to_owned(),
             topic: topic.to_owned(),
+            transformation_input,
+            auto_offset_reset,
+            idempotency_namespace: idempotency_namespace.map(str::to_owned),
             security_protocol: svix_bridge_plugin_kafka::KafkaSecurityProtocol::Plaintext,
             debug_contexts: None,
         },
@@ -95,11 +165,32 @@ async fn publish(producer: &FutureProducer, topic: &str, payload: &[u8]) {
         .unwrap();
 }
 
+async fn publish_with_metadata(
+    producer: &FutureProducer,
+    topic: &str,
+    key: &[u8],
+    headers: OwnedHeaders,
+    payload: &[u8],
+) {
+    producer
+        .send(
+            FutureRecord::<[u8], _>::to(topic)
+                .key(key)
+                .headers(headers)
+                .payload(payload),
+            Timeout::After(Duration::from_secs(3)),
+        )
+        .await
+        .unwrap();
+}
+
 /// Push a msg on the queue.
 /// Check to see if the svix server sees a request.
 #[tokio::test]
 async fn test_consume_ok() {
     let topic = unique_topic_name!();
+    let expected_idempotency_key =
+        format!("svix_bridge_kafka_svix_bridge_test_group_id_{topic}_0_0");
 
     let admin_client = kafka_admin_client();
     create_topic(&admin_client, topic).await;
@@ -111,6 +202,7 @@ async fn test_consume_ok() {
     // The `expect` call should ensure we see exactly 1 POST request.
     // <https://docs.rs/wiremock/latest/wiremock/struct.Mock.html#method.expect>
     let mock = Mock::given(method("POST"))
+        .and(header("idempotency-key", expected_idempotency_key))
         .respond_with(ResponseTemplate::new(202).set_body_json(json!({
           "eventType": "testing.things",
           "payload": {
@@ -142,6 +234,97 @@ async fn test_consume_ok() {
 
     // Wait for the consumer to consume.
     tokio::time::sleep(CONSUME_WAIT_TIME).await;
+
+    handle.abort();
+    delete_topic(&admin_client, topic).await;
+}
+
+#[tokio::test]
+async fn test_consume_with_idempotency_namespace_ok() {
+    let topic = unique_topic_name!();
+    let expected_idempotency_key =
+        format!("svix_bridge_kafka_svix_bridge_test_group_id_source-a_{topic}_0_0");
+
+    let admin_client = kafka_admin_client();
+    create_topic(&admin_client, topic).await;
+
+    let producer = kafka_producer();
+
+    let mock_server = MockServer::start().await;
+    let mock = Mock::given(method("POST"))
+        .and(header("idempotency-key", expected_idempotency_key))
+        .respond_with(ResponseTemplate::new(202).set_body_json(json!({
+          "eventType": "testing.things",
+          "payload": {
+            "_SVIX_APP_ID": "app_1234",
+            "_SVIX_EVENT_TYPE": "testing.things",
+            "hi": "there",
+          },
+          "id": "msg_xxxx",
+          "timestamp": "2023-04-25T00:00:00Z"
+        })))
+        .named("create_message")
+        .expect(1);
+    mock_server.register(mock).await;
+
+    let plugin =
+        get_test_plugin_with_idempotency_namespace(mock_server.uri(), topic, None, "source-a");
+
+    let handle = tokio::spawn(async move {
+        plugin.run().await;
+    });
+    tokio::time::sleep(CONNECT_WAIT_TIME).await;
+
+    let msg = CreateMessageRequest {
+        app_id: "app_1234".into(),
+        message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
+    };
+
+    publish(&producer, topic, &serde_json::to_vec(&msg).unwrap()).await;
+
+    tokio::time::sleep(CONSUME_WAIT_TIME).await;
+    handle.abort();
+    delete_topic(&admin_client, topic).await;
+}
+
+#[tokio::test]
+async fn test_consume_with_earliest_auto_offset_reset_ok() {
+    let topic = unique_topic_name!();
+
+    let admin_client = kafka_admin_client();
+    create_topic(&admin_client, topic).await;
+
+    let producer = kafka_producer();
+    let msg = CreateMessageRequest {
+        app_id: "app_1234".into(),
+        message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
+    };
+    publish(&producer, topic, &serde_json::to_vec(&msg).unwrap()).await;
+
+    let mock_server = MockServer::start().await;
+    let mock = Mock::given(method("POST"))
+        .respond_with(ResponseTemplate::new(202).set_body_json(json!({
+          "eventType": "testing.things",
+          "payload": {
+            "hi": "there",
+          },
+          "id": "msg_xxxx",
+          "timestamp": "2023-04-25T00:00:00Z"
+        })))
+        .named("create_message")
+        .expect(1);
+    mock_server.register(mock).await;
+
+    let plugin = get_test_plugin_with_auto_offset_reset(
+        mock_server.uri(),
+        topic,
+        None,
+        KafkaAutoOffsetReset::Earliest,
+    );
+    let handle = tokio::spawn(async move {
+        plugin.run().await;
+    });
+    tokio::time::sleep(CONNECT_WAIT_TIME + CONSUME_WAIT_TIME).await;
 
     handle.abort();
     delete_topic(&admin_client, topic).await;
@@ -214,6 +397,117 @@ async fn test_consume_transformed_json_ok() {
     // Wait for the consumer to consume.
     tokio::time::sleep(CONSUME_WAIT_TIME).await;
 
+    handle.abort();
+    delete_topic(&admin_client, topic).await;
+}
+
+#[tokio::test]
+async fn test_consume_transformed_json_envelope_ok() {
+    let topic = unique_topic_name!();
+
+    let admin_client = kafka_admin_client();
+    create_topic(&admin_client, topic).await;
+
+    let producer = kafka_producer();
+
+    let mock_server = MockServer::start().await;
+    let mock = Mock::given(method("POST"))
+        .respond_with(ResponseTemplate::new(202).set_body_json(json!({
+          "eventType": "testing.things",
+          "payload": {
+            "hi": "there",
+          },
+          "id": "msg_xxxx",
+          "timestamp": "2023-04-25T00:00:00Z"
+        })))
+        .named("create_message")
+        .expect(1);
+    mock_server.register(mock).await;
+
+    let mut plugin = get_test_plugin_with_transformation_input(
+        mock_server.uri(),
+        topic,
+        Some(TransformerInputFormat::Json),
+        KafkaTransformationInput::Envelope,
+    );
+    let (transformer_tx, mut transformer_rx) =
+        tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
+    let (input_tx, input_rx) = tokio::sync::oneshot::channel();
+    let transformer_handle = tokio::spawn(async move {
+        let job = transformer_rx.recv().await.unwrap();
+        let input = match job.input {
+            TransformerInput::Json(input) => input,
+            _ => unreachable!(),
+        };
+        let output = input["payload"].as_object().unwrap().clone();
+        input_tx.send(input).unwrap();
+        job.callback_tx
+            .send(Ok(TransformerOutput::Object(output)))
+            .unwrap();
+    });
+    plugin.set_transformer(Some(transformer_tx));
+
+    let handle = tokio::spawn(async move {
+        plugin.run().await;
+    });
+    tokio::time::sleep(CONNECT_WAIT_TIME).await;
+
+    let msg = CreateMessageRequest {
+        app_id: "app_1234".into(),
+        message: MessageIn::new("testing.things".into(), json!({"hi": "there"})),
+    };
+    let headers = OwnedHeaders::new()
+        .insert(Header {
+            key: "test-header",
+            value: Some(b"test-value"),
+        })
+        .insert(Header {
+            key: "duplicate",
+            value: Some(b"first"),
+        })
+        .insert(Header {
+            key: "duplicate",
+            value: Some(b"second"),
+        })
+        .insert(Header {
+            key: "binary",
+            value: Some(&[0xff]),
+        })
+        .insert(Header {
+            key: "empty",
+            value: None::<&[u8]>,
+        });
+    publish_with_metadata(
+        &producer,
+        topic,
+        &[b'm', 0xff, b'k'],
+        headers,
+        &serde_json::to_vec(&msg).unwrap(),
+    )
+    .await;
+
+    let input = tokio::time::timeout(CONSUME_WAIT_TIME, input_rx)
+        .await
+        .unwrap()
+        .unwrap();
+    assert_eq!(input["key"], "m\u{fffd}k");
+    assert_eq!(input["topic"], topic.as_str());
+    assert_eq!(input["partition"], 0);
+    assert_eq!(input["offset"], 0);
+    assert_eq!(
+        input["headers"],
+        json!([
+            { "key": "test-header", "value": "dGVzdC12YWx1ZQ==" },
+            { "key": "duplicate", "value": "Zmlyc3Q=" },
+            { "key": "duplicate", "value": "c2Vjb25k" },
+            { "key": "binary", "value": "/w==" },
+            { "key": "empty", "value": null },
+        ])
+    );
+    assert_eq!(input["payload"], serde_json::to_value(&msg).unwrap());
+
+    transformer_handle.await.unwrap();
+    tokio::time::sleep(CONSUME_WAIT_TIME).await;
     handle.abort();
     delete_topic(&admin_client, topic).await;
 }

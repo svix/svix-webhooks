@@ -36,7 +36,7 @@ impl<'a> Streaming<'a> {
         sink_id: String,
     ) -> Result<EndpointHeadersOut> {
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
         )
         .with_path_param("stream_id", stream_id)
@@ -55,28 +55,12 @@ impl<'a> Streaming<'a> {
         http_sink_headers_patch_in: HttpSinkHeadersPatchIn,
     ) -> Result<EndpointHeadersOut> {
         crate::request::Request::new(
-            http1::Method::PATCH,
+            http::Method::PATCH,
             "/api/v1/stream/{stream_id}/sink/{sink_id}/headers",
         )
         .with_path_param("stream_id", stream_id)
         .with_path_param("sink_id", sink_id)
         .with_body_param(http_sink_headers_patch_in)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Get the transformation code associated with this sink.
-    pub async fn sink_transformation_get(
-        &self,
-        stream_id: String,
-        sink_id: String,
-    ) -> Result<SinkTransformationOut> {
-        crate::request::Request::new(
-            http1::Method::GET,
-            "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-        )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
         .execute(self.cfg)
         .await
     }

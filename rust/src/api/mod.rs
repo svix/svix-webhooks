@@ -1,22 +1,23 @@
 // this file is @generated
 #![warn(unreachable_pub)]
 
-mod client;
-mod deprecated;
+pub(crate) mod client;
 
 pub use self::client::{Svix, SvixOptions};
-pub use crate::models::*;
 
 mod application;
 mod authentication;
 mod background_task;
 mod connector;
 mod endpoint;
+mod endpoint_transformation;
 mod environment;
 mod event_type;
 mod health;
 mod ingest;
+mod ingest_authentication;
 mod ingest_endpoint;
+mod ingest_endpoint_transformation;
 mod ingest_source;
 mod integration;
 mod message;
@@ -29,6 +30,7 @@ mod streaming;
 mod streaming_event_type;
 mod streaming_events;
 mod streaming_sink;
+mod streaming_sink_transformation;
 mod streaming_stream;
 
 #[cfg(feature = "svix_beta")]
@@ -43,23 +45,27 @@ pub use self::{
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
-    deprecated::*,
     endpoint::{
         Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
         EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
         EndpointRotateSecretOptions, EndpointSendExampleOptions,
     },
+    endpoint_transformation::EndpointTransformation,
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
     event_type::{
         EventType, EventTypeCreateOptions, EventTypeDeleteOptions, EventTypeImportOpenapiOptions,
         EventTypeListOptions,
     },
     health::Health,
-    ingest::{Ingest, IngestDashboardOptions},
+    ingest::Ingest,
+    ingest_authentication::{
+        IngestAuthentication, IngestAuthenticationConsumerPortalAccessOptions,
+    },
     ingest_endpoint::{
         IngestEndpoint, IngestEndpointCreateOptions, IngestEndpointListOptions,
         IngestEndpointRotateSecretOptions,
     },
+    ingest_endpoint_transformation::IngestEndpointTransformation,
     ingest_source::{
         IngestSource, IngestSourceCreateOptions, IngestSourceListOptions,
         IngestSourceRotateTokenOptions,
@@ -96,6 +102,7 @@ pub use self::{
         StreamingSink, StreamingSinkCreateOptions, StreamingSinkListOptions,
         StreamingSinkRotateSecretOptions,
     },
+    streaming_sink_transformation::StreamingSinkTransformation,
     streaming_stream::{StreamingStream, StreamingStreamCreateOptions, StreamingStreamListOptions},
 };
 
@@ -144,9 +151,5 @@ impl Svix {
     }
     pub fn streaming(&self) -> Streaming<'_> {
         Streaming::new(&self.cfg)
-    }
-    #[deprecated = "Use .operational_webhook().endpoint() instead"]
-    pub fn operational_webhook_endpoint(&self) -> OperationalWebhookEndpoint<'_> {
-        OperationalWebhookEndpoint::new(&self.cfg)
     }
 }

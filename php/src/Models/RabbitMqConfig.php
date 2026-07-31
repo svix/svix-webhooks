@@ -11,8 +11,8 @@ class RabbitMqConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly string $routingKey,
         public readonly string $uri,
+        public readonly string $routingKey,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -22,21 +22,21 @@ class RabbitMqConfig implements \JsonSerializable
      * Create an instance of RabbitMqConfig with required fields.
      */
     public static function create(
-        string $routingKey,
         string $uri,
+        string $routingKey,
     ): self {
         return new self(
-            routingKey: $routingKey,
             uri: $uri,
-            setFields: ['routingKey' => true, 'uri' => true]
+            routingKey: $routingKey,
+            setFields: ['uri' => true, 'routingKey' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'routingKey' => $this->routingKey,
-            'uri' => $this->uri];
+            'uri' => $this->uri,
+            'routingKey' => $this->routingKey];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -47,8 +47,8 @@ class RabbitMqConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            routingKey: \Svix\Utils::deserializeString($data, 'routingKey', true, 'RabbitMqConfig'),
-            uri: \Svix\Utils::deserializeString($data, 'uri', true, 'RabbitMqConfig')
+            uri: \Svix\Utils::deserializeString($data, 'uri', true, 'RabbitMqConfig'),
+            routingKey: \Svix\Utils::deserializeString($data, 'routingKey', true, 'RabbitMqConfig')
         );
     }
 

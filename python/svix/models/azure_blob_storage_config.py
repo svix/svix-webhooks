@@ -4,8 +4,8 @@ from .common import BaseModel
 
 
 class AzureBlobStorageConfig(BaseModel):
-    access_key: str
+    container: str
 
     account: str
 
-    container: str
+    access_key: str

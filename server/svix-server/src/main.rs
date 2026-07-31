@@ -281,7 +281,7 @@ async fn main() -> anyhow::Result<()> {
         Some(Commands::GenerateOpenapi) => {
             let mut openapi = svix_server::openapi::initialize_openapi();
 
-            let router = svix_server::v1::router();
+            let router = svix_server::v1::router(cfg);
             _ = aide::axum::ApiRouter::new()
                 .nest("/api/v1", router)
                 .finish_api_with(&mut openapi, svix_server::openapi::add_security_scheme);

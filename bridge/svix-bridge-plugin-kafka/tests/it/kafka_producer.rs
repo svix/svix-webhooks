@@ -1,14 +1,14 @@
 use std::{sync::Arc, time::Duration};
 
 use rdkafka::{
-    consumer::{Consumer, StreamConsumer},
     ClientConfig, Message,
+    consumer::{Consumer, StreamConsumer},
 };
 use serde_json::json;
 use svix_bridge_plugin_kafka::{KafkaOutputOpts, KafkaProducer};
 use svix_bridge_types::{ForwardRequest, ReceiverOutput as _};
 
-use crate::{create_topic, delete_topic, kafka_admin_client, BROKER_HOST};
+use crate::{BROKER_HOST, create_topic, delete_topic, kafka_admin_client};
 
 /// Time to wait for the consumer to be properly listening.
 const LISTEN_WAIT_TIME: Duration = Duration::from_secs(8);

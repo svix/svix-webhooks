@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use super::{event_in::EventIn, stream_in::StreamIn};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct CreateStreamEventsIn {
     pub events: Vec<EventIn>,
 

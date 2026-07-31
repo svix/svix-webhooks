@@ -5,10 +5,10 @@ from .common import BaseModel
 
 
 class StreamEventTypePatch(BaseModel):
-    archived: t.Optional[bool] = None
-
-    deprecated: t.Optional[bool] = None
-
     description: t.Optional[str] = None
 
     feature_flags: t.Optional[t.List[str]] = None
+
+    deprecated: t.Optional[bool] = None
+
+    archived: t.Optional[bool] = None

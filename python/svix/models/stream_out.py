@@ -6,17 +6,17 @@ from .common import BaseModel
 
 
 class StreamOut(BaseModel):
-    created_at: datetime
-
     id: str
     """The stream's ID."""
-
-    metadata: t.Dict[str, str]
-
-    name: t.Optional[str] = None
-    """The stream's name."""
 
     uid: t.Optional[str] = None
     """The stream's UID."""
 
+    name: t.Optional[str] = None
+    """The stream's name."""
+
+    created_at: datetime
+
     updated_at: datetime
+
+    metadata: t.Dict[str, str]

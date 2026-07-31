@@ -4,14 +4,14 @@ require "json"
 
 module Svix
   class CronConfig
+    attr_accessor :schedule
+    attr_accessor :payload
     # Override the default content-type.
     #
     # Recommended if the payload is not JSON.
     attr_accessor :content_type
-    attr_accessor :payload
-    attr_accessor :schedule
 
-    ALL_FIELD ||= ["content_type", "payload", "schedule"].freeze
+    ALL_FIELD ||= ["schedule", "payload", "content_type"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,17 +32,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["content_type"] = attributes["contentType"]
-      attrs["payload"] = attributes["payload"]
       attrs["schedule"] = attributes["schedule"]
+      attrs["payload"] = attributes["payload"]
+      attrs["content_type"] = attributes["contentType"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["contentType"] = Svix::serialize_primitive(@content_type) if @content_type
-      out["payload"] = Svix::serialize_primitive(@payload) if @payload
       out["schedule"] = Svix::serialize_primitive(@schedule) if @schedule
+      out["payload"] = Svix::serialize_primitive(@payload) if @payload
+      out["contentType"] = Svix::serialize_primitive(@content_type) if @content_type
       out
     end
 

@@ -31,9 +31,9 @@ class AppUsageStatsIn implements \JsonSerializable
         \DateTimeImmutable $until,
     ): self {
         return new self(
-            appIds: null,
             since: $since,
             until: $until,
+            appIds: null,
             setFields: ['since' => true, 'until' => true]
         );
     }
@@ -44,9 +44,9 @@ class AppUsageStatsIn implements \JsonSerializable
         $setFields['appIds'] = true;
 
         return new self(
-            appIds: $appIds,
             since: $this->since,
             until: $this->until,
+            appIds: $appIds,
             setFields: $setFields
         );
     }
@@ -70,9 +70,9 @@ class AppUsageStatsIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            appIds: \Svix\Utils::getValFromJson($data, 'appIds', false, 'AppUsageStatsIn'),
             since: \Svix\Utils::deserializeDt($data, 'since', true, 'AppUsageStatsIn'),
-            until: \Svix\Utils::deserializeDt($data, 'until', true, 'AppUsageStatsIn')
+            until: \Svix\Utils::deserializeDt($data, 'until', true, 'AppUsageStatsIn'),
+            appIds: \Svix\Utils::getValFromJson($data, 'appIds', false, 'AppUsageStatsIn')
         );
     }
 

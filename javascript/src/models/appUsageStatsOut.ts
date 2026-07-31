@@ -9,36 +9,36 @@ import {
 } from "./backgroundTaskType";
 
 export interface AppUsageStatsOut {
-  /** The QueueBackgroundTask's ID. */
-  id: string;
-  status: BackgroundTaskStatus;
-  task: BackgroundTaskType;
   /**
    * Any app IDs or UIDs received in the request that weren't found.
    *
    * Stats will be produced for all the others.
    */
   unresolvedAppIds: string[];
+  /** The QueueBackgroundTask's ID. */
+  id: string;
+  status: BackgroundTaskStatus;
+  task: BackgroundTaskType;
   updatedAt: Date;
 }
 
 export const AppUsageStatsOutSerializer = {
   _fromJsonObject(object: any): AppUsageStatsOut {
     return {
+      unresolvedAppIds: object["unresolvedAppIds"],
       id: object["id"],
       status: BackgroundTaskStatusSerializer._fromJsonObject(object["status"]),
       task: BackgroundTaskTypeSerializer._fromJsonObject(object["task"]),
-      unresolvedAppIds: object["unresolvedAppIds"],
       updatedAt: new Date(object["updatedAt"]),
     };
   },
 
   _toJsonObject(self: AppUsageStatsOut): any {
     return {
+      unresolvedAppIds: self.unresolvedAppIds,
       id: self.id,
       status: BackgroundTaskStatusSerializer._toJsonObject(self.status),
       task: BackgroundTaskTypeSerializer._toJsonObject(self.task),
-      unresolvedAppIds: self.unresolvedAppIds,
       updatedAt: self.updatedAt,
     };
   },

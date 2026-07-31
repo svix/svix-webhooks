@@ -24,7 +24,7 @@ impl<'a> Endpoint<'a> {
         endpoint_transformation_in: EndpointTransformationIn,
     ) -> Result<()> {
         crate::request::Request::new(
-            http1::Method::PATCH,
+            http::Method::PATCH,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
         )
         .with_path_param("app_id", app_id)

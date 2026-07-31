@@ -23,14 +23,14 @@ class BackgroundTask
      * @throws ApiException
      */
     public function list(
-        ?BackgroundTaskListOptions $options = null,
+        BackgroundTaskListOptions $options = new BackgroundTaskListOptions(),
     ): ListResponseBackgroundTaskOut {
         $request = $this->client->newReq('GET', '/api/v1/background-task');
-        $request->setQueryParam('status', $options?->status);
-        $request->setQueryParam('task', $options?->task);
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('status', $options->status);
+        $request->setQueryParam('task', $options->task);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseBackgroundTaskOut::fromJson($res);

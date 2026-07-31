@@ -1,14 +1,18 @@
 // Modified version of the file openapi-generator would usually put in
 // apis/request.rs
 
-use std::{collections::HashMap, time::Duration};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    time::Duration,
+};
 
-use http1::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
+use chrono::{DateTime, Utc};
+use http::header::{HeaderValue, AUTHORIZATION, CONTENT_LENGTH, CONTENT_TYPE, USER_AGENT};
 use http_body_util::{BodyExt as _, Full};
 use hyper::body::Bytes;
 use itertools::Itertools as _;
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
-use rand::Rng;
+use rand::random;
 use serde::de::DeserializeOwned;
 
 use crate::{error::Error, models, Configuration};
@@ -24,24 +28,24 @@ pub(crate) enum Auth {
 /// OpenAPI definition does not include an authorization scheme.
 #[derive(Clone)]
 pub(crate) struct Request {
-    method: http1::Method,
+    method: http::Method,
     path: &'static str,
-    query_params: HashMap<&'static str, String>,
+    query_params: Vec<(&'static str, String)>,
     no_return_type: bool,
-    path_params: HashMap<&'static str, String>,
-    header_params: HashMap<&'static str, String>,
+    path_params: Vec<(&'static str, String)>,
+    header_params: BTreeMap<&'static str, String>,
     // TODO: multiple body params are possible technically, but not supported here.
     serialized_body: Option<String>,
 }
 
 impl Request {
-    pub fn new(method: http1::Method, path: &'static str) -> Self {
+    pub fn new(method: http::Method, path: &'static str) -> Self {
         Request {
             method,
             path,
-            query_params: HashMap::new(),
-            path_params: HashMap::new(),
-            header_params: HashMap::new(),
+            query_params: Vec::new(),
+            path_params: Vec::new(),
+            header_params: BTreeMap::new(),
             serialized_body: None,
             no_return_type: false,
         }
@@ -60,7 +64,7 @@ impl Request {
     }
 
     pub fn with_query_param(mut self, name: &'static str, param: impl QueryParamValue) -> Self {
-        self.query_params.insert(name, param.encode());
+        self.query_params.push((name, param.encode()));
         self
     }
 
@@ -70,17 +74,21 @@ impl Request {
         param: Option<T>,
     ) -> Self {
         if let Some(value) = param {
-            self.query_params.insert(name, value.encode());
+            self.query_params.push((name, value.encode()));
+        } else if name == "with_content" {
+            // default with_content to false, it only defaults to true
+            // server-side because of backwards-compatibility
+            self.query_params.push((name, false.encode()));
         } else if name == "expanded_statuses" {
-            // HACK: default expanded_statuses to true, it only defaults to false
-            //       server-side because of backwards-compatibility for old SDKs
-            self.query_params.insert(name, true.encode());
+            // default expanded_statuses to true, it only defaults to false
+            // server-side because of backwards-compatibility
+            self.query_params.push((name, true.encode()));
         }
         self
     }
 
     pub fn with_path_param(mut self, basename: &'static str, param: String) -> Self {
-        self.path_params.insert(basename, param);
+        self.path_params.push((basename, param));
         self
     }
 
@@ -104,7 +112,7 @@ impl Request {
 
     async fn execute_with_backoff(mut self, conf: &Configuration) -> Result<Option<Bytes>, Error> {
         let no_return_type = self.no_return_type;
-        if self.method == http1::Method::POST && !self.header_params.contains_key("idempotency-key")
+        if self.method == http::Method::POST && !self.header_params.contains_key("idempotency-key")
         {
             self.header_params
                 .insert("idempotency-key", format!("auto_{}", uuid::Uuid::new_v4()));
@@ -125,7 +133,7 @@ impl Request {
         let mut request = self.build_request(conf)?;
         request
             .headers_mut()
-            .insert("svix-req-id", rand::rng().random::<u32>().into());
+            .insert("svix-req-id", random::<u32>().into());
 
         let mut retry_count = 0;
 
@@ -134,7 +142,7 @@ impl Request {
 
             let status = response.status();
             if !status.is_success() {
-                Err(Error::from_response(status, response.into_body()).await)
+                Err(Error::from_response(status, response.into_body(), conf.timeout).await)
             } else if no_return_type {
                 Ok(None)
             } else {
@@ -149,11 +157,15 @@ impl Request {
         };
 
         loop {
+            let start = std::time::Instant::now();
             let request_fut = execute_request(request.clone());
             let res = if let Some(duration) = conf.timeout {
                 tokio::time::timeout(duration, request_fut)
                     .await
-                    .map_err(Error::generic)?
+                    .map_err(|_| Error::Timeout {
+                        elapsed: Some(start.elapsed()),
+                        timeout: Some(duration),
+                    })?
             } else {
                 request_fut.await
             };
@@ -180,7 +192,7 @@ impl Request {
         }
     }
 
-    fn build_request(self, conf: &Configuration) -> Result<http1::Request<Full<Bytes>>, Error> {
+    fn build_request(self, conf: &Configuration) -> Result<http::Request<Full<Bytes>>, Error> {
         const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
         const PATH: &AsciiSet = &FRAGMENT.add(b'#').add(b'?').add(b'{').add(b'}');
         const PATH_SEGMENT: &AsciiSet = &PATH.add(b'/').add(b'%');
@@ -206,8 +218,8 @@ impl Request {
             uri += &query_string_str;
         }
 
-        let uri = http1::Uri::try_from(uri).map_err(Error::generic)?;
-        let mut req_builder = http1::Request::builder().uri(uri).method(self.method);
+        let uri = http::Uri::try_from(uri).map_err(Error::generic)?;
+        let mut req_builder = http::Request::builder().uri(uri).method(self.method);
 
         let mut request = if let Some(body) = self.serialized_body {
             let req_headers = req_builder.headers_mut().unwrap();
@@ -267,7 +279,7 @@ macro_rules! impl_query_param_value {
 }
 
 impl_query_param_value!(bool);
-impl_query_param_value!(i32);
+impl_query_param_value!(u64);
 impl_query_param_value!(String);
 impl_query_param_value!(models::BackgroundTaskStatus);
 impl_query_param_value!(models::BackgroundTaskType);
@@ -277,7 +289,19 @@ impl_query_param_value!(models::Ordering);
 impl_query_param_value!(models::StartingPosition);
 impl_query_param_value!(models::StatusCodeClass);
 
+impl QueryParamValue for DateTime<Utc> {
+    fn encode(&self) -> String {
+        self.to_rfc3339()
+    }
+}
+
 impl QueryParamValue for Vec<String> {
+    fn encode(&self) -> String {
+        self.iter().format(",").to_string()
+    }
+}
+
+impl QueryParamValue for BTreeSet<String> {
     fn encode(&self) -> String {
         self.iter().format(",").to_string()
     }

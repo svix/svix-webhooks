@@ -10,8 +10,8 @@ class EndpointHeadersPatchIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null     $deleteHeaders A list of headers be be removed
      * @param array<string, string> $headers
+     * @param list<string>|null     $deleteHeaders A list of headers be be removed
      */
     private function __construct(
         public readonly array $headers,
@@ -28,8 +28,8 @@ class EndpointHeadersPatchIn implements \JsonSerializable
         array $headers,
     ): self {
         return new self(
-            deleteHeaders: null,
             headers: $headers,
+            deleteHeaders: null,
             setFields: ['headers' => true]
         );
     }
@@ -40,8 +40,8 @@ class EndpointHeadersPatchIn implements \JsonSerializable
         $setFields['deleteHeaders'] = true;
 
         return new self(
-            deleteHeaders: $deleteHeaders,
             headers: $this->headers,
+            deleteHeaders: $deleteHeaders,
             setFields: $setFields
         );
     }
@@ -64,8 +64,8 @@ class EndpointHeadersPatchIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            deleteHeaders: \Svix\Utils::getValFromJson($data, 'deleteHeaders', false, 'EndpointHeadersPatchIn'),
-            headers: \Svix\Utils::getValFromJson($data, 'headers', true, 'EndpointHeadersPatchIn')
+            headers: \Svix\Utils::getValFromJson($data, 'headers', true, 'EndpointHeadersPatchIn'),
+            deleteHeaders: \Svix\Utils::getValFromJson($data, 'deleteHeaders', false, 'EndpointHeadersPatchIn')
         );
     }
 

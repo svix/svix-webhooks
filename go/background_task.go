@@ -12,10 +12,8 @@ type BackgroundTask struct {
 	client *internal.SvixHttpClient
 }
 
-func newBackgroundTask(client *internal.SvixHttpClient) *BackgroundTask {
-	return &BackgroundTask{
-		client: client,
-	}
+func newBackgroundTask(client *internal.SvixHttpClient) BackgroundTask {
+	return BackgroundTask{client}
 }
 
 type BackgroundTaskListOptions struct {
@@ -35,22 +33,23 @@ type BackgroundTaskListOptions struct {
 }
 
 // List background tasks executed in the past 90 days.
-func (backgroundTask *BackgroundTask) List(
+func (backgroundTask BackgroundTask) List(
 	ctx context.Context,
 	o *BackgroundTaskListOptions,
 ) (*models.ListResponseBackgroundTaskOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("status", o.Status, queryMap, &err)
-		internal.SerializeParamToMap("task", o.Task, queryMap, &err)
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := BackgroundTaskListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("status", o.Status, queryMap, &err)
+	internal.SerializeParamToMap("task", o.Task, queryMap, &err)
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseBackgroundTaskOut](
 		ctx,
@@ -65,7 +64,7 @@ func (backgroundTask *BackgroundTask) List(
 }
 
 // Get a background task by ID.
-func (backgroundTask *BackgroundTask) Get(
+func (backgroundTask BackgroundTask) Get(
 	ctx context.Context,
 	taskId string,
 ) (*models.BackgroundTaskOut, error) {

@@ -70,35 +70,9 @@ class PostOptions(BaseOptions):
 
 class ApiBase:
     _client: AuthenticatedClient
-    _httpx_client: httpx.Client
-    _httpx_async_client: httpx.AsyncClient
 
     def __init__(self, client: AuthenticatedClient) -> None:
         self._client = client
-
-        if self._client.proxy is not None:
-            proxy_mounts = {
-                "http://": httpx.HTTPTransport(proxy=httpx.Proxy(self._client.proxy)),
-                "https://": httpx.HTTPTransport(proxy=httpx.Proxy(self._client.proxy)),
-            }
-            async_proxy_mounts = {
-                "http://": httpx.AsyncHTTPTransport(
-                    proxy=httpx.Proxy(self._client.proxy)
-                ),
-                "https://": httpx.AsyncHTTPTransport(
-                    proxy=httpx.Proxy(self._client.proxy)
-                ),
-            }
-        else:
-            proxy_mounts = None
-            async_proxy_mounts = None
-
-        self._httpx_client = httpx.Client(
-            mounts=proxy_mounts, cookies=self._client.get_cookies()
-        )
-        self._httpx_async_client = httpx.AsyncClient(
-            mounts=async_proxy_mounts, cookies=self._client.get_cookies()
-        )
 
     def _get_httpx_kwargs(
         self,
@@ -142,6 +116,18 @@ class ApiBase:
 
         return httpx_kwargs
 
+
+class ApiBaseAsync(ApiBase):
+    _httpx_client: httpx.AsyncClient
+
+    def __init__(
+        self,
+        client: AuthenticatedClient,
+        httpx_async_client: httpx.AsyncClient,
+    ):
+        super().__init__(client)
+        self._httpx_client = httpx_async_client
+
     async def _request_asyncio(
         self,
         method: str,
@@ -160,7 +146,7 @@ class ApiBase:
             json_body=json_body,
         )
 
-        response = await self._httpx_async_client.request(**httpx_kwargs)
+        response = await self._httpx_client.request(**httpx_kwargs)
 
         for retry_count, sleep_time in enumerate(self._client.retry_schedule):
             if response.status_code < 500:
@@ -168,9 +154,17 @@ class ApiBase:
 
             await asyncio.sleep(sleep_time)
             httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
-            response = await self._httpx_async_client.request(**httpx_kwargs)
+            response = await self._httpx_client.request(**httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
+
+
+class ApiBaseSync(ApiBase):
+    _httpx_client: httpx.Client
+
+    def __init__(self, client: AuthenticatedClient, httpx_client: httpx.Client):
+        super().__init__(client)
+        self._httpx_client = httpx_client
 
     def _request_sync(
         self,
@@ -199,6 +193,30 @@ class ApiBase:
             response = self._httpx_client.request(**httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
+
+
+def _make_httpx_async_client(client: AuthenticatedClient) -> httpx.AsyncClient:
+    if client.proxy is not None:
+        async_proxy_mounts = {
+            "http://": httpx.AsyncHTTPTransport(proxy=httpx.Proxy(client.proxy)),
+            "https://": httpx.AsyncHTTPTransport(proxy=httpx.Proxy(client.proxy)),
+        }
+    else:
+        async_proxy_mounts = None
+
+    return httpx.AsyncClient(mounts=async_proxy_mounts, cookies=client.get_cookies())
+
+
+def _make_httpx_client(client: AuthenticatedClient) -> httpx.Client:
+    if client.proxy is not None:
+        proxy_mounts = {
+            "http://": httpx.HTTPTransport(proxy=httpx.Proxy(client.proxy)),
+            "https://": httpx.HTTPTransport(proxy=httpx.Proxy(client.proxy)),
+        }
+    else:
+        proxy_mounts = None
+
+    return httpx.Client(mounts=proxy_mounts, cookies=client.get_cookies())
 
 
 def _filter_response_for_errors_response(response: httpx.Response) -> httpx.Response:

@@ -16,31 +16,29 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class CronConfig {
-    @JsonProperty private String contentType;
-    @JsonProperty private String payload;
     @JsonProperty private String schedule;
+    @JsonProperty private String payload;
+    @JsonProperty private String contentType;
 
     public CronConfig() {}
 
-    public CronConfig contentType(String contentType) {
-        this.contentType = contentType;
+    public CronConfig schedule(String schedule) {
+        this.schedule = schedule;
         return this;
     }
 
     /**
-     * Override the default content-type.
+     * Get schedule
      *
-     * <p>Recommended if the payload is not JSON.
-     *
-     * @return contentType
+     * @return schedule
      */
-    @javax.annotation.Nullable
-    public String getContentType() {
-        return contentType;
+    @javax.annotation.Nonnull
+    public String getSchedule() {
+        return schedule;
     }
 
-    public void setContentType(String contentType) {
-        this.contentType = contentType;
+    public void setSchedule(String schedule) {
+        this.schedule = schedule;
     }
 
     public CronConfig payload(String payload) {
@@ -62,23 +60,25 @@ public class CronConfig {
         this.payload = payload;
     }
 
-    public CronConfig schedule(String schedule) {
-        this.schedule = schedule;
+    public CronConfig contentType(String contentType) {
+        this.contentType = contentType;
         return this;
     }
 
     /**
-     * Get schedule
+     * Override the default content-type.
      *
-     * @return schedule
+     * <p>Recommended if the payload is not JSON.
+     *
+     * @return contentType
      */
-    @javax.annotation.Nonnull
-    public String getSchedule() {
-        return schedule;
+    @javax.annotation.Nullable
+    public String getContentType() {
+        return contentType;
     }
 
-    public void setSchedule(String schedule) {
-        this.schedule = schedule;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     /**

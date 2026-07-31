@@ -3,6 +3,6 @@ package models
 
 type EventStreamOut struct {
 	Data     []EventOut `json:"data"`
-	Done     bool       `json:"done"`
 	Iterator string     `json:"iterator"`
+	Done     bool       `json:"done"`
 }

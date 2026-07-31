@@ -64,7 +64,7 @@ module Svix
       ApplicationOut.deserialize(res)
     end
 
-    def update(app_id, application_in)
+    def upsert(app_id, application_in)
       res = @client.execute_request(
         "PUT",
         "/api/v1/app/#{app_id}",

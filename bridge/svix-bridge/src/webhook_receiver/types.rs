@@ -2,14 +2,13 @@ use std::{collections::HashMap, marker::PhantomData, sync::Arc};
 
 use anyhow::Result;
 use axum::{
-    async_trait,
     body::Bytes,
     extract::{FromRequest, Request},
     http::{self, HeaderMap, HeaderValue},
 };
 use serde::{Deserialize, Serialize};
 use svix_bridge_types::{
-    svix, ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier,
+    ReceiverInputOpts, ReceiverOutput, TransformationConfig, TransformerTx, WebhookVerifier, svix,
 };
 
 use super::verification::{NoVerifier, SvixVerifier, VerificationMethod, Verifier};
@@ -210,7 +209,6 @@ impl From<RequestFromParts> for SerializableRequest<Unvalidated> {
     }
 }
 
-#[async_trait]
 impl<S> FromRequest<S> for SerializableRequest<Unvalidated>
 where
     S: Send + Sync,

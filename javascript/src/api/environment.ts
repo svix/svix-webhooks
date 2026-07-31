@@ -38,7 +38,7 @@ export class Environment {
    * herein are provided for convenience but should be treated as JSON blobs.
    */
   public async import(
-    environmentIn: EnvironmentIn,
+    environmentIn: EnvironmentIn = {},
     options?: EnvironmentImportOptions
   ): Promise<void> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/environment/import");

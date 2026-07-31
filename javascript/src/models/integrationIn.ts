@@ -1,23 +1,23 @@
 // this file is @generated
 
 export interface IntegrationIn {
+  name: string;
   /** The set of feature flags the integration will have access to. */
   featureFlags?: string[];
-  name: string;
 }
 
 export const IntegrationInSerializer = {
   _fromJsonObject(object: any): IntegrationIn {
     return {
-      featureFlags: object["featureFlags"],
       name: object["name"],
+      featureFlags: object["featureFlags"],
     };
   },
 
   _toJsonObject(self: IntegrationIn): any {
     return {
-      featureFlags: self.featureFlags,
       name: self.name,
+      featureFlags: self.featureFlags,
     };
   },
 };

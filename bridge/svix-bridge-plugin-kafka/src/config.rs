@@ -1,10 +1,11 @@
 use rdkafka::{
-    consumer::StreamConsumer, error::KafkaResult, producer::FutureProducer, ClientConfig,
+    ClientConfig, consumer::StreamConsumer, error::KafkaResult, producer::FutureProducer,
 };
 use serde::Deserialize;
+use strum::IntoStaticStr;
 use svix_bridge_types::{ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig};
 
-use crate::{input::KafkaConsumer, KafkaProducer, Result};
+use crate::{KafkaProducer, Result, input::KafkaConsumer};
 
 #[derive(Clone, Deserialize)]
 #[serde(tag = "type")]
@@ -27,6 +28,18 @@ pub enum KafkaInputOpts {
         #[serde(rename = "kafka_topic")]
         topic: String,
 
+        /// The input passed to JSON transformations.
+        #[serde(rename = "kafka_transformation_input", default)]
+        transformation_input: KafkaTransformationInput,
+
+        /// The value for 'auto.offset.reset' in the kafka config.
+        #[serde(rename = "kafka_auto_offset_reset", default)]
+        auto_offset_reset: KafkaAutoOffsetReset,
+
+        /// A namespace for idempotency keys from independent Kafka sources.
+        #[serde(rename = "kafka_idempotency_namespace")]
+        idempotency_namespace: Option<String>,
+
         /// The value for 'security.protocol' in the kafka config.
         #[serde(flatten)]
         security_protocol: KafkaSecurityProtocol,
@@ -38,11 +51,20 @@ pub enum KafkaInputOpts {
     },
 }
 
+#[derive(Clone, Copy, Default, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KafkaTransformationInput {
+    #[default]
+    Payload,
+    Envelope,
+}
+
 impl KafkaInputOpts {
     pub(crate) fn create_consumer(self) -> KafkaResult<StreamConsumer> {
         let Self::Inner {
             bootstrap_brokers,
             group_id,
+            auto_offset_reset,
             security_protocol,
             debug_contexts,
             ..
@@ -52,18 +74,28 @@ impl KafkaInputOpts {
         config
             .set("group.id", group_id)
             .set("bootstrap.servers", bootstrap_brokers)
+            .set("auto.offset.reset", <&'static str>::from(auto_offset_reset))
             // messages are committed manually after webhook delivery was successful.
             .set("enable.auto.commit", "false");
 
         security_protocol.apply(&mut config);
-        if let Some(debug_contexts) = debug_contexts {
-            if !debug_contexts.is_empty() {
-                config.set("debug", debug_contexts);
-            }
+        if let Some(debug_contexts) = debug_contexts
+            && !debug_contexts.is_empty()
+        {
+            config.set("debug", debug_contexts);
         }
 
         config.create()
     }
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, IntoStaticStr, PartialEq, Eq)]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum KafkaAutoOffsetReset {
+    #[default]
+    Latest,
+    Earliest,
 }
 
 #[derive(Clone, Deserialize)]
@@ -106,10 +138,10 @@ impl KafkaOutputOpts {
         config.set("bootstrap.servers", bootstrap_brokers);
 
         security_protocol.apply(&mut config);
-        if let Some(debug_contexts) = debug_contexts {
-            if !debug_contexts.is_empty() {
-                config.set("debug", debug_contexts);
-            }
+        if let Some(debug_contexts) = debug_contexts
+            && !debug_contexts.is_empty()
+        {
+            config.set("debug", debug_contexts);
         }
 
         config.create()

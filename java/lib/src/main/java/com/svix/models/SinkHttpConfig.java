@@ -20,11 +20,30 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SinkHttpConfig {
+    @JsonProperty private URI url;
     @JsonProperty private Map<String, String> headers;
     @JsonProperty private String key;
-    @JsonProperty private URI url;
 
     public SinkHttpConfig() {}
+
+    public SinkHttpConfig url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public SinkHttpConfig headers(Map<String, String> headers) {
         this.headers = headers;
@@ -71,25 +90,6 @@ public class SinkHttpConfig {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public SinkHttpConfig url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

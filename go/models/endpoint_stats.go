@@ -2,9 +2,9 @@
 package models
 
 type EndpointStats struct {
-	Canceled int64 `json:"canceled"`
-	Fail     int64 `json:"fail"`
+	Success  int64 `json:"success"`
 	Pending  int64 `json:"pending"`
 	Sending  int64 `json:"sending"`
-	Success  int64 `json:"success"`
+	Fail     int64 `json:"fail"`
+	Canceled int64 `json:"canceled"`
 }

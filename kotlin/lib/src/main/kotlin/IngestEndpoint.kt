@@ -7,9 +7,7 @@ import com.svix.kotlin.models.IngestEndpointIn
 import com.svix.kotlin.models.IngestEndpointOut
 import com.svix.kotlin.models.IngestEndpointSecretIn
 import com.svix.kotlin.models.IngestEndpointSecretOut
-import com.svix.kotlin.models.IngestEndpointTransformationOut
-import com.svix.kotlin.models.IngestEndpointTransformationPatch
-import com.svix.kotlin.models.IngestEndpointUpdate
+import com.svix.kotlin.models.IngestEndpointUpsertIn
 import com.svix.kotlin.models.ListResponseIngestEndpointOut
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
@@ -28,6 +26,8 @@ data class IngestEndpointCreateOptions(val idempotencyKey: String? = null)
 data class IngestEndpointRotateSecretOptions(val idempotencyKey: String? = null)
 
 class IngestEndpoint(private val client: SvixHttpClient) {
+    val transformation: IngestEndpointTransformation = IngestEndpointTransformation(client)
+
     /** List ingest endpoints. */
     suspend fun list(
         sourceId: String,
@@ -67,21 +67,21 @@ class IngestEndpoint(private val client: SvixHttpClient) {
         return client.executeRequest<Any, IngestEndpointOut>("GET", url.build())
     }
 
-    /** Update an ingest endpoint. */
-    suspend fun update(
+    /** Create or update an ingest endpoint. */
+    suspend fun upsert(
         sourceId: String,
         endpointId: String,
-        ingestEndpointUpdate: IngestEndpointUpdate,
+        ingestEndpointUpsertIn: IngestEndpointUpsertIn,
     ): IngestEndpointOut {
         val url =
             client
                 .newUrlBuilder()
                 .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId")
 
-        return client.executeRequest<IngestEndpointUpdate, IngestEndpointOut>(
+        return client.executeRequest<IngestEndpointUpsertIn, IngestEndpointOut>(
             "PUT",
             url.build(),
-            reqBody = ingestEndpointUpdate,
+            reqBody = ingestEndpointUpsertIn,
         )
     }
 
@@ -92,33 +92,6 @@ class IngestEndpoint(private val client: SvixHttpClient) {
                 .newUrlBuilder()
                 .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
-    }
-
-    /** Get the additional headers to be sent with the ingest. */
-    suspend fun getHeaders(sourceId: String, endpointId: String): IngestEndpointHeadersOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/headers")
-        return client.executeRequest<Any, IngestEndpointHeadersOut>("GET", url.build())
-    }
-
-    /** Set the additional headers to be sent to the endpoint. */
-    suspend fun updateHeaders(
-        sourceId: String,
-        endpointId: String,
-        ingestEndpointHeadersIn: IngestEndpointHeadersIn,
-    ) {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/headers")
-
-        client.executeRequest<IngestEndpointHeadersIn, Boolean>(
-            "PUT",
-            url.build(),
-            reqBody = ingestEndpointHeadersIn,
-        )
     }
 
     /**
@@ -161,33 +134,30 @@ class IngestEndpoint(private val client: SvixHttpClient) {
         )
     }
 
-    /** Get the transformation code associated with this ingest endpoint. */
-    suspend fun getTransformation(
-        sourceId: String,
-        endpointId: String,
-    ): IngestEndpointTransformationOut {
+    /** Get the additional headers to be sent with the ingest. */
+    suspend fun getHeaders(sourceId: String, endpointId: String): IngestEndpointHeadersOut {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/transformation")
-        return client.executeRequest<Any, IngestEndpointTransformationOut>("GET", url.build())
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/headers")
+        return client.executeRequest<Any, IngestEndpointHeadersOut>("GET", url.build())
     }
 
-    /** Set or unset the transformation code associated with this ingest endpoint. */
-    suspend fun setTransformation(
+    /** Set the additional headers to be sent to the endpoint. */
+    suspend fun setHeaders(
         sourceId: String,
         endpointId: String,
-        ingestEndpointTransformationPatch: IngestEndpointTransformationPatch,
+        ingestEndpointHeadersIn: IngestEndpointHeadersIn,
     ) {
         val url =
             client
                 .newUrlBuilder()
-                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/transformation")
+                .encodedPath("/ingest/api/v1/source/$sourceId/endpoint/$endpointId/headers")
 
-        client.executeRequest<IngestEndpointTransformationPatch, Boolean>(
-            "PATCH",
+        client.executeRequest<IngestEndpointHeadersIn, Boolean>(
+            "PUT",
             url.build(),
-            reqBody = ingestEndpointTransformationPatch,
+            reqBody = ingestEndpointHeadersIn,
         )
     }
 }

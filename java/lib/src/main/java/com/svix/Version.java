@@ -1,5 +1,5 @@
 package com.svix;
 
 public class Version {
-    public static final String VERSION = "1.96.1";
+    public static final String VERSION = "2.0.0-rc.2";
 }

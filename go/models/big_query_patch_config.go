@@ -2,8 +2,8 @@
 package models
 
 type BigQueryPatchConfig struct {
-	Credentials *string `json:"credentials,omitempty"`
-	DatasetId   *string `json:"datasetId,omitempty"`
 	ProjectId   *string `json:"projectId,omitempty"`
+	DatasetId   *string `json:"datasetId,omitempty"`
 	TableId     *string `json:"tableId,omitempty"`
+	Credentials *string `json:"credentials,omitempty"`
 }

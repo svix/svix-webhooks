@@ -5,10 +5,17 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IngestEndpointIn(
+    val url: String,
     val description: String? = null,
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     */
+    val throttleRate: UShort? = null,
+    /** Optional unique identifier for the endpoint. */
+    val uid: String? = null,
     val disabled: Boolean? = null,
-    val metadata: Map<String, String>? = null,
-    val rateLimit: UShort? = null,
     /**
      * The endpoint's verification secret.
      *
@@ -16,7 +23,5 @@ data class IngestEndpointIn(
      * not set this and let the server generate the secret.
      */
     val secret: String? = null,
-    /** Optional unique identifier for the endpoint. */
-    val uid: String? = null,
-    val url: String,
+    val metadata: Map<String, String>? = null,
 )

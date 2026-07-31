@@ -8,7 +8,7 @@ import com.svix.kotlin.models.OperationalWebhookEndpointIn
 import com.svix.kotlin.models.OperationalWebhookEndpointOut
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretIn
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretOut
-import com.svix.kotlin.models.OperationalWebhookEndpointUpdate
+import com.svix.kotlin.models.OperationalWebhookEndpointUpsertIn
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
 
@@ -64,21 +64,21 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
         return client.executeRequest<Any, OperationalWebhookEndpointOut>("GET", url.build())
     }
 
-    /** Update an operational webhook endpoint. */
-    suspend fun update(
+    /** Create or update an operational webhook endpoint. */
+    suspend fun upsert(
         endpointId: String,
-        operationalWebhookEndpointUpdate: OperationalWebhookEndpointUpdate,
+        operationalWebhookEndpointUpsertIn: OperationalWebhookEndpointUpsertIn,
     ): OperationalWebhookEndpointOut {
         val url =
             client.newUrlBuilder().encodedPath("/api/v1/operational-webhook/endpoint/$endpointId")
 
         return client.executeRequest<
-            OperationalWebhookEndpointUpdate,
+            OperationalWebhookEndpointUpsertIn,
             OperationalWebhookEndpointOut,
         >(
             "PUT",
             url.build(),
-            reqBody = operationalWebhookEndpointUpdate,
+            reqBody = operationalWebhookEndpointUpsertIn,
         )
     }
 
@@ -87,32 +87,6 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
         val url =
             client.newUrlBuilder().encodedPath("/api/v1/operational-webhook/endpoint/$endpointId")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
-    }
-
-    /** Get the additional headers to be sent with the operational webhook. */
-    suspend fun getHeaders(endpointId: String): OperationalWebhookEndpointHeadersOut {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
-        return client.executeRequest<Any, OperationalWebhookEndpointHeadersOut>("GET", url.build())
-    }
-
-    /** Set the additional headers to be sent with the operational webhook. */
-    suspend fun updateHeaders(
-        endpointId: String,
-        operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn,
-    ) {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
-
-        client.executeRequest<OperationalWebhookEndpointHeadersIn, Boolean>(
-            "PUT",
-            url.build(),
-            reqBody = operationalWebhookEndpointHeadersIn,
-        )
     }
 
     /**
@@ -152,6 +126,32 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = operationalWebhookEndpointSecretIn,
+        )
+    }
+
+    /** Get the additional headers to be sent with the operational webhook. */
+    suspend fun getHeaders(endpointId: String): OperationalWebhookEndpointHeadersOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
+        return client.executeRequest<Any, OperationalWebhookEndpointHeadersOut>("GET", url.build())
+    }
+
+    /** Set the additional headers to be sent with the operational webhook. */
+    suspend fun setHeaders(
+        endpointId: String,
+        operationalWebhookEndpointHeadersIn: OperationalWebhookEndpointHeadersIn,
+    ) {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/operational-webhook/endpoint/$endpointId/headers")
+
+        client.executeRequest<OperationalWebhookEndpointHeadersIn, Boolean>(
+            "PUT",
+            url.build(),
+            reqBody = operationalWebhookEndpointHeadersIn,
         )
     }
 }

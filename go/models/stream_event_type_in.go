@@ -2,9 +2,9 @@
 package models
 
 type StreamEventTypeIn struct {
-	Archived     *bool    `json:"archived,omitempty"`
-	Deprecated   *bool    `json:"deprecated,omitempty"`
+	Name         string   `json:"name"` // The event type's name
 	Description  *string  `json:"description,omitempty"`
 	FeatureFlags []string `json:"featureFlags,omitempty"`
-	Name         string   `json:"name"` // The event type's name
+	Deprecated   *bool    `json:"deprecated,omitempty"`
+	Archived     *bool    `json:"archived,omitempty"`
 }

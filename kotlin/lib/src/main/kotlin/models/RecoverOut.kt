@@ -1,7 +1,7 @@
 // This file is @generated
 package com.svix.kotlin.models
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

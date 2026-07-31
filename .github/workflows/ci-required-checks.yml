@@ -47,6 +47,7 @@ jobs:
       server-ci: ${{ steps.filter.outputs.server-ci }}
       rust-lint: ${{ steps.filter.outputs.rust-lint }}
       ruby-lint: ${{ steps.filter.outputs.ruby-lint }}
+      openapi-compatibility-check: ${{ steps.filter.outputs.openapi-compatibility-check }}
     steps:
       - uses: actions/checkout@v6
       - uses: dorny/paths-filter@v3
@@ -115,6 +116,11 @@ jobs:
               - 'ruby/**'
               - 'codegen/lib-openapi.json'
               - '.github/workflows/ruby-lint.yml'
+            openapi-compatibility-check:
+              - 'tools/validate_openapi_compatibility.py'
+              - 'codegen/lib-openapi.json'
+              - 'server/openapi.json'
+              - '.github/workflows/openapi-compatibility-check.yml'
 
   bridge-ci:
     needs: filter
@@ -200,6 +206,11 @@ jobs:
     uses: ./.github/workflows/ruby-lint.yml
     secrets: inherit
 
+  openapi-compatibility-check:
+    needs: filter
+    if: needs.filter.outputs.openapi-compatibility-check == 'true'
+    uses: ./.github/workflows/openapi-compatibility-check.yml
+
   # pre-commit, and codegen have no path filter — always run them.
   pre-commit:
     uses: ./.github/workflows/pre-commit.yml
@@ -226,6 +237,7 @@ jobs:
       - server-ci
       - rust-lint
       - ruby-lint
+      - openapi-compatibility-check
       - pre-commit
       - codegen
     if: always()

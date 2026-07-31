@@ -4,15 +4,15 @@ require "json"
 
 module Svix
   class EventBridgeConfig
-    attr_accessor :access_key_id
-    # Free-form string, with a maximum of 128 characters
-    attr_accessor :detail_type
     # The name or ARN of the event bus to receive the event
     attr_accessor :event_bus_name
-    attr_accessor :region
+    # Free-form string, with a maximum of 128 characters
+    attr_accessor :detail_type
+    attr_accessor :access_key_id
     attr_accessor :secret_access_key
+    attr_accessor :region
 
-    ALL_FIELD ||= ["access_key_id", "detail_type", "event_bus_name", "region", "secret_access_key"].freeze
+    ALL_FIELD ||= ["event_bus_name", "detail_type", "access_key_id", "secret_access_key", "region"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -33,21 +33,21 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["access_key_id"] = attributes["accessKeyId"]
-      attrs["detail_type"] = attributes["detailType"]
       attrs["event_bus_name"] = attributes["eventBusName"]
-      attrs["region"] = attributes["region"]
+      attrs["detail_type"] = attributes["detailType"]
+      attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["region"] = attributes["region"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["detailType"] = Svix::serialize_primitive(@detail_type) if @detail_type
       out["eventBusName"] = Svix::serialize_primitive(@event_bus_name) if @event_bus_name
-      out["region"] = Svix::serialize_primitive(@region) if @region
+      out["detailType"] = Svix::serialize_primitive(@detail_type) if @detail_type
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
+      out["region"] = Svix::serialize_primitive(@region) if @region
       out
     end
 

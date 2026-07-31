@@ -8,37 +8,37 @@ module Svix
   # For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.
   class RedshiftConfig
     attr_accessor :access_key_id
+    attr_accessor :secret_access_key
+    attr_accessor :region
     # Required for provisioned clusters.
     attr_accessor :cluster_identifier
+    # Required for provisioned clusters.
+    attr_accessor :db_user
+    # Required for Redshift Serverless.
+    attr_accessor :workgroup_name
     # Database name.
     #
     # Only required if not using transformations.
     attr_accessor :db_name
-    # Required for provisioned clusters.
-    attr_accessor :db_user
-    attr_accessor :region
     # Schema name.
     #
     # Only used if not using transformations.
     attr_accessor :schema_name
-    attr_accessor :secret_access_key
     # Table name.
     #
     # Only required if not using transformations.
     attr_accessor :table_name
-    # Required for Redshift Serverless.
-    attr_accessor :workgroup_name
 
     ALL_FIELD ||= [
       "access_key_id",
-      "cluster_identifier",
-      "db_name",
-      "db_user",
-      "region",
-      "schema_name",
       "secret_access_key",
-      "table_name",
-      "workgroup_name"
+      "region",
+      "cluster_identifier",
+      "db_user",
+      "workgroup_name",
+      "db_name",
+      "schema_name",
+      "table_name"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -61,28 +61,28 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["access_key_id"] = attributes["accessKeyId"]
-      attrs["cluster_identifier"] = attributes["clusterIdentifier"]
-      attrs["db_name"] = attributes["dbName"]
-      attrs["db_user"] = attributes["dbUser"]
-      attrs["region"] = attributes["region"]
-      attrs["schema_name"] = attributes["schemaName"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
-      attrs["table_name"] = attributes["tableName"]
+      attrs["region"] = attributes["region"]
+      attrs["cluster_identifier"] = attributes["clusterIdentifier"]
+      attrs["db_user"] = attributes["dbUser"]
       attrs["workgroup_name"] = attributes["workgroupName"]
+      attrs["db_name"] = attributes["dbName"]
+      attrs["schema_name"] = attributes["schemaName"]
+      attrs["table_name"] = attributes["tableName"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) if @cluster_identifier
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
-      out["dbUser"] = Svix::serialize_primitive(@db_user) if @db_user
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
+      out["region"] = Svix::serialize_primitive(@region) if @region
+      out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) if @cluster_identifier
+      out["dbUser"] = Svix::serialize_primitive(@db_user) if @db_user
       out["workgroupName"] = Svix::serialize_primitive(@workgroup_name) if @workgroup_name
+      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
+      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
+      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
       out
     end
 

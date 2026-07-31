@@ -25,11 +25,6 @@ type (
 		// hidden field. allows me to override the user agent in `SvixHttpClient.DefaultHeaders["User-Agent"]`
 		// to override the user agent use `SetUseragentSuffix`
 		client *internal.SvixHttpClient
-
-		{% for resource in api.resources -%}
-		{{ resource.name | to_upper_camel_case }} *{{ resource.name | to_upper_camel_case }}
-		{% endfor -%}
-		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
 
@@ -62,15 +57,17 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 
 	svx := Svix{
 		client: &svixHttpClient,
-
-
-		{% for resource in api.resources -%}
-		{{ resource.name | to_upper_camel_case }}: new{{ resource.name | to_upper_camel_case }}(&svixHttpClient),
-		{% endfor -%}
-		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil
 }
+
+{% for resource in api.resources -%}
+{% set resource_name = resource.name | to_upper_camel_case -%}
+func (svix Svix) {{ resource_name }}() {{ resource_name }} {
+	return new{{ resource_name }}(svix.client)
+}
+
+{% endfor -%}
 
 // Add a custom suffix to the default user-agent
 //
@@ -106,17 +103,18 @@ func (s Svix) SetUserAgentSuffix(userAgentSuffix string) error {
 func getDefaultBaseUrl(token string) string {
 	var tokenParts = strings.Split(token, ".")
 	var region = tokenParts[len(tokenParts)-1]
-	if region == "us" {
+	switch region {
+	case "us":
 		return "https://api.us.svix.com"
-	} else if region == "eu" {
+	case "eu":
 		return "https://api.eu.svix.com"
-	} else if region == "in" {
+	case "in":
 		return "https://api.in.svix.com"
-	} else if region == "ca" {
+	case "ca":
 		return "https://api.ca.svix.com"
-	} else if region == "au" {
+	case "au":
 		return "https://api.au.svix.com"
-	} else {
+	default:
 		return "https://api.svix.com"
 	}
 }

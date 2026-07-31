@@ -1,20 +1,26 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestEndpointIn {
+    pub url: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
+    /// Maximum messages per second to send to this endpoint.
+    ///
+    /// Outgoing messages will be throttled to this rate.
+    #[serde(rename = "throttleRate")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub throttle_rate: Option<u16>,
+
+    /// Optional unique identifier for the endpoint.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub uid: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub disabled: Option<bool>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
-
-    #[serde(rename = "rateLimit")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub rate_limit: Option<u16>,
 
     /// The endpoint's verification secret.
     ///
@@ -24,23 +30,20 @@ pub struct IngestEndpointIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secret: Option<String>,
 
-    /// Optional unique identifier for the endpoint.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub uid: Option<String>,
-
-    pub url: String,
+    pub metadata: Option<std::collections::BTreeMap<String, String>>,
 }
 
 impl IngestEndpointIn {
     pub fn new(url: String) -> Self {
         Self {
-            description: None,
-            disabled: None,
-            metadata: None,
-            rate_limit: None,
-            secret: None,
-            uid: None,
             url,
+            description: None,
+            throttle_rate: None,
+            uid: None,
+            disabled: None,
+            secret: None,
+            metadata: None,
         }
     }
 }

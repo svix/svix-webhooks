@@ -8,10 +8,11 @@ import com.svix.models.EmptyResponse;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseStreamSinkOut;
 import com.svix.models.SinkSecretOut;
-import com.svix.models.SinkTransformIn;
 import com.svix.models.StreamSinkIn;
 import com.svix.models.StreamSinkOut;
 import com.svix.models.StreamSinkPatch;
+
+import lombok.Getter;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -23,8 +24,11 @@ import java.util.Map;
 public class StreamingSink {
     private final SvixHttpClient client;
 
+    @Getter private final StreamingSinkTransformation transformation;
+
     public StreamingSink(SvixHttpClient client) {
         this.client = client;
+        this.transformation = new StreamingSinkTransformation(client);
     }
 
     /** List of all the stream's sinks. */
@@ -87,8 +91,8 @@ public class StreamingSink {
         return this.client.executeRequest("GET", url.build(), null, null, StreamSinkOut.class);
     }
 
-    /** Update a sink. */
-    public StreamSinkOut update(
+    /** Create or update a sink. */
+    public StreamSinkOut upsert(
             final String streamId, final String sinkId, final StreamSinkIn streamSinkIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
@@ -174,20 +178,5 @@ public class StreamingSink {
                 Headers.of(headers),
                 endpointSecretRotateIn,
                 EmptyResponse.class);
-    }
-
-    /** Set or unset the transformation code associated with this sink. */
-    public EmptyResponse transformationPartialUpdate(
-            final String streamId, final String sinkId, final SinkTransformIn sinkTransformIn)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/stream/%s/sink/%s/transformation",
-                                        streamId, sinkId));
-        return this.client.executeRequest(
-                "PATCH", url.build(), null, sinkTransformIn, EmptyResponse.class);
     }
 }

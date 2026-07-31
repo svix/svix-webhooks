@@ -6,6 +6,6 @@ from .common import BaseModel
 class RabbitMqConfig(BaseModel):
     """Configuration for a RabbitMq sink."""
 
-    routing_key: str
-
     uri: str
+
+    routing_key: str

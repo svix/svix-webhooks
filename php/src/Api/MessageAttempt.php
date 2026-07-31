@@ -33,21 +33,21 @@ class MessageAttempt
     public function listByEndpoint(
         string $appId,
         string $endpointId,
-        ?MessageAttemptListByEndpointOptions $options = null,
+        MessageAttemptListByEndpointOptions $options = new MessageAttemptListByEndpointOptions(),
     ): ListResponseMessageAttemptOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/attempt/endpoint/{$endpointId}");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('status', $options?->status);
-        $request->setQueryParam('status_code_class', $options?->statusCodeClass);
-        $request->setQueryParam('channel', $options?->channel);
-        $request->setQueryParam('tag', $options?->tag);
-        $request->setQueryParam('before', $options?->before);
-        $request->setQueryParam('after', $options?->after);
-        $request->setQueryParam('with_content', $options?->withContent);
-        $request->setQueryParam('with_msg', $options?->withMsg);
-        $request->setQueryParam('expanded_statuses', $options?->expandedStatuses);
-        $request->setQueryParam('event_types', $options?->eventTypes);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('status', $options->status);
+        $request->setQueryParam('status_code_class', $options->statusCodeClass);
+        $request->setQueryParam('channel', $options->channel);
+        $request->setQueryParam('tag', $options->tag);
+        $request->setQueryParam('before', $options->before);
+        $request->setQueryParam('after', $options->after);
+        $request->setQueryParam('with_content', $options->withContent);
+        $request->setQueryParam('with_msg', $options->withMsg);
+        $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
+        $request->setQueryParam('event_types', $options->eventTypes);
         $res = $this->client->send($request);
 
         return ListResponseMessageAttemptOut::fromJson($res);
@@ -66,21 +66,21 @@ class MessageAttempt
     public function listByMsg(
         string $appId,
         string $msgId,
-        ?MessageAttemptListByMsgOptions $options = null,
+        MessageAttemptListByMsgOptions $options = new MessageAttemptListByMsgOptions(),
     ): ListResponseMessageAttemptOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/attempt/msg/{$msgId}");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('status', $options?->status);
-        $request->setQueryParam('status_code_class', $options?->statusCodeClass);
-        $request->setQueryParam('channel', $options?->channel);
-        $request->setQueryParam('tag', $options?->tag);
-        $request->setQueryParam('endpoint_id', $options?->endpointId);
-        $request->setQueryParam('before', $options?->before);
-        $request->setQueryParam('after', $options?->after);
-        $request->setQueryParam('with_content', $options?->withContent);
-        $request->setQueryParam('expanded_statuses', $options?->expandedStatuses);
-        $request->setQueryParam('event_types', $options?->eventTypes);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('status', $options->status);
+        $request->setQueryParam('status_code_class', $options->statusCodeClass);
+        $request->setQueryParam('channel', $options->channel);
+        $request->setQueryParam('tag', $options->tag);
+        $request->setQueryParam('endpoint_id', $options->endpointId);
+        $request->setQueryParam('before', $options->before);
+        $request->setQueryParam('after', $options->after);
+        $request->setQueryParam('with_content', $options->withContent);
+        $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
+        $request->setQueryParam('event_types', $options->eventTypes);
         $res = $this->client->send($request);
 
         return ListResponseMessageAttemptOut::fromJson($res);
@@ -102,22 +102,43 @@ class MessageAttempt
     public function listAttemptedMessages(
         string $appId,
         string $endpointId,
-        ?MessageAttemptListAttemptedMessagesOptions $options = null,
+        MessageAttemptListAttemptedMessagesOptions $options = new MessageAttemptListAttemptedMessagesOptions(),
     ): ListResponseEndpointMessageOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/msg");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('channel', $options?->channel);
-        $request->setQueryParam('tag', $options?->tag);
-        $request->setQueryParam('status', $options?->status);
-        $request->setQueryParam('before', $options?->before);
-        $request->setQueryParam('after', $options?->after);
-        $request->setQueryParam('with_content', $options?->withContent);
-        $request->setQueryParam('expanded_statuses', $options?->expandedStatuses);
-        $request->setQueryParam('event_types', $options?->eventTypes);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('channel', $options->channel);
+        $request->setQueryParam('tag', $options->tag);
+        $request->setQueryParam('status', $options->status);
+        $request->setQueryParam('before', $options->before);
+        $request->setQueryParam('after', $options->after);
+        $request->setQueryParam('with_content', $options->withContent);
+        $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
+        $request->setQueryParam('event_types', $options->eventTypes);
         $res = $this->client->send($request);
 
         return ListResponseEndpointMessageOut::fromJson($res);
+    }
+
+    /**
+     * List endpoints attempted by a given message.
+     *
+     * Additionally includes metadata about the latest message attempt.
+     * By default, endpoints are listed in ascending order by ID.
+     *
+     * @throws ApiException
+     */
+    public function listAttemptedDestinations(
+        string $appId,
+        string $msgId,
+        MessageAttemptListAttemptedDestinationsOptions $options = new MessageAttemptListAttemptedDestinationsOptions(),
+    ): ListResponseMessageEndpointOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}/endpoint");
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $res = $this->client->send($request);
+
+        return ListResponseMessageEndpointOut::fromJson($res);
     }
 
     /**
@@ -129,10 +150,10 @@ class MessageAttempt
         string $appId,
         string $msgId,
         string $attemptId,
-        ?MessageAttemptGetOptions $options = null,
+        MessageAttemptGetOptions $options = new MessageAttemptGetOptions(),
     ): MessageAttemptOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}/attempt/{$attemptId}");
-        $request->setQueryParam('expanded_statuses', $options?->expandedStatuses);
+        $request->setQueryParam('expanded_statuses', $options->expandedStatuses);
         $res = $this->client->send($request);
 
         return MessageAttemptOut::fromJson($res);
@@ -156,27 +177,6 @@ class MessageAttempt
     }
 
     /**
-     * List endpoints attempted by a given message.
-     *
-     * Additionally includes metadata about the latest message attempt.
-     * By default, endpoints are listed in ascending order by ID.
-     *
-     * @throws ApiException
-     */
-    public function listAttemptedDestinations(
-        string $appId,
-        string $msgId,
-        ?MessageAttemptListAttemptedDestinationsOptions $options = null,
-    ): ListResponseMessageEndpointOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}/endpoint");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $res = $this->client->send($request);
-
-        return ListResponseMessageEndpointOut::fromJson($res);
-    }
-
-    /**
      * Resend a message to the specified endpoint.
      *
      * @throws ApiException
@@ -185,10 +185,10 @@ class MessageAttempt
         string $appId,
         string $msgId,
         string $endpointId,
-        ?MessageAttemptResendOptions $options = null,
+        MessageAttemptResendOptions $options = new MessageAttemptResendOptions(),
     ): EmptyResponse {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/{$msgId}/endpoint/{$endpointId}/resend");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->send($request);
 
         return EmptyResponse::fromJson($res);

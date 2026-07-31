@@ -46,9 +46,16 @@ jobs:
           filter: tree:0
       - id: get-version-number
         run: |
-          echo "tag=$(git describe --tags --abbrev=0)" >> "$GITHUB_OUTPUT"
+          version=$(cargo metadata --format-version 1 \
+            | jq -r '.packages[] | select(.name == "svix-server") | .version')
+          if ! [[ "$version" =~ ^[0-9.]+$ ]] ; then
+             echo >&2 "Invalid version $version"
+             exit 1
+          fi
+          echo "version=v${version}" >> "$GITHUB_OUTPUT"
+        working-directory: server
     outputs:
-      version: ${{ steps.get-version-number.outputs.tag }}
+      version: ${{ steps.get-version-number.outputs.version }}
 
   build:
     needs: [get-version]
@@ -72,6 +79,10 @@ jobs:
         type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
         type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
         type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+      set-meta-labels: true
+      labels: |
+        org.opencontainers.image.version=${{ needs.get-version.outputs.version }}
+        org.opencontainers.image.revision=${{ github.sha }}
     secrets:
       registry-auths: |
         - registry: ghcr.io

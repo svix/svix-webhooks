@@ -10,22 +10,22 @@ class EventTypeOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null $featureFlags
-     * @param string|null       $groupName    The event type group's name
      * @param string            $name         The event type's name
      * @param array|null        $schemas      the schema for the event type for a specific version as a JSON schema
+     * @param string|null       $groupName    The event type group's name
+     * @param list<string>|null $featureFlags
      */
     private function __construct(
-        public readonly \DateTimeImmutable $createdAt,
-        public readonly bool $deprecated,
-        public readonly string $description,
         public readonly string $name,
+        public readonly string $description,
+        public readonly bool $deprecated,
+        public readonly \DateTimeImmutable $createdAt,
         public readonly \DateTimeImmutable $updatedAt,
         public readonly ?bool $archived = null,
-        public readonly ?string $featureFlag = null,
-        public readonly ?array $featureFlags = null,
-        public readonly ?string $groupName = null,
         public readonly ?array $schemas = null,
+        public readonly ?string $groupName = null,
+        public readonly ?array $featureFlags = null,
+        public readonly ?string $featureFlag = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -35,24 +35,24 @@ class EventTypeOut implements \JsonSerializable
      * Create an instance of EventTypeOut with required fields.
      */
     public static function create(
-        \DateTimeImmutable $createdAt,
-        bool $deprecated,
-        string $description,
         string $name,
+        string $description,
+        bool $deprecated,
+        \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
     ): self {
         return new self(
-            archived: null,
-            createdAt: $createdAt,
-            deprecated: $deprecated,
-            description: $description,
-            featureFlag: null,
-            featureFlags: null,
-            groupName: null,
             name: $name,
+            description: $description,
+            archived: null,
+            deprecated: $deprecated,
             schemas: null,
+            createdAt: $createdAt,
             updatedAt: $updatedAt,
-            setFields: ['createdAt' => true, 'deprecated' => true, 'description' => true, 'name' => true, 'updatedAt' => true]
+            groupName: null,
+            featureFlags: null,
+            featureFlag: null,
+            setFields: ['name' => true, 'description' => true, 'deprecated' => true, 'createdAt' => true, 'updatedAt' => true]
         );
     }
 
@@ -62,76 +62,16 @@ class EventTypeOut implements \JsonSerializable
         $setFields['archived'] = true;
 
         return new self(
+            name: $this->name,
+            description: $this->description,
             archived: $archived,
-            createdAt: $this->createdAt,
             deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlag: $this->featureFlag,
-            featureFlags: $this->featureFlags,
+            schemas: $this->schemas,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
             groupName: $this->groupName,
-            name: $this->name,
-            schemas: $this->schemas,
-            updatedAt: $this->updatedAt,
-            setFields: $setFields
-        );
-    }
-
-    public function withFeatureFlag(?string $featureFlag): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlag'] = true;
-
-        return new self(
-            archived: $this->archived,
-            createdAt: $this->createdAt,
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlag: $featureFlag,
             featureFlags: $this->featureFlags,
-            groupName: $this->groupName,
-            name: $this->name,
-            schemas: $this->schemas,
-            updatedAt: $this->updatedAt,
-            setFields: $setFields
-        );
-    }
-
-    public function withFeatureFlags(?array $featureFlags): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlags'] = true;
-
-        return new self(
-            archived: $this->archived,
-            createdAt: $this->createdAt,
-            deprecated: $this->deprecated,
-            description: $this->description,
             featureFlag: $this->featureFlag,
-            featureFlags: $featureFlags,
-            groupName: $this->groupName,
-            name: $this->name,
-            schemas: $this->schemas,
-            updatedAt: $this->updatedAt,
-            setFields: $setFields
-        );
-    }
-
-    public function withGroupName(?string $groupName): self
-    {
-        $setFields = $this->setFields;
-        $setFields['groupName'] = true;
-
-        return new self(
-            archived: $this->archived,
-            createdAt: $this->createdAt,
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlag: $this->featureFlag,
-            featureFlags: $this->featureFlags,
-            groupName: $groupName,
-            name: $this->name,
-            schemas: $this->schemas,
-            updatedAt: $this->updatedAt,
             setFields: $setFields
         );
     }
@@ -142,16 +82,76 @@ class EventTypeOut implements \JsonSerializable
         $setFields['schemas'] = true;
 
         return new self(
-            archived: $this->archived,
-            createdAt: $this->createdAt,
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlag: $this->featureFlag,
-            featureFlags: $this->featureFlags,
-            groupName: $this->groupName,
             name: $this->name,
+            description: $this->description,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
             schemas: $schemas,
+            createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            groupName: $this->groupName,
+            featureFlags: $this->featureFlags,
+            featureFlag: $this->featureFlag,
+            setFields: $setFields
+        );
+    }
+
+    public function withGroupName(?string $groupName): self
+    {
+        $setFields = $this->setFields;
+        $setFields['groupName'] = true;
+
+        return new self(
+            name: $this->name,
+            description: $this->description,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            groupName: $groupName,
+            featureFlags: $this->featureFlags,
+            featureFlag: $this->featureFlag,
+            setFields: $setFields
+        );
+    }
+
+    public function withFeatureFlags(?array $featureFlags): self
+    {
+        $setFields = $this->setFields;
+        $setFields['featureFlags'] = true;
+
+        return new self(
+            name: $this->name,
+            description: $this->description,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            groupName: $this->groupName,
+            featureFlags: $featureFlags,
+            featureFlag: $this->featureFlag,
+            setFields: $setFields
+        );
+    }
+
+    public function withFeatureFlag(?string $featureFlag): self
+    {
+        $setFields = $this->setFields;
+        $setFields['featureFlag'] = true;
+
+        return new self(
+            name: $this->name,
+            description: $this->description,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            groupName: $this->groupName,
+            featureFlags: $this->featureFlags,
+            featureFlag: $featureFlag,
             setFields: $setFields
         );
     }
@@ -159,26 +159,26 @@ class EventTypeOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'createdAt' => $this->createdAt->format('c'),
-            'deprecated' => $this->deprecated,
-            'description' => $this->description,
             'name' => $this->name,
+            'description' => $this->description,
+            'deprecated' => $this->deprecated,
+            'createdAt' => $this->createdAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c')];
 
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;
         }
-        if (isset($this->setFields['featureFlag'])) {
-            $data['featureFlag'] = $this->featureFlag;
-        }
-        if (isset($this->setFields['featureFlags'])) {
-            $data['featureFlags'] = $this->featureFlags;
+        if (isset($this->setFields['schemas'])) {
+            $data['schemas'] = $this->schemas;
         }
         if (isset($this->setFields['groupName'])) {
             $data['groupName'] = $this->groupName;
         }
-        if (isset($this->setFields['schemas'])) {
-            $data['schemas'] = $this->schemas;
+        if (isset($this->setFields['featureFlags'])) {
+            $data['featureFlags'] = $this->featureFlags;
+        }
+        if (isset($this->setFields['featureFlag'])) {
+            $data['featureFlag'] = $this->featureFlag;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -190,16 +190,16 @@ class EventTypeOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypeOut'),
-            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'EventTypeOut'),
-            deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', true, 'EventTypeOut'),
-            description: \Svix\Utils::deserializeString($data, 'description', true, 'EventTypeOut'),
-            featureFlag: \Svix\Utils::deserializeString($data, 'featureFlag', false, 'EventTypeOut'),
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'EventTypeOut'),
-            groupName: \Svix\Utils::deserializeString($data, 'groupName', false, 'EventTypeOut'),
             name: \Svix\Utils::deserializeString($data, 'name', true, 'EventTypeOut'),
+            description: \Svix\Utils::deserializeString($data, 'description', true, 'EventTypeOut'),
+            archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypeOut'),
+            deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', true, 'EventTypeOut'),
             schemas: \Svix\Utils::getValFromJson($data, 'schemas', false, 'EventTypeOut'),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'EventTypeOut')
+            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'EventTypeOut'),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'EventTypeOut'),
+            groupName: \Svix\Utils::deserializeString($data, 'groupName', false, 'EventTypeOut'),
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'EventTypeOut'),
+            featureFlag: \Svix\Utils::deserializeString($data, 'featureFlag', false, 'EventTypeOut')
         );
     }
 

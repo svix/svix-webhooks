@@ -12,10 +12,8 @@ type Connector struct {
 	client *internal.SvixHttpClient
 }
 
-func newConnector(client *internal.SvixHttpClient) *Connector {
-	return &Connector{
-		client: client,
-	}
+func newConnector(client *internal.SvixHttpClient) Connector {
+	return Connector{client}
 }
 
 type ConnectorListOptions struct {
@@ -35,21 +33,22 @@ type ConnectorCreateOptions struct {
 }
 
 // List all connectors for an application.
-func (connector *Connector) List(
+func (connector Connector) List(
 	ctx context.Context,
 	o *ConnectorListOptions,
 ) (*models.ListResponseConnectorOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		internal.SerializeParamToMap("product_type", o.ProductType, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ConnectorListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	internal.SerializeParamToMap("product_type", o.ProductType, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseConnectorOut](
 		ctx,
@@ -64,19 +63,20 @@ func (connector *Connector) List(
 }
 
 // Create a new connector.
-func (connector *Connector) Create(
+func (connector Connector) Create(
 	ctx context.Context,
 	connectorIn models.ConnectorIn,
 	o *ConnectorCreateOptions,
 ) (*models.ConnectorOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ConnectorCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.ConnectorIn, models.ConnectorOut](
 		ctx,
@@ -91,7 +91,7 @@ func (connector *Connector) Create(
 }
 
 // Get a connector.
-func (connector *Connector) Get(
+func (connector Connector) Get(
 	ctx context.Context,
 	connectorId string,
 ) (*models.ConnectorOut, error) {
@@ -110,16 +110,16 @@ func (connector *Connector) Get(
 	)
 }
 
-// Update a connector.
-func (connector *Connector) Update(
+// Create or update a connector.
+func (connector Connector) Upsert(
 	ctx context.Context,
 	connectorId string,
-	connectorUpdate models.ConnectorUpdate,
+	connectorUpsertIn models.ConnectorUpsertIn,
 ) (*models.ConnectorOut, error) {
 	pathMap := map[string]string{
 		"connector_id": connectorId,
 	}
-	return internal.ExecuteRequest[models.ConnectorUpdate, models.ConnectorOut](
+	return internal.ExecuteRequest[models.ConnectorUpsertIn, models.ConnectorOut](
 		ctx,
 		connector.client,
 		"PUT",
@@ -127,19 +127,20 @@ func (connector *Connector) Update(
 		pathMap,
 		nil,
 		nil,
-		&connectorUpdate,
+		&connectorUpsertIn,
 	)
 }
 
 // Delete a connector.
-func (connector *Connector) Delete(
+func (connector Connector) Delete(
 	ctx context.Context,
 	connectorId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"connector_id": connectorId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		connector.client,
 		"DELETE",
@@ -153,7 +154,7 @@ func (connector *Connector) Delete(
 }
 
 // Partially update a connector.
-func (connector *Connector) Patch(
+func (connector Connector) Patch(
 	ctx context.Context,
 	connectorId string,
 	connectorPatch models.ConnectorPatch,

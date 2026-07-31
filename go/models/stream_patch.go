@@ -9,8 +9,8 @@ import (
 
 type StreamPatch struct {
 	Description *string                `json:"description,omitempty"` // The Stream's description.
+	Uid         utils.Nullable[string] `json:"uid"`                   // An optional unique identifier for the stream.
 	Metadata    *map[string]string     `json:"metadata,omitempty"`
-	Uid         utils.Nullable[string] `json:"uid"` // An optional unique identifier for the stream.
 }
 
 func (o StreamPatch) MarshalJSON() ([]byte, error) {
@@ -18,11 +18,11 @@ func (o StreamPatch) MarshalJSON() ([]byte, error) {
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
 	}
-	if o.Metadata != nil {
-		toSerialize["metadata"] = o.Metadata
-	}
 	if o.Uid.IsSet() {
 		toSerialize["uid"] = o.Uid
+	}
+	if o.Metadata != nil {
+		toSerialize["metadata"] = o.Metadata
 	}
 	return json.Marshal(toSerialize)
 }

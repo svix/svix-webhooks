@@ -38,7 +38,11 @@ export interface MessageAttemptListByEndpointOptions {
   before?: Date | null;
   /** Only include items created after a certain date */
   after?: Date | null;
-  /** When `true` attempt content is included in the response */
+  /**
+   * When `true` attempt content is included in the response.
+   *
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   */
   withContent?: boolean;
   /**
    * When `true`, the message information is included in the response
@@ -75,7 +79,11 @@ export interface MessageAttemptListByMsgOptions {
   before?: Date | null;
   /** Only include items created after a certain date */
   after?: Date | null;
-  /** When `true` attempt content is included in the response */
+  /**
+   * When `true` attempt content is included in the response.
+   *
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   */
   withContent?: boolean;
   /**
    * When `true`, return the Canceled (4) status in attempts.
@@ -102,7 +110,11 @@ export interface MessageAttemptListAttemptedMessagesOptions {
   before?: Date | null;
   /** Only include items created after a certain date */
   after?: Date | null;
-  /** When `true` message payloads are included in the response */
+  /**
+   * When `true` message payloads are included in the response.
+   *
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   */
   withContent?: boolean;
   /**
    * When `true`, return the Canceled (4) status in attempts.
@@ -114,6 +126,13 @@ export interface MessageAttemptListAttemptedMessagesOptions {
   eventTypes?: string[];
 }
 
+export interface MessageAttemptListAttemptedDestinationsOptions {
+  /** Limit the number of returned items */
+  limit?: number;
+  /** The iterator returned from a prior invocation */
+  iterator?: string | null;
+}
+
 export interface MessageAttemptGetOptions {
   /**
    * When `true`, return the Canceled (4) status in attempts.
@@ -121,13 +140,6 @@ export interface MessageAttemptGetOptions {
    * If `false`, canceled attempts are returned as Success (0) for backwards compatibility.
    */
   expandedStatuses?: boolean;
-}
-
-export interface MessageAttemptListAttemptedDestinationsOptions {
-  /** Limit the number of returned items */
-  limit?: number;
-  /** The iterator returned from a prior invocation */
-  iterator?: string | null;
 }
 
 export interface MessageAttemptResendOptions {
@@ -166,7 +178,7 @@ export class MessageAttempt {
       tag: options?.tag,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       with_msg: options?.withMsg,
       expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
@@ -208,7 +220,7 @@ export class MessageAttempt {
       endpoint_id: options?.endpointId,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
@@ -250,7 +262,7 @@ export class MessageAttempt {
       status: options?.status,
       before: options?.before,
       after: options?.after,
-      with_content: options?.withContent,
+      with_content: options?.withContent ?? false,
       expanded_statuses: options?.expandedStatuses ?? true,
       event_types: options?.eventTypes,
     });
@@ -258,6 +270,35 @@ export class MessageAttempt {
     return await request.send(
       this.requestCtx,
       ListResponseEndpointMessageOutSerializer._fromJsonObject
+    );
+  }
+
+  /**
+   * List endpoints attempted by a given message.
+   *
+   * Additionally includes metadata about the latest message attempt.
+   * By default, endpoints are listed in ascending order by ID.
+   */
+  public async listAttemptedDestinations(
+    appId: string,
+    msgId: string,
+    options?: MessageAttemptListAttemptedDestinationsOptions
+  ): Promise<ListResponseMessageEndpointOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/msg/{msg_id}/endpoint"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("msg_id", msgId);
+    request.setQueryParams({
+      limit: options?.limit,
+      iterator: options?.iterator,
+    });
+
+    return await request.send(
+      this.requestCtx,
+      ListResponseMessageEndpointOutSerializer._fromJsonObject
     );
   }
 
@@ -307,35 +348,6 @@ export class MessageAttempt {
     request.setPathParam("attempt_id", attemptId);
 
     return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  /**
-   * List endpoints attempted by a given message.
-   *
-   * Additionally includes metadata about the latest message attempt.
-   * By default, endpoints are listed in ascending order by ID.
-   */
-  public async listAttemptedDestinations(
-    appId: string,
-    msgId: string,
-    options?: MessageAttemptListAttemptedDestinationsOptions
-  ): Promise<ListResponseMessageEndpointOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/msg/{msg_id}/endpoint"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("msg_id", msgId);
-    request.setQueryParams({
-      limit: options?.limit,
-      iterator: options?.iterator,
-    });
-
-    return await request.send(
-      this.requestCtx,
-      ListResponseMessageEndpointOutSerializer._fromJsonObject
-    );
   }
 
   /** Resend a message to the specified endpoint. */

@@ -71,15 +71,15 @@ public class KitchenSinkTest {
 
         EndpointPatch epPatched = new EndpointPatch();
 
-        epPatched.setFilterTypes(new HashSet<>(Arrays.asList("event.started", "event.ended")));
+        epPatched.setEventTypes(new HashSet<>(Arrays.asList("event.started", "event.ended")));
 
         EndpointOut ep2 = client.getEndpoint().patch(app.getId(), ep1.getId(), epPatched);
 
         assertEquals(
-                ep2.getFilterTypes(), new HashSet<>(Arrays.asList("event.started", "event.ended")));
+                ep2.getEventTypes(), new HashSet<>(Arrays.asList("event.started", "event.ended")));
 
         assertEquals(
-                ep2.getFilterTypes(), new HashSet<>(Arrays.asList("event.started", "event.ended")));
+                ep2.getEventTypes(), new HashSet<>(Arrays.asList("event.started", "event.ended")));
 
         // Should not throw an exception if the empty response body is handled correctly.
         client.getEndpoint().delete(app.getId(), ep1.getId());

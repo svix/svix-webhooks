@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .. import models
 from ..models import PollerV2CommitIn, PollerV2PollOut
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -36,7 +36,7 @@ class MessagePollerv2ConsumerCommitOptions(BaseOptions):
         )
 
 
-class MessagePollerv2Async(ApiBase):
+class MessagePollerv2Async(ApiBaseAsync):
     async def consumer_poll(
         self,
         app_id: str,
@@ -87,7 +87,7 @@ class MessagePollerv2Async(ApiBase):
         )
 
 
-class MessagePollerv2(ApiBase):
+class MessagePollerv2(ApiBaseSync):
     def consumer_poll(
         self,
         app_id: str,

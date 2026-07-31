@@ -6,11 +6,8 @@ namespace Svix.Models
 {
     public class StreamEventTypeIn
     {
-        [JsonProperty("archived")]
-        public bool? Archived { get; set; } = null;
-
-        [JsonProperty("deprecated")]
-        public bool? Deprecated { get; set; } = null;
+        [JsonProperty("name", Required = Required.Always)]
+        public required string Name { get; set; }
 
         [JsonProperty("description")]
         public string? Description { get; set; } = null;
@@ -18,19 +15,22 @@ namespace Svix.Models
         [JsonProperty("featureFlags")]
         public List<string>? FeatureFlags { get; set; } = null;
 
-        [JsonProperty("name", Required = Required.Always)]
-        public required string Name { get; set; }
+        [JsonProperty("deprecated")]
+        public bool? Deprecated { get; set; } = null;
+
+        [JsonProperty("archived")]
+        public bool? Archived { get; set; } = null;
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class StreamEventTypeIn {\n");
-            sb.Append("  Archived: ").Append(Archived).Append('\n');
-            sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
+            sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  Description: ").Append(Description).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
-            sb.Append("  Name: ").Append(Name).Append('\n');
+            sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
+            sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

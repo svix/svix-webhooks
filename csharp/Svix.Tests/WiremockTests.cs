@@ -66,7 +66,7 @@ namespace Svix.Tests
             );
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(
-                "?event_types=val1%2Cval2%2Cval3",
+                "?with_content=false&event_types=val1%2Cval2%2Cval3",
                 stub.LogEntries[0].RequestMessage.RawQuery
             );
         }
@@ -133,7 +133,7 @@ namespace Svix.Tests
             );
 
             string expected_json_body =
-                """{"metadata":{"key1":"val1","key2":"val2"},"name":"app"}""";
+                """{"name":"app","metadata":{"key1":"val1","key2":"val2"}}""";
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }
@@ -174,9 +174,9 @@ namespace Svix.Tests
             stub.Given(Request.Create().WithPath("/api/v1/app/*"))
                 .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
 
-            client.Application.Patch("app1", new ApplicationPatch { RateLimit = null });
+            client.Application.Patch("app1", new ApplicationPatch { ThrottleRate = null });
 
-            string expected_json_body = """{"rateLimit":null}""";
+            string expected_json_body = """{"throttleRate":null}""";
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }
@@ -261,7 +261,7 @@ namespace Svix.Tests
             client.Message.List("app_id", new MessageListOptions { Tag = "test#test" });
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.EndsWith(
-                "/api/v1/app/app_id/msg?tag=test%23test",
+                "/api/v1/app/app_id/msg?with_content=false&tag=test%23test",
                 stub.LogEntries[0].RequestMessage.Url
             );
         }
@@ -317,17 +317,6 @@ namespace Svix.Tests
             Assert.True(loadedFromJson.Config.GetContent().GetType() == typeof(CronConfig));
             Assert.Equal("asd", ((CronConfig)loadedFromJson.Config.GetContent()).Payload);
             Assert.Equal("* * * * *", ((CronConfig)loadedFromJson.Config.GetContent()).Schedule);
-        }
-
-        [Fact]
-        public void OpWebhookModels()
-        {
-            var jsonString =
-                """{"data":{"data":{"appStats":[{"appId":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","appUid":null,"messageDestinations":343}]},"status":"finished","task":"application.stats","taskId":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2"},"type":"background_task.finished"}""";
-            var loadedFromJson = JsonConvert.DeserializeObject<BackgroundTaskFinishedEvent>(
-                jsonString
-            );
-            Assert.Equal(jsonString, JsonConvert.SerializeObject(loadedFromJson));
         }
 
         [Fact]
@@ -407,7 +396,7 @@ namespace Svix.Tests
                 new MessageIn { EventType = "user.signup", Payload = payload }
             );
 
-            Assert.Equal(response.Payload, payload);
+            Assert.Equal(response.Payload, JsonConvert.DeserializeObject("""{"m": "FILTERED"}"""));
 
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal("?with_content=false", stub.LogEntries[0].RequestMessage.RawQuery);

@@ -2,20 +2,20 @@
 
 export interface RedshiftPatchConfig {
   accessKeyId?: string;
+  secretAccessKey?: string;
+  region?: string;
   /**
    * Database name.
    *
    * Only required if not using transformations.
    */
   dbName?: string;
-  region?: string;
   /**
    * Schema name.
    *
    * Only used if not using transformations.
    */
   schemaName?: string | null;
-  secretAccessKey?: string;
   /**
    * Table name.
    *
@@ -28,10 +28,10 @@ export const RedshiftPatchConfigSerializer = {
   _fromJsonObject(object: any): RedshiftPatchConfig {
     return {
       accessKeyId: object["accessKeyId"],
-      dbName: object["dbName"],
-      region: object["region"],
-      schemaName: object["schemaName"],
       secretAccessKey: object["secretAccessKey"],
+      region: object["region"],
+      dbName: object["dbName"],
+      schemaName: object["schemaName"],
       tableName: object["tableName"],
     };
   },
@@ -39,10 +39,10 @@ export const RedshiftPatchConfigSerializer = {
   _toJsonObject(self: RedshiftPatchConfig): any {
     return {
       accessKeyId: self.accessKeyId,
-      dbName: self.dbName,
-      region: self.region,
-      schemaName: self.schemaName,
       secretAccessKey: self.secretAccessKey,
+      region: self.region,
+      dbName: self.dbName,
+      schemaName: self.schemaName,
       tableName: self.tableName,
     };
   },

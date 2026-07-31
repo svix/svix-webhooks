@@ -28,6 +28,12 @@ class {{ type_name }}(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
+        {# `data` is a mapping on construction, but an already-built model
+           instance when pydantic re-validates this nested model (e.g. when it
+           is a field of another model). An instance is already correctly
+           typed, so skip the mapping-only content-field massaging below. -#}
+        if isinstance(data, cls):
+            return handler(data)
         {# sadly this is needed because of pydantic -#}
         if "{{ type.content_field }}" not in data:
             data["{{ type.content_field }}"] = {}

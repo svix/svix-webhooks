@@ -1,33 +1,33 @@
 // this file is @generated
 
 export interface IntegrationOut {
-  createdAt: Date;
-  /** The set of feature flags the integration has access to. */
-  featureFlags?: string[];
+  name: string;
   /** The Integration's ID. */
   id: string;
-  name: string;
+  createdAt: Date;
   updatedAt: Date;
+  /** The set of feature flags the integration has access to. */
+  featureFlags?: string[];
 }
 
 export const IntegrationOutSerializer = {
   _fromJsonObject(object: any): IntegrationOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      featureFlags: object["featureFlags"],
-      id: object["id"],
       name: object["name"],
+      id: object["id"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
+      featureFlags: object["featureFlags"],
     };
   },
 
   _toJsonObject(self: IntegrationOut): any {
     return {
-      createdAt: self.createdAt,
-      featureFlags: self.featureFlags,
-      id: self.id,
       name: self.name,
+      id: self.id,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
+      featureFlags: self.featureFlags,
     };
   },
 };

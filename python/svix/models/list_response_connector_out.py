@@ -8,8 +8,8 @@ from .connector_out import ConnectorOut
 class ListResponseConnectorOut(BaseModel):
     data: t.List[ConnectorOut]
 
-    done: bool
-
     iterator: t.Optional[str]
 
     prev_iterator: t.Optional[str] = None
+
+    done: bool

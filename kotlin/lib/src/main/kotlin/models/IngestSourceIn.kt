@@ -13,10 +13,10 @@ import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = IngestSourceInSerializer::class)
 data class IngestSourceIn(
-    val metadata: Map<String, String>? = null,
     val name: String,
     /** The Source's UID. */
     val uid: String? = null,
+    val metadata: Map<String, String>? = null,
     val config: IngestSourceInConfig,
 )
 
@@ -106,9 +106,20 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(MetaConfig.serializer(), meta)
     }
 
+    @VariantName("nango")
+    data class Nango(val nango: NangoConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(NangoConfig.serializer(), nango)
+    }
+
     @VariantName("nash")
     data class Nash(val nash: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), nash)
+    }
+
+    @VariantName("openclaw")
+    data class Openclaw(val openclaw: OpenClawConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(OpenClawConfig.serializer(), openclaw)
     }
 
     @VariantName("orum-io")
@@ -299,9 +310,17 @@ sealed class IngestSourceInConfig {
                     { config ->
                         Meta(Json.decodeFromJsonElement(MetaConfig.serializer(), config))
                     },
+                "nango" to
+                    { config ->
+                        Nango(Json.decodeFromJsonElement(NangoConfig.serializer(), config))
+                    },
                 "nash" to
                     { config ->
                         Nash(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "openclaw" to
+                    { config ->
+                        Openclaw(Json.decodeFromJsonElement(OpenClawConfig.serializer(), config))
                     },
                 "orum-io" to
                     { config ->
@@ -415,10 +434,10 @@ sealed class IngestSourceInConfig {
 class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     @Serializable
     private data class IngestSourceInSurrogate(
-        val metadata: Map<String, String>? = null,
         val name: String,
         /** The Source's UID. */
         val uid: String? = null,
+        val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
     )
@@ -428,9 +447,9 @@ class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     override fun serialize(encoder: Encoder, value: IngestSourceIn) {
         val surrogate =
             IngestSourceInSurrogate(
-                metadata = value.metadata,
                 name = value.name,
                 uid = value.uid,
+                metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
             )
@@ -440,9 +459,9 @@ class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
     override fun deserialize(decoder: Decoder): IngestSourceIn {
         val surrogate = decoder.decodeSerializableValue(IngestSourceInSurrogate.serializer())
         return IngestSourceIn(
-            metadata = surrogate.metadata,
             name = surrogate.name,
             uid = surrogate.uid,
+            metadata = surrogate.metadata,
             config = IngestSourceInConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )
     }

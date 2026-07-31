@@ -17,10 +17,10 @@ import lombok.ToString;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class RedshiftPatchConfig {
     @JsonProperty private String accessKeyId;
-    @JsonProperty private String dbName;
-    @JsonProperty private String region;
-    @JsonProperty private String schemaName;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String region;
+    @JsonProperty private String dbName;
+    @JsonProperty private String schemaName;
     @JsonProperty private String tableName;
 
     public RedshiftPatchConfig() {}
@@ -44,25 +44,23 @@ public class RedshiftPatchConfig {
         this.accessKeyId = accessKeyId;
     }
 
-    public RedshiftPatchConfig dbName(String dbName) {
-        this.dbName = dbName;
+    public RedshiftPatchConfig secretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
         return this;
     }
 
     /**
-     * Database name.
+     * Get secretAccessKey
      *
-     * <p>Only required if not using transformations.
-     *
-     * @return dbName
+     * @return secretAccessKey
      */
     @javax.annotation.Nullable
-    public String getDbName() {
-        return dbName;
+    public String getSecretAccessKey() {
+        return secretAccessKey;
     }
 
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
+    public void setSecretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
     }
 
     public RedshiftPatchConfig region(String region) {
@@ -84,6 +82,27 @@ public class RedshiftPatchConfig {
         this.region = region;
     }
 
+    public RedshiftPatchConfig dbName(String dbName) {
+        this.dbName = dbName;
+        return this;
+    }
+
+    /**
+     * Database name.
+     *
+     * <p>Only required if not using transformations.
+     *
+     * @return dbName
+     */
+    @javax.annotation.Nullable
+    public String getDbName() {
+        return dbName;
+    }
+
+    public void setDbName(String dbName) {
+        this.dbName = dbName;
+    }
+
     public RedshiftPatchConfig schemaName(String schemaName) {
         this.schemaName = schemaName;
         return this;
@@ -103,25 +122,6 @@ public class RedshiftPatchConfig {
 
     public void setSchemaName(String schemaName) {
         this.schemaName = schemaName;
-    }
-
-    public RedshiftPatchConfig secretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
-        return this;
-    }
-
-    /**
-     * Get secretAccessKey
-     *
-     * @return secretAccessKey
-     */
-    @javax.annotation.Nullable
-    public String getSecretAccessKey() {
-        return secretAccessKey;
-    }
-
-    public void setSecretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
     }
 
     public RedshiftPatchConfig tableName(String tableName) {

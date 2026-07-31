@@ -5,15 +5,16 @@ use super::{message_status::MessageStatus, message_status_text::MessageStatusTex
 
 /// A model containing information on a given message plus additional fields on
 /// the last attempt for that message.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EndpointMessageOut {
-    /// List of free-form identifiers that endpoints can filter by
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub channels: Option<Vec<String>>,
+    pub status: MessageStatus,
 
-    #[serde(rename = "deliverAt")]
+    #[serde(rename = "statusText")]
+    pub status_text: MessageStatusText,
+
+    #[serde(rename = "nextAttempt")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub deliver_at: Option<String>,
+    pub next_attempt: Option<chrono::DateTime<chrono::Utc>>,
 
     /// Optional unique identifier for the message
     #[serde(rename = "eventId")]
@@ -24,47 +25,21 @@ pub struct EndpointMessageOut {
     #[serde(rename = "eventType")]
     pub event_type: String,
 
+    pub payload: serde_json::Value,
+
+    /// List of free-form identifiers that endpoints can filter by
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<std::collections::BTreeSet<String>>,
+
     /// The Message's ID.
     pub id: String,
 
-    #[serde(rename = "nextAttempt")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub next_attempt: Option<String>,
-
-    pub payload: serde_json::Value,
-
-    pub status: MessageStatus,
-
-    #[serde(rename = "statusText")]
-    pub status_text: MessageStatusText,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tags: Option<Vec<String>>,
+    pub tags: Option<std::collections::BTreeSet<String>>,
 
-    pub timestamp: String,
-}
-
-impl EndpointMessageOut {
-    pub fn new(
-        event_type: String,
-        id: String,
-        payload: serde_json::Value,
-        status: MessageStatus,
-        status_text: MessageStatusText,
-        timestamp: String,
-    ) -> Self {
-        Self {
-            channels: None,
-            deliver_at: None,
-            event_id: None,
-            event_type,
-            id,
-            next_attempt: None,
-            payload,
-            status,
-            status_text,
-            tags: None,
-            timestamp,
-        }
-    }
+    #[serde(rename = "deliverAt")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
 }

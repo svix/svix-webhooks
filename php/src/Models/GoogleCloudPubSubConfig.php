@@ -13,9 +13,9 @@ class GoogleCloudPubSubConfig implements \JsonSerializable
      * @param string $credentials google Cloud Credentials JSON Object as a string
      */
     private function __construct(
-        public readonly string $credentials,
         public readonly string $projectId,
         public readonly string $topicId,
+        public readonly string $credentials,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -25,24 +25,24 @@ class GoogleCloudPubSubConfig implements \JsonSerializable
      * Create an instance of GoogleCloudPubSubConfig with required fields.
      */
     public static function create(
-        string $credentials,
         string $projectId,
         string $topicId,
+        string $credentials,
     ): self {
         return new self(
-            credentials: $credentials,
             projectId: $projectId,
             topicId: $topicId,
-            setFields: ['credentials' => true, 'projectId' => true, 'topicId' => true]
+            credentials: $credentials,
+            setFields: ['projectId' => true, 'topicId' => true, 'credentials' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'credentials' => $this->credentials,
             'projectId' => $this->projectId,
-            'topicId' => $this->topicId];
+            'topicId' => $this->topicId,
+            'credentials' => $this->credentials];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -53,9 +53,9 @@ class GoogleCloudPubSubConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            credentials: \Svix\Utils::deserializeString($data, 'credentials', true, 'GoogleCloudPubSubConfig'),
             projectId: \Svix\Utils::deserializeString($data, 'projectId', true, 'GoogleCloudPubSubConfig'),
-            topicId: \Svix\Utils::deserializeString($data, 'topicId', true, 'GoogleCloudPubSubConfig')
+            topicId: \Svix\Utils::deserializeString($data, 'topicId', true, 'GoogleCloudPubSubConfig'),
+            credentials: \Svix\Utils::deserializeString($data, 'credentials', true, 'GoogleCloudPubSubConfig')
         );
     }
 

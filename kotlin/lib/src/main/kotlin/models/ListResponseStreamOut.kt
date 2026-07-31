@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ListResponseStreamOut(
     val data: List<StreamOut>,
-    val done: Boolean,
     val iterator: String? = null,
     val prevIterator: String? = null,
+    val done: Boolean,
 )

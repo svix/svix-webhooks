@@ -6,11 +6,13 @@ import (
 )
 
 type OperationalWebhook struct {
-	Endpoint *OperationalWebhookEndpoint
+	client *internal.SvixHttpClient
 }
 
-func newOperationalWebhook(client *internal.SvixHttpClient) *OperationalWebhook {
-	return &OperationalWebhook{
-		Endpoint: newOperationalWebhookEndpoint(client),
-	}
+func newOperationalWebhook(client *internal.SvixHttpClient) OperationalWebhook {
+	return OperationalWebhook{client}
+}
+
+func (operationalWebhook OperationalWebhook) Endpoint() OperationalWebhookEndpoint {
+	return newOperationalWebhookEndpoint(operationalWebhook.client)
 }

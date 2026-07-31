@@ -5,13 +5,19 @@ from .common import BaseModel
 
 
 class IngestEndpointIn(BaseModel):
+    url: str
+
     description: t.Optional[str] = None
 
+    throttle_rate: t.Optional[int] = None
+    """Maximum messages per second to send to this endpoint.
+
+    Outgoing messages will be throttled to this rate."""
+
+    uid: t.Optional[str] = None
+    """Optional unique identifier for the endpoint."""
+
     disabled: t.Optional[bool] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
-
-    rate_limit: t.Optional[int] = None
 
     secret: t.Optional[str] = None
     """The endpoint's verification secret.
@@ -19,7 +25,4 @@ class IngestEndpointIn(BaseModel):
     Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
     It is recommended to not set this and let the server generate the secret."""
 
-    uid: t.Optional[str] = None
-    """Optional unique identifier for the endpoint."""
-
-    url: str
+    metadata: t.Optional[t.Dict[str, str]] = None

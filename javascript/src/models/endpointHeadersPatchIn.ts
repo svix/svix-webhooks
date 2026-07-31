@@ -1,23 +1,23 @@
 // this file is @generated
 
 export interface EndpointHeadersPatchIn {
+  headers: { [key: string]: string };
   /** A list of headers be be removed */
   deleteHeaders?: string[];
-  headers: { [key: string]: string };
 }
 
 export const EndpointHeadersPatchInSerializer = {
   _fromJsonObject(object: any): EndpointHeadersPatchIn {
     return {
-      deleteHeaders: object["deleteHeaders"],
       headers: object["headers"],
+      deleteHeaders: object["deleteHeaders"],
     };
   },
 
   _toJsonObject(self: EndpointHeadersPatchIn): any {
     return {
-      deleteHeaders: self.deleteHeaders,
       headers: self.headers,
+      deleteHeaders: self.deleteHeaders,
     };
   },
 };

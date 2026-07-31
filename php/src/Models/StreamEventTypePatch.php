@@ -13,10 +13,10 @@ class StreamEventTypePatch implements \JsonSerializable
      * @param list<string>|null $featureFlags
      */
     private function __construct(
-        public readonly ?bool $archived = null,
-        public readonly ?bool $deprecated = null,
         public readonly ?string $description = null,
         public readonly ?array $featureFlags = null,
+        public readonly ?bool $deprecated = null,
+        public readonly ?bool $archived = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -28,39 +28,11 @@ class StreamEventTypePatch implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            archived: null,
-            deprecated: null,
             description: null,
             featureFlags: null,
+            deprecated: null,
+            archived: null,
             setFields: []
-        );
-    }
-
-    public function withArchived(?bool $archived): self
-    {
-        $setFields = $this->setFields;
-        $setFields['archived'] = true;
-
-        return new self(
-            archived: $archived,
-            deprecated: $this->deprecated,
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            setFields: $setFields
-        );
-    }
-
-    public function withDeprecated(?bool $deprecated): self
-    {
-        $setFields = $this->setFields;
-        $setFields['deprecated'] = true;
-
-        return new self(
-            archived: $this->archived,
-            deprecated: $deprecated,
-            description: $this->description,
-            featureFlags: $this->featureFlags,
-            setFields: $setFields
         );
     }
 
@@ -70,10 +42,10 @@ class StreamEventTypePatch implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
-            archived: $this->archived,
-            deprecated: $this->deprecated,
             description: $description,
             featureFlags: $this->featureFlags,
+            deprecated: $this->deprecated,
+            archived: $this->archived,
             setFields: $setFields
         );
     }
@@ -84,10 +56,38 @@ class StreamEventTypePatch implements \JsonSerializable
         $setFields['featureFlags'] = true;
 
         return new self(
-            archived: $this->archived,
-            deprecated: $this->deprecated,
             description: $this->description,
             featureFlags: $featureFlags,
+            deprecated: $this->deprecated,
+            archived: $this->archived,
+            setFields: $setFields
+        );
+    }
+
+    public function withDeprecated(?bool $deprecated): self
+    {
+        $setFields = $this->setFields;
+        $setFields['deprecated'] = true;
+
+        return new self(
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            deprecated: $deprecated,
+            archived: $this->archived,
+            setFields: $setFields
+        );
+    }
+
+    public function withArchived(?bool $archived): self
+    {
+        $setFields = $this->setFields;
+        $setFields['archived'] = true;
+
+        return new self(
+            description: $this->description,
+            featureFlags: $this->featureFlags,
+            deprecated: $this->deprecated,
+            archived: $archived,
             setFields: $setFields
         );
     }
@@ -97,17 +97,17 @@ class StreamEventTypePatch implements \JsonSerializable
         $data = [
         ];
 
-        if (null !== $this->archived) {
-            $data['archived'] = $this->archived;
-        }
-        if (null !== $this->deprecated) {
-            $data['deprecated'] = $this->deprecated;
-        }
         if (isset($this->setFields['description'])) {
             $data['description'] = $this->description;
         }
         if (isset($this->setFields['featureFlags'])) {
             $data['featureFlags'] = $this->featureFlags;
+        }
+        if (null !== $this->deprecated) {
+            $data['deprecated'] = $this->deprecated;
+        }
+        if (null !== $this->archived) {
+            $data['archived'] = $this->archived;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -119,10 +119,10 @@ class StreamEventTypePatch implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'StreamEventTypePatch'),
-            deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'StreamEventTypePatch'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'StreamEventTypePatch'),
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'StreamEventTypePatch')
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'StreamEventTypePatch'),
+            deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'StreamEventTypePatch'),
+            archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'StreamEventTypePatch')
         );
     }
 

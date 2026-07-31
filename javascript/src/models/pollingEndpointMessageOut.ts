@@ -2,47 +2,47 @@
 
 /** The MessageOut equivalent of polling endpoint */
 export interface PollingEndpointMessageOut {
-  /** List of free-form identifiers that endpoints can filter by */
-  channels?: string[] | null;
-  deliverAt?: Date | null;
+  headers?: { [key: string]: string } | null;
   /** Optional unique identifier for the message */
   eventId?: string | null;
   /** The event type's name */
   eventType: string;
-  headers?: { [key: string]: string } | null;
+  payload: any;
+  /** List of free-form identifiers that endpoints can filter by */
+  channels?: string[] | null;
   /** The Message's ID. */
   id: string;
-  payload: any;
-  tags?: string[] | null;
   timestamp: Date;
+  tags?: string[] | null;
+  deliverAt?: Date | null;
 }
 
 export const PollingEndpointMessageOutSerializer = {
   _fromJsonObject(object: any): PollingEndpointMessageOut {
     return {
-      channels: object["channels"],
-      deliverAt: object["deliverAt"] ? new Date(object["deliverAt"]) : null,
+      headers: object["headers"],
       eventId: object["eventId"],
       eventType: object["eventType"],
-      headers: object["headers"],
-      id: object["id"],
       payload: object["payload"],
-      tags: object["tags"],
+      channels: object["channels"],
+      id: object["id"],
       timestamp: new Date(object["timestamp"]),
+      tags: object["tags"],
+      deliverAt: object["deliverAt"] ? new Date(object["deliverAt"]) : null,
     };
   },
 
   _toJsonObject(self: PollingEndpointMessageOut): any {
     return {
-      channels: self.channels,
-      deliverAt: self.deliverAt,
+      headers: self.headers,
       eventId: self.eventId,
       eventType: self.eventType,
-      headers: self.headers,
-      id: self.id,
       payload: self.payload,
-      tags: self.tags,
+      channels: self.channels,
+      id: self.id,
       timestamp: self.timestamp,
+      tags: self.tags,
+      deliverAt: self.deliverAt,
     };
   },
 };

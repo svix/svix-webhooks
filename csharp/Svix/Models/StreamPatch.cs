@@ -11,15 +11,15 @@ namespace Svix.Models
 
         public bool ShouldSerializeDescription() => Description != null;
 
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
-        public bool ShouldSerializeMetadata() => Metadata != null;
-
         [JsonProperty("uid")]
         public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
 
         public bool ShouldSerializeUid() => !Uid.IsUnset;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
+
+        public bool ShouldSerializeMetadata() => Metadata != null;
 
         public override string ToString()
         {
@@ -27,8 +27,8 @@ namespace Svix.Models
 
             sb.Append("class StreamPatch {\n");
             sb.Append("  Description: ").Append(Description).Append('\n');
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

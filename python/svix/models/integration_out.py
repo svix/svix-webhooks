@@ -6,14 +6,14 @@ from .common import BaseModel
 
 
 class IntegrationOut(BaseModel):
-    created_at: datetime
-
-    feature_flags: t.Optional[t.List[str]] = None
-    """The set of feature flags the integration has access to."""
+    name: str
 
     id: str
     """The Integration's ID."""
 
-    name: str
+    created_at: datetime
 
     updated_at: datetime
+
+    feature_flags: t.Optional[t.List[str]] = None
+    """The set of feature flags the integration has access to."""

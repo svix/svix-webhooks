@@ -1,15 +1,19 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct OperationalWebhookEndpointListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -84,21 +88,20 @@ pub enum OperationalWebhookEndpointCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"disabled\": false,
-    \"filterTypes\": [\"message.attempt.failing\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"metadata\": {\"key\": \"...\"},
-    \"rateLimit\": 123,
+    \"url\": \"https://example.com/webhook/\",
+    \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
+    \"disabled\": false,
+    \"eventTypes\": [\"message.attempt.failing\"],
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\"
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -115,28 +118,26 @@ pub enum OperationalWebhookEndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"disabled\": false,
+  \"eventTypes\": [\"message.attempt.failing\"],
+  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"disabled\": false,
+  \"eventTypes\": [\"message.attempt.failing\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         operational_webhook_endpoint_in: crate::json::JsonOf<OperationalWebhookEndpointIn>,
@@ -154,55 +155,53 @@ pub enum OperationalWebhookEndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"disabled\": false,
+  \"eventTypes\": [\"message.attempt.failing\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { endpoint_id: String },
-    /// Update an operational webhook endpoint.
+    /// Create or update an operational webhook endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix operational-webhook endpoint update ep_abc000000000000000000000000 {...}\n",
+            "Example: svix operational-webhook endpoint upsert ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\"
+  \"disabled\": false,
+  \"eventTypes\": [\"message.attempt.failing\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"message.attempt.failing\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
+  \"disabled\": false,
+  \"eventTypes\": [\"message.attempt.failing\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\"
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
-    Update {
+    Upsert {
         endpoint_id: String,
-        operational_webhook_endpoint_update: crate::json::JsonOf<OperationalWebhookEndpointUpdate>,
+        operational_webhook_endpoint_upsert_in:
+            crate::json::JsonOf<OperationalWebhookEndpointUpsertIn>,
     },
     /// Delete an operational webhook endpoint.
     #[command(help_template = concat!(
@@ -214,45 +213,6 @@ pub enum OperationalWebhookEndpointCommands {
             "{all-args}",
         ))]
     Delete { endpoint_id: String },
-    /// Get the additional headers to be sent with the operational webhook.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix operational-webhook endpoint get-headers ep_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"headers\": {
-    \"X-Example\": \"123\",
-    \"X-Foobar\": \"Bar\"
-  },
-  \"sensitive\": [\"Authorization\"]
-}\n")]
-    GetHeaders { endpoint_id: String },
-    /// Set the additional headers to be sent with the operational webhook.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix operational-webhook endpoint update-headers ep_abc000000000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"headers\": {
-    \"X-Example\": \"123\",
-    \"X-Foobar\": \"Bar\"
-  }
-}\n")]
-    UpdateHeaders {
-        endpoint_id: String,
-        operational_webhook_endpoint_headers_in:
-            crate::json::JsonOf<OperationalWebhookEndpointHeadersIn>,
-    },
     /// Get an operational webhook endpoint's signing secret.
     ///
     /// This is used to verify the authenticity of the webhook.
@@ -291,6 +251,45 @@ pub enum OperationalWebhookEndpointCommands {
             Option<crate::json::JsonOf<OperationalWebhookEndpointSecretIn>>,
         #[clap(flatten)]
         options: OperationalWebhookEndpointRotateSecretOptions,
+    },
+    /// Get the additional headers to be sent with the operational webhook.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix operational-webhook endpoint get-headers ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"headers\": {
+    \"X-Example\": \"123\",
+    \"X-Foobar\": \"Bar\"
+  },
+  \"sensitive\": [\"Authorization\"]
+}\n")]
+    GetHeaders { endpoint_id: String },
+    /// Set the additional headers to be sent with the operational webhook.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix operational-webhook endpoint set-headers ep_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"headers\": {
+    \"X-Example\": \"123\",
+    \"X-Foobar\": \"Bar\"
+  }
+}\n")]
+    SetHeaders {
+        endpoint_id: String,
+        operational_webhook_endpoint_headers_in:
+            crate::json::JsonOf<OperationalWebhookEndpointHeadersIn>,
     },
 }
 
@@ -331,16 +330,16 @@ impl OperationalWebhookEndpointCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 endpoint_id,
-                operational_webhook_endpoint_update,
+                operational_webhook_endpoint_upsert_in,
             } => {
                 let resp = client
                     .operational_webhook()
                     .endpoint()
-                    .update(
+                    .upsert(
                         endpoint_id,
-                        operational_webhook_endpoint_update.into_inner(),
+                        operational_webhook_endpoint_upsert_in.into_inner(),
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
@@ -350,27 +349,6 @@ impl OperationalWebhookEndpointCommands {
                     .operational_webhook()
                     .endpoint()
                     .delete(endpoint_id)
-                    .await?;
-            }
-            Self::GetHeaders { endpoint_id } => {
-                let resp = client
-                    .operational_webhook()
-                    .endpoint()
-                    .get_headers(endpoint_id)
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::UpdateHeaders {
-                endpoint_id,
-                operational_webhook_endpoint_headers_in,
-            } => {
-                client
-                    .operational_webhook()
-                    .endpoint()
-                    .update_headers(
-                        endpoint_id,
-                        operational_webhook_endpoint_headers_in.into_inner(),
-                    )
                     .await?;
             }
             Self::GetSecret { endpoint_id } => {
@@ -395,6 +373,27 @@ impl OperationalWebhookEndpointCommands {
                             .unwrap_or_default()
                             .into_inner(),
                         Some(options.into()),
+                    )
+                    .await?;
+            }
+            Self::GetHeaders { endpoint_id } => {
+                let resp = client
+                    .operational_webhook()
+                    .endpoint()
+                    .get_headers(endpoint_id)
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::SetHeaders {
+                endpoint_id,
+                operational_webhook_endpoint_headers_in,
+            } => {
+                client
+                    .operational_webhook()
+                    .endpoint()
+                    .set_headers(
+                        endpoint_id,
+                        operational_webhook_endpoint_headers_in.into_inner(),
                     )
                     .await?;
             }

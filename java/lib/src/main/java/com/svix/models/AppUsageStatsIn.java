@@ -20,41 +20,11 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AppUsageStatsIn {
-    @JsonProperty private Set<String> appIds;
     @JsonProperty private OffsetDateTime since;
     @JsonProperty private OffsetDateTime until;
+    @JsonProperty private Set<String> appIds;
 
     public AppUsageStatsIn() {}
-
-    public AppUsageStatsIn appIds(Set<String> appIds) {
-        this.appIds = appIds;
-        return this;
-    }
-
-    public AppUsageStatsIn addAppIdsItem(String appIdsItem) {
-        if (this.appIds == null) {
-            this.appIds = new LinkedHashSet<>();
-        }
-        this.appIds.add(appIdsItem);
-
-        return this;
-    }
-
-    /**
-     * Specific app IDs or UIDs to aggregate stats for.
-     *
-     * <p>Note that if none of the given IDs or UIDs are resolved, a 422 response will be given.
-     *
-     * @return appIds
-     */
-    @javax.annotation.Nullable
-    public Set<String> getAppIds() {
-        return appIds;
-    }
-
-    public void setAppIds(Set<String> appIds) {
-        this.appIds = appIds;
-    }
 
     public AppUsageStatsIn since(OffsetDateTime since) {
         this.since = since;
@@ -92,6 +62,36 @@ public class AppUsageStatsIn {
 
     public void setUntil(OffsetDateTime until) {
         this.until = until;
+    }
+
+    public AppUsageStatsIn appIds(Set<String> appIds) {
+        this.appIds = appIds;
+        return this;
+    }
+
+    public AppUsageStatsIn addAppIdsItem(String appIdsItem) {
+        if (this.appIds == null) {
+            this.appIds = new LinkedHashSet<>();
+        }
+        this.appIds.add(appIdsItem);
+
+        return this;
+    }
+
+    /**
+     * Specific app IDs or UIDs to aggregate stats for.
+     *
+     * <p>Note that if none of the given IDs or UIDs are resolved, a 422 response will be given.
+     *
+     * @return appIds
+     */
+    @javax.annotation.Nullable
+    public Set<String> getAppIds() {
+        return appIds;
+    }
+
+    public void setAppIds(Set<String> appIds) {
+        this.appIds = appIds;
     }
 
     /**

@@ -17,9 +17,7 @@ use Svix\Models\EndpointSecretOut;
 use Svix\Models\EndpointSecretRotateIn;
 use Svix\Models\EndpointStats;
 use Svix\Models\EndpointTransformationIn;
-use Svix\Models\EndpointTransformationOut;
-use Svix\Models\EndpointTransformationPatch;
-use Svix\Models\EndpointUpdate;
+use Svix\Models\EndpointUpsertIn;
 use Svix\Models\EventExampleIn;
 use Svix\Models\ListResponseEndpointOut;
 use Svix\Models\MessageOut;
@@ -31,9 +29,12 @@ use Svix\Request\SvixHttpClient;
 
 class Endpoint
 {
+    public EndpointTransformation $transformation;
+
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->transformation = new EndpointTransformation($client);
     }
 
     /**
@@ -43,12 +44,12 @@ class Endpoint
      */
     public function list(
         string $appId,
-        ?EndpointListOptions $options = null,
+        EndpointListOptions $options = new EndpointListOptions(),
     ): ListResponseEndpointOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseEndpointOut::fromJson($res);
@@ -64,10 +65,10 @@ class Endpoint
     public function create(
         string $appId,
         EndpointIn $endpointIn,
-        ?EndpointCreateOptions $options = null,
+        EndpointCreateOptions $options = new EndpointCreateOptions(),
     ): EndpointOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($endpointIn));
         $res = $this->client->send($request);
 
@@ -90,17 +91,17 @@ class Endpoint
     }
 
     /**
-     * Update an endpoint.
+     * Create or update an endpoint.
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $appId,
         string $endpointId,
-        EndpointUpdate $endpointUpdate,
+        EndpointUpsertIn $endpointUpsertIn,
     ): EndpointOut {
         $request = $this->client->newReq('PUT', "/api/v1/app/{$appId}/endpoint/{$endpointId}");
-        $request->setBody(json_encode($endpointUpdate));
+        $request->setBody(json_encode($endpointUpsertIn));
         $res = $this->client->send($request);
 
         return EndpointOut::fromJson($res);
@@ -137,37 +138,40 @@ class Endpoint
     }
 
     /**
-     * Bulk replay messages sent to the endpoint.
+     * Get the endpoint's signing secret.
      *
-     * Only messages that were created after `since` will be sent.
-     * This will replay both successful, and failed messages
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "endpoint.bulk-replay",
-     *   "data": {
-     *     "messagesSent": 2
-     *   }
-     * }
-     * ```
+     * This is used to verify the authenticity of the webhook.
+     * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
      *
      * @throws ApiException
      */
-    public function bulkReplay(
+    public function getSecret(
         string $appId,
         string $endpointId,
-        BulkReplayIn $bulkReplayIn,
-        ?EndpointBulkReplayOptions $options = null,
-    ): ReplayOut {
-        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/bulk-replay");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
-        $request->setBody(json_encode($bulkReplayIn));
+    ): EndpointSecretOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret");
         $res = $this->client->send($request);
 
-        return ReplayOut::fromJson($res);
+        return EndpointSecretOut::fromJson($res);
+    }
+
+    /**
+     * Rotates the endpoint's signing secret.
+     *
+     * The previous secret will remain valid for the specified grace period (default 24 hours).
+     *
+     * @throws ApiException
+     */
+    public function rotateSecret(
+        string $appId,
+        string $endpointId,
+        EndpointSecretRotateIn $endpointSecretRotateIn,
+        EndpointRotateSecretOptions $options = new EndpointRotateSecretOptions(),
+    ): void {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret/rotate");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($endpointSecretRotateIn));
+        $res = $this->client->sendNoResponseBody($request);
     }
 
     /**
@@ -190,7 +194,7 @@ class Endpoint
      *
      * @throws ApiException
      */
-    public function updateHeaders(
+    public function setHeaders(
         string $appId,
         string $endpointId,
         EndpointHeadersIn $endpointHeadersIn,
@@ -213,39 +217,6 @@ class Endpoint
         $request = $this->client->newReq('PATCH', "/api/v1/app/{$appId}/endpoint/{$endpointId}/headers");
         $request->setBody(json_encode($endpointHeadersPatchIn));
         $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
-     * Resend all failed messages since a given time.
-     *
-     * Messages that were sent successfully, even if failed initially, are not resent.
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "endpoint.recover",
-     *   "data": {
-     *     "messagesSent": 2
-     *   }
-     * }
-     * ```
-     *
-     * @throws ApiException
-     */
-    public function recover(
-        string $appId,
-        string $endpointId,
-        RecoverIn $recoverIn,
-        ?EndpointRecoverOptions $options = null,
-    ): RecoverOut {
-        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/recover");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
-        $request->setBody(json_encode($recoverIn));
-        $res = $this->client->send($request);
-
-        return RecoverOut::fromJson($res);
     }
 
     /**
@@ -272,10 +243,10 @@ class Endpoint
         string $appId,
         string $endpointId,
         ReplayIn $replayIn,
-        ?EndpointReplayMissingOptions $options = null,
+        EndpointReplayMissingOptions $options = new EndpointReplayMissingOptions(),
     ): ReplayOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/replay-missing");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($replayIn));
         $res = $this->client->send($request);
 
@@ -283,40 +254,88 @@ class Endpoint
     }
 
     /**
-     * Get the endpoint's signing secret.
+     * Bulk replay messages sent to the endpoint.
      *
-     * This is used to verify the authenticity of the webhook.
-     * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     * Only messages that were created after `since` will be sent.
+     * This will replay both successful, and failed messages
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "endpoint.bulk-replay",
+     *   "data": {
+     *     "messagesSent": 2
+     *   }
+     * }
+     * ```
      *
      * @throws ApiException
      */
-    public function getSecret(
+    public function bulkReplay(
         string $appId,
         string $endpointId,
-    ): EndpointSecretOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret");
+        BulkReplayIn $bulkReplayIn,
+        EndpointBulkReplayOptions $options = new EndpointBulkReplayOptions(),
+    ): ReplayOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/bulk-replay");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($bulkReplayIn));
         $res = $this->client->send($request);
 
-        return EndpointSecretOut::fromJson($res);
+        return ReplayOut::fromJson($res);
     }
 
     /**
-     * Rotates the endpoint's signing secret.
-     *
-     * The previous secret will remain valid for the next 24 hours.
+     * Get basic statistics for the endpoint.
      *
      * @throws ApiException
      */
-    public function rotateSecret(
+    public function getStats(
         string $appId,
         string $endpointId,
-        EndpointSecretRotateIn $endpointSecretRotateIn,
-        ?EndpointRotateSecretOptions $options = null,
-    ): void {
-        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
-        $request->setBody(json_encode($endpointSecretRotateIn));
-        $res = $this->client->sendNoResponseBody($request);
+        EndpointGetStatsOptions $options = new EndpointGetStatsOptions(),
+    ): EndpointStats {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/stats");
+        $request->setQueryParam('since', $options->since);
+        $request->setQueryParam('until', $options->until);
+        $res = $this->client->send($request);
+
+        return EndpointStats::fromJson($res);
+    }
+
+    /**
+     * Resend all failed messages since a given time.
+     *
+     * Messages that were sent successfully, even if failed initially, are not resent.
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "endpoint.recover",
+     *   "data": {
+     *     "messagesSent": 2
+     *   }
+     * }
+     * ```
+     *
+     * @throws ApiException
+     */
+    public function recover(
+        string $appId,
+        string $endpointId,
+        RecoverIn $recoverIn,
+        EndpointRecoverOptions $options = new EndpointRecoverOptions(),
+    ): RecoverOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/recover");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($recoverIn));
+        $res = $this->client->send($request);
+
+        return RecoverOut::fromJson($res);
     }
 
     /**
@@ -328,62 +347,14 @@ class Endpoint
         string $appId,
         string $endpointId,
         EventExampleIn $eventExampleIn,
-        ?EndpointSendExampleOptions $options = null,
+        EndpointSendExampleOptions $options = new EndpointSendExampleOptions(),
     ): MessageOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/send-example");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($eventExampleIn));
         $res = $this->client->send($request);
 
         return MessageOut::fromJson($res);
-    }
-
-    /**
-     * Get basic statistics for the endpoint.
-     *
-     * @throws ApiException
-     */
-    public function getStats(
-        string $appId,
-        string $endpointId,
-        ?EndpointGetStatsOptions $options = null,
-    ): EndpointStats {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/stats");
-        $request->setQueryParam('since', $options?->since);
-        $request->setQueryParam('until', $options?->until);
-        $res = $this->client->send($request);
-
-        return EndpointStats::fromJson($res);
-    }
-
-    /**
-     * Get the transformation code associated with this endpoint.
-     *
-     * @throws ApiException
-     */
-    public function transformationGet(
-        string $appId,
-        string $endpointId,
-    ): EndpointTransformationOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/transformation");
-        $res = $this->client->send($request);
-
-        return EndpointTransformationOut::fromJson($res);
-    }
-
-    /**
-     * Set or unset the transformation code associated with this endpoint.
-     *
-     * @throws ApiException
-     */
-    public function patchTransformation(
-        string $appId,
-        string $endpointId,
-        EndpointTransformationPatch $endpointTransformationPatch,
-    ): void {
-        $request = $this->client->newReq('PATCH', "/api/v1/app/{$appId}/endpoint/{$endpointId}/transformation");
-        $request->setBody(json_encode($endpointTransformationPatch));
-        $res = $this->client->sendNoResponseBody($request);
     }
 
     /**

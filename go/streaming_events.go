@@ -13,14 +13,8 @@ type StreamingEvents struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingEvents(client *internal.SvixHttpClient) *StreamingEvents {
-	return &StreamingEvents{
-		client: client,
-	}
-}
-
-type StreamingEventsCreateOptions struct {
-	IdempotencyKey *string
+func newStreamingEvents(client *internal.SvixHttpClient) StreamingEvents {
+	return StreamingEvents{client}
 }
 
 type StreamingEventsGetOptions struct {
@@ -31,60 +25,34 @@ type StreamingEventsGetOptions struct {
 	After    *time.Time
 }
 
-// Creates events on the Stream.
-func (streamingEvents *StreamingEvents) Create(
-	ctx context.Context,
-	streamId string,
-	createStreamEventsIn models.CreateStreamEventsIn,
-	o *StreamingEventsCreateOptions,
-) (*models.CreateStreamEventsOut, error) {
-	pathMap := map[string]string{
-		"stream_id": streamId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.CreateStreamEventsIn, models.CreateStreamEventsOut](
-		ctx,
-		streamingEvents.client,
-		"POST",
-		"/api/v1/stream/{stream_id}/events",
-		pathMap,
-		nil,
-		headerMap,
-		&createStreamEventsIn,
-	)
+type StreamingEventsCreateOptions struct {
+	IdempotencyKey *string
 }
 
 // Iterate over a stream of events.
 //
 // The sink must be of type `poller` to use the poller endpoint.
-func (streamingEvents *StreamingEvents) Get(
+func (streamingEvents StreamingEvents) Get(
 	ctx context.Context,
 	streamId string,
 	sinkId string,
 	o *StreamingEventsGetOptions,
 ) (*models.EventStreamOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 		"sink_id":   sinkId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventsGetOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.EventStreamOut](
 		ctx,
@@ -95,5 +63,37 @@ func (streamingEvents *StreamingEvents) Get(
 		queryMap,
 		nil,
 		nil,
+	)
+}
+
+// Creates events on the Stream.
+func (streamingEvents StreamingEvents) Create(
+	ctx context.Context,
+	streamId string,
+	createStreamEventsIn models.CreateStreamEventsIn,
+	o *StreamingEventsCreateOptions,
+) (*models.CreateStreamEventsOut, error) {
+	var err error
+	pathMap := map[string]string{
+		"stream_id": streamId,
+	}
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := StreamingEventsCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.CreateStreamEventsIn, models.CreateStreamEventsOut](
+		ctx,
+		streamingEvents.client,
+		"POST",
+		"/api/v1/stream/{stream_id}/events",
+		pathMap,
+		nil,
+		headerMap,
+		&createStreamEventsIn,
 	)
 }

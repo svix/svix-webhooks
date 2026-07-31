@@ -6,7 +6,6 @@ import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.ListResponseStreamSinkOut
 import com.svix.kotlin.models.Ordering
 import com.svix.kotlin.models.SinkSecretOut
-import com.svix.kotlin.models.SinkTransformIn
 import com.svix.kotlin.models.StreamSinkIn
 import com.svix.kotlin.models.StreamSinkOut
 import com.svix.kotlin.models.StreamSinkPatch
@@ -26,6 +25,8 @@ data class StreamingSinkCreateOptions(val idempotencyKey: String? = null)
 data class StreamingSinkRotateSecretOptions(val idempotencyKey: String? = null)
 
 class StreamingSink(private val client: SvixHttpClient) {
+    val transformation: StreamingSinkTransformation = StreamingSinkTransformation(client)
+
     /** List of all the stream's sinks. */
     suspend fun list(
         streamId: String,
@@ -62,8 +63,8 @@ class StreamingSink(private val client: SvixHttpClient) {
         return client.executeRequest<Any, StreamSinkOut>("GET", url.build())
     }
 
-    /** Update a sink. */
-    suspend fun update(
+    /** Create or update a sink. */
+    suspend fun upsert(
         streamId: String,
         sinkId: String,
         streamSinkIn: StreamSinkIn,
@@ -130,24 +131,6 @@ class StreamingSink(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = endpointSecretRotateIn,
-        )
-    }
-
-    /** Set or unset the transformation code associated with this sink. */
-    suspend fun transformationPartialUpdate(
-        streamId: String,
-        sinkId: String,
-        sinkTransformIn: SinkTransformIn,
-    ): EmptyResponse {
-        val url =
-            client
-                .newUrlBuilder()
-                .encodedPath("/api/v1/stream/$streamId/sink/$sinkId/transformation")
-
-        return client.executeRequest<SinkTransformIn, EmptyResponse>(
-            "PATCH",
-            url.build(),
-            reqBody = sinkTransformIn,
         )
     }
 }

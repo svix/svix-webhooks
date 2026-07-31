@@ -44,11 +44,11 @@ module Svix
       OperationalWebhookEndpointOut.deserialize(res)
     end
 
-    def update(endpoint_id, operational_webhook_endpoint_update)
+    def upsert(endpoint_id, operational_webhook_endpoint_upsert_in)
       res = @client.execute_request(
         "PUT",
         "/api/v1/operational-webhook/endpoint/#{endpoint_id}",
-        body: operational_webhook_endpoint_update
+        body: operational_webhook_endpoint_upsert_in
       )
       OperationalWebhookEndpointOut.deserialize(res)
     end
@@ -57,22 +57,6 @@ module Svix
       @client.execute_request(
         "DELETE",
         "/api/v1/operational-webhook/endpoint/#{endpoint_id}"
-      )
-    end
-
-    def get_headers(endpoint_id)
-      res = @client.execute_request(
-        "GET",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers"
-      )
-      OperationalWebhookEndpointHeadersOut.deserialize(res)
-    end
-
-    def update_headers(endpoint_id, operational_webhook_endpoint_headers_in)
-      @client.execute_request(
-        "PUT",
-        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers",
-        body: operational_webhook_endpoint_headers_in
       )
     end
 
@@ -93,6 +77,22 @@ module Svix
           "idempotency-key" => options["idempotency-key"]
         },
         body: operational_webhook_endpoint_secret_in
+      )
+    end
+
+    def get_headers(endpoint_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers"
+      )
+      OperationalWebhookEndpointHeadersOut.deserialize(res)
+    end
+
+    def set_headers(endpoint_id, operational_webhook_endpoint_headers_in)
+      @client.execute_request(
+        "PUT",
+        "/api/v1/operational-webhook/endpoint/#{endpoint_id}/headers",
+        body: operational_webhook_endpoint_headers_in
       )
     end
 

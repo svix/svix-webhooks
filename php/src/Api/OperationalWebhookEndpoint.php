@@ -13,7 +13,7 @@ use Svix\Models\OperationalWebhookEndpointIn;
 use Svix\Models\OperationalWebhookEndpointOut;
 use Svix\Models\OperationalWebhookEndpointSecretIn;
 use Svix\Models\OperationalWebhookEndpointSecretOut;
-use Svix\Models\OperationalWebhookEndpointUpdate;
+use Svix\Models\OperationalWebhookEndpointUpsertIn;
 use Svix\Request\SvixHttpClient;
 
 class OperationalWebhookEndpoint
@@ -29,12 +29,12 @@ class OperationalWebhookEndpoint
      * @throws ApiException
      */
     public function list(
-        ?OperationalWebhookEndpointListOptions $options = null,
+        OperationalWebhookEndpointListOptions $options = new OperationalWebhookEndpointListOptions(),
     ): ListResponseOperationalWebhookEndpointOut {
         $request = $this->client->newReq('GET', '/api/v1/operational-webhook/endpoint');
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
         $res = $this->client->send($request);
 
         return ListResponseOperationalWebhookEndpointOut::fromJson($res);
@@ -47,10 +47,10 @@ class OperationalWebhookEndpoint
      */
     public function create(
         OperationalWebhookEndpointIn $operationalWebhookEndpointIn,
-        ?OperationalWebhookEndpointCreateOptions $options = null,
+        OperationalWebhookEndpointCreateOptions $options = new OperationalWebhookEndpointCreateOptions(),
     ): OperationalWebhookEndpointOut {
         $request = $this->client->newReq('POST', '/api/v1/operational-webhook/endpoint');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointIn));
         $res = $this->client->send($request);
 
@@ -72,16 +72,16 @@ class OperationalWebhookEndpoint
     }
 
     /**
-     * Update an operational webhook endpoint.
+     * Create or update an operational webhook endpoint.
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $endpointId,
-        OperationalWebhookEndpointUpdate $operationalWebhookEndpointUpdate,
+        OperationalWebhookEndpointUpsertIn $operationalWebhookEndpointUpsertIn,
     ): OperationalWebhookEndpointOut {
         $request = $this->client->newReq('PUT', "/api/v1/operational-webhook/endpoint/{$endpointId}");
-        $request->setBody(json_encode($operationalWebhookEndpointUpdate));
+        $request->setBody(json_encode($operationalWebhookEndpointUpsertIn));
         $res = $this->client->send($request);
 
         return OperationalWebhookEndpointOut::fromJson($res);
@@ -96,34 +96,6 @@ class OperationalWebhookEndpoint
         string $endpointId,
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/operational-webhook/endpoint/{$endpointId}");
-        $res = $this->client->sendNoResponseBody($request);
-    }
-
-    /**
-     * Get the additional headers to be sent with the operational webhook.
-     *
-     * @throws ApiException
-     */
-    public function getHeaders(
-        string $endpointId,
-    ): OperationalWebhookEndpointHeadersOut {
-        $request = $this->client->newReq('GET', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
-        $res = $this->client->send($request);
-
-        return OperationalWebhookEndpointHeadersOut::fromJson($res);
-    }
-
-    /**
-     * Set the additional headers to be sent with the operational webhook.
-     *
-     * @throws ApiException
-     */
-    public function updateHeaders(
-        string $endpointId,
-        OperationalWebhookEndpointHeadersIn $operationalWebhookEndpointHeadersIn,
-    ): void {
-        $request = $this->client->newReq('PUT', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
-        $request->setBody(json_encode($operationalWebhookEndpointHeadersIn));
         $res = $this->client->sendNoResponseBody($request);
     }
 
@@ -154,11 +126,39 @@ class OperationalWebhookEndpoint
     public function rotateSecret(
         string $endpointId,
         OperationalWebhookEndpointSecretIn $operationalWebhookEndpointSecretIn,
-        ?OperationalWebhookEndpointRotateSecretOptions $options = null,
+        OperationalWebhookEndpointRotateSecretOptions $options = new OperationalWebhookEndpointRotateSecretOptions(),
     ): void {
         $request = $this->client->newReq('POST', "/api/v1/operational-webhook/endpoint/{$endpointId}/secret/rotate");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($operationalWebhookEndpointSecretIn));
+        $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Get the additional headers to be sent with the operational webhook.
+     *
+     * @throws ApiException
+     */
+    public function getHeaders(
+        string $endpointId,
+    ): OperationalWebhookEndpointHeadersOut {
+        $request = $this->client->newReq('GET', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
+        $res = $this->client->send($request);
+
+        return OperationalWebhookEndpointHeadersOut::fromJson($res);
+    }
+
+    /**
+     * Set the additional headers to be sent with the operational webhook.
+     *
+     * @throws ApiException
+     */
+    public function setHeaders(
+        string $endpointId,
+        OperationalWebhookEndpointHeadersIn $operationalWebhookEndpointHeadersIn,
+    ): void {
+        $request = $this->client->newReq('PUT', "/api/v1/operational-webhook/endpoint/{$endpointId}/headers");
+        $request->setBody(json_encode($operationalWebhookEndpointHeadersIn));
         $res = $this->client->sendNoResponseBody($request);
     }
 }

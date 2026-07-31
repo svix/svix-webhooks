@@ -4,12 +4,13 @@ require "json"
 
 module Svix
   class SnowflakePatchConfig
+    attr_accessor :private_key
     attr_accessor :account_identifier
+    attr_accessor :user_id
     # Database name.
     #
     # Only required if not using transformations.
     attr_accessor :db_name
-    attr_accessor :private_key
     # Schema name.
     #
     # Only required if not using transformations.
@@ -18,9 +19,8 @@ module Svix
     #
     # Only required if not using transformations.
     attr_accessor :table_name
-    attr_accessor :user_id
 
-    ALL_FIELD ||= ["account_identifier", "db_name", "private_key", "schema_name", "table_name", "user_id"].freeze
+    ALL_FIELD ||= ["private_key", "account_identifier", "user_id", "db_name", "schema_name", "table_name"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -41,23 +41,23 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["account_identifier"] = attributes["accountIdentifier"]
-      attrs["db_name"] = attributes["dbName"]
       attrs["private_key"] = attributes["privateKey"]
+      attrs["account_identifier"] = attributes["accountIdentifier"]
+      attrs["user_id"] = attributes["userId"]
+      attrs["db_name"] = attributes["dbName"]
       attrs["schema_name"] = attributes["schemaName"]
       attrs["table_name"] = attributes["tableName"]
-      attrs["user_id"] = attributes["userId"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["accountIdentifier"] = Svix::serialize_primitive(@account_identifier) if @account_identifier
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
       out["privateKey"] = Svix::serialize_primitive(@private_key) if @private_key
+      out["accountIdentifier"] = Svix::serialize_primitive(@account_identifier) if @account_identifier
+      out["userId"] = Svix::serialize_primitive(@user_id) if @user_id
+      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
       out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
       out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
-      out["userId"] = Svix::serialize_primitive(@user_id) if @user_id
       out
     end
 

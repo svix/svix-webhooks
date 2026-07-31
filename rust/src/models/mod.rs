@@ -1,259 +1,230 @@
 // this file is @generated
 #![allow(clippy::too_many_arguments)]
 
-pub mod adobe_sign_config;
-pub mod adobe_sign_config_out;
-pub mod aggregate_event_types_out;
-pub mod airwallex_config;
-pub mod airwallex_config_out;
-pub mod amazon_s3_patch_config;
-pub mod api_token_out;
-pub mod app_portal_access_in;
-pub mod app_portal_access_out;
-pub mod app_portal_capability;
-pub mod app_usage_stats_in;
-pub mod app_usage_stats_out;
-pub mod application_in;
-pub mod application_out;
-pub mod application_patch;
-pub mod application_token_expire_in;
-pub mod authentication_source;
-pub mod auto_config_sink_type;
-pub mod azure_blob_storage_config;
-pub mod azure_blob_storage_patch_config;
-pub mod background_task_finished_event;
-pub mod background_task_finished_event2;
-pub mod background_task_out;
-pub mod background_task_status;
-pub mod background_task_type;
-pub mod big_query_config;
-pub mod big_query_patch_config;
-pub mod bulk_replay_in;
-pub mod checkbook_config;
-pub mod checkbook_config_out;
-pub mod clickhouse_config;
-pub mod clickhouse_patch_config;
-pub mod connector_in;
-pub mod connector_kind;
-pub mod connector_out;
-pub mod connector_patch;
-pub mod connector_product;
-pub mod connector_update;
-pub mod create_stream_events_in;
-pub mod create_stream_events_out;
-pub mod cron_config;
-pub mod dashboard_access_out;
-pub mod docusign_config;
-pub mod docusign_config_out;
-pub mod easypost_config;
-pub mod easypost_config_out;
-pub mod empty_response;
-pub mod endpoint_created_event;
-pub mod endpoint_created_event_data;
-pub mod endpoint_deleted_event;
-pub mod endpoint_deleted_event_data;
-pub mod endpoint_disabled_event;
-pub mod endpoint_disabled_event_data;
-pub mod endpoint_disabled_trigger;
-pub mod endpoint_enabled_event;
-pub mod endpoint_enabled_event_data;
-pub mod endpoint_headers_in;
-pub mod endpoint_headers_out;
-pub mod endpoint_headers_patch_in;
-pub mod endpoint_in;
-pub mod endpoint_message_out;
-pub mod endpoint_out;
-pub mod endpoint_patch;
-pub mod endpoint_secret_out;
-pub mod endpoint_secret_rotate_in;
-pub mod endpoint_stats;
-pub mod endpoint_transformation_in;
-pub mod endpoint_transformation_out;
-pub mod endpoint_transformation_patch;
-pub mod endpoint_update;
-pub mod endpoint_updated_event;
-pub mod endpoint_updated_event_data;
-pub mod environment_in;
-pub mod environment_out;
-pub mod event_bridge_config;
-pub mod event_bridge_patch_config;
-pub mod event_example_in;
-pub mod event_in;
-pub mod event_out;
-pub mod event_stream_out;
-pub mod event_type_from_open_api;
-pub mod event_type_import_open_api_in;
-pub mod event_type_import_open_api_out;
-pub mod event_type_import_open_api_out_data;
-pub mod event_type_in;
-pub mod event_type_out;
-pub mod event_type_patch;
-pub mod event_type_update;
-pub mod expunge_all_contents_out;
-pub mod github_config;
-pub mod github_config_out;
-pub mod google_cloud_pub_sub_config;
-pub mod google_cloud_pub_sub_patch_config;
-pub mod google_cloud_storage_config;
-pub mod google_cloud_storage_patch_config;
-pub mod http_attempt_times;
-pub mod http_patch_config;
-pub mod http_sink_headers_patch_in;
-pub mod hubspot_config;
-pub mod hubspot_config_out;
-pub mod ingest_endpoint_disabled_event;
-pub mod ingest_endpoint_disabled_event_data;
-pub mod ingest_endpoint_headers_in;
-pub mod ingest_endpoint_headers_out;
-pub mod ingest_endpoint_in;
-pub mod ingest_endpoint_out;
-pub mod ingest_endpoint_secret_in;
-pub mod ingest_endpoint_secret_out;
-pub mod ingest_endpoint_transformation_out;
-pub mod ingest_endpoint_transformation_patch;
-pub mod ingest_endpoint_update;
-pub mod ingest_message_attempt_exhausted_event;
-pub mod ingest_message_attempt_exhausted_event_data;
-pub mod ingest_message_attempt_failing_event;
-pub mod ingest_message_attempt_failing_event_data;
-pub mod ingest_message_attempt_recovered_event;
-pub mod ingest_message_attempt_recovered_event_data;
-pub mod ingest_source_consumer_portal_access_in;
-pub mod ingest_source_in;
-pub mod ingest_source_out;
-pub mod integration_in;
-pub mod integration_key_out;
-pub mod integration_out;
-pub mod integration_update;
-pub mod list_response_application_out;
-pub mod list_response_background_task_out;
-pub mod list_response_connector_out;
-pub mod list_response_endpoint_message_out;
-pub mod list_response_endpoint_out;
-pub mod list_response_event_type_out;
-pub mod list_response_ingest_endpoint_out;
-pub mod list_response_ingest_source_out;
-pub mod list_response_integration_out;
-pub mod list_response_message_attempt_out;
-pub mod list_response_message_endpoint_out;
-pub mod list_response_message_out;
-pub mod list_response_operational_webhook_endpoint_out;
-pub mod list_response_stream_event_type_out;
-pub mod list_response_stream_out;
-pub mod list_response_stream_sink_out;
-pub mod message_attempt_exhausted_event;
-pub mod message_attempt_exhausted_event_data;
-pub mod message_attempt_failed_data;
-pub mod message_attempt_failing_event;
-pub mod message_attempt_failing_event_data;
-pub mod message_attempt_log;
-pub mod message_attempt_log_event;
-pub mod message_attempt_out;
-pub mod message_attempt_recovered_event;
-pub mod message_attempt_recovered_event_data;
-pub mod message_attempt_trigger_type;
-pub mod message_endpoint_out;
-pub mod message_in;
-pub mod message_out;
-pub mod message_precheck_in;
-pub mod message_precheck_out;
-pub mod message_status;
-pub mod message_status_text;
-pub mod meta_config;
-pub mod meta_config_out;
-pub mod operational_webhook_endpoint_headers_in;
-pub mod operational_webhook_endpoint_headers_out;
-pub mod operational_webhook_endpoint_in;
-pub mod operational_webhook_endpoint_out;
-pub mod operational_webhook_endpoint_secret_in;
-pub mod operational_webhook_endpoint_secret_out;
-pub mod operational_webhook_endpoint_update;
-pub mod ordering;
-pub mod orum_io_config;
-pub mod orum_io_config_out;
-pub mod otel_tracing_patch_config;
-pub mod panda_doc_config;
-pub mod panda_doc_config_out;
-pub mod poller_v2_commit_in;
-pub mod poller_v2_message_out;
-pub mod poller_v2_poll_out;
-pub mod polling_endpoint_consumer_seek_in;
-pub mod polling_endpoint_consumer_seek_out;
-pub mod polling_endpoint_message_out;
-pub mod polling_endpoint_out;
-pub mod port_io_config;
-pub mod port_io_config_out;
-pub mod rabbit_mq_config;
-pub mod rabbit_mq_patch_config;
-pub mod recover_in;
-pub mod recover_out;
-pub mod redshift_config;
-pub mod redshift_patch_config;
-pub mod replay_in;
-pub mod replay_out;
-pub mod rotate_poller_token_in;
-pub mod rotate_token_out;
-pub mod rutter_config;
-pub mod rutter_config_out;
-pub mod s3_config;
-pub mod segment_config;
-pub mod segment_config_out;
-pub mod shopify_config;
-pub mod shopify_config_out;
-pub mod sink_http_config;
-pub mod sink_in_common;
-pub mod sink_otel_v1_config;
-pub mod sink_secret_out;
-pub mod sink_status;
-pub mod sink_status_in;
-pub mod sink_transform_in;
-pub mod sink_transformation_out;
-pub mod slack_config;
-pub mod slack_config_out;
-pub mod snowflake_config;
-pub mod snowflake_patch_config;
-pub mod sns_config;
-pub mod sns_patch_config;
-pub mod sqs_config;
-pub mod sqs_patch_config;
-pub mod starting_position;
-pub mod status_code_class;
-pub mod stream_event_type_in;
-pub mod stream_event_type_out;
-pub mod stream_event_type_patch;
-pub mod stream_in;
-pub mod stream_out;
-pub mod stream_patch;
-pub mod stream_portal_access_in;
-pub mod stream_sink_in;
-pub mod stream_sink_out;
-pub mod stream_sink_patch;
-pub mod stream_token_expire_in;
-pub mod stripe_config;
-pub mod stripe_config_out;
-pub mod subscribe_in;
-pub mod svix_config;
-pub mod svix_config_out;
-pub mod tailscale_config;
-pub mod tailscale_config_out;
-pub mod telnyx_config;
-pub mod telnyx_config_out;
-pub mod vapi_config;
-pub mod vapi_config_out;
-pub mod veriff_config;
-pub mod veriff_config_out;
-pub mod vgs_config;
-pub mod vgs_config_out;
-pub mod whoami_out;
-pub mod zoom_config;
-pub mod zoom_config_out;
+mod adobe_sign_config;
+mod adobe_sign_config_out;
+mod aggregate_event_types_out;
+mod airwallex_config;
+mod airwallex_config_out;
+mod amazon_s3_patch_config;
+mod api_token_out;
+mod app_portal_access_in;
+mod app_portal_access_out;
+mod app_portal_capability;
+mod app_usage_stats_in;
+mod app_usage_stats_out;
+mod application_in;
+mod application_out;
+mod application_patch;
+mod application_token_expire_in;
+mod authentication_source;
+mod auto_config_sink_type;
+mod azure_blob_storage_config;
+mod azure_blob_storage_patch_config;
+mod background_task_out;
+mod background_task_status;
+mod background_task_type;
+mod big_query_config;
+mod big_query_patch_config;
+mod bulk_replay_in;
+mod checkbook_config;
+mod checkbook_config_out;
+mod clickhouse_config;
+mod clickhouse_patch_config;
+mod connector_in;
+mod connector_kind;
+mod connector_out;
+mod connector_patch;
+mod connector_product;
+mod connector_upsert_in;
+mod create_stream_events_in;
+mod create_stream_events_out;
+mod cron_config;
+mod docusign_config;
+mod docusign_config_out;
+mod easypost_config;
+mod easypost_config_out;
+mod empty_response;
+mod endpoint_headers_in;
+mod endpoint_headers_out;
+mod endpoint_headers_patch_in;
+mod endpoint_in;
+mod endpoint_message_out;
+mod endpoint_out;
+mod endpoint_patch;
+mod endpoint_secret_out;
+mod endpoint_secret_rotate_in;
+mod endpoint_stats;
+mod endpoint_transformation_in;
+mod endpoint_transformation_out;
+mod endpoint_transformation_patch;
+mod endpoint_upsert_in;
+mod environment_in;
+mod environment_out;
+mod event_bridge_config;
+mod event_bridge_patch_config;
+mod event_example_in;
+mod event_in;
+mod event_out;
+mod event_stream_out;
+mod event_type_from_open_api;
+mod event_type_import_open_api_in;
+mod event_type_import_open_api_out;
+mod event_type_import_open_api_out_data;
+mod event_type_in;
+mod event_type_out;
+mod event_type_patch;
+mod event_type_upsert_in;
+mod expunge_all_contents_out;
+mod github_config;
+mod github_config_out;
+mod google_cloud_pub_sub_config;
+mod google_cloud_pub_sub_patch_config;
+mod google_cloud_storage_config;
+mod google_cloud_storage_patch_config;
+mod http_patch_config;
+mod http_sink_headers_patch_in;
+mod hubspot_config;
+mod hubspot_config_out;
+mod ingest_endpoint_headers_in;
+mod ingest_endpoint_headers_out;
+mod ingest_endpoint_in;
+mod ingest_endpoint_out;
+mod ingest_endpoint_secret_in;
+mod ingest_endpoint_secret_out;
+mod ingest_endpoint_transformation_out;
+mod ingest_endpoint_transformation_patch;
+mod ingest_endpoint_upsert_in;
+mod ingest_source_consumer_portal_access_in;
+mod ingest_source_in;
+mod ingest_source_out;
+mod integration_in;
+mod integration_key_out;
+mod integration_out;
+mod integration_update;
+mod list_response_application_out;
+mod list_response_background_task_out;
+mod list_response_connector_out;
+mod list_response_endpoint_message_out;
+mod list_response_endpoint_out;
+mod list_response_event_type_out;
+mod list_response_ingest_endpoint_out;
+mod list_response_ingest_source_out;
+mod list_response_integration_out;
+mod list_response_message_attempt_out;
+mod list_response_message_endpoint_out;
+mod list_response_message_out;
+mod list_response_operational_webhook_endpoint_out;
+mod list_response_stream_event_type_out;
+mod list_response_stream_out;
+mod list_response_stream_sink_out;
+mod message_attempt_out;
+mod message_attempt_trigger_type;
+mod message_endpoint_out;
+mod message_in;
+mod message_out;
+mod message_precheck_in;
+mod message_precheck_out;
+mod message_status;
+mod message_status_text;
+mod meta_config;
+mod meta_config_out;
+mod nango_config;
+mod nango_config_out;
+mod open_claw_config;
+mod open_claw_config_out;
+mod operational_webhook_endpoint_headers_in;
+mod operational_webhook_endpoint_headers_out;
+mod operational_webhook_endpoint_in;
+mod operational_webhook_endpoint_out;
+mod operational_webhook_endpoint_secret_in;
+mod operational_webhook_endpoint_secret_out;
+mod operational_webhook_endpoint_upsert_in;
+mod ordering;
+mod orum_io_config;
+mod orum_io_config_out;
+mod otel_tracing_patch_config;
+mod panda_doc_config;
+mod panda_doc_config_out;
+mod poller_v2_commit_in;
+mod poller_v2_message_out;
+mod poller_v2_poll_out;
+mod polling_endpoint_consumer_seek_in;
+mod polling_endpoint_consumer_seek_out;
+mod polling_endpoint_message_out;
+mod polling_endpoint_out;
+mod port_io_config;
+mod port_io_config_out;
+mod rabbit_mq_config;
+mod rabbit_mq_patch_config;
+mod recover_in;
+mod recover_out;
+mod redshift_config;
+mod redshift_patch_config;
+mod replay_in;
+mod replay_out;
+mod rotate_poller_token_in;
+mod rotate_token_out;
+mod rutter_config;
+mod rutter_config_out;
+mod s3_config;
+mod segment_config;
+mod segment_config_out;
+mod shopify_config;
+mod shopify_config_out;
+mod sink_http_config;
+mod sink_in_common;
+mod sink_otel_v1_config;
+mod sink_secret_out;
+mod sink_status;
+mod sink_status_in;
+mod sink_transform_in;
+mod sink_transformation_out;
+mod slack_config;
+mod slack_config_out;
+mod snowflake_config;
+mod snowflake_patch_config;
+mod sns_config;
+mod sns_patch_config;
+mod sqs_config;
+mod sqs_patch_config;
+mod starting_position;
+mod status_code_class;
+mod stream_event_type_in;
+mod stream_event_type_out;
+mod stream_event_type_patch;
+mod stream_in;
+mod stream_out;
+mod stream_patch;
+mod stream_portal_access_in;
+mod stream_sink_in;
+mod stream_sink_out;
+mod stream_sink_patch;
+mod stream_token_expire_in;
+mod stripe_config;
+mod stripe_config_out;
+mod subscribe_in;
+mod svix_config;
+mod svix_config_out;
+mod tailscale_config;
+mod tailscale_config_out;
+mod telnyx_config;
+mod telnyx_config_out;
+mod vapi_config;
+mod vapi_config_out;
+mod veriff_config;
+mod veriff_config_out;
+mod vgs_config;
+mod vgs_config_out;
+mod whoami_out;
+mod zoom_config;
+mod zoom_config_out;
 // not currently generated
-pub mod http_error_out;
-pub mod http_validation_error;
-pub mod list_response_message_attempt_endpoint_out;
-pub mod message_attempt_endpoint_out;
-pub mod message_events_out;
-pub mod validation_error;
+mod http_error_out;
+mod http_validation_error;
+#[cfg(feature = "svix_beta")]
+mod message_events_out;
+mod validation_error;
 
 pub use self::{
     adobe_sign_config::AdobeSignConfig,
@@ -276,8 +247,6 @@ pub use self::{
     auto_config_sink_type::AutoConfigSinkType,
     azure_blob_storage_config::AzureBlobStorageConfig,
     azure_blob_storage_patch_config::AzureBlobStoragePatchConfig,
-    background_task_finished_event::BackgroundTaskFinishedEvent,
-    background_task_finished_event2::BackgroundTaskFinishedEvent2,
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
@@ -293,25 +262,15 @@ pub use self::{
     connector_out::ConnectorOut,
     connector_patch::ConnectorPatch,
     connector_product::ConnectorProduct,
-    connector_update::ConnectorUpdate,
+    connector_upsert_in::ConnectorUpsertIn,
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
     cron_config::CronConfig,
-    dashboard_access_out::DashboardAccessOut,
     docusign_config::DocusignConfig,
     docusign_config_out::DocusignConfigOut,
     easypost_config::EasypostConfig,
     easypost_config_out::EasypostConfigOut,
     empty_response::EmptyResponse,
-    endpoint_created_event::EndpointCreatedEvent,
-    endpoint_created_event_data::EndpointCreatedEventData,
-    endpoint_deleted_event::EndpointDeletedEvent,
-    endpoint_deleted_event_data::EndpointDeletedEventData,
-    endpoint_disabled_event::EndpointDisabledEvent,
-    endpoint_disabled_event_data::EndpointDisabledEventData,
-    endpoint_disabled_trigger::EndpointDisabledTrigger,
-    endpoint_enabled_event::EndpointEnabledEvent,
-    endpoint_enabled_event_data::EndpointEnabledEventData,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
     endpoint_headers_patch_in::EndpointHeadersPatchIn,
@@ -325,9 +284,7 @@ pub use self::{
     endpoint_transformation_in::EndpointTransformationIn,
     endpoint_transformation_out::EndpointTransformationOut,
     endpoint_transformation_patch::EndpointTransformationPatch,
-    endpoint_update::EndpointUpdate,
-    endpoint_updated_event::EndpointUpdatedEvent,
-    endpoint_updated_event_data::EndpointUpdatedEventData,
+    endpoint_upsert_in::EndpointUpsertIn,
     environment_in::EnvironmentIn,
     environment_out::EnvironmentOut,
     event_bridge_config::EventBridgeConfig,
@@ -343,7 +300,7 @@ pub use self::{
     event_type_in::EventTypeIn,
     event_type_out::EventTypeOut,
     event_type_patch::EventTypePatch,
-    event_type_update::EventTypeUpdate,
+    event_type_upsert_in::EventTypeUpsertIn,
     expunge_all_contents_out::ExpungeAllContentsOut,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
@@ -351,13 +308,10 @@ pub use self::{
     google_cloud_pub_sub_patch_config::GoogleCloudPubSubPatchConfig,
     google_cloud_storage_config::GoogleCloudStorageConfig,
     google_cloud_storage_patch_config::GoogleCloudStoragePatchConfig,
-    http_attempt_times::HttpAttemptTimes,
     http_patch_config::HttpPatchConfig,
     http_sink_headers_patch_in::HttpSinkHeadersPatchIn,
     hubspot_config::HubspotConfig,
     hubspot_config_out::HubspotConfigOut,
-    ingest_endpoint_disabled_event::IngestEndpointDisabledEvent,
-    ingest_endpoint_disabled_event_data::IngestEndpointDisabledEventData,
     ingest_endpoint_headers_in::IngestEndpointHeadersIn,
     ingest_endpoint_headers_out::IngestEndpointHeadersOut,
     ingest_endpoint_in::IngestEndpointIn,
@@ -366,13 +320,7 @@ pub use self::{
     ingest_endpoint_secret_out::IngestEndpointSecretOut,
     ingest_endpoint_transformation_out::IngestEndpointTransformationOut,
     ingest_endpoint_transformation_patch::IngestEndpointTransformationPatch,
-    ingest_endpoint_update::IngestEndpointUpdate,
-    ingest_message_attempt_exhausted_event::IngestMessageAttemptExhaustedEvent,
-    ingest_message_attempt_exhausted_event_data::IngestMessageAttemptExhaustedEventData,
-    ingest_message_attempt_failing_event::IngestMessageAttemptFailingEvent,
-    ingest_message_attempt_failing_event_data::IngestMessageAttemptFailingEventData,
-    ingest_message_attempt_recovered_event::IngestMessageAttemptRecoveredEvent,
-    ingest_message_attempt_recovered_event_data::IngestMessageAttemptRecoveredEventData,
+    ingest_endpoint_upsert_in::IngestEndpointUpsertIn,
     ingest_source_consumer_portal_access_in::IngestSourceConsumerPortalAccessIn,
     ingest_source_in::{IngestSourceIn, IngestSourceInConfig},
     ingest_source_out::{IngestSourceOut, IngestSourceOutConfig},
@@ -396,16 +344,7 @@ pub use self::{
     list_response_stream_event_type_out::ListResponseStreamEventTypeOut,
     list_response_stream_out::ListResponseStreamOut,
     list_response_stream_sink_out::ListResponseStreamSinkOut,
-    message_attempt_exhausted_event::MessageAttemptExhaustedEvent,
-    message_attempt_exhausted_event_data::MessageAttemptExhaustedEventData,
-    message_attempt_failed_data::MessageAttemptFailedData,
-    message_attempt_failing_event::MessageAttemptFailingEvent,
-    message_attempt_failing_event_data::MessageAttemptFailingEventData,
-    message_attempt_log::MessageAttemptLog,
-    message_attempt_log_event::MessageAttemptLogEvent,
     message_attempt_out::MessageAttemptOut,
-    message_attempt_recovered_event::MessageAttemptRecoveredEvent,
-    message_attempt_recovered_event_data::MessageAttemptRecoveredEventData,
     message_attempt_trigger_type::MessageAttemptTriggerType,
     message_endpoint_out::MessageEndpointOut,
     message_in::MessageIn,
@@ -416,13 +355,17 @@ pub use self::{
     message_status_text::MessageStatusText,
     meta_config::MetaConfig,
     meta_config_out::MetaConfigOut,
+    nango_config::NangoConfig,
+    nango_config_out::NangoConfigOut,
+    open_claw_config::OpenClawConfig,
+    open_claw_config_out::OpenClawConfigOut,
     operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,
     operational_webhook_endpoint_headers_out::OperationalWebhookEndpointHeadersOut,
     operational_webhook_endpoint_in::OperationalWebhookEndpointIn,
     operational_webhook_endpoint_out::OperationalWebhookEndpointOut,
     operational_webhook_endpoint_secret_in::OperationalWebhookEndpointSecretIn,
     operational_webhook_endpoint_secret_out::OperationalWebhookEndpointSecretOut,
-    operational_webhook_endpoint_update::OperationalWebhookEndpointUpdate,
+    operational_webhook_endpoint_upsert_in::OperationalWebhookEndpointUpsertIn,
     ordering::Ordering,
     orum_io_config::OrumIoConfig,
     orum_io_config_out::OrumIoConfigOut,
@@ -505,9 +448,9 @@ pub use self::{
 };
 
 // not currently generated
+#[cfg(feature = "svix_beta")]
+pub use self::message_events_out::MessageEventsOut;
 pub use self::{
     http_error_out::HttpErrorOut, http_validation_error::HttpValidationError,
-    list_response_message_attempt_endpoint_out::ListResponseMessageAttemptEndpointOut,
-    message_attempt_endpoint_out::MessageAttemptEndpointOut, message_events_out::MessageEventsOut,
     validation_error::ValidationError,
 };

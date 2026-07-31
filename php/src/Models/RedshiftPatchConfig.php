@@ -22,10 +22,10 @@ class RedshiftPatchConfig implements \JsonSerializable
      */
     private function __construct(
         public readonly ?string $accessKeyId = null,
-        public readonly ?string $dbName = null,
-        public readonly ?string $region = null,
-        public readonly ?string $schemaName = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $region = null,
+        public readonly ?string $dbName = null,
+        public readonly ?string $schemaName = null,
         public readonly ?string $tableName = null,
         array $setFields = [],
     ) {
@@ -39,10 +39,10 @@ class RedshiftPatchConfig implements \JsonSerializable
     ): self {
         return new self(
             accessKeyId: null,
-            dbName: null,
-            region: null,
-            schemaName: null,
             secretAccessKey: null,
+            region: null,
+            dbName: null,
+            schemaName: null,
             tableName: null,
             setFields: []
         );
@@ -55,58 +55,10 @@ class RedshiftPatchConfig implements \JsonSerializable
 
         return new self(
             accessKeyId: $accessKeyId,
-            dbName: $this->dbName,
+            secretAccessKey: $this->secretAccessKey,
             region: $this->region,
-            schemaName: $this->schemaName,
-            secretAccessKey: $this->secretAccessKey,
-            tableName: $this->tableName,
-            setFields: $setFields
-        );
-    }
-
-    public function withDbName(?string $dbName): self
-    {
-        $setFields = $this->setFields;
-        $setFields['dbName'] = true;
-
-        return new self(
-            accessKeyId: $this->accessKeyId,
-            dbName: $dbName,
-            region: $this->region,
-            schemaName: $this->schemaName,
-            secretAccessKey: $this->secretAccessKey,
-            tableName: $this->tableName,
-            setFields: $setFields
-        );
-    }
-
-    public function withRegion(?string $region): self
-    {
-        $setFields = $this->setFields;
-        $setFields['region'] = true;
-
-        return new self(
-            accessKeyId: $this->accessKeyId,
             dbName: $this->dbName,
-            region: $region,
             schemaName: $this->schemaName,
-            secretAccessKey: $this->secretAccessKey,
-            tableName: $this->tableName,
-            setFields: $setFields
-        );
-    }
-
-    public function withSchemaName(?string $schemaName): self
-    {
-        $setFields = $this->setFields;
-        $setFields['schemaName'] = true;
-
-        return new self(
-            accessKeyId: $this->accessKeyId,
-            dbName: $this->dbName,
-            region: $this->region,
-            schemaName: $schemaName,
-            secretAccessKey: $this->secretAccessKey,
             tableName: $this->tableName,
             setFields: $setFields
         );
@@ -119,10 +71,58 @@ class RedshiftPatchConfig implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
-            dbName: $this->dbName,
-            region: $this->region,
-            schemaName: $this->schemaName,
             secretAccessKey: $secretAccessKey,
+            region: $this->region,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withRegion(?string $region): self
+    {
+        $setFields = $this->setFields;
+        $setFields['region'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            region: $region,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withDbName(?string $dbName): self
+    {
+        $setFields = $this->setFields;
+        $setFields['dbName'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
+            dbName: $dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withSchemaName(?string $schemaName): self
+    {
+        $setFields = $this->setFields;
+        $setFields['schemaName'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
+            dbName: $this->dbName,
+            schemaName: $schemaName,
             tableName: $this->tableName,
             setFields: $setFields
         );
@@ -135,10 +135,10 @@ class RedshiftPatchConfig implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
-            dbName: $this->dbName,
-            region: $this->region,
-            schemaName: $this->schemaName,
             secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
             tableName: $tableName,
             setFields: $setFields
         );
@@ -152,17 +152,17 @@ class RedshiftPatchConfig implements \JsonSerializable
         if (null !== $this->accessKeyId) {
             $data['accessKeyId'] = $this->accessKeyId;
         }
-        if (null !== $this->dbName) {
-            $data['dbName'] = $this->dbName;
+        if (null !== $this->secretAccessKey) {
+            $data['secretAccessKey'] = $this->secretAccessKey;
         }
         if (null !== $this->region) {
             $data['region'] = $this->region;
         }
+        if (null !== $this->dbName) {
+            $data['dbName'] = $this->dbName;
+        }
         if (isset($this->setFields['schemaName'])) {
             $data['schemaName'] = $this->schemaName;
-        }
-        if (null !== $this->secretAccessKey) {
-            $data['secretAccessKey'] = $this->secretAccessKey;
         }
         if (null !== $this->tableName) {
             $data['tableName'] = $this->tableName;
@@ -178,10 +178,10 @@ class RedshiftPatchConfig implements \JsonSerializable
     {
         return new self(
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'RedshiftPatchConfig'),
-            dbName: \Svix\Utils::deserializeString($data, 'dbName', false, 'RedshiftPatchConfig'),
-            region: \Svix\Utils::deserializeString($data, 'region', false, 'RedshiftPatchConfig'),
-            schemaName: \Svix\Utils::deserializeString($data, 'schemaName', false, 'RedshiftPatchConfig'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'RedshiftPatchConfig'),
+            region: \Svix\Utils::deserializeString($data, 'region', false, 'RedshiftPatchConfig'),
+            dbName: \Svix\Utils::deserializeString($data, 'dbName', false, 'RedshiftPatchConfig'),
+            schemaName: \Svix\Utils::deserializeString($data, 'schemaName', false, 'RedshiftPatchConfig'),
             tableName: \Svix\Utils::deserializeString($data, 'tableName', false, 'RedshiftPatchConfig')
         );
     }

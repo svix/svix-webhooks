@@ -107,17 +107,14 @@ fn validate_operational_webhook_url(url: &str) -> Result<(), ValidationError> {
 }
 
 #[derive(Clone, Debug, Deserialize, Validate)]
-#[validate(
-    schema(function = "validate_config_complete"),
-    skip_on_field_errors = false
-)]
+#[validate(schema(function = "validate_config_complete", skip_on_field_errors = false))]
 pub struct ConfigurationInner {
     /// The address to listen on
     pub listen_address: SocketAddr,
 
     /// The address to send operational webhooks to. When None, operational webhooks will not be
     /// sent. When Some, the API server with the given URL will be used to send operational webhooks.
-    #[validate(custom = "validate_operational_webhook_url")]
+    #[validate(custom(function = "validate_operational_webhook_url"))]
     pub operational_webhook_address: Option<String>,
 
     /// The main secret used by Svix. Used for client-side encryption of sensitive data, etc.

@@ -1,15 +1,20 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
+use super::endpoint_transformation::EndpointTransformationArgs;
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -44,27 +49,14 @@ impl From<EndpointCreateOptions> for svix::api::EndpointCreateOptions {
 }
 
 #[derive(Args, Clone)]
-pub struct EndpointBulkReplayOptions {
+pub struct EndpointRotateSecretOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
 }
 
-impl From<EndpointBulkReplayOptions> for svix::api::EndpointBulkReplayOptions {
-    fn from(value: EndpointBulkReplayOptions) -> Self {
-        let EndpointBulkReplayOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
-pub struct EndpointRecoverOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<EndpointRecoverOptions> for svix::api::EndpointRecoverOptions {
-    fn from(value: EndpointRecoverOptions) -> Self {
-        let EndpointRecoverOptions { idempotency_key } = value;
+impl From<EndpointRotateSecretOptions> for svix::api::EndpointRotateSecretOptions {
+    fn from(value: EndpointRotateSecretOptions) -> Self {
+        let EndpointRotateSecretOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -83,27 +75,14 @@ impl From<EndpointReplayMissingOptions> for svix::api::EndpointReplayMissingOpti
 }
 
 #[derive(Args, Clone)]
-pub struct EndpointRotateSecretOptions {
+pub struct EndpointBulkReplayOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
 }
 
-impl From<EndpointRotateSecretOptions> for svix::api::EndpointRotateSecretOptions {
-    fn from(value: EndpointRotateSecretOptions) -> Self {
-        let EndpointRotateSecretOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
-pub struct EndpointSendExampleOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions {
-    fn from(value: EndpointSendExampleOptions) -> Self {
-        let EndpointSendExampleOptions { idempotency_key } = value;
+impl From<EndpointBulkReplayOptions> for svix::api::EndpointBulkReplayOptions {
+    fn from(value: EndpointBulkReplayOptions) -> Self {
+        let EndpointBulkReplayOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -121,10 +100,33 @@ pub struct EndpointGetStatsOptions {
 impl From<EndpointGetStatsOptions> for svix::api::EndpointGetStatsOptions {
     fn from(value: EndpointGetStatsOptions) -> Self {
         let EndpointGetStatsOptions { since, until } = value;
-        Self {
-            since: since.map(|dt| dt.to_rfc3339()),
-            until: until.map(|dt| dt.to_rfc3339()),
-        }
+        Self { since, until }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointRecoverOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointRecoverOptions> for svix::api::EndpointRecoverOptions {
+    fn from(value: EndpointRecoverOptions) -> Self {
+        let EndpointRecoverOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct EndpointSendExampleOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<EndpointSendExampleOptions> for svix::api::EndpointSendExampleOptions {
+    fn from(value: EndpointSendExampleOptions) -> Self {
+        let EndpointSendExampleOptions { idempotency_key } = value;
+        Self { idempotency_key }
     }
 }
 
@@ -138,6 +140,7 @@ pub struct EndpointArgs {
 #[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum EndpointCommands {
+    Transformation(EndpointTransformationArgs),
     /// List the application's endpoints.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -150,23 +153,21 @@ pub enum EndpointCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"description\": \"...\",
-    \"disabled\": false,
-    \"filterTypes\": [\"user.signup\",\"user.deleted\"],
     \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"metadata\": {\"key\": \"...\"},
-    \"rateLimit\": 123,
+    \"url\": \"https://example.com/webhook/\",
+    \"description\": \"...\",
     \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\",
-    \"url\": \"https://example.com/webhook/\",
-    \"version\": 1
+    \"disabled\": false,
+    \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         app_id: String,
@@ -186,36 +187,32 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"An example endpoint name\",
+  \"throttleRate\": 123,
+  \"uid\": \"unique-identifier\",
   \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"metadata\": {\"key\": \"...\"},
   \"headers\": {
     \"X-Example\": \"123\",
     \"X-Foobar\": \"Bar\"
-  },
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  }
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"disabled\": false,
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Create {
         app_id: String,
@@ -234,62 +231,59 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"disabled\": false,
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Get { app_id: String, id: String },
-    /// Update an endpoint.
+    Get {
+        app_id: String,
+        id: String,
+    },
+    /// Create or update an endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint update app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "Example: svix endpoint upsert app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
+  \"url\": \"https://example.com/webhook/\",
   \"description\": \"An example endpoint name\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"disabled\": false,
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"disabled\": false,
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    Update {
+    Upsert {
         app_id: String,
         id: String,
-        endpoint_update: crate::json::JsonOf<EndpointUpdate>,
+        endpoint_upsert_in: crate::json::JsonOf<EndpointUpsertIn>,
     },
     /// Delete an endpoint.
     #[command(help_template = concat!(
@@ -300,7 +294,10 @@ pub enum EndpointCommands {
             "\n",
             "{all-args}",
         ))]
-    Delete { app_id: String, id: String },
+    Delete {
+        app_id: String,
+        id: String,
+    },
     /// Partially update an endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -312,84 +309,75 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"channels\": [\"...\"],
   \"description\": \"...\",
-  \"disabled\": true,
-  \"filterTypes\": [\"...\"],
-  \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
-  \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
   \"url\": \"...\",
-  \"version\": 1
+  \"disabled\": true,
+  \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"description\": \"...\",
-  \"disabled\": false,
-  \"filterTypes\": [\"user.signup\",\"user.deleted\"],
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"metadata\": {\"key\": \"...\"},
-  \"rateLimit\": 123,
+  \"url\": \"https://example.com/webhook/\",
+  \"description\": \"...\",
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"url\": \"https://example.com/webhook/\",
-  \"version\": 1
+  \"disabled\": false,
+  \"eventTypes\": [\"user.signup\",\"user.deleted\"],
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     Patch {
         app_id: String,
         id: String,
         endpoint_patch: Option<crate::json::JsonOf<EndpointPatch>>,
     },
-    /// Bulk replay messages sent to the endpoint.
+    /// Get the endpoint's signing secret.
     ///
-    /// Only messages that were created after `since` will be sent.
-    /// This will replay both successful, and failed messages
-    ///
-    /// A completed task will return a payload like the following:
-    /// ```json
-    /// {
-    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-    ///   "status": "finished",
-    ///   "task": "endpoint.bulk-replay",
-    ///   "data": {
-    ///     "messagesSent": 2
-    ///   }
-    /// }
-    /// ```
+    /// This is used to verify the authenticity of the webhook.
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint bulk-replay app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "Example: svix endpoint get-secret app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
+}\n")]
+    GetSecret {
+        app_id: String,
+        id: String,
+    },
+    /// Rotates the endpoint's signing secret.
+    ///
+    /// The previous secret will remain valid for the specified grace period (default 24 hours).
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint rotate-secret app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"channel\": \"project_1337\",
-  \"eventTypes\": [\"...\"],
-  \"since\": \"2030-01-01T00:00:00Z\",
-  \"status\": 0,
-  \"statusCodeClass\": 0,
-  \"tag\": \"project_1337\",
-  \"until\": \"2030-01-01T00:00:00Z\"
-}\n\nExample response:
-{
-  \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"status\": \"running\",
-  \"task\": \"endpoint.replay\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"gracePeriodSeconds\": 123
 }\n")]
-    BulkReplay {
+    RotateSecret {
         app_id: String,
         id: String,
-        bulk_replay_in: crate::json::JsonOf<BulkReplayIn>,
+        endpoint_secret_rotate_in: Option<crate::json::JsonOf<EndpointSecretRotateIn>>,
         #[clap(flatten)]
-        options: EndpointBulkReplayOptions,
+        options: EndpointRotateSecretOptions,
     },
     /// Get the additional headers to be sent with the webhook.
     #[command(help_template = concat!(
@@ -408,12 +396,15 @@ pub enum EndpointCommands {
   },
   \"sensitive\": [\"Authorization\"]
 }\n")]
-    GetHeaders { app_id: String, id: String },
+    GetHeaders {
+        app_id: String,
+        id: String,
+    },
     /// Set the additional headers to be sent with the webhook.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint update-headers app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "Example: svix endpoint set-headers app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -425,7 +416,7 @@ pub enum EndpointCommands {
     \"X-Foobar\": \"Bar\"
   }
 }\n")]
-    UpdateHeaders {
+    SetHeaders {
         app_id: String,
         id: String,
         endpoint_headers_in: crate::json::JsonOf<EndpointHeadersIn>,
@@ -441,57 +432,16 @@ pub enum EndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"deleteHeaders\": [\"...\"],
   \"headers\": {
     \"X-Example\": \"123\",
     \"X-Foobar\": \"Bar\"
-  }
+  },
+  \"deleteHeaders\": [\"...\"]
 }\n")]
     PatchHeaders {
         app_id: String,
         id: String,
         endpoint_headers_patch_in: crate::json::JsonOf<EndpointHeadersPatchIn>,
-    },
-    /// Resend all failed messages since a given time.
-    ///
-    /// Messages that were sent successfully, even if failed initially, are not resent.
-    ///
-    /// A completed task will return a payload like the following:
-    /// ```json
-    /// {
-    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-    ///   "status": "finished",
-    ///   "task": "endpoint.recover",
-    ///   "data": {
-    ///     "messagesSent": 2
-    ///   }
-    /// }
-    /// ```
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint recover app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"since\": \"2030-01-01T00:00:00Z\",
-  \"until\": \"2030-01-01T00:00:00Z\"
-}\n\nExample response:
-{
-  \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"status\": \"running\",
-  \"task\": \"endpoint.replay\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
-}\n")]
-    Recover {
-        app_id: String,
-        id: String,
-        recover_in: crate::json::JsonOf<RecoverIn>,
-        #[clap(flatten)]
-        options: EndpointRecoverOptions,
     },
     /// Replays messages to the endpoint.
     ///
@@ -535,44 +485,116 @@ pub enum EndpointCommands {
         #[clap(flatten)]
         options: EndpointReplayMissingOptions,
     },
-    /// Get the endpoint's signing secret.
+    /// Bulk replay messages sent to the endpoint.
     ///
-    /// This is used to verify the authenticity of the webhook.
-    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+    /// Only messages that were created after `since` will be sent.
+    /// This will replay both successful, and failed messages
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.bulk-replay",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint get-secret app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
-}\n")]
-    GetSecret { app_id: String, id: String },
-    /// Rotates the endpoint's signing secret.
-    ///
-    /// The previous secret will remain valid for the next 24 hours.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint rotate-secret app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "Example: svix endpoint bulk-replay app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
+  \"since\": \"2030-01-01T00:00:00Z\",
+  \"until\": \"2030-01-01T00:00:00Z\",
+  \"eventTypes\": [\"...\"],
+  \"channel\": \"project_1337\",
+  \"tag\": \"project_1337\",
+  \"status\": 0,
+  \"statusCodeClass\": 0
+}\n\nExample response:
+{
+  \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"status\": \"running\",
+  \"task\": \"endpoint.replay\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
-    RotateSecret {
+    BulkReplay {
         app_id: String,
         id: String,
-        endpoint_secret_rotate_in: Option<crate::json::JsonOf<EndpointSecretRotateIn>>,
+        bulk_replay_in: crate::json::JsonOf<BulkReplayIn>,
         #[clap(flatten)]
-        options: EndpointRotateSecretOptions,
+        options: EndpointBulkReplayOptions,
+    },
+    /// Get basic statistics for the endpoint.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint get-stats app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"success\": 123,
+  \"pending\": 123,
+  \"sending\": 123,
+  \"fail\": 123,
+  \"canceled\": 123
+}\n")]
+    GetStats {
+        app_id: String,
+        id: String,
+        #[clap(flatten)]
+        options: EndpointGetStatsOptions,
+    },
+    /// Resend all failed messages since a given time.
+    ///
+    /// Messages that were sent successfully, even if failed initially, are not resent.
+    ///
+    /// A completed task will return a payload like the following:
+    /// ```json
+    /// {
+    ///   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+    ///   "status": "finished",
+    ///   "task": "endpoint.recover",
+    ///   "data": {
+    ///     "messagesSent": 2
+    ///   }
+    /// }
+    /// ```
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint recover app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"since\": \"2030-01-01T00:00:00Z\",
+  \"until\": \"2030-01-01T00:00:00Z\"
+}\n\nExample response:
+{
+  \"id\": \"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"status\": \"running\",
+  \"task\": \"endpoint.replay\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+}\n")]
+    Recover {
+        app_id: String,
+        id: String,
+        recover_in: crate::json::JsonOf<RecoverIn>,
+        #[clap(flatten)]
+        options: EndpointRecoverOptions,
     },
     /// Send an example message for an event.
     #[command(help_template = concat!(
@@ -589,18 +611,18 @@ pub enum EndpointCommands {
   \"exampleIndex\": 123
 }\n\nExample response:
 {
-  \"channels\": [\"project_123\",\"group_2\"],
-  \"deliverAt\": \"2030-01-01T00:00:00Z\",
   \"eventId\": \"unique-identifier\",
   \"eventType\": \"user.signup\",
-  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"payload\": {
     \"email\": \"test@example.com\",
     \"type\": \"user.created\",
     \"username\": \"test_user\"
   },
+  \"channels\": [\"project_123\",\"group_2\"],
+  \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"timestamp\": \"2030-01-01T00:00:00Z\",
   \"tags\": [\"...\"],
-  \"timestamp\": \"2030-01-01T00:00:00Z\"
+  \"deliverAt\": \"2030-01-01T00:00:00Z\"
 }\n")]
     SendExample {
         app_id: String,
@@ -608,66 +630,6 @@ pub enum EndpointCommands {
         event_example_in: crate::json::JsonOf<EventExampleIn>,
         #[clap(flatten)]
         options: EndpointSendExampleOptions,
-    },
-    /// Get basic statistics for the endpoint.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint get-stats app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"canceled\": 123,
-  \"fail\": 123,
-  \"pending\": 123,
-  \"sending\": 123,
-  \"success\": 123
-}\n")]
-    GetStats {
-        app_id: String,
-        id: String,
-        #[clap(flatten)]
-        options: EndpointGetStatsOptions,
-    },
-    /// Get the transformation code associated with this endpoint.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint transformation-get app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"code\": \"...\",
-  \"enabled\": true,
-  \"updatedAt\": \"2030-01-01T00:00:00Z\",
-  \"variables\": {\"key\": \"...\"}
-}\n")]
-    TransformationGet { app_id: String, id: String },
-    /// Set or unset the transformation code associated with this endpoint.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix endpoint patch-transformation app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"code\": \"function handler(webhook) { /* ... */ }\",
-  \"enabled\": true,
-  \"variables\": {\"key\": \"...\"}
-}\n")]
-    PatchTransformation {
-        app_id: String,
-        id: String,
-        endpoint_transformation_patch: Option<crate::json::JsonOf<EndpointTransformationPatch>>,
     },
     /// This operation was renamed to `set-transformation`.
     #[command(help_template = concat!(
@@ -697,6 +659,9 @@ impl EndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
+            Self::Transformation(args) => {
+                args.command.exec(client, color_mode).await?;
+            }
             Self::List { app_id, options } => {
                 let resp = client.endpoint().list(app_id, Some(options.into())).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
@@ -716,14 +681,14 @@ impl EndpointCommands {
                 let resp = client.endpoint().get(app_id, id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 app_id,
                 id,
-                endpoint_update,
+                endpoint_upsert_in,
             } => {
                 let resp = client
                     .endpoint()
-                    .update(app_id, id, endpoint_update.into_inner())
+                    .upsert(app_id, id, endpoint_upsert_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -738,71 +703,6 @@ impl EndpointCommands {
                 let resp = client
                     .endpoint()
                     .patch(app_id, id, endpoint_patch.unwrap_or_default().into_inner())
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::BulkReplay {
-                app_id,
-                id,
-                bulk_replay_in,
-                options,
-            } => {
-                let resp = client
-                    .endpoint()
-                    .bulk_replay(
-                        app_id,
-                        id,
-                        bulk_replay_in.into_inner(),
-                        Some(options.into()),
-                    )
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::GetHeaders { app_id, id } => {
-                let resp = client.endpoint().get_headers(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::UpdateHeaders {
-                app_id,
-                id,
-                endpoint_headers_in,
-            } => {
-                client
-                    .endpoint()
-                    .update_headers(app_id, id, endpoint_headers_in.into_inner())
-                    .await?;
-            }
-            Self::PatchHeaders {
-                app_id,
-                id,
-                endpoint_headers_patch_in,
-            } => {
-                client
-                    .endpoint()
-                    .patch_headers(app_id, id, endpoint_headers_patch_in.into_inner())
-                    .await?;
-            }
-            Self::Recover {
-                app_id,
-                id,
-                recover_in,
-                options,
-            } => {
-                let resp = client
-                    .endpoint()
-                    .recover(app_id, id, recover_in.into_inner(), Some(options.into()))
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::ReplayMissing {
-                app_id,
-                id,
-                replay_in,
-                options,
-            } => {
-                let resp = client
-                    .endpoint()
-                    .replay_missing(app_id, id, replay_in.into_inner(), Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
@@ -826,18 +726,54 @@ impl EndpointCommands {
                     )
                     .await?;
             }
-            Self::SendExample {
+            Self::GetHeaders { app_id, id } => {
+                let resp = client.endpoint().get_headers(app_id, id).await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::SetHeaders {
                 app_id,
                 id,
-                event_example_in,
+                endpoint_headers_in,
+            } => {
+                client
+                    .endpoint()
+                    .set_headers(app_id, id, endpoint_headers_in.into_inner())
+                    .await?;
+            }
+            Self::PatchHeaders {
+                app_id,
+                id,
+                endpoint_headers_patch_in,
+            } => {
+                client
+                    .endpoint()
+                    .patch_headers(app_id, id, endpoint_headers_patch_in.into_inner())
+                    .await?;
+            }
+            Self::ReplayMissing {
+                app_id,
+                id,
+                replay_in,
                 options,
             } => {
                 let resp = client
                     .endpoint()
-                    .send_example(
+                    .replay_missing(app_id, id, replay_in.into_inner(), Some(options.into()))
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::BulkReplay {
+                app_id,
+                id,
+                bulk_replay_in,
+                options,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .bulk_replay(
                         app_id,
                         id,
-                        event_example_in.into_inner(),
+                        bulk_replay_in.into_inner(),
                         Some(options.into()),
                     )
                     .await?;
@@ -854,25 +790,34 @@ impl EndpointCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::TransformationGet { app_id, id } => {
-                let resp = client.endpoint().transformation_get(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::PatchTransformation {
+            Self::Recover {
                 app_id,
                 id,
-                endpoint_transformation_patch,
+                recover_in,
+                options,
             } => {
-                client
+                let resp = client
                     .endpoint()
-                    .patch_transformation(
+                    .recover(app_id, id, recover_in.into_inner(), Some(options.into()))
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::SendExample {
+                app_id,
+                id,
+                event_example_in,
+                options,
+            } => {
+                let resp = client
+                    .endpoint()
+                    .send_example(
                         app_id,
                         id,
-                        endpoint_transformation_patch
-                            .unwrap_or_default()
-                            .into_inner(),
+                        event_example_in.into_inner(),
+                        Some(options.into()),
                     )
                     .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::TransformationPartialUpdate {
                 app_id,

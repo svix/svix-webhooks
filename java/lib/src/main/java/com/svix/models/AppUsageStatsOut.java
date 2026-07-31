@@ -20,13 +20,43 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AppUsageStatsOut {
+    @JsonProperty private Set<String> unresolvedAppIds;
     @JsonProperty private String id;
     @JsonProperty private BackgroundTaskStatus status;
     @JsonProperty private BackgroundTaskType task;
-    @JsonProperty private Set<String> unresolvedAppIds;
     @JsonProperty private OffsetDateTime updatedAt;
 
     public AppUsageStatsOut() {}
+
+    public AppUsageStatsOut unresolvedAppIds(Set<String> unresolvedAppIds) {
+        this.unresolvedAppIds = unresolvedAppIds;
+        return this;
+    }
+
+    public AppUsageStatsOut addUnresolvedAppIdsItem(String unresolvedAppIdsItem) {
+        if (this.unresolvedAppIds == null) {
+            this.unresolvedAppIds = new LinkedHashSet<>();
+        }
+        this.unresolvedAppIds.add(unresolvedAppIdsItem);
+
+        return this;
+    }
+
+    /**
+     * Any app IDs or UIDs received in the request that weren't found.
+     *
+     * <p>Stats will be produced for all the others.
+     *
+     * @return unresolvedAppIds
+     */
+    @javax.annotation.Nonnull
+    public Set<String> getUnresolvedAppIds() {
+        return unresolvedAppIds;
+    }
+
+    public void setUnresolvedAppIds(Set<String> unresolvedAppIds) {
+        this.unresolvedAppIds = unresolvedAppIds;
+    }
 
     public AppUsageStatsOut id(String id) {
         this.id = id;
@@ -83,36 +113,6 @@ public class AppUsageStatsOut {
 
     public void setTask(BackgroundTaskType task) {
         this.task = task;
-    }
-
-    public AppUsageStatsOut unresolvedAppIds(Set<String> unresolvedAppIds) {
-        this.unresolvedAppIds = unresolvedAppIds;
-        return this;
-    }
-
-    public AppUsageStatsOut addUnresolvedAppIdsItem(String unresolvedAppIdsItem) {
-        if (this.unresolvedAppIds == null) {
-            this.unresolvedAppIds = new LinkedHashSet<>();
-        }
-        this.unresolvedAppIds.add(unresolvedAppIdsItem);
-
-        return this;
-    }
-
-    /**
-     * Any app IDs or UIDs received in the request that weren't found.
-     *
-     * <p>Stats will be produced for all the others.
-     *
-     * @return unresolvedAppIds
-     */
-    @javax.annotation.Nonnull
-    public Set<String> getUnresolvedAppIds() {
-        return unresolvedAppIds;
-    }
-
-    public void setUnresolvedAppIds(Set<String> unresolvedAppIds) {
-        this.unresolvedAppIds = unresolvedAppIds;
     }
 
     public AppUsageStatsOut updatedAt(OffsetDateTime updatedAt) {

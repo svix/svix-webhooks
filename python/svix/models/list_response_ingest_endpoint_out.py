@@ -8,8 +8,8 @@ from .ingest_endpoint_out import IngestEndpointOut
 class ListResponseIngestEndpointOut(BaseModel):
     data: t.List[IngestEndpointOut]
 
-    done: bool
-
     iterator: t.Optional[str]
 
     prev_iterator: t.Optional[str] = None
+
+    done: bool

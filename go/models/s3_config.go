@@ -2,9 +2,9 @@
 package models
 
 type S3Config struct {
-	AccessKeyId     string  `json:"accessKeyId"`
 	Bucket          string  `json:"bucket"`
-	EndpointUrl     *string `json:"endpointUrl,omitempty"`
-	Region          string  `json:"region"`
+	AccessKeyId     string  `json:"accessKeyId"`
 	SecretAccessKey string  `json:"secretAccessKey"`
+	Region          string  `json:"region"`
+	EndpointUrl     *string `json:"endpointUrl,omitempty"`
 }

@@ -1,22 +1,11 @@
 // this file is @generated
 
 export interface EndpointOut {
-  /** List of message channels this endpoint listens to (omit for all). */
-  channels?: string[] | null;
-  createdAt: Date;
-  /** An example endpoint name. */
-  description: string;
-  disabled?: boolean;
-  filterTypes?: string[] | null;
   /** The Endpoint's ID. */
   id: string;
   metadata: { [key: string]: string };
-  /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
+  url: string;
+  description: string;
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -25,45 +14,44 @@ export interface EndpointOut {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
+  disabled?: boolean;
+  eventTypes?: string[] | null;
+  /** List of message channels this endpoint listens to (omit for all). */
+  channels?: string[] | null;
+  createdAt: Date;
   updatedAt: Date;
-  url: string;
-  version: number;
 }
 
 export const EndpointOutSerializer = {
   _fromJsonObject(object: any): EndpointOut {
     return {
-      channels: object["channels"],
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
       id: object["id"],
       metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
+      url: object["url"],
+      description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
+      disabled: object["disabled"],
+      eventTypes: object["eventTypes"],
+      channels: object["channels"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
-      url: object["url"],
-      version: object["version"],
     };
   },
 
   _toJsonObject(self: EndpointOut): any {
     return {
-      channels: self.channels,
-      createdAt: self.createdAt,
-      description: self.description,
-      disabled: self.disabled,
-      filterTypes: self.filterTypes,
       id: self.id,
       metadata: self.metadata,
-      rateLimit: self.rateLimit,
+      url: self.url,
+      description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
+      disabled: self.disabled,
+      eventTypes: self.eventTypes,
+      channels: self.channels,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
-      url: self.url,
-      version: self.version,
     };
   },
 };

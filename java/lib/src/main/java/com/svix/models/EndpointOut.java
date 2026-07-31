@@ -23,134 +23,19 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointOut {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
     @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
-    @JsonProperty private Long throttleRate;
-    @JsonProperty private String uid;
-    @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
-    @JsonProperty private Integer version;
+    @JsonProperty private String description;
+    @JsonProperty private Short throttleRate;
+    @JsonProperty private String uid;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> eventTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public EndpointOut() {}
-
-    public EndpointOut channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public EndpointOut addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of message channels this endpoint listens to (omit for all).
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
-
-    public EndpointOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return createdAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public EndpointOut description(String description) {
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * An example endpoint name.
-     *
-     * @return description
-     */
-    @javax.annotation.Nonnull
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public EndpointOut disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public EndpointOut filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public EndpointOut addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
 
     public EndpointOut id(String id) {
         this.id = id;
@@ -199,29 +84,45 @@ public class EndpointOut {
         this.metadata = metadata;
     }
 
-    @Deprecated
-    public EndpointOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
+    public EndpointOut url(URI url) {
+        this.url = url;
         return this;
     }
 
     /**
-     * Deprecated, use `throttleRate` instead.
+     * Get url
      *
-     * @return rateLimit
+     * @return url
      */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
     }
 
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
-    public EndpointOut throttleRate(Long throttleRate) {
+    public EndpointOut description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nonnull
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public EndpointOut throttleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
         return this;
     }
@@ -234,11 +135,11 @@ public class EndpointOut {
      * @return throttleRate
      */
     @javax.annotation.Nullable
-    public Long getThrottleRate() {
+    public Short getThrottleRate() {
         return throttleRate;
     }
 
-    public void setThrottleRate(Long throttleRate) {
+    public void setThrottleRate(Short throttleRate) {
         this.throttleRate = throttleRate;
     }
 
@@ -261,6 +162,100 @@ public class EndpointOut {
         this.uid = uid;
     }
 
+    public EndpointOut disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public EndpointOut eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public EndpointOut addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
+        }
+        this.eventTypes.add(eventTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get eventTypes
+     *
+     * @return eventTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getEventTypes() {
+        return eventTypes;
+    }
+
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+    }
+
+    public EndpointOut channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public EndpointOut addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
+        return this;
+    }
+
+    /**
+     * List of message channels this endpoint listens to (omit for all).
+     *
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
+
+    public EndpointOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return createdAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public EndpointOut updatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
@@ -278,47 +273,6 @@ public class EndpointOut {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public EndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
-    @Deprecated
-    public EndpointOut version(Integer version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nonnull
-    @Deprecated
-    public Integer getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     /**

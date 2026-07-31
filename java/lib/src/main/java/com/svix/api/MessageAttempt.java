@@ -83,6 +83,8 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.withMsg != null) {
             url.addQueryParameter("with_msg", Utils.serializeQueryParam(options.withMsg));
@@ -158,6 +160,8 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
@@ -235,6 +239,8 @@ public class MessageAttempt {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         if (options.expandedStatuses != null) {
             url.addQueryParameter(
@@ -247,6 +253,43 @@ public class MessageAttempt {
         }
         return this.client.executeRequest(
                 "GET", url.build(), null, null, ListResponseEndpointMessageOut.class);
+    }
+
+    /**
+     * List endpoints attempted by a given message.
+     *
+     * <p>Additionally includes metadata about the latest message attempt. By default, endpoints are
+     * listed in ascending order by ID.
+     */
+    public ListResponseMessageEndpointOut listAttemptedDestinations(
+            final String appId, final String msgId) throws IOException, ApiException {
+        return this.listAttemptedDestinations(
+                appId, msgId, new MessageAttemptListAttemptedDestinationsOptions());
+    }
+
+    /**
+     * List endpoints attempted by a given message.
+     *
+     * <p>Additionally includes metadata about the latest message attempt. By default, endpoints are
+     * listed in ascending order by ID.
+     */
+    public ListResponseMessageEndpointOut listAttemptedDestinations(
+            final String appId,
+            final String msgId,
+            final MessageAttemptListAttemptedDestinationsOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(String.format("/api/v1/app/%s/msg/%s/endpoint", appId, msgId));
+        if (options.limit != null) {
+            url.addQueryParameter("limit", Utils.serializeQueryParam(options.limit));
+        }
+        if (options.iterator != null) {
+            url.addQueryParameter("iterator", options.iterator);
+        }
+        return this.client.executeRequest(
+                "GET", url.build(), null, null, ListResponseMessageEndpointOut.class);
     }
 
     /** `msg_id`: Use a message id or a message `eventId` */
@@ -294,43 +337,6 @@ public class MessageAttempt {
                                         "/api/v1/app/%s/msg/%s/attempt/%s/content",
                                         appId, msgId, attemptId));
         this.client.executeRequest("DELETE", url.build(), null, null, null);
-    }
-
-    /**
-     * List endpoints attempted by a given message.
-     *
-     * <p>Additionally includes metadata about the latest message attempt. By default, endpoints are
-     * listed in ascending order by ID.
-     */
-    public ListResponseMessageEndpointOut listAttemptedDestinations(
-            final String appId, final String msgId) throws IOException, ApiException {
-        return this.listAttemptedDestinations(
-                appId, msgId, new MessageAttemptListAttemptedDestinationsOptions());
-    }
-
-    /**
-     * List endpoints attempted by a given message.
-     *
-     * <p>Additionally includes metadata about the latest message attempt. By default, endpoints are
-     * listed in ascending order by ID.
-     */
-    public ListResponseMessageEndpointOut listAttemptedDestinations(
-            final String appId,
-            final String msgId,
-            final MessageAttemptListAttemptedDestinationsOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(String.format("/api/v1/app/%s/msg/%s/endpoint", appId, msgId));
-        if (options.limit != null) {
-            url.addQueryParameter("limit", Utils.serializeQueryParam(options.limit));
-        }
-        if (options.iterator != null) {
-            url.addQueryParameter("iterator", options.iterator);
-        }
-        return this.client.executeRequest(
-                "GET", url.build(), null, null, ListResponseMessageEndpointOut.class);
     }
 
     /** Resend a message to the specified endpoint. */

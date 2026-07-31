@@ -3,10 +3,10 @@ use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
 pub struct MessagePollerv2ConsumerPollOptions {
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// Lease duration in milliseconds.
-    pub lease_duration_ms: Option<i32>,
+    pub lease_duration_ms: Option<u64>,
 
     pub starting_position: Option<StartingPosition>,
 }
@@ -40,7 +40,7 @@ impl<'a> MessagePollerv2<'a> {
         } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/polling-endpoint/{sink_id}/consumer/{consumer_id}",
         )
         .with_path_param("app_id", app_id)
@@ -65,7 +65,7 @@ impl<'a> MessagePollerv2<'a> {
         let MessagePollerv2ConsumerCommitOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/app/{app_id}/polling-endpoint/{sink_id}/consumer/{consumer_id}/commit",
         )
         .with_path_param("app_id", app_id)

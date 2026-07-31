@@ -2,12 +2,13 @@
 package models
 
 type SnowflakePatchConfig struct {
+	PrivateKey        *string `json:"privateKey,omitempty"`
 	AccountIdentifier *string `json:"accountIdentifier,omitempty"`
+	UserId            *string `json:"userId,omitempty"`
 	// Database name.
 	//
 	// Only required if not using transformations.
-	DbName     *string `json:"dbName,omitempty"`
-	PrivateKey *string `json:"privateKey,omitempty"`
+	DbName *string `json:"dbName,omitempty"`
 	// Schema name.
 	//
 	// Only required if not using transformations.
@@ -16,5 +17,4 @@ type SnowflakePatchConfig struct {
 	//
 	// Only required if not using transformations.
 	TableName *string `json:"tableName,omitempty"`
-	UserId    *string `json:"userId,omitempty"`
 }

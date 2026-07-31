@@ -12,10 +12,8 @@ type StreamingStream struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingStream(client *internal.SvixHttpClient) *StreamingStream {
-	return &StreamingStream{
-		client: client,
-	}
+func newStreamingStream(client *internal.SvixHttpClient) StreamingStream {
+	return StreamingStream{client}
 }
 
 type StreamingStreamListOptions struct {
@@ -33,20 +31,21 @@ type StreamingStreamCreateOptions struct {
 }
 
 // List of all the organization's streams.
-func (streamingStream *StreamingStream) List(
+func (streamingStream StreamingStream) List(
 	ctx context.Context,
 	o *StreamingStreamListOptions,
 ) (*models.ListResponseStreamOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingStreamListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseStreamOut](
 		ctx,
@@ -61,19 +60,20 @@ func (streamingStream *StreamingStream) List(
 }
 
 // Creates a new stream.
-func (streamingStream *StreamingStream) Create(
+func (streamingStream StreamingStream) Create(
 	ctx context.Context,
 	streamIn models.StreamIn,
 	o *StreamingStreamCreateOptions,
 ) (*models.StreamOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingStreamCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.StreamIn, models.StreamOut](
 		ctx,
@@ -88,7 +88,7 @@ func (streamingStream *StreamingStream) Create(
 }
 
 // Get a stream by id or uid.
-func (streamingStream *StreamingStream) Get(
+func (streamingStream StreamingStream) Get(
 	ctx context.Context,
 	streamId string,
 ) (*models.StreamOut, error) {
@@ -107,8 +107,8 @@ func (streamingStream *StreamingStream) Get(
 	)
 }
 
-// Update a stream.
-func (streamingStream *StreamingStream) Update(
+// Create or update a stream.
+func (streamingStream StreamingStream) Upsert(
 	ctx context.Context,
 	streamId string,
 	streamIn models.StreamIn,
@@ -129,14 +129,15 @@ func (streamingStream *StreamingStream) Update(
 }
 
 // Delete a stream.
-func (streamingStream *StreamingStream) Delete(
+func (streamingStream StreamingStream) Delete(
 	ctx context.Context,
 	streamId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		streamingStream.client,
 		"DELETE",
@@ -150,7 +151,7 @@ func (streamingStream *StreamingStream) Delete(
 }
 
 // Partially update a stream.
-func (streamingStream *StreamingStream) Patch(
+func (streamingStream StreamingStream) Patch(
 	ctx context.Context,
 	streamId string,
 	streamPatch models.StreamPatch,

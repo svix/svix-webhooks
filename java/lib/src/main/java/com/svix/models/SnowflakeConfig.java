@@ -16,14 +16,35 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SnowflakeConfig {
-    @JsonProperty private String accountIdentifier;
-    @JsonProperty private String dbName;
     @JsonProperty private String privateKey;
+    @JsonProperty private String accountIdentifier;
+    @JsonProperty private String userId;
+    @JsonProperty private String dbName;
     @JsonProperty private String schemaName;
     @JsonProperty private String tableName;
-    @JsonProperty private String userId;
 
     public SnowflakeConfig() {}
+
+    public SnowflakeConfig privateKey(String privateKey) {
+        this.privateKey = privateKey;
+        return this;
+    }
+
+    /**
+     * PEM-encoded private key used for signing token-based requests to the Snowflake API.
+     *
+     * <p>Beginning/end delimiters are not required.
+     *
+     * @return privateKey
+     */
+    @javax.annotation.Nonnull
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
 
     public SnowflakeConfig accountIdentifier(String accountIdentifier) {
         this.accountIdentifier = accountIdentifier;
@@ -45,6 +66,25 @@ public class SnowflakeConfig {
         this.accountIdentifier = accountIdentifier;
     }
 
+    public SnowflakeConfig userId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    /**
+     * The Snowflake user id.
+     *
+     * @return userId
+     */
+    @javax.annotation.Nonnull
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
     public SnowflakeConfig dbName(String dbName) {
         this.dbName = dbName;
         return this;
@@ -64,27 +104,6 @@ public class SnowflakeConfig {
 
     public void setDbName(String dbName) {
         this.dbName = dbName;
-    }
-
-    public SnowflakeConfig privateKey(String privateKey) {
-        this.privateKey = privateKey;
-        return this;
-    }
-
-    /**
-     * PEM-encoded private key used for signing token-based requests to the Snowflake API.
-     *
-     * <p>Beginning/end delimiters are not required.
-     *
-     * @return privateKey
-     */
-    @javax.annotation.Nonnull
-    public String getPrivateKey() {
-        return privateKey;
-    }
-
-    public void setPrivateKey(String privateKey) {
-        this.privateKey = privateKey;
     }
 
     public SnowflakeConfig schemaName(String schemaName) {
@@ -127,25 +146,6 @@ public class SnowflakeConfig {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
-    }
-
-    public SnowflakeConfig userId(String userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    /**
-     * The Snowflake user id.
-     *
-     * @return userId
-     */
-    @javax.annotation.Nonnull
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
     }
 
     /**

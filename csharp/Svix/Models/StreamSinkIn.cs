@@ -9,23 +9,23 @@ namespace Svix.Models
     [JsonConverter(typeof(StreamSinkInConverter))]
     public class StreamSinkIn
     {
-        [JsonProperty("batchSize")]
-        public ushort? BatchSize { get; set; } = null;
-
-        [JsonProperty("eventTypes")]
-        public List<string>? EventTypes { get; set; } = null;
-
-        [JsonProperty("maxWaitSecs")]
-        public ushort? MaxWaitSecs { get; set; } = null;
-
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
         [JsonProperty("status")]
         public SinkStatusIn? Status { get; set; } = null;
 
-        [JsonProperty("uid")]
-        public string? Uid { get; set; } = null;
+        [JsonProperty("batchSize")]
+        public ushort? BatchSize { get; set; } = null;
+
+        [JsonProperty("maxWaitSecs")]
+        public ushort? MaxWaitSecs { get; set; } = null;
+
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
         [JsonIgnore]
         public required StreamSinkInConfig Config { get; set; }
@@ -45,12 +45,12 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class StreamSinkIn {\n");
-            sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
-            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
-            sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
-            sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Status: ").Append(Status).Append('\n');
+            sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
+            sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
+            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
@@ -300,23 +300,23 @@ namespace Svix.Models
 
     internal class StreamSinkInSurrogate
     {
-        [JsonProperty("batchSize")]
-        public ushort? BatchSize { get; set; } = null;
-
-        [JsonProperty("eventTypes")]
-        public List<string>? EventTypes { get; set; } = null;
-
-        [JsonProperty("maxWaitSecs")]
-        public ushort? MaxWaitSecs { get; set; } = null;
-
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
+        [JsonProperty("uid")]
+        public string? Uid { get; set; } = null;
 
         [JsonProperty("status")]
         public SinkStatusIn? Status { get; set; } = null;
 
-        [JsonProperty("uid")]
-        public string? Uid { get; set; } = null;
+        [JsonProperty("batchSize")]
+        public ushort? BatchSize { get; set; } = null;
+
+        [JsonProperty("maxWaitSecs")]
+        public ushort? MaxWaitSecs { get; set; } = null;
+
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
@@ -371,12 +371,12 @@ namespace Svix.Models
 
             return new StreamSinkIn
             {
-                BatchSize = surrogate.BatchSize,
-                EventTypes = surrogate.EventTypes,
-                MaxWaitSecs = surrogate.MaxWaitSecs,
-                Metadata = surrogate.Metadata,
-                Status = surrogate.Status,
                 Uid = surrogate.Uid,
+                Status = surrogate.Status,
+                BatchSize = surrogate.BatchSize,
+                MaxWaitSecs = surrogate.MaxWaitSecs,
+                EventTypes = surrogate.EventTypes,
+                Metadata = surrogate.Metadata,
                 Config = config,
             };
         }

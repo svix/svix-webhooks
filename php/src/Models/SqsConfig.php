@@ -11,9 +11,9 @@ class SqsConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly string $accessKeyId,
         public readonly string $queueUrl,
         public readonly string $region,
+        public readonly string $accessKeyId,
         public readonly string $secretAccessKey,
         public readonly ?string $endpointUrl = null,
         array $setFields = [],
@@ -25,18 +25,18 @@ class SqsConfig implements \JsonSerializable
      * Create an instance of SqsConfig with required fields.
      */
     public static function create(
-        string $accessKeyId,
         string $queueUrl,
         string $region,
+        string $accessKeyId,
         string $secretAccessKey,
     ): self {
         return new self(
-            accessKeyId: $accessKeyId,
-            endpointUrl: null,
             queueUrl: $queueUrl,
             region: $region,
+            accessKeyId: $accessKeyId,
             secretAccessKey: $secretAccessKey,
-            setFields: ['accessKeyId' => true, 'queueUrl' => true, 'region' => true, 'secretAccessKey' => true]
+            endpointUrl: null,
+            setFields: ['queueUrl' => true, 'region' => true, 'accessKeyId' => true, 'secretAccessKey' => true]
         );
     }
 
@@ -46,11 +46,11 @@ class SqsConfig implements \JsonSerializable
         $setFields['endpointUrl'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            endpointUrl: $endpointUrl,
             queueUrl: $this->queueUrl,
             region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $endpointUrl,
             setFields: $setFields
         );
     }
@@ -58,9 +58,9 @@ class SqsConfig implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'accessKeyId' => $this->accessKeyId,
             'queueUrl' => $this->queueUrl,
             'region' => $this->region,
+            'accessKeyId' => $this->accessKeyId,
             'secretAccessKey' => $this->secretAccessKey];
 
         if (isset($this->setFields['endpointUrl'])) {
@@ -76,11 +76,11 @@ class SqsConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'SqsConfig'),
-            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SqsConfig'),
             queueUrl: \Svix\Utils::getValFromJson($data, 'queueUrl', true, 'SqsConfig'),
             region: \Svix\Utils::deserializeString($data, 'region', true, 'SqsConfig'),
-            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', true, 'SqsConfig')
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'SqsConfig'),
+            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', true, 'SqsConfig'),
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SqsConfig')
         );
     }
 

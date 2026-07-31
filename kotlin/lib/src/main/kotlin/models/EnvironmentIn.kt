@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class EnvironmentIn(
-    val connectors: List<ConnectorIn>? = null,
     val eventTypes: List<EventTypeIn>? = null,
     @Serializable(with = StringAnyMapSerializer::class) val settings: Map<String, Any>? = null,
+    val connectors: List<ConnectorIn>? = null,
 )

@@ -2,6 +2,6 @@
 package models
 
 type OtelConfig struct {
-	AdditionalHeaders *map[string]string `json:"additionalHeaders,omitempty"`
 	Url               string             `json:"url"`
+	AdditionalHeaders *map[string]string `json:"additionalHeaders,omitempty"`
 }

@@ -7,7 +7,7 @@ import com.svix.exceptions.ApiException;
 import com.svix.models.ConnectorIn;
 import com.svix.models.ConnectorOut;
 import com.svix.models.ConnectorPatch;
-import com.svix.models.ConnectorUpdate;
+import com.svix.models.ConnectorUpsertIn;
 import com.svix.models.ListResponseConnectorOut;
 
 import okhttp3.Headers;
@@ -76,15 +76,15 @@ public class Connector {
         return this.client.executeRequest("GET", url.build(), null, null, ConnectorOut.class);
     }
 
-    /** Update a connector. */
-    public ConnectorOut update(final String connectorId, final ConnectorUpdate connectorUpdate)
+    /** Create or update a connector. */
+    public ConnectorOut upsert(final String connectorId, final ConnectorUpsertIn connectorUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
                         .newUrlBuilder()
                         .encodedPath(String.format("/api/v1/connector/%s", connectorId));
         return this.client.executeRequest(
-                "PUT", url.build(), null, connectorUpdate, ConnectorOut.class);
+                "PUT", url.build(), null, connectorUpsertIn, ConnectorOut.class);
     }
 
     /** Delete a connector. */

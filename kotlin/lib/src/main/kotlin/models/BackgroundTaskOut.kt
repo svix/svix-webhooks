@@ -2,7 +2,7 @@
 package com.svix.kotlin.models
 
 import com.svix.kotlin.StringAnyMapSerializer
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable

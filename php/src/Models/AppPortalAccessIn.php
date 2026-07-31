@@ -13,6 +13,7 @@ class AppPortalAccessIn implements \JsonSerializable
      * @param ApplicationIn|null $application Optionally creates a new application while generating the access link.
      *
      * If the application id or uid that is used in the path already exists, this argument is ignored.
+     * @param bool|null                      $readOnly     whether the app portal should be in read-only mode
      * @param list<AppPortalCapability>|null $capabilities Custom capabilities attached to the token, You can combine as many capabilities as necessary.
      *
      * The `ViewBase` capability is always required
@@ -30,21 +31,20 @@ class AppPortalAccessIn implements \JsonSerializable
      * - `ManageEndpoint`: Allows user to read/modify any field or configuration of an endpoint (including secrets)
      *
      * By default, the token will get all capabilities if the capabilities are not explicitly specified.
-     * @param int|null $expiry How long the token will be valid for, in seconds.
+     * @param list<string>|null $featureFlags the set of feature flags the created token will have access to
+     * @param int|null          $expiry       How long the token will be valid for, in seconds.
      *
      * Valid values are between 1 hour and 7 days. The default is 7 days.
-     * @param list<string>|null $featureFlags the set of feature flags the created token will have access to
-     * @param bool|null         $readOnly     whether the app portal should be in read-only mode
-     * @param string|null       $sessionId    An optional session ID to attach to the token.
+     * @param string|null $sessionId An optional session ID to attach to the token.
      *
      * When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
      */
     private function __construct(
         public readonly ?ApplicationIn $application = null,
-        public readonly ?array $capabilities = null,
-        public readonly ?int $expiry = null,
-        public readonly ?array $featureFlags = null,
         public readonly ?bool $readOnly = null,
+        public readonly ?array $capabilities = null,
+        public readonly ?array $featureFlags = null,
+        public readonly ?int $expiry = null,
         public readonly ?string $sessionId = null,
         array $setFields = [],
     ) {
@@ -58,10 +58,10 @@ class AppPortalAccessIn implements \JsonSerializable
     ): self {
         return new self(
             application: null,
-            capabilities: null,
-            expiry: null,
-            featureFlags: null,
             readOnly: null,
+            capabilities: null,
+            featureFlags: null,
+            expiry: null,
             sessionId: null,
             setFields: []
         );
@@ -74,58 +74,10 @@ class AppPortalAccessIn implements \JsonSerializable
 
         return new self(
             application: $application,
+            readOnly: $this->readOnly,
             capabilities: $this->capabilities,
-            expiry: $this->expiry,
             featureFlags: $this->featureFlags,
-            readOnly: $this->readOnly,
-            sessionId: $this->sessionId,
-            setFields: $setFields
-        );
-    }
-
-    public function withCapabilities(?array $capabilities): self
-    {
-        $setFields = $this->setFields;
-        $setFields['capabilities'] = true;
-
-        return new self(
-            application: $this->application,
-            capabilities: $capabilities,
             expiry: $this->expiry,
-            featureFlags: $this->featureFlags,
-            readOnly: $this->readOnly,
-            sessionId: $this->sessionId,
-            setFields: $setFields
-        );
-    }
-
-    public function withExpiry(?int $expiry): self
-    {
-        $setFields = $this->setFields;
-        $setFields['expiry'] = true;
-
-        return new self(
-            application: $this->application,
-            capabilities: $this->capabilities,
-            expiry: $expiry,
-            featureFlags: $this->featureFlags,
-            readOnly: $this->readOnly,
-            sessionId: $this->sessionId,
-            setFields: $setFields
-        );
-    }
-
-    public function withFeatureFlags(?array $featureFlags): self
-    {
-        $setFields = $this->setFields;
-        $setFields['featureFlags'] = true;
-
-        return new self(
-            application: $this->application,
-            capabilities: $this->capabilities,
-            expiry: $this->expiry,
-            featureFlags: $featureFlags,
-            readOnly: $this->readOnly,
             sessionId: $this->sessionId,
             setFields: $setFields
         );
@@ -138,10 +90,58 @@ class AppPortalAccessIn implements \JsonSerializable
 
         return new self(
             application: $this->application,
-            capabilities: $this->capabilities,
-            expiry: $this->expiry,
-            featureFlags: $this->featureFlags,
             readOnly: $readOnly,
+            capabilities: $this->capabilities,
+            featureFlags: $this->featureFlags,
+            expiry: $this->expiry,
+            sessionId: $this->sessionId,
+            setFields: $setFields
+        );
+    }
+
+    public function withCapabilities(?array $capabilities): self
+    {
+        $setFields = $this->setFields;
+        $setFields['capabilities'] = true;
+
+        return new self(
+            application: $this->application,
+            readOnly: $this->readOnly,
+            capabilities: $capabilities,
+            featureFlags: $this->featureFlags,
+            expiry: $this->expiry,
+            sessionId: $this->sessionId,
+            setFields: $setFields
+        );
+    }
+
+    public function withFeatureFlags(?array $featureFlags): self
+    {
+        $setFields = $this->setFields;
+        $setFields['featureFlags'] = true;
+
+        return new self(
+            application: $this->application,
+            readOnly: $this->readOnly,
+            capabilities: $this->capabilities,
+            featureFlags: $featureFlags,
+            expiry: $this->expiry,
+            sessionId: $this->sessionId,
+            setFields: $setFields
+        );
+    }
+
+    public function withExpiry(?int $expiry): self
+    {
+        $setFields = $this->setFields;
+        $setFields['expiry'] = true;
+
+        return new self(
+            application: $this->application,
+            readOnly: $this->readOnly,
+            capabilities: $this->capabilities,
+            featureFlags: $this->featureFlags,
+            expiry: $expiry,
             sessionId: $this->sessionId,
             setFields: $setFields
         );
@@ -154,10 +154,10 @@ class AppPortalAccessIn implements \JsonSerializable
 
         return new self(
             application: $this->application,
-            capabilities: $this->capabilities,
-            expiry: $this->expiry,
-            featureFlags: $this->featureFlags,
             readOnly: $this->readOnly,
+            capabilities: $this->capabilities,
+            featureFlags: $this->featureFlags,
+            expiry: $this->expiry,
             sessionId: $sessionId,
             setFields: $setFields
         );
@@ -171,17 +171,17 @@ class AppPortalAccessIn implements \JsonSerializable
         if (isset($this->setFields['application'])) {
             $data['application'] = $this->application;
         }
+        if (isset($this->setFields['readOnly'])) {
+            $data['readOnly'] = $this->readOnly;
+        }
         if (isset($this->setFields['capabilities'])) {
             $data['capabilities'] = $this->capabilities;
-        }
-        if (isset($this->setFields['expiry'])) {
-            $data['expiry'] = $this->expiry;
         }
         if (null !== $this->featureFlags) {
             $data['featureFlags'] = $this->featureFlags;
         }
-        if (isset($this->setFields['readOnly'])) {
-            $data['readOnly'] = $this->readOnly;
+        if (isset($this->setFields['expiry'])) {
+            $data['expiry'] = $this->expiry;
         }
         if (isset($this->setFields['sessionId'])) {
             $data['sessionId'] = $this->sessionId;
@@ -197,10 +197,10 @@ class AppPortalAccessIn implements \JsonSerializable
     {
         return new self(
             application: \Svix\Utils::deserializeObject($data, 'application', false, 'AppPortalAccessIn', [ApplicationIn::class, 'fromMixed']),
-            capabilities: \Svix\Utils::getValFromJson($data, 'capabilities', false, 'AppPortalAccessIn'),
-            expiry: \Svix\Utils::deserializeInt($data, 'expiry', false, 'AppPortalAccessIn'),
-            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'AppPortalAccessIn'),
             readOnly: \Svix\Utils::deserializeBool($data, 'readOnly', false, 'AppPortalAccessIn'),
+            capabilities: \Svix\Utils::getValFromJson($data, 'capabilities', false, 'AppPortalAccessIn'),
+            featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'AppPortalAccessIn'),
+            expiry: \Svix\Utils::deserializeInt($data, 'expiry', false, 'AppPortalAccessIn'),
             sessionId: \Svix\Utils::deserializeString($data, 'sessionId', false, 'AppPortalAccessIn')
         );
     }

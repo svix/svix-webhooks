@@ -11,7 +11,7 @@ from ..models import (
     MessagePrecheckIn,
     MessagePrecheckOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 from .message_poller import (
     MessagePoller,
     MessagePollerAsync,
@@ -31,7 +31,9 @@ class MessageListOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date."""
     with_content: t.Optional[bool] = None
-    """When `true` message payloads are included in the response."""
+    """When `true` message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     tag: t.Optional[str] = None
     """Filter messages matching the provided tag."""
     event_types: t.Optional[t.List[str]] = None
@@ -45,7 +47,7 @@ class MessageListOptions(BaseOptions):
                 "channel": self.channel,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "tag": self.tag,
                 "event_types": self.event_types,
             }
@@ -55,27 +57,17 @@ class MessageListOptions(BaseOptions):
 @dataclass
 class MessageCreateOptions(BaseOptions):
     with_content: t.Optional[bool] = None
-    """When `true`, message payloads are included in the response."""
+    """When `true`, message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     idempotency_key: t.Optional[str] = None
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
-                "with_content": False,
+                "with_content": self.with_content or False,
             }
         )
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
-@dataclass
-class MessageExpungeAllContentsOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -100,12 +92,26 @@ class MessagePrecheckOptions(BaseOptions):
 @dataclass
 class MessageGetOptions(BaseOptions):
     with_content: t.Optional[bool] = None
-    """When `true` message payloads are included in the response."""
+    """When `true` message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
             {
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
+            }
+        )
+
+
+@dataclass
+class MessageExpungeAllContentsOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
             }
         )
 
@@ -142,10 +148,10 @@ def message_in_raw(
     )
 
 
-class MessageAsync(ApiBase):
+class MessageAsync(ApiBaseAsync):
     @property
     def poller(self) -> MessagePollerAsync:
-        return MessagePollerAsync(self._client)
+        return MessagePollerAsync(self._client, self._httpx_client)
 
     async def list(
         self, app_id: str, options: MessageListOptions = (MessageListOptions())
@@ -195,43 +201,7 @@ class MessageAsync(ApiBase):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        message_out = MessageOut.model_validate(response.json())
-        if options.with_content is not False:
-            message_out.payload = message_in.payload
-        return message_out
-
-    async def expunge_all_contents(
-        self,
-        app_id: str,
-        options: MessageExpungeAllContentsOptions = (
-            MessageExpungeAllContentsOptions()
-        ),
-    ) -> ExpungeAllContentsOut:
-        """Delete all message payloads for the application.
-
-        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-
-        A completed task will return a payload like the following:
-        ```json
-        {
-          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-          "status": "finished",
-          "task": "application.purge_content",
-          "data": {
-            "messagesPurged": 150
-          }
-        }
-        ```"""
-        response = await self._request_asyncio(
-            method="post",
-            path="/api/v1/app/{app_id}/msg/expunge-all-contents",
-            path_params={
-                "app_id": app_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return ExpungeAllContentsOut.model_validate(response.json())
+        return MessageOut.model_validate(response.json())
 
     async def precheck(
         self,
@@ -292,11 +262,44 @@ class MessageAsync(ApiBase):
             },
         )
 
+    async def expunge_all_contents(
+        self,
+        app_id: str,
+        options: MessageExpungeAllContentsOptions = (
+            MessageExpungeAllContentsOptions()
+        ),
+    ) -> ExpungeAllContentsOut:
+        """Delete all message payloads for the application.
 
-class Message(ApiBase):
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "application.purge_content",
+          "data": {
+            "messagesPurged": 150
+          }
+        }
+        ```"""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/expunge-all-contents",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ExpungeAllContentsOut.model_validate(response.json())
+
+
+class Message(ApiBaseSync):
     @property
     def poller(self) -> MessagePoller:
-        return MessagePoller(self._client)
+        return MessagePoller(self._client, self._httpx_client)
 
     def list(
         self, app_id: str, options: MessageListOptions = (MessageListOptions())
@@ -346,43 +349,7 @@ class Message(ApiBase):
             header_params=options._header_params(),
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
-        message_out = MessageOut.model_validate(response.json())
-        if options.with_content is not False:
-            message_out.payload = message_in.payload
-        return message_out
-
-    def expunge_all_contents(
-        self,
-        app_id: str,
-        options: MessageExpungeAllContentsOptions = (
-            MessageExpungeAllContentsOptions()
-        ),
-    ) -> ExpungeAllContentsOut:
-        """Delete all message payloads for the application.
-
-        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
-
-        A completed task will return a payload like the following:
-        ```json
-        {
-          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-          "status": "finished",
-          "task": "application.purge_content",
-          "data": {
-            "messagesPurged": 150
-          }
-        }
-        ```"""
-        response = self._request_sync(
-            method="post",
-            path="/api/v1/app/{app_id}/msg/expunge-all-contents",
-            path_params={
-                "app_id": app_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return ExpungeAllContentsOut.model_validate(response.json())
+        return MessageOut.model_validate(response.json())
 
     def precheck(
         self,
@@ -442,3 +409,36 @@ class Message(ApiBase):
                 "msg_id": msg_id,
             },
         )
+
+    def expunge_all_contents(
+        self,
+        app_id: str,
+        options: MessageExpungeAllContentsOptions = (
+            MessageExpungeAllContentsOptions()
+        ),
+    ) -> ExpungeAllContentsOut:
+        """Delete all message payloads for the application.
+
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "application.purge_content",
+          "data": {
+            "messagesPurged": 150
+          }
+        }
+        ```"""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/expunge-all-contents",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ExpungeAllContentsOut.model_validate(response.json())

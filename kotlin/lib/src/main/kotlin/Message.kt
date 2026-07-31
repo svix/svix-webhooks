@@ -8,7 +8,7 @@ import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 import com.svix.kotlin.models.MessagePrecheckIn
 import com.svix.kotlin.models.MessagePrecheckOut
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -26,7 +26,12 @@ data class MessageListOptions(
     val before: Instant? = null,
     /** Only include items created after a certain date. */
     val after: Instant? = null,
-    /** When `true` message payloads are included in the response. */
+    /**
+     * When `true` message payloads are included in the response.
+     *
+     * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+     * without specifying this parameter.
+     */
     val withContent: Boolean? = null,
     /** Filter messages matching the provided tag. */
     val tag: String? = null,
@@ -35,19 +40,29 @@ data class MessageListOptions(
 )
 
 data class MessageCreateOptions(
-    /** When `true`, message payloads are included in the response. */
+    /**
+     * When `true`, message payloads are included in the response.
+     *
+     * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+     * without specifying this parameter.
+     */
     val withContent: Boolean? = null,
     val idempotencyKey: String? = null,
 )
 
-data class MessageExpungeAllContentsOptions(val idempotencyKey: String? = null)
-
 data class MessagePrecheckOptions(val idempotencyKey: String? = null)
 
 data class MessageGetOptions(
-    /** When `true` message payloads are included in the response. */
+    /**
+     * When `true` message payloads are included in the response.
+     *
+     * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+     * without specifying this parameter.
+     */
     val withContent: Boolean? = null
 )
+
+data class MessageExpungeAllContentsOptions(val idempotencyKey: String? = null)
 
 class Message(private val client: SvixHttpClient) {
     val poller: MessagePoller = MessagePoller(client)
@@ -74,7 +89,11 @@ class Message(private val client: SvixHttpClient) {
         options.channel?.let { url.addQueryParameter("channel", it) }
         options.before?.let { url.addQueryParameter("before", serializeQueryParam(it)) }
         options.after?.let { url.addQueryParameter("after", serializeQueryParam(it)) }
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         options.tag?.let { url.addQueryParameter("tag", it) }
         options.eventTypes?.let { url.addQueryParameter("event_types", serializeQueryParam(it)) }
         return client.executeRequest<Any, ListResponseMessageOut>("GET", url.build())
@@ -103,7 +122,11 @@ class Message(private val client: SvixHttpClient) {
         options: MessageCreateOptions = MessageCreateOptions(),
     ): MessageOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg")
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
         var msgInInternal =
@@ -139,38 +162,6 @@ class Message(private val client: SvixHttpClient) {
     }
 
     /**
-     * Delete all message payloads for the application.
-     *
-     * This operation is only available in the <a href="https://svix.com/pricing"
-     * target="_blank">Enterprise</a> plan.
-     *
-     * A completed task will return a payload like the following:
-     * ```json
-     * {
-     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-     *   "status": "finished",
-     *   "task": "application.purge_content",
-     *   "data": {
-     *     "messagesPurged": 150
-     *   }
-     * }
-     * ```
-     */
-    suspend fun expungeAllContents(
-        appId: String,
-        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
-    ): ExpungeAllContentsOut {
-        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/expunge-all-contents")
-        val headers = Headers.Builder()
-        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
-        return client.executeRequest<Any, ExpungeAllContentsOut>(
-            "POST",
-            url.build(),
-            headers = headers.build(),
-        )
-    }
-
-    /**
      * A pre-check call for `message.create` that checks whether any active endpoints are listening
      * to this message.
      *
@@ -202,7 +193,11 @@ class Message(private val client: SvixHttpClient) {
         options: MessageGetOptions = MessageGetOptions(),
     ): MessageOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId")
-        options.withContent?.let { url.addQueryParameter("with_content", serializeQueryParam(it)) }
+
+        url.addQueryParameter(
+            "with_content",
+            options.withContent?.let { serializeQueryParam(it) } ?: "false",
+        )
         return client.executeRequest<Any, MessageOut>("GET", url.build())
     }
 
@@ -215,6 +210,38 @@ class Message(private val client: SvixHttpClient) {
     suspend fun expungeContent(appId: String, msgId: String) {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/content")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
+    }
+
+    /**
+     * Delete all message payloads for the application.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     *
+     * A completed task will return a payload like the following:
+     * ```json
+     * {
+     *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+     *   "status": "finished",
+     *   "task": "application.purge_content",
+     *   "data": {
+     *     "messagesPurged": 150
+     *   }
+     * }
+     * ```
+     */
+    suspend fun expungeAllContents(
+        appId: String,
+        options: MessageExpungeAllContentsOptions = MessageExpungeAllContentsOptions(),
+    ): ExpungeAllContentsOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/expunge-all-contents")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+        return client.executeRequest<Any, ExpungeAllContentsOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+        )
     }
 }
 

@@ -3,7 +3,7 @@ import typing as t
 from dataclasses import dataclass
 
 from ..models import EnvironmentIn, EnvironmentOut
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -30,7 +30,7 @@ class EnvironmentImportOptions(BaseOptions):
         )
 
 
-class EnvironmentAsync(ApiBase):
+class EnvironmentAsync(ApiBaseAsync):
     async def export(
         self, options: EnvironmentExportOptions = (EnvironmentExportOptions())
     ) -> EnvironmentOut:
@@ -68,7 +68,7 @@ class EnvironmentAsync(ApiBase):
         )
 
 
-class Environment(ApiBase):
+class Environment(ApiBaseSync):
     def export(
         self, options: EnvironmentExportOptions = (EnvironmentExportOptions())
     ) -> EnvironmentOut:

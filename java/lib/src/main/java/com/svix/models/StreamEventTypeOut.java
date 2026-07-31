@@ -20,33 +20,52 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class StreamEventTypeOut {
-    @JsonProperty private Boolean archived;
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private Boolean deprecated;
-    @JsonProperty private String description;
-    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private String name;
+    @JsonProperty private String description;
+    @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Boolean deprecated;
+    @JsonProperty private Boolean archived;
+    @JsonProperty private Set<String> featureFlags;
 
     public StreamEventTypeOut() {}
 
-    public StreamEventTypeOut archived(Boolean archived) {
-        this.archived = archived;
+    public StreamEventTypeOut name(String name) {
+        this.name = name;
         return this;
     }
 
     /**
-     * Get archived
+     * The event type's name
      *
-     * @return archived
+     * @return name
      */
     @javax.annotation.Nonnull
-    public Boolean getArchived() {
-        return archived;
+    public String getName() {
+        return name;
     }
 
-    public void setArchived(Boolean archived) {
-        this.archived = archived;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public StreamEventTypeOut description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public StreamEventTypeOut createdAt(OffsetDateTime createdAt) {
@@ -68,6 +87,25 @@ public class StreamEventTypeOut {
         this.createdAt = createdAt;
     }
 
+    public StreamEventTypeOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     public StreamEventTypeOut deprecated(Boolean deprecated) {
         this.deprecated = deprecated;
         return this;
@@ -87,23 +125,23 @@ public class StreamEventTypeOut {
         this.deprecated = deprecated;
     }
 
-    public StreamEventTypeOut description(String description) {
-        this.description = description;
+    public StreamEventTypeOut archived(Boolean archived) {
+        this.archived = archived;
         return this;
     }
 
     /**
-     * Get description
+     * Get archived
      *
-     * @return description
+     * @return archived
      */
-    @javax.annotation.Nullable
-    public String getDescription() {
-        return description;
+    @javax.annotation.Nonnull
+    public Boolean getArchived() {
+        return archived;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setArchived(Boolean archived) {
+        this.archived = archived;
     }
 
     public StreamEventTypeOut featureFlags(Set<String> featureFlags) {
@@ -132,44 +170,6 @@ public class StreamEventTypeOut {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public StreamEventTypeOut name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * The event type's name
-     *
-     * @return name
-     */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public StreamEventTypeOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

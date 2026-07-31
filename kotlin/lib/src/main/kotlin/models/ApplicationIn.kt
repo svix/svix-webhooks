@@ -5,11 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ApplicationIn(
-    val metadata: Map<String, String>? = null,
     /** Application name for human consumption. */
     val name: String,
-    /** Deprecated, use `throttleRate` instead. */
-    val rateLimit: UShort? = null,
     /**
      * Maximum messages per second to send to this application.
      *
@@ -18,4 +15,5 @@ data class ApplicationIn(
     val throttleRate: UShort? = null,
     /** Optional unique identifier for the application. */
     val uid: String? = null,
+    val metadata: Map<String, String>? = null,
 )

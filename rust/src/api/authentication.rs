@@ -7,22 +7,22 @@ pub struct AuthenticationAppPortalAccessOptions {
 }
 
 #[derive(Default)]
-pub struct AuthenticationExpireAllOptions {
-    pub idempotency_key: Option<String>,
-}
-
-#[derive(Default)]
 pub struct AuthenticationLogoutOptions {
     pub idempotency_key: Option<String>,
 }
 
 #[derive(Default)]
-pub struct AuthenticationStreamLogoutOptions {
+pub struct AuthenticationExpireAllOptions {
     pub idempotency_key: Option<String>,
 }
 
 #[derive(Default)]
 pub struct AuthenticationStreamPortalAccessOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct AuthenticationStreamLogoutOptions {
     pub idempotency_key: Option<String>,
 }
 
@@ -56,7 +56,7 @@ impl<'a> Authentication<'a> {
         let AuthenticationAppPortalAccessOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/auth/app-portal-access/{app_id}",
         )
         .with_path_param("app_id", app_id)
@@ -64,6 +64,26 @@ impl<'a> Authentication<'a> {
         .with_body_param(app_portal_access_in)
         .execute(self.cfg)
         .await
+    }
+
+    /// Return information about the account associated with the current token
+    pub async fn whoami(&self) -> Result<WhoamiOut> {
+        crate::request::Request::new(http::Method::GET, "/api/v1/auth/whoami")
+            .execute(self.cfg)
+            .await
+    }
+
+    /// Logout an app token.
+    ///
+    /// Trying to log out other tokens will fail.
+    pub async fn logout(&self, options: Option<AuthenticationLogoutOptions>) -> Result<()> {
+        let AuthenticationLogoutOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(http::Method::POST, "/api/v1/auth/logout")
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     /// Expire all of the tokens associated with a specific application.
@@ -75,59 +95,10 @@ impl<'a> Authentication<'a> {
     ) -> Result<()> {
         let AuthenticationExpireAllOptions { idempotency_key } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::POST, "/api/v1/auth/app/{app_id}/expire-all")
+        crate::request::Request::new(http::Method::POST, "/api/v1/auth/app/{app_id}/expire-all")
             .with_path_param("app_id", app_id)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(application_token_expire_in)
-            .returns_nothing()
-            .execute(self.cfg)
-            .await
-    }
-
-    #[deprecated = "Please use app_portal_access instead."]
-    #[allow(deprecated)]
-    pub async fn dashboard_access(
-        &self,
-        app_id: String,
-        options: Option<super::AuthenticationDashboardAccessOptions>,
-    ) -> Result<DashboardAccessOut> {
-        let super::AuthenticationDashboardAccessOptions { idempotency_key } =
-            options.unwrap_or_default();
-
-        crate::request::Request::new(
-            http1::Method::POST,
-            "/api/v1/auth/dashboard-access/{app_id}",
-        )
-        .with_path_param("app_id", app_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Logout an app token.
-    ///
-    /// Trying to log out other tokens will fail.
-    pub async fn logout(&self, options: Option<AuthenticationLogoutOptions>) -> Result<()> {
-        let AuthenticationLogoutOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(http1::Method::POST, "/api/v1/auth/logout")
-            .with_optional_header_param("idempotency-key", idempotency_key)
-            .returns_nothing()
-            .execute(self.cfg)
-            .await
-    }
-
-    /// Logout a stream token.
-    ///
-    /// Trying to log out other tokens will fail.
-    pub async fn stream_logout(
-        &self,
-        options: Option<AuthenticationStreamLogoutOptions>,
-    ) -> Result<()> {
-        let AuthenticationStreamLogoutOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(http1::Method::POST, "/api/v1/auth/stream-logout")
-            .with_optional_header_param("idempotency-key", idempotency_key)
             .returns_nothing()
             .execute(self.cfg)
             .await
@@ -145,7 +116,7 @@ impl<'a> Authentication<'a> {
             options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/auth/stream-portal-access/{stream_id}",
         )
         .with_path_param("stream_id", stream_id)
@@ -153,6 +124,22 @@ impl<'a> Authentication<'a> {
         .with_body_param(stream_portal_access_in)
         .execute(self.cfg)
         .await
+    }
+
+    /// Logout a stream token.
+    ///
+    /// Trying to log out other tokens will fail.
+    pub async fn stream_logout(
+        &self,
+        options: Option<AuthenticationStreamLogoutOptions>,
+    ) -> Result<()> {
+        let AuthenticationStreamLogoutOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(http::Method::POST, "/api/v1/auth/stream-logout")
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .returns_nothing()
+            .execute(self.cfg)
+            .await
     }
 
     /// Expire all of the tokens associated with a specific stream.
@@ -165,29 +152,13 @@ impl<'a> Authentication<'a> {
         let AuthenticationStreamExpireAllOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/auth/stream/{stream_id}/expire-all",
         )
         .with_path_param("stream_id", stream_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
         .with_body_param(stream_token_expire_in)
         .returns_nothing()
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Get the current auth token for the stream poller.
-    pub async fn get_stream_poller_token(
-        &self,
-        stream_id: String,
-        sink_id: String,
-    ) -> Result<ApiTokenOut> {
-        crate::request::Request::new(
-            http1::Method::GET,
-            "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token",
-        )
-        .with_path_param("stream_id", stream_id)
-        .with_path_param("sink_id", sink_id)
         .execute(self.cfg)
         .await
     }
@@ -204,7 +175,7 @@ impl<'a> Authentication<'a> {
             options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::POST,
+            http::Method::POST,
             "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate",
         )
         .with_path_param("stream_id", stream_id)
@@ -215,10 +186,19 @@ impl<'a> Authentication<'a> {
         .await
     }
 
-    /// Return information about the account associated with the current token
-    pub async fn whoami(&self) -> Result<WhoamiOut> {
-        crate::request::Request::new(http1::Method::GET, "/api/v1/auth/whoami")
-            .execute(self.cfg)
-            .await
+    /// Get the current auth token for the stream poller.
+    pub async fn get_stream_poller_token(
+        &self,
+        stream_id: String,
+        sink_id: String,
+    ) -> Result<ApiTokenOut> {
+        crate::request::Request::new(
+            http::Method::GET,
+            "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token",
+        )
+        .with_path_param("stream_id", stream_id)
+        .with_path_param("sink_id", sink_id)
+        .execute(self.cfg)
+        .await
     }
 }

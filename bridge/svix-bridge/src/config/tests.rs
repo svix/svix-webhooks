@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+#[cfg(feature = "kafka")]
+use svix_bridge_plugin_kafka::{KafkaAutoOffsetReset, KafkaInputOpts, KafkaTransformationInput};
 use svix_bridge_plugin_queue::config::{QueueInputOpts, RabbitMqInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
@@ -345,6 +347,129 @@ fn test_omnibus_parses_ok() {
     conf.unwrap();
 }
 
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_transformation_input_defaults_to_payload() {
+    let config: Config = serde_yaml::from_str(
+        r#"
+senders:
+  - name: "kafka-example"
+    input:
+      type: "kafka"
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      kafka_security_protocol: "plaintext"
+    output:
+      type: "svix"
+      token: "XYZ"
+"#,
+    )
+    .unwrap();
+
+    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+        transformation_input,
+        ..
+    }) = &config.senders[0].input
+    else {
+        panic!("Expected Kafka input");
+    };
+
+    assert!(matches!(
+        transformation_input,
+        KafkaTransformationInput::Payload
+    ));
+}
+
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_auto_offset_reset_parses_ok() {
+    let config: Config = serde_yaml::from_str(
+        r#"
+senders:
+  - name: "kafka-default"
+    input:
+      type: "kafka"
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      kafka_security_protocol: "plaintext"
+    output:
+      type: "svix"
+      token: "XYZ"
+  - name: "kafka-earliest"
+    input:
+      type: "kafka"
+      kafka_bootstrap_brokers: "localhost:9094"
+      kafka_group_id: "kafka_example_consumer_group"
+      kafka_topic: "foobar"
+      kafka_auto_offset_reset: "earliest"
+      kafka_security_protocol: "plaintext"
+    output:
+      type: "svix"
+      token: "XYZ"
+"#,
+    )
+    .unwrap();
+
+    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+        auto_offset_reset: default_auto_offset_reset,
+        ..
+    }) = &config.senders[0].input
+    else {
+        panic!("Expected Kafka input");
+    };
+    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+        auto_offset_reset: explicit_auto_offset_reset,
+        ..
+    }) = &config.senders[1].input
+    else {
+        panic!("Expected Kafka input");
+    };
+
+    assert_eq!(default_auto_offset_reset, &KafkaAutoOffsetReset::Latest);
+    assert_eq!(explicit_auto_offset_reset, &KafkaAutoOffsetReset::Earliest);
+}
+
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_auto_offset_reset_rejects_invalid_value() {
+    let config = serde_yaml::from_str::<KafkaInputOpts>(
+        r#"
+type: "kafka"
+kafka_bootstrap_brokers: "localhost:9094"
+kafka_group_id: "kafka_example_consumer_group"
+kafka_topic: "foobar"
+kafka_auto_offset_reset: "invalid"
+kafka_security_protocol: "plaintext"
+"#,
+    );
+
+    assert!(config.is_err());
+}
+
+#[cfg(feature = "kafka")]
+#[test]
+fn test_kafka_idempotency_namespace_parses_ok() {
+    let config = serde_yaml::from_str::<KafkaInputOpts>(
+        r#"
+type: "kafka"
+kafka_bootstrap_brokers: "localhost:9094"
+kafka_group_id: "kafka_example_consumer_group"
+kafka_topic: "foobar"
+kafka_idempotency_namespace: "source-a"
+kafka_security_protocol: "plaintext"
+"#,
+    )
+    .unwrap();
+
+    let KafkaInputOpts::Inner {
+        idempotency_namespace,
+        ..
+    } = config;
+    assert_eq!(idempotency_namespace.as_deref(), Some("source-a"));
+}
+
 #[test]
 fn test_empty() {
     let conf: Config = serde_yaml::from_str("").unwrap();
@@ -640,9 +765,10 @@ fn test_transformation_validation_bad_syntax_is_err() {
           token: "xxx"
     "#;
     let err = Config::from_src(src, None).err().unwrap();
-    assert!(err
-        .to_string()
-        .contains("failed to parse transformation for sender `bad xform`"))
+    assert!(
+        err.to_string()
+            .contains("failed to parse transformation for sender `bad xform`")
+    )
 }
 
 #[test]

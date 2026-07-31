@@ -1,15 +1,19 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct IntegrationListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -78,15 +82,15 @@ pub enum IntegrationCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"featureFlags\": [],
-    \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"name\": \"Example Integration\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"featureFlags\": []
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         app_id: String,
@@ -104,15 +108,15 @@ pub enum IntegrationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"featureFlags\": [],
-  \"name\": \"Example Integration\"
+  \"name\": \"Example Integration\",
+  \"featureFlags\": []
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"featureFlags\": [],
-  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"name\": \"Example Integration\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": []
 }\n")]
     Create {
         app_id: String,
@@ -131,11 +135,11 @@ pub enum IntegrationCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"featureFlags\": [],
-  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"name\": \"Example Integration\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": []
 }\n")]
     Get { app_id: String, id: String },
     /// Update an integration.
@@ -149,15 +153,15 @@ pub enum IntegrationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"featureFlags\": [],
-  \"name\": \"Example Integration\"
+  \"name\": \"Example Integration\",
+  \"featureFlags\": []
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"featureFlags\": [],
-  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"name\": \"Example Integration\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"id\": \"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"featureFlags\": []
 }\n")]
     Update {
         app_id: String,
@@ -174,20 +178,6 @@ pub enum IntegrationCommands {
             "{all-args}",
         ))]
     Delete { app_id: String, id: String },
-    /// Get an integration's key.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix integration get-key app_abc000000000000000000000000 integ_abc000000000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"key\": \"integsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
-}\n")]
-    GetKey { app_id: String, id: String },
     /// Rotate the integration's key. The previous key will be immediately revoked.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -251,11 +241,6 @@ impl IntegrationCommands {
             }
             Self::Delete { app_id, id } => {
                 client.integration().delete(app_id, id).await?;
-            }
-            Self::GetKey { app_id, id } => {
-                #[allow(deprecated)]
-                let resp = client.integration().get_key(app_id, id).await?;
-                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::RotateKey {
                 app_id,

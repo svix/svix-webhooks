@@ -20,15 +20,34 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointIn {
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
-    @JsonProperty private String secret;
-    @JsonProperty private String uid;
     @JsonProperty private URI url;
+    @JsonProperty private String description;
+    @JsonProperty private Short throttleRate;
+    @JsonProperty private String uid;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private String secret;
+    @JsonProperty private Map<String, String> metadata;
 
     public IngestEndpointIn() {}
+
+    public IngestEndpointIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public IngestEndpointIn description(String description) {
         this.description = description;
@@ -49,6 +68,46 @@ public class IngestEndpointIn {
         this.description = description;
     }
 
+    public IngestEndpointIn throttleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Short getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public IngestEndpointIn uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
     public IngestEndpointIn disabled(Boolean disabled) {
         this.disabled = disabled;
         return this;
@@ -66,6 +125,28 @@ public class IngestEndpointIn {
 
     public void setDisabled(Boolean disabled) {
         this.disabled = disabled;
+    }
+
+    public IngestEndpointIn secret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    /**
+     * The endpoint's verification secret.
+     *
+     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
+     * to not set this and let the server generate the secret.
+     *
+     * @return secret
+     */
+    @javax.annotation.Nullable
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public IngestEndpointIn metadata(Map<String, String> metadata) {
@@ -94,85 +175,6 @@ public class IngestEndpointIn {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public IngestEndpointIn rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Get rateLimit
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
-    public IngestEndpointIn secret(String secret) {
-        this.secret = secret;
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public IngestEndpointIn uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public IngestEndpointIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

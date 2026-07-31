@@ -20,13 +20,51 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IntegrationOut {
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private String id;
     @JsonProperty private String name;
+    @JsonProperty private String id;
+    @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Set<String> featureFlags;
 
     public IntegrationOut() {}
+
+    public IntegrationOut name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return name
+     */
+    @javax.annotation.Nonnull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public IntegrationOut id(String id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * The Integration's ID.
+     *
+     * @return id
+     */
+    @javax.annotation.Nonnull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public IntegrationOut createdAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
@@ -45,6 +83,25 @@ public class IntegrationOut {
 
     public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public IntegrationOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public IntegrationOut featureFlags(Set<String> featureFlags) {
@@ -73,63 +130,6 @@ public class IntegrationOut {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public IntegrationOut id(String id) {
-        this.id = id;
-        return this;
-    }
-
-    /**
-     * The Integration's ID.
-     *
-     * @return id
-     */
-    @javax.annotation.Nonnull
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public IntegrationOut name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return name
-     */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public IntegrationOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     /**

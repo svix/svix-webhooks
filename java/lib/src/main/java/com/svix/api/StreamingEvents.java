@@ -22,35 +22,6 @@ public class StreamingEvents {
         this.client = client;
     }
 
-    /** Creates events on the Stream. */
-    public CreateStreamEventsOut create(
-            final String streamId, final CreateStreamEventsIn createStreamEventsIn)
-            throws IOException, ApiException {
-        return this.create(streamId, createStreamEventsIn, new StreamingEventsCreateOptions());
-    }
-
-    /** Creates events on the Stream. */
-    public CreateStreamEventsOut create(
-            final String streamId,
-            final CreateStreamEventsIn createStreamEventsIn,
-            final StreamingEventsCreateOptions options)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(String.format("/api/v1/stream/%s/events", streamId));
-        Map<String, String> headers = new HashMap<>();
-        if (options.idempotencyKey != null) {
-            headers.put("idempotency-key", options.idempotencyKey);
-        }
-        return this.client.executeRequest(
-                "POST",
-                url.build(),
-                Headers.of(headers),
-                createStreamEventsIn,
-                CreateStreamEventsOut.class);
-    }
-
     /**
      * Iterate over a stream of events.
      *
@@ -85,5 +56,34 @@ public class StreamingEvents {
             url.addQueryParameter("after", Utils.serializeQueryParam(options.after));
         }
         return this.client.executeRequest("GET", url.build(), null, null, EventStreamOut.class);
+    }
+
+    /** Creates events on the Stream. */
+    public CreateStreamEventsOut create(
+            final String streamId, final CreateStreamEventsIn createStreamEventsIn)
+            throws IOException, ApiException {
+        return this.create(streamId, createStreamEventsIn, new StreamingEventsCreateOptions());
+    }
+
+    /** Creates events on the Stream. */
+    public CreateStreamEventsOut create(
+            final String streamId,
+            final CreateStreamEventsIn createStreamEventsIn,
+            final StreamingEventsCreateOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(String.format("/api/v1/stream/%s/events", streamId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                createStreamEventsIn,
+                CreateStreamEventsOut.class);
     }
 }

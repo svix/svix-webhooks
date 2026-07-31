@@ -2,7 +2,7 @@
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct IngestEndpointTransformationPatch {
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub code: JsOption<String>,
@@ -17,5 +17,11 @@ impl IngestEndpointTransformationPatch {
             code: JsOption::Undefined,
             enabled: None,
         }
+    }
+}
+
+impl Default for IngestEndpointTransformationPatch {
+    fn default() -> Self {
+        Self::new()
     }
 }

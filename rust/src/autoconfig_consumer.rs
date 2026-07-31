@@ -1,9 +1,12 @@
 use crate::{
-    api::{EndpointOut, Svix, SvixOptions},
+    api::{Svix, SvixOptions},
     api_internal,
     autoconfig::{decode_autoconfig_token_v1, AutoConfigError},
     error::Result,
-    models::{AutoConfigSinkType, PollerV2CommitIn, PollerV2PollOut, SinkInCommon, SubscribeIn},
+    models::{
+        AutoConfigSinkType, EndpointOut, PollerV2CommitIn, PollerV2PollOut, SinkInCommon,
+        SubscribeIn,
+    },
 };
 
 // Re-exported so callers can name and construct the `options` arguments of
@@ -68,7 +71,7 @@ impl AutoConfigConsumer {
     pub async fn commit(
         &self,
         consumer_id: String,
-        offset: i32,
+        offset: u64,
         options: Option<api_internal::message_pollerv2::MessagePollerv2ConsumerCommitOptions>,
     ) -> Result<()> {
         api_internal::message_pollerv2(self.svix.cfg())

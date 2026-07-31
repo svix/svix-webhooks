@@ -3,7 +3,7 @@ use rdkafka::{
     producer::{FutureProducer, FutureRecord},
     util::Timeout,
 };
-use svix_bridge_types::{async_trait, BoxError, ForwardRequest, ReceiverOutput};
+use svix_bridge_types::{BoxError, ForwardRequest, ReceiverOutput, async_trait};
 
 use crate::config::KafkaOutputOpts;
 

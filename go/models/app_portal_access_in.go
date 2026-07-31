@@ -6,6 +6,7 @@ type AppPortalAccessIn struct {
 	//
 	// If the application id or uid that is used in the path already exists, this argument is ignored.
 	Application *ApplicationIn `json:"application,omitempty"`
+	ReadOnly    *bool          `json:"readOnly,omitempty"` // Whether the app portal should be in read-only mode.
 	// Custom capabilities attached to the token, You can combine as many capabilities as necessary.
 	//
 	// The `ViewBase` capability is always required
@@ -24,12 +25,11 @@ type AppPortalAccessIn struct {
 	//
 	// By default, the token will get all capabilities if the capabilities are not explicitly specified.
 	Capabilities []AppPortalCapability `json:"capabilities,omitempty"`
+	FeatureFlags []string              `json:"featureFlags,omitempty"` // The set of feature flags the created token will have access to.
 	// How long the token will be valid for, in seconds.
 	//
 	// Valid values are between 1 hour and 7 days. The default is 7 days.
-	Expiry       *uint64  `json:"expiry,omitempty"`
-	FeatureFlags []string `json:"featureFlags,omitempty"` // The set of feature flags the created token will have access to.
-	ReadOnly     *bool    `json:"readOnly,omitempty"`     // Whether the app portal should be in read-only mode.
+	Expiry *uint64 `json:"expiry,omitempty"`
 	// An optional session ID to attach to the token.
 	//
 	// When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.

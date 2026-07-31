@@ -1,46 +1,50 @@
 // this file is @generated
 
 export interface IngestEndpointOut {
-  createdAt: Date;
-  /** An example endpoint name. */
-  description: string;
-  disabled?: boolean;
   /** The Endpoint's ID. */
   id: string;
-  metadata: { [key: string]: string };
-  rateLimit?: number | null;
+  url: string;
+  description: string;
+  /**
+   * Maximum messages per second to send to this endpoint.
+   *
+   * Outgoing messages will be throttled to this rate.
+   */
+  throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
+  disabled?: boolean;
+  createdAt: Date;
   updatedAt: Date;
-  url: string;
+  metadata: { [key: string]: string };
 }
 
 export const IngestEndpointOutSerializer = {
   _fromJsonObject(object: any): IngestEndpointOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
       id: object["id"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
-      uid: object["uid"],
-      updatedAt: new Date(object["updatedAt"]),
       url: object["url"],
+      description: object["description"],
+      throttleRate: object["throttleRate"],
+      uid: object["uid"],
+      disabled: object["disabled"],
+      createdAt: new Date(object["createdAt"]),
+      updatedAt: new Date(object["updatedAt"]),
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: IngestEndpointOut): any {
     return {
-      createdAt: self.createdAt,
-      description: self.description,
-      disabled: self.disabled,
       id: self.id,
-      metadata: self.metadata,
-      rateLimit: self.rateLimit,
-      uid: self.uid,
-      updatedAt: self.updatedAt,
       url: self.url,
+      description: self.description,
+      throttleRate: self.throttleRate,
+      uid: self.uid,
+      disabled: self.disabled,
+      createdAt: self.createdAt,
+      updatedAt: self.updatedAt,
+      metadata: self.metadata,
     };
   },
 };

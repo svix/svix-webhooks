@@ -19,95 +19,38 @@ import java.time.OffsetDateTime;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MessageAttemptOut {
-    @JsonProperty private String endpointId;
-    @JsonProperty private String id;
-    @JsonProperty private MessageOut msg;
-    @JsonProperty private String msgId;
+    @JsonProperty private URI url;
     @JsonProperty private String response;
-    @JsonProperty private Long responseDurationMs;
     @JsonProperty private Short responseStatusCode;
+    @JsonProperty private Long responseDurationMs;
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
-    @JsonProperty private OffsetDateTime timestamp;
     @JsonProperty private MessageAttemptTriggerType triggerType;
-    @JsonProperty private URI url;
+    @JsonProperty private String msgId;
+    @JsonProperty private String endpointId;
+    @JsonProperty private String id;
+    @JsonProperty private OffsetDateTime timestamp;
+    @JsonProperty private MessageOut msg;
 
     public MessageAttemptOut() {}
 
-    public MessageAttemptOut endpointId(String endpointId) {
-        this.endpointId = endpointId;
+    public MessageAttemptOut url(URI url) {
+        this.url = url;
         return this;
     }
 
     /**
-     * The Endpoint's ID.
+     * Get url
      *
-     * @return endpointId
+     * @return url
      */
     @javax.annotation.Nonnull
-    public String getEndpointId() {
-        return endpointId;
+    public URI getUrl() {
+        return url;
     }
 
-    public void setEndpointId(String endpointId) {
-        this.endpointId = endpointId;
-    }
-
-    public MessageAttemptOut id(String id) {
-        this.id = id;
-        return this;
-    }
-
-    /**
-     * The MessageAttempt's ID.
-     *
-     * @return id
-     */
-    @javax.annotation.Nonnull
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public MessageAttemptOut msg(MessageOut msg) {
-        this.msg = msg;
-        return this;
-    }
-
-    /**
-     * Get msg
-     *
-     * @return msg
-     */
-    @javax.annotation.Nullable
-    public MessageOut getMsg() {
-        return msg;
-    }
-
-    public void setMsg(MessageOut msg) {
-        this.msg = msg;
-    }
-
-    public MessageAttemptOut msgId(String msgId) {
-        this.msgId = msgId;
-        return this;
-    }
-
-    /**
-     * The Message's ID.
-     *
-     * @return msgId
-     */
-    @javax.annotation.Nonnull
-    public String getMsgId() {
-        return msgId;
-    }
-
-    public void setMsgId(String msgId) {
-        this.msgId = msgId;
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
     public MessageAttemptOut response(String response) {
@@ -129,25 +72,6 @@ public class MessageAttemptOut {
         this.response = response;
     }
 
-    public MessageAttemptOut responseDurationMs(Long responseDurationMs) {
-        this.responseDurationMs = responseDurationMs;
-        return this;
-    }
-
-    /**
-     * Response duration in milliseconds.
-     *
-     * @return responseDurationMs
-     */
-    @javax.annotation.Nonnull
-    public Long getResponseDurationMs() {
-        return responseDurationMs;
-    }
-
-    public void setResponseDurationMs(Long responseDurationMs) {
-        this.responseDurationMs = responseDurationMs;
-    }
-
     public MessageAttemptOut responseStatusCode(Short responseStatusCode) {
         this.responseStatusCode = responseStatusCode;
         return this;
@@ -165,6 +89,25 @@ public class MessageAttemptOut {
 
     public void setResponseStatusCode(Short responseStatusCode) {
         this.responseStatusCode = responseStatusCode;
+    }
+
+    public MessageAttemptOut responseDurationMs(Long responseDurationMs) {
+        this.responseDurationMs = responseDurationMs;
+        return this;
+    }
+
+    /**
+     * Response duration in milliseconds.
+     *
+     * @return responseDurationMs
+     */
+    @javax.annotation.Nonnull
+    public Long getResponseDurationMs() {
+        return responseDurationMs;
+    }
+
+    public void setResponseDurationMs(Long responseDurationMs) {
+        this.responseDurationMs = responseDurationMs;
     }
 
     public MessageAttemptOut status(MessageStatus status) {
@@ -205,25 +148,6 @@ public class MessageAttemptOut {
         this.statusText = statusText;
     }
 
-    public MessageAttemptOut timestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
-
-    /**
-     * Get timestamp
-     *
-     * @return timestamp
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
-    }
-
     public MessageAttemptOut triggerType(MessageAttemptTriggerType triggerType) {
         this.triggerType = triggerType;
         return this;
@@ -243,23 +167,99 @@ public class MessageAttemptOut {
         this.triggerType = triggerType;
     }
 
-    public MessageAttemptOut url(URI url) {
-        this.url = url;
+    public MessageAttemptOut msgId(String msgId) {
+        this.msgId = msgId;
         return this;
     }
 
     /**
-     * Get url
+     * The Message's ID.
      *
-     * @return url
+     * @return msgId
      */
     @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
+    public String getMsgId() {
+        return msgId;
     }
 
-    public void setUrl(URI url) {
-        this.url = url;
+    public void setMsgId(String msgId) {
+        this.msgId = msgId;
+    }
+
+    public MessageAttemptOut endpointId(String endpointId) {
+        this.endpointId = endpointId;
+        return this;
+    }
+
+    /**
+     * The Endpoint's ID.
+     *
+     * @return endpointId
+     */
+    @javax.annotation.Nonnull
+    public String getEndpointId() {
+        return endpointId;
+    }
+
+    public void setEndpointId(String endpointId) {
+        this.endpointId = endpointId;
+    }
+
+    public MessageAttemptOut id(String id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * The MessageAttempt's ID.
+     *
+     * @return id
+     */
+    @javax.annotation.Nonnull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public MessageAttemptOut timestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    /**
+     * Get timestamp
+     *
+     * @return timestamp
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public MessageAttemptOut msg(MessageOut msg) {
+        this.msg = msg;
+        return this;
+    }
+
+    /**
+     * Get msg
+     *
+     * @return msg
+     */
+    @javax.annotation.Nullable
+    public MessageOut getMsg() {
+        return msg;
+    }
+
+    public void setMsg(MessageOut msg) {
+        this.msg = msg;
     }
 
     /**

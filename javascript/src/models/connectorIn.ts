@@ -3,57 +3,57 @@ import { type ConnectorKind, ConnectorKindSerializer } from "./connectorKind";
 import { type ConnectorProduct, ConnectorProductSerializer } from "./connectorProduct";
 
 export interface ConnectorIn {
-  allowedEventTypes?: string[] | null;
-  description?: string;
-  featureFlags?: string[] | null;
-  instructions?: string;
-  kind?: ConnectorKind;
-  logo?: string | null;
   name: string;
-  productType?: ConnectorProduct | null;
-  transformation: string;
   /** The Connector's UID. */
   uid?: string | null;
+  logo?: string | null;
+  description?: string;
+  kind?: ConnectorKind;
+  instructions?: string;
+  allowedEventTypes?: string[] | null;
+  transformation: string;
+  featureFlags?: string[] | null;
+  productType?: ConnectorProduct | null;
 }
 
 export const ConnectorInSerializer = {
   _fromJsonObject(object: any): ConnectorIn {
     return {
-      allowedEventTypes: object["allowedEventTypes"],
+      name: object["name"],
+      uid: object["uid"],
+      logo: object["logo"],
       description: object["description"],
-      featureFlags: object["featureFlags"],
-      instructions: object["instructions"],
       kind:
         object["kind"] != null
           ? ConnectorKindSerializer._fromJsonObject(object["kind"])
           : undefined,
-      logo: object["logo"],
-      name: object["name"],
+      instructions: object["instructions"],
+      allowedEventTypes: object["allowedEventTypes"],
+      transformation: object["transformation"],
+      featureFlags: object["featureFlags"],
       productType:
         object["productType"] != null
           ? ConnectorProductSerializer._fromJsonObject(object["productType"])
           : undefined,
-      transformation: object["transformation"],
-      uid: object["uid"],
     };
   },
 
   _toJsonObject(self: ConnectorIn): any {
     return {
-      allowedEventTypes: self.allowedEventTypes,
+      name: self.name,
+      uid: self.uid,
+      logo: self.logo,
       description: self.description,
-      featureFlags: self.featureFlags,
-      instructions: self.instructions,
       kind:
         self.kind != null ? ConnectorKindSerializer._toJsonObject(self.kind) : undefined,
-      logo: self.logo,
-      name: self.name,
+      instructions: self.instructions,
+      allowedEventTypes: self.allowedEventTypes,
+      transformation: self.transformation,
+      featureFlags: self.featureFlags,
       productType:
         self.productType != null
           ? ConnectorProductSerializer._toJsonObject(self.productType)
           : undefined,
-      transformation: self.transformation,
-      uid: self.uid,
     };
   },
 };

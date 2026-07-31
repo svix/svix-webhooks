@@ -49,13 +49,13 @@ import { type SnsPatchConfig, SnsPatchConfigSerializer } from "./snsPatchConfig"
 import { type SqsPatchConfig, SqsPatchConfigSerializer } from "./sqsPatchConfig";
 
 interface _StreamSinkPatchFields {
-  batchSize?: number | null;
-  eventTypes?: string[];
-  maxWaitSecs?: number | null;
-  metadata?: { [key: string]: string };
-  status?: SinkStatusIn | null;
   /** The StreamSink's UID. */
   uid?: string | null;
+  status?: SinkStatusIn | null;
+  batchSize?: number | null;
+  maxWaitSecs?: number | null;
+  eventTypes?: string[];
+  metadata?: { [key: string]: string };
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
@@ -201,15 +201,15 @@ export const StreamSinkPatchSerializer = {
     return {
       type,
       config: getConfig(type),
-      batchSize: object["batchSize"],
-      eventTypes: object["eventTypes"],
-      maxWaitSecs: object["maxWaitSecs"],
-      metadata: object["metadata"],
+      uid: object["uid"],
       status:
         object["status"] != null
           ? SinkStatusInSerializer._fromJsonObject(object["status"])
           : undefined,
-      uid: object["uid"],
+      batchSize: object["batchSize"],
+      maxWaitSecs: object["maxWaitSecs"],
+      eventTypes: object["eventTypes"],
+      metadata: object["metadata"],
     };
   },
 
@@ -267,15 +267,15 @@ export const StreamSinkPatchSerializer = {
     return {
       type: self.type,
       config: config,
-      batchSize: self.batchSize,
-      eventTypes: self.eventTypes,
-      maxWaitSecs: self.maxWaitSecs,
-      metadata: self.metadata,
+      uid: self.uid,
       status:
         self.status != null
           ? SinkStatusInSerializer._toJsonObject(self.status)
           : undefined,
-      uid: self.uid,
+      batchSize: self.batchSize,
+      maxWaitSecs: self.maxWaitSecs,
+      eventTypes: self.eventTypes,
+      metadata: self.metadata,
     };
   },
 };

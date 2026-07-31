@@ -1,28 +1,28 @@
 // this file is @generated
 
 export interface BigQueryPatchConfig {
-  credentials?: string;
-  datasetId?: string;
   projectId?: string;
+  datasetId?: string;
   tableId?: string;
+  credentials?: string;
 }
 
 export const BigQueryPatchConfigSerializer = {
   _fromJsonObject(object: any): BigQueryPatchConfig {
     return {
-      credentials: object["credentials"],
-      datasetId: object["datasetId"],
       projectId: object["projectId"],
+      datasetId: object["datasetId"],
       tableId: object["tableId"],
+      credentials: object["credentials"],
     };
   },
 
   _toJsonObject(self: BigQueryPatchConfig): any {
     return {
-      credentials: self.credentials,
-      datasetId: self.datasetId,
       projectId: self.projectId,
+      datasetId: self.datasetId,
       tableId: self.tableId,
+      credentials: self.credentials,
     };
   },
 };

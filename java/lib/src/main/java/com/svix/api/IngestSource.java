@@ -74,8 +74,8 @@ public class IngestSource {
         return this.client.executeRequest("GET", url.build(), null, null, IngestSourceOut.class);
     }
 
-    /** Update an Ingest Source. */
-    public IngestSourceOut update(final String sourceId, final IngestSourceIn ingestSourceIn)
+    /** Create or update an Ingest Source. */
+    public IngestSourceOut upsert(final String sourceId, final IngestSourceIn ingestSourceIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client

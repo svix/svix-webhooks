@@ -8,8 +8,8 @@ from .common import BaseModel
 class ListResponseBackgroundTaskOut(BaseModel):
     data: t.List[BackgroundTaskOut]
 
-    done: bool
-
     iterator: t.Optional[str]
 
     prev_iterator: t.Optional[str] = None
+
+    done: bool

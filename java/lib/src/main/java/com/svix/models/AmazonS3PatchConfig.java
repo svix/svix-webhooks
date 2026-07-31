@@ -18,32 +18,13 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AmazonS3PatchConfig {
-    @JsonProperty private String accessKeyId;
     @JsonProperty private String bucket;
-    @JsonProperty private URI endpointUrl;
-    @JsonProperty private String region;
+    @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String region;
+    @JsonProperty private URI endpointUrl;
 
     public AmazonS3PatchConfig() {}
-
-    public AmazonS3PatchConfig accessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-        return this;
-    }
-
-    /**
-     * Get accessKeyId
-     *
-     * @return accessKeyId
-     */
-    @javax.annotation.Nullable
-    public String getAccessKeyId() {
-        return accessKeyId;
-    }
-
-    public void setAccessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-    }
 
     public AmazonS3PatchConfig bucket(String bucket) {
         this.bucket = bucket;
@@ -64,23 +45,42 @@ public class AmazonS3PatchConfig {
         this.bucket = bucket;
     }
 
-    public AmazonS3PatchConfig endpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
+    public AmazonS3PatchConfig accessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
         return this;
     }
 
     /**
-     * Get endpointUrl
+     * Get accessKeyId
      *
-     * @return endpointUrl
+     * @return accessKeyId
      */
     @javax.annotation.Nullable
-    public URI getEndpointUrl() {
-        return endpointUrl;
+    public String getAccessKeyId() {
+        return accessKeyId;
     }
 
-    public void setEndpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+    }
+
+    public AmazonS3PatchConfig secretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
+        return this;
+    }
+
+    /**
+     * Get secretAccessKey
+     *
+     * @return secretAccessKey
+     */
+    @javax.annotation.Nullable
+    public String getSecretAccessKey() {
+        return secretAccessKey;
+    }
+
+    public void setSecretAccessKey(String secretAccessKey) {
+        this.secretAccessKey = secretAccessKey;
     }
 
     public AmazonS3PatchConfig region(String region) {
@@ -102,23 +102,23 @@ public class AmazonS3PatchConfig {
         this.region = region;
     }
 
-    public AmazonS3PatchConfig secretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
+    public AmazonS3PatchConfig endpointUrl(URI endpointUrl) {
+        this.endpointUrl = endpointUrl;
         return this;
     }
 
     /**
-     * Get secretAccessKey
+     * Get endpointUrl
      *
-     * @return secretAccessKey
+     * @return endpointUrl
      */
     @javax.annotation.Nullable
-    public String getSecretAccessKey() {
-        return secretAccessKey;
+    public URI getEndpointUrl() {
+        return endpointUrl;
     }
 
-    public void setSecretAccessKey(String secretAccessKey) {
-        this.secretAccessKey = secretAccessKey;
+    public void setEndpointUrl(URI endpointUrl) {
+        this.endpointUrl = endpointUrl;
     }
 
     /**

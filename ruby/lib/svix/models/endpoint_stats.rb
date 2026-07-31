@@ -4,13 +4,13 @@ require "json"
 
 module Svix
   class EndpointStats
-    attr_accessor :canceled
-    attr_accessor :fail
+    attr_accessor :success
     attr_accessor :pending
     attr_accessor :sending
-    attr_accessor :success
+    attr_accessor :fail
+    attr_accessor :canceled
 
-    ALL_FIELD ||= ["canceled", "fail", "pending", "sending", "success"].freeze
+    ALL_FIELD ||= ["success", "pending", "sending", "fail", "canceled"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -31,21 +31,21 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["canceled"] = attributes["canceled"]
-      attrs["fail"] = attributes["fail"]
+      attrs["success"] = attributes["success"]
       attrs["pending"] = attributes["pending"]
       attrs["sending"] = attributes["sending"]
-      attrs["success"] = attributes["success"]
+      attrs["fail"] = attributes["fail"]
+      attrs["canceled"] = attributes["canceled"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["canceled"] = Svix::serialize_primitive(@canceled) if @canceled
-      out["fail"] = Svix::serialize_primitive(@fail) if @fail
+      out["success"] = Svix::serialize_primitive(@success) if @success
       out["pending"] = Svix::serialize_primitive(@pending) if @pending
       out["sending"] = Svix::serialize_primitive(@sending) if @sending
-      out["success"] = Svix::serialize_primitive(@success) if @success
+      out["fail"] = Svix::serialize_primitive(@fail) if @fail
+      out["canceled"] = Svix::serialize_primitive(@canceled) if @canceled
       out
     end
 

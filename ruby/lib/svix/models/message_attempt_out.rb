@@ -4,36 +4,36 @@ require "json"
 
 module Svix
   class MessageAttemptOut
+    attr_accessor :url
+    attr_accessor :response
+    attr_accessor :response_status_code
+    # Response duration in milliseconds.
+    attr_accessor :response_duration_ms
+    attr_accessor :status
+    attr_accessor :status_text
+    attr_accessor :trigger_type
+    # The Message's ID.
+    attr_accessor :msg_id
     # The Endpoint's ID.
     attr_accessor :endpoint_id
     # The MessageAttempt's ID.
     attr_accessor :id
-    attr_accessor :msg
-    # The Message's ID.
-    attr_accessor :msg_id
-    attr_accessor :response
-    # Response duration in milliseconds.
-    attr_accessor :response_duration_ms
-    attr_accessor :response_status_code
-    attr_accessor :status
-    attr_accessor :status_text
     attr_accessor :timestamp
-    attr_accessor :trigger_type
-    attr_accessor :url
+    attr_accessor :msg
 
     ALL_FIELD ||= [
-      "endpoint_id",
-      "id",
-      "msg",
-      "msg_id",
+      "url",
       "response",
-      "response_duration_ms",
       "response_status_code",
+      "response_duration_ms",
       "status",
       "status_text",
-      "timestamp",
       "trigger_type",
-      "url"
+      "msg_id",
+      "endpoint_id",
+      "id",
+      "timestamp",
+      "msg"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -55,35 +55,35 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["endpoint_id"] = attributes["endpointId"]
-      attrs["id"] = attributes["id"]
-      attrs["msg"] = Svix::MessageOut.deserialize(attributes["msg"]) if attributes["msg"]
-      attrs["msg_id"] = attributes["msgId"]
+      attrs["url"] = attributes["url"]
       attrs["response"] = attributes["response"]
-      attrs["response_duration_ms"] = attributes["responseDurationMs"]
       attrs["response_status_code"] = attributes["responseStatusCode"]
+      attrs["response_duration_ms"] = attributes["responseDurationMs"]
       attrs["status"] = Svix::MessageStatus.deserialize(attributes["status"])
       attrs["status_text"] = Svix::MessageStatusText.deserialize(attributes["statusText"])
-      attrs["timestamp"] = DateTime.rfc3339(attributes["timestamp"]).to_time
       attrs["trigger_type"] = Svix::MessageAttemptTriggerType.deserialize(attributes["triggerType"])
-      attrs["url"] = attributes["url"]
+      attrs["msg_id"] = attributes["msgId"]
+      attrs["endpoint_id"] = attributes["endpointId"]
+      attrs["id"] = attributes["id"]
+      attrs["timestamp"] = DateTime.rfc3339(attributes["timestamp"]).to_time
+      attrs["msg"] = Svix::MessageOut.deserialize(attributes["msg"]) if attributes["msg"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["endpointId"] = Svix::serialize_primitive(@endpoint_id) if @endpoint_id
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["msg"] = Svix::serialize_schema_ref(@msg) if @msg
-      out["msgId"] = Svix::serialize_primitive(@msg_id) if @msg_id
+      out["url"] = Svix::serialize_primitive(@url) if @url
       out["response"] = Svix::serialize_primitive(@response) if @response
-      out["responseDurationMs"] = Svix::serialize_primitive(@response_duration_ms) if @response_duration_ms
       out["responseStatusCode"] = Svix::serialize_primitive(@response_status_code) if @response_status_code
+      out["responseDurationMs"] = Svix::serialize_primitive(@response_duration_ms) if @response_duration_ms
       out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
-      out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
       out["triggerType"] = Svix::serialize_schema_ref(@trigger_type) if @trigger_type
-      out["url"] = Svix::serialize_primitive(@url) if @url
+      out["msgId"] = Svix::serialize_primitive(@msg_id) if @msg_id
+      out["endpointId"] = Svix::serialize_primitive(@endpoint_id) if @endpoint_id
+      out["id"] = Svix::serialize_primitive(@id) if @id
+      out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
+      out["msg"] = Svix::serialize_schema_ref(@msg) if @msg
       out
     end
 

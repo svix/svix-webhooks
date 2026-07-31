@@ -26,10 +26,10 @@ class Environment
      * @throws ApiException
      */
     public function export(
-        ?EnvironmentExportOptions $options = null,
+        EnvironmentExportOptions $options = new EnvironmentExportOptions(),
     ): EnvironmentOut {
         $request = $this->client->newReq('POST', '/api/v1/environment/export');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->send($request);
 
         return EnvironmentOut::fromJson($res);
@@ -47,10 +47,10 @@ class Environment
      */
     public function import(
         EnvironmentIn $environmentIn,
-        ?EnvironmentImportOptions $options = null,
+        EnvironmentImportOptions $options = new EnvironmentImportOptions(),
     ): void {
         $request = $this->client->newReq('POST', '/api/v1/environment/import');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($environmentIn));
         $res = $this->client->sendNoResponseBody($request);
     }

@@ -20,10 +20,10 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AppPortalAccessIn {
     @JsonProperty private ApplicationIn application;
-    @JsonProperty private Set<AppPortalCapability> capabilities;
-    @JsonProperty private Long expiry;
-    @JsonProperty private Set<String> featureFlags;
     @JsonProperty private Boolean readOnly;
+    @JsonProperty private Set<AppPortalCapability> capabilities;
+    @JsonProperty private Set<String> featureFlags;
+    @JsonProperty private Long expiry;
     @JsonProperty private String sessionId;
 
     public AppPortalAccessIn() {}
@@ -48,6 +48,28 @@ public class AppPortalAccessIn {
 
     public void setApplication(ApplicationIn application) {
         this.application = application;
+    }
+
+    @Deprecated
+    public AppPortalAccessIn readOnly(Boolean readOnly) {
+        this.readOnly = readOnly;
+        return this;
+    }
+
+    /**
+     * Whether the app portal should be in read-only mode.
+     *
+     * @return readOnly
+     */
+    @javax.annotation.Nullable
+    @Deprecated
+    public Boolean getReadOnly() {
+        return readOnly;
+    }
+
+    @Deprecated
+    public void setReadOnly(Boolean readOnly) {
+        this.readOnly = readOnly;
     }
 
     public AppPortalAccessIn capabilities(Set<AppPortalCapability> capabilities) {
@@ -97,27 +119,6 @@ public class AppPortalAccessIn {
         this.capabilities = capabilities;
     }
 
-    public AppPortalAccessIn expiry(Long expiry) {
-        this.expiry = expiry;
-        return this;
-    }
-
-    /**
-     * How long the token will be valid for, in seconds.
-     *
-     * <p>Valid values are between 1 hour and 7 days. The default is 7 days.
-     *
-     * @return expiry
-     */
-    @javax.annotation.Nullable
-    public Long getExpiry() {
-        return expiry;
-    }
-
-    public void setExpiry(Long expiry) {
-        this.expiry = expiry;
-    }
-
     public AppPortalAccessIn featureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
         return this;
@@ -146,26 +147,25 @@ public class AppPortalAccessIn {
         this.featureFlags = featureFlags;
     }
 
-    @Deprecated
-    public AppPortalAccessIn readOnly(Boolean readOnly) {
-        this.readOnly = readOnly;
+    public AppPortalAccessIn expiry(Long expiry) {
+        this.expiry = expiry;
         return this;
     }
 
     /**
-     * Whether the app portal should be in read-only mode.
+     * How long the token will be valid for, in seconds.
      *
-     * @return readOnly
+     * <p>Valid values are between 1 hour and 7 days. The default is 7 days.
+     *
+     * @return expiry
      */
     @javax.annotation.Nullable
-    @Deprecated
-    public Boolean getReadOnly() {
-        return readOnly;
+    public Long getExpiry() {
+        return expiry;
     }
 
-    @Deprecated
-    public void setReadOnly(Boolean readOnly) {
-        this.readOnly = readOnly;
+    public void setExpiry(Long expiry) {
+        this.expiry = expiry;
     }
 
     public AppPortalAccessIn sessionId(String sessionId) {

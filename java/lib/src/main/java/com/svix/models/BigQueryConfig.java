@@ -16,30 +16,30 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class BigQueryConfig {
-    @JsonProperty private String credentials;
-    @JsonProperty private String datasetId;
     @JsonProperty private String projectId;
+    @JsonProperty private String datasetId;
     @JsonProperty private String tableId;
+    @JsonProperty private String credentials;
 
     public BigQueryConfig() {}
 
-    public BigQueryConfig credentials(String credentials) {
-        this.credentials = credentials;
+    public BigQueryConfig projectId(String projectId) {
+        this.projectId = projectId;
         return this;
     }
 
     /**
-     * Google Cloud Credentials JSON Object as a string.
+     * Get projectId
      *
-     * @return credentials
+     * @return projectId
      */
     @javax.annotation.Nonnull
-    public String getCredentials() {
-        return credentials;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setCredentials(String credentials) {
-        this.credentials = credentials;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public BigQueryConfig datasetId(String datasetId) {
@@ -61,25 +61,6 @@ public class BigQueryConfig {
         this.datasetId = datasetId;
     }
 
-    public BigQueryConfig projectId(String projectId) {
-        this.projectId = projectId;
-        return this;
-    }
-
-    /**
-     * Get projectId
-     *
-     * @return projectId
-     */
-    @javax.annotation.Nonnull
-    public String getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
-
     public BigQueryConfig tableId(String tableId) {
         this.tableId = tableId;
         return this;
@@ -97,6 +78,25 @@ public class BigQueryConfig {
 
     public void setTableId(String tableId) {
         this.tableId = tableId;
+    }
+
+    public BigQueryConfig credentials(String credentials) {
+        this.credentials = credentials;
+        return this;
+    }
+
+    /**
+     * Google Cloud Credentials JSON Object as a string.
+     *
+     * @return credentials
+     */
+    @javax.annotation.Nonnull
+    public String getCredentials() {
+        return credentials;
+    }
+
+    public void setCredentials(String credentials) {
+        this.credentials = credentials;
     }
 
     /**

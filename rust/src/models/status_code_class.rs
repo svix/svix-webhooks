@@ -13,20 +13,9 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 /// - Code5xx = 500
 #[repr(i64)]
 #[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Hash,
-    Serialize_repr,
-    Deserialize_repr,
+    Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize_repr, Deserialize_repr,
 )]
 pub enum StatusCodeClass {
-    #[default]
     CodeNone = 0,
     Code1xx = 100,
     Code2xx = 200,

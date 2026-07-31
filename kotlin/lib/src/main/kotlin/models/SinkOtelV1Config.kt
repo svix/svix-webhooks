@@ -4,4 +4,4 @@ package com.svix.kotlin.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SinkOtelV1Config(val headers: Map<String, String>? = null, val url: String)
+data class SinkOtelV1Config(val url: String, val headers: Map<String, String>? = null)

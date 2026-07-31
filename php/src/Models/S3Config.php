@@ -10,10 +10,10 @@ class S3Config implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly string $accessKeyId,
         public readonly string $bucket,
-        public readonly string $region,
+        public readonly string $accessKeyId,
         public readonly string $secretAccessKey,
+        public readonly string $region,
         public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
@@ -24,18 +24,18 @@ class S3Config implements \JsonSerializable
      * Create an instance of S3Config with required fields.
      */
     public static function create(
-        string $accessKeyId,
         string $bucket,
-        string $region,
+        string $accessKeyId,
         string $secretAccessKey,
+        string $region,
     ): self {
         return new self(
-            accessKeyId: $accessKeyId,
             bucket: $bucket,
-            endpointUrl: null,
-            region: $region,
+            accessKeyId: $accessKeyId,
             secretAccessKey: $secretAccessKey,
-            setFields: ['accessKeyId' => true, 'bucket' => true, 'region' => true, 'secretAccessKey' => true]
+            region: $region,
+            endpointUrl: null,
+            setFields: ['bucket' => true, 'accessKeyId' => true, 'secretAccessKey' => true, 'region' => true]
         );
     }
 
@@ -45,11 +45,11 @@ class S3Config implements \JsonSerializable
         $setFields['endpointUrl'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
             bucket: $this->bucket,
-            endpointUrl: $endpointUrl,
-            region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
+            endpointUrl: $endpointUrl,
             setFields: $setFields
         );
     }
@@ -57,10 +57,10 @@ class S3Config implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'accessKeyId' => $this->accessKeyId,
             'bucket' => $this->bucket,
-            'region' => $this->region,
-            'secretAccessKey' => $this->secretAccessKey];
+            'accessKeyId' => $this->accessKeyId,
+            'secretAccessKey' => $this->secretAccessKey,
+            'region' => $this->region];
 
         if (isset($this->setFields['endpointUrl'])) {
             $data['endpointUrl'] = $this->endpointUrl;
@@ -75,11 +75,11 @@ class S3Config implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'S3Config'),
             bucket: \Svix\Utils::deserializeString($data, 'bucket', true, 'S3Config'),
-            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'S3Config'),
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'S3Config'),
+            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', true, 'S3Config'),
             region: \Svix\Utils::deserializeString($data, 'region', true, 'S3Config'),
-            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', true, 'S3Config')
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'S3Config')
         );
     }
 

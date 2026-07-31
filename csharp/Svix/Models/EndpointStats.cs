@@ -6,11 +6,8 @@ namespace Svix.Models
 {
     public class EndpointStats
     {
-        [JsonProperty("canceled", Required = Required.Always)]
-        public required long Canceled { get; set; }
-
-        [JsonProperty("fail", Required = Required.Always)]
-        public required long Fail { get; set; }
+        [JsonProperty("success", Required = Required.Always)]
+        public required long Success { get; set; }
 
         [JsonProperty("pending", Required = Required.Always)]
         public required long Pending { get; set; }
@@ -18,19 +15,22 @@ namespace Svix.Models
         [JsonProperty("sending", Required = Required.Always)]
         public required long Sending { get; set; }
 
-        [JsonProperty("success", Required = Required.Always)]
-        public required long Success { get; set; }
+        [JsonProperty("fail", Required = Required.Always)]
+        public required long Fail { get; set; }
+
+        [JsonProperty("canceled", Required = Required.Always)]
+        public required long Canceled { get; set; }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class EndpointStats {\n");
-            sb.Append("  Canceled: ").Append(Canceled).Append('\n');
-            sb.Append("  Fail: ").Append(Fail).Append('\n');
+            sb.Append("  Success: ").Append(Success).Append('\n');
             sb.Append("  Pending: ").Append(Pending).Append('\n');
             sb.Append("  Sending: ").Append(Sending).Append('\n');
-            sb.Append("  Success: ").Append(Success).Append('\n');
+            sb.Append("  Fail: ").Append(Fail).Append('\n');
+            sb.Append("  Canceled: ").Append(Canceled).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

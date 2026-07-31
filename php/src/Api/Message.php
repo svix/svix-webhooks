@@ -39,17 +39,17 @@ class Message
      */
     public function list(
         string $appId,
-        ?MessageListOptions $options = null,
+        MessageListOptions $options = new MessageListOptions(),
     ): ListResponseMessageOut {
         $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg");
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('channel', $options?->channel);
-        $request->setQueryParam('before', $options?->before);
-        $request->setQueryParam('after', $options?->after);
-        $request->setQueryParam('with_content', $options?->withContent);
-        $request->setQueryParam('tag', $options?->tag);
-        $request->setQueryParam('event_types', $options?->eventTypes);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('channel', $options->channel);
+        $request->setQueryParam('before', $options->before);
+        $request->setQueryParam('after', $options->after);
+        $request->setQueryParam('with_content', $options->withContent);
+        $request->setQueryParam('tag', $options->tag);
+        $request->setQueryParam('event_types', $options->eventTypes);
         $res = $this->client->send($request);
 
         return ListResponseMessageOut::fromJson($res);
@@ -71,15 +71,71 @@ class Message
     public function create(
         string $appId,
         MessageIn $messageIn,
-        ?MessageCreateOptions $options = null,
+        MessageCreateOptions $options = new MessageCreateOptions(),
     ): MessageOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg");
-        $request->setQueryParam('with_content', $options?->withContent);
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setQueryParam('with_content', $options->withContent);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($messageIn));
         $res = $this->client->send($request);
 
         return MessageOut::fromJson($res);
+    }
+
+    /**
+     * A pre-check call for `message.create` that checks whether any active endpoints are
+     * listening to this message.
+     *
+     * Note: most people shouldn't be using this API. Svix doesn't bill you for
+     * messages not actually sent, so using this API doesn't save money.
+     * If unsure, please ask Svix support before using this API.
+     *
+     * @throws ApiException
+     */
+    public function precheck(
+        string $appId,
+        MessagePrecheckIn $messagePrecheckIn,
+        MessagePrecheckOptions $options = new MessagePrecheckOptions(),
+    ): MessagePrecheckOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/precheck/active");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($messagePrecheckIn));
+        $res = $this->client->send($request);
+
+        return MessagePrecheckOut::fromJson($res);
+    }
+
+    /**
+     * Get a message by its ID or eventID.
+     *
+     * @throws ApiException
+     */
+    public function get(
+        string $appId,
+        string $msgId,
+        MessageGetOptions $options = new MessageGetOptions(),
+    ): MessageOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}");
+        $request->setQueryParam('with_content', $options->withContent);
+        $res = $this->client->send($request);
+
+        return MessageOut::fromJson($res);
+    }
+
+    /**
+     * Delete the given message's payload.
+     *
+     * Useful in cases when a message was accidentally sent with sensitive content.
+     * The message can't be replayed or resent once its payload has been deleted or expired.
+     *
+     * @throws ApiException
+     */
+    public function expungeContent(
+        string $appId,
+        string $msgId,
+    ): void {
+        $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/msg/{$msgId}/content");
+        $res = $this->client->sendNoResponseBody($request);
     }
 
     /**
@@ -103,68 +159,12 @@ class Message
      */
     public function expungeAllContents(
         string $appId,
-        ?MessageExpungeAllContentsOptions $options = null,
+        MessageExpungeAllContentsOptions $options = new MessageExpungeAllContentsOptions(),
     ): ExpungeAllContentsOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/expunge-all-contents");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $res = $this->client->send($request);
 
         return ExpungeAllContentsOut::fromJson($res);
-    }
-
-    /**
-     * A pre-check call for `message.create` that checks whether any active endpoints are
-     * listening to this message.
-     *
-     * Note: most people shouldn't be using this API. Svix doesn't bill you for
-     * messages not actually sent, so using this API doesn't save money.
-     * If unsure, please ask Svix support before using this API.
-     *
-     * @throws ApiException
-     */
-    public function precheck(
-        string $appId,
-        MessagePrecheckIn $messagePrecheckIn,
-        ?MessagePrecheckOptions $options = null,
-    ): MessagePrecheckOut {
-        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/precheck/active");
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
-        $request->setBody(json_encode($messagePrecheckIn));
-        $res = $this->client->send($request);
-
-        return MessagePrecheckOut::fromJson($res);
-    }
-
-    /**
-     * Get a message by its ID or eventID.
-     *
-     * @throws ApiException
-     */
-    public function get(
-        string $appId,
-        string $msgId,
-        ?MessageGetOptions $options = null,
-    ): MessageOut {
-        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/msg/{$msgId}");
-        $request->setQueryParam('with_content', $options?->withContent);
-        $res = $this->client->send($request);
-
-        return MessageOut::fromJson($res);
-    }
-
-    /**
-     * Delete the given message's payload.
-     *
-     * Useful in cases when a message was accidentally sent with sensitive content.
-     * The message can't be replayed or resent once its payload has been deleted or expired.
-     *
-     * @throws ApiException
-     */
-    public function expungeContent(
-        string $appId,
-        string $msgId,
-    ): void {
-        $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/msg/{$msgId}/content");
-        $res = $this->client->sendNoResponseBody($request);
     }
 }

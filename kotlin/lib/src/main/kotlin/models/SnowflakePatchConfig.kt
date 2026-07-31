@@ -5,14 +5,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SnowflakePatchConfig(
+    val privateKey: String? = null,
     val accountIdentifier: String? = null,
+    val userId: String? = null,
     /**
      * Database name.
      *
      * Only required if not using transformations.
      */
     val dbName: String? = null,
-    val privateKey: String? = null,
     /**
      * Schema name.
      *
@@ -25,5 +26,4 @@ data class SnowflakePatchConfig(
      * Only required if not using transformations.
      */
     val tableName: String? = null,
-    val userId: String? = null,
 )

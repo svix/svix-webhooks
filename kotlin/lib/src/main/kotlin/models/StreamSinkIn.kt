@@ -13,23 +13,8 @@ import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = StreamSinkInSerializer::class)
 data class StreamSinkIn(
-    /** How many events will be batched in a request to the Sink. */
-    val batchSize: UShort? = null,
-    /**
-     * A list of event types that filter which events are dispatched to the Sink. An empty list (or
-     * null) will not filter out any events.
-     */
-    val eventTypes: List<String>? = null,
-    /**
-     * How long to wait before a batch of events is sent, if the `batchSize` is not reached.
-     *
-     * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after
-     * 10 seconds or 100 events, whichever comes first.
-     *
-     * Note that we will never send an empty batch of events to the Sink.
-     */
-    val maxWaitSecs: UShort? = null,
-    val metadata: Map<String, String>? = null,
+    /** An optional unique identifier for the sink. */
+    val uid: String? = null,
     /**
      * Whether the sink will receive events.
      *
@@ -40,8 +25,23 @@ data class StreamSinkIn(
      * reenabled.
      */
     val status: SinkStatusIn? = null,
-    /** An optional unique identifier for the sink. */
-    val uid: String? = null,
+    /** How many events will be batched in a request to the Sink. */
+    val batchSize: UShort? = null,
+    /**
+     * How long to wait before a batch of events is sent, if the `batchSize` is not reached.
+     *
+     * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after
+     * 10 seconds or 100 events, whichever comes first.
+     *
+     * Note that we will never send an empty batch of events to the Sink.
+     */
+    val maxWaitSecs: UShort? = null,
+    /**
+     * A list of event types that filter which events are dispatched to the Sink. An empty list (or
+     * null) will not filter out any events.
+     */
+    val eventTypes: List<String>? = null,
+    val metadata: Map<String, String>? = null,
     val config: StreamSinkInConfig,
 )
 
@@ -227,23 +227,8 @@ sealed class StreamSinkInConfig {
 class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
     @Serializable
     private data class StreamSinkInSurrogate(
-        /** How many events will be batched in a request to the Sink. */
-        val batchSize: UShort? = null,
-        /**
-         * A list of event types that filter which events are dispatched to the Sink. An empty list
-         * (or null) will not filter out any events.
-         */
-        val eventTypes: List<String>? = null,
-        /**
-         * How long to wait before a batch of events is sent, if the `batchSize` is not reached.
-         *
-         * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request
-         * after 10 seconds or 100 events, whichever comes first.
-         *
-         * Note that we will never send an empty batch of events to the Sink.
-         */
-        val maxWaitSecs: UShort? = null,
-        val metadata: Map<String, String>? = null,
+        /** An optional unique identifier for the sink. */
+        val uid: String? = null,
         /**
          * Whether the sink will receive events.
          *
@@ -254,8 +239,23 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
          * reenabled.
          */
         val status: SinkStatusIn? = null,
-        /** An optional unique identifier for the sink. */
-        val uid: String? = null,
+        /** How many events will be batched in a request to the Sink. */
+        val batchSize: UShort? = null,
+        /**
+         * How long to wait before a batch of events is sent, if the `batchSize` is not reached.
+         *
+         * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request
+         * after 10 seconds or 100 events, whichever comes first.
+         *
+         * Note that we will never send an empty batch of events to the Sink.
+         */
+        val maxWaitSecs: UShort? = null,
+        /**
+         * A list of event types that filter which events are dispatched to the Sink. An empty list
+         * (or null) will not filter out any events.
+         */
+        val eventTypes: List<String>? = null,
+        val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
     )
@@ -265,12 +265,12 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
     override fun serialize(encoder: Encoder, value: StreamSinkIn) {
         val surrogate =
             StreamSinkInSurrogate(
-                batchSize = value.batchSize,
-                eventTypes = value.eventTypes,
-                maxWaitSecs = value.maxWaitSecs,
-                metadata = value.metadata,
-                status = value.status,
                 uid = value.uid,
+                status = value.status,
+                batchSize = value.batchSize,
+                maxWaitSecs = value.maxWaitSecs,
+                eventTypes = value.eventTypes,
+                metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
             )
@@ -280,12 +280,12 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
     override fun deserialize(decoder: Decoder): StreamSinkIn {
         val surrogate = decoder.decodeSerializableValue(StreamSinkInSurrogate.serializer())
         return StreamSinkIn(
-            batchSize = surrogate.batchSize,
-            eventTypes = surrogate.eventTypes,
-            maxWaitSecs = surrogate.maxWaitSecs,
-            metadata = surrogate.metadata,
-            status = surrogate.status,
             uid = surrogate.uid,
+            status = surrogate.status,
+            batchSize = surrogate.batchSize,
+            maxWaitSecs = surrogate.maxWaitSecs,
+            eventTypes = surrogate.eventTypes,
+            metadata = surrogate.metadata,
             config = StreamSinkInConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )
     }

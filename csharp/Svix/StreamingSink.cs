@@ -52,6 +52,11 @@ namespace Svix
     {
         readonly SvixClient _client = client;
 
+        public StreamingSinkTransformation Transformation
+        {
+            get => new StreamingSinkTransformation(_client);
+        }
+
         /// <summary>
         /// List of all the stream's sinks.
         /// </summary>
@@ -61,6 +66,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkListOptions();
+            }
             try
             {
                 var response =
@@ -68,8 +77,8 @@ namespace Svix
                         method: HttpMethod.Get,
                         path: "/api/v1/stream/{stream_id}/sink",
                         pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -90,14 +99,18 @@ namespace Svix
             StreamingSinkListOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseStreamSinkOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/stream/{stream_id}/sink",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -119,6 +132,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkCreateOptions();
+            }
             streamSinkIn = streamSinkIn ?? throw new ArgumentNullException(nameof(streamSinkIn));
             try
             {
@@ -126,8 +143,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/sink",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamSinkIn,
                     cancellationToken: cancellationToken
                 );
@@ -150,6 +167,10 @@ namespace Svix
             StreamingSinkCreateOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkCreateOptions();
+            }
             streamSinkIn = streamSinkIn ?? throw new ArgumentNullException(nameof(streamSinkIn));
             try
             {
@@ -157,8 +178,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/sink",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamSinkIn
                 );
                 return response.Data;
@@ -229,9 +250,9 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update a sink.
+        /// Create or update a sink.
         /// </summary>
-        public async Task<StreamSinkOut> UpdateAsync(
+        public async Task<StreamSinkOut> UpsertAsync(
             string streamId,
             string sinkId,
             StreamSinkIn streamSinkIn,
@@ -256,16 +277,16 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Update a sink.
+        /// Create or update a sink.
         /// </summary>
-        public StreamSinkOut Update(string streamId, string sinkId, StreamSinkIn streamSinkIn)
+        public StreamSinkOut Upsert(string streamId, string sinkId, StreamSinkIn streamSinkIn)
         {
             streamSinkIn = streamSinkIn ?? throw new ArgumentNullException(nameof(streamSinkIn));
             try
@@ -284,7 +305,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }
@@ -487,6 +508,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkRotateSecretOptions();
+            }
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
@@ -500,8 +525,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointSecretRotateIn,
                     cancellationToken: cancellationToken
                 );
@@ -525,6 +550,10 @@ namespace Svix
             StreamingSinkRotateSecretOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new StreamingSinkRotateSecretOptions();
+            }
             endpointSecretRotateIn =
                 endpointSecretRotateIn
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
@@ -538,8 +567,8 @@ namespace Svix
                         { "stream_id", streamId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: endpointSecretRotateIn
                 );
                 return response.Data;
@@ -547,74 +576,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this sink.
-        /// </summary>
-        public async Task<EmptyResponse> TransformationPartialUpdateAsync(
-            string streamId,
-            string sinkId,
-            SinkTransformIn sinkTransformIn,
-            CancellationToken cancellationToken = default
-        )
-        {
-            sinkTransformIn =
-                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    content: sinkTransformIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdateAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Set or unset the transformation code associated with this sink.
-        /// </summary>
-        public EmptyResponse TransformationPartialUpdate(
-            string streamId,
-            string sinkId,
-            SinkTransformIn sinkTransformIn
-        )
-        {
-            sinkTransformIn =
-                sinkTransformIn ?? throw new ArgumentNullException(nameof(sinkTransformIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
-                    method: HttpMethod.Patch,
-                    path: "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    content: sinkTransformIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(TransformationPartialUpdate)} failed");
 
                 throw;
             }

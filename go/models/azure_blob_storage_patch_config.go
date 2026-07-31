@@ -2,7 +2,7 @@
 package models
 
 type AzureBlobStoragePatchConfig struct {
-	AccessKey *string `json:"accessKey,omitempty"`
-	Account   *string `json:"account,omitempty"`
 	Container *string `json:"container,omitempty"`
+	Account   *string `json:"account,omitempty"`
+	AccessKey *string `json:"accessKey,omitempty"`
 }

@@ -5,12 +5,7 @@ from .common import BaseModel
 
 
 class ApplicationPatch(BaseModel):
-    metadata: t.Optional[t.Dict[str, str]] = None
-
     name: t.Optional[str] = None
-
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this application.
@@ -19,3 +14,5 @@ class ApplicationPatch(BaseModel):
 
     uid: t.Optional[str] = None
     """The Application's UID."""
+
+    metadata: t.Optional[t.Dict[str, str]] = None

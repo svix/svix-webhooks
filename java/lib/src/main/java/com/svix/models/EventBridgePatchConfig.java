@@ -16,31 +16,31 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventBridgePatchConfig {
-    @JsonProperty private String accessKeyId;
-    @JsonProperty private String detailType;
     @JsonProperty private String eventBusName;
-    @JsonProperty private String region;
+    @JsonProperty private String detailType;
+    @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String region;
 
     public EventBridgePatchConfig() {}
 
-    public EventBridgePatchConfig accessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
+    public EventBridgePatchConfig eventBusName(String eventBusName) {
+        this.eventBusName = eventBusName;
         return this;
     }
 
     /**
-     * Get accessKeyId
+     * Get eventBusName
      *
-     * @return accessKeyId
+     * @return eventBusName
      */
     @javax.annotation.Nullable
-    public String getAccessKeyId() {
-        return accessKeyId;
+    public String getEventBusName() {
+        return eventBusName;
     }
 
-    public void setAccessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
+    public void setEventBusName(String eventBusName) {
+        this.eventBusName = eventBusName;
     }
 
     public EventBridgePatchConfig detailType(String detailType) {
@@ -62,42 +62,23 @@ public class EventBridgePatchConfig {
         this.detailType = detailType;
     }
 
-    public EventBridgePatchConfig eventBusName(String eventBusName) {
-        this.eventBusName = eventBusName;
+    public EventBridgePatchConfig accessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
         return this;
     }
 
     /**
-     * Get eventBusName
+     * Get accessKeyId
      *
-     * @return eventBusName
+     * @return accessKeyId
      */
     @javax.annotation.Nullable
-    public String getEventBusName() {
-        return eventBusName;
+    public String getAccessKeyId() {
+        return accessKeyId;
     }
 
-    public void setEventBusName(String eventBusName) {
-        this.eventBusName = eventBusName;
-    }
-
-    public EventBridgePatchConfig region(String region) {
-        this.region = region;
-        return this;
-    }
-
-    /**
-     * Get region
-     *
-     * @return region
-     */
-    @javax.annotation.Nullable
-    public String getRegion() {
-        return region;
-    }
-
-    public void setRegion(String region) {
-        this.region = region;
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
     }
 
     public EventBridgePatchConfig secretAccessKey(String secretAccessKey) {
@@ -117,6 +98,25 @@ public class EventBridgePatchConfig {
 
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+
+    public EventBridgePatchConfig region(String region) {
+        this.region = region;
+        return this;
+    }
+
+    /**
+     * Get region
+     *
+     * @return region
+     */
+    @javax.annotation.Nullable
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
     }
 
     /**

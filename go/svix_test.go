@@ -32,12 +32,12 @@ var endpointOurStr = `
     "property2": "string"
   },
   "description": "string",
-  "rateLimit": 0,
+  "throttleRate": 0,
   "uid": "unique-identifier",
   "url": "https://example.com/webhook/",
   "version": 1,
   "disabled": false,
-  "filterTypes": [
+  "eventTypes": [
     "user.signup",
     "user.deleted"
   ],
@@ -101,7 +101,7 @@ var MsgOut = `{
   ],
   "application": {
     "name": "My first application",
-    "rateLimit": 1,
+    "throttleRate": 1,
     "uid": "unique-identifier",
     "metadata": {}
   },
@@ -161,7 +161,7 @@ func isNotConflict(err error) error {
 }
 
 func deleteApp(t *testing.T, ctx context.Context, client svix.Svix, app_id string) {
-	err := client.Application.Delete(ctx, app_id)
+	err := client.Application().Delete(ctx, app_id)
 	if err != nil {
 		t.Error(err)
 	}
@@ -173,7 +173,7 @@ func TestKitchenSink(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 
-	app, err := client.Application.Create(ctx, models.ApplicationIn{
+	app, err := client.Application().Create(ctx, models.ApplicationIn{
 		Name: "test",
 	}, nil)
 	if err != nil {
@@ -181,18 +181,18 @@ func TestKitchenSink(t *testing.T) {
 	}
 	defer deleteApp(t, ctx, *client, app.Id)
 
-	_, err = client.EventType.Create(ctx, models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
+	_, err = client.EventType().Create(ctx, models.EventTypeIn{Name: "event.started", Description: "Something started"}, nil)
 
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	_, err = client.EventType.Create(ctx, models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
+	_, err = client.EventType().Create(ctx, models.EventTypeIn{Name: "event.ended", Description: "Something ended"}, nil)
 	if isNotConflict(err) != nil {
 		t.Fatal(err)
 	}
 
-	endp, err := client.Endpoint.Create(ctx, app.Id, models.EndpointIn{
+	endp, err := client.Endpoint().Create(ctx, app.Id, models.EndpointIn{
 		Url: "https://example.svix.com/",
 	}, nil)
 	if err != nil {
@@ -200,16 +200,16 @@ func TestKitchenSink(t *testing.T) {
 	}
 
 	endpPatch := models.EndpointPatch{
-		FilterTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
+		EventTypes: utils.NewNullable([]string{"event.started", "event.ended"}),
 	}
 
-	patched, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, endpPatch)
+	patched, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, endpPatch)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	for _, typ := range patched.FilterTypes {
-		if !(typ == "event.started" || typ == "event.ended") {
+	for _, typ := range patched.EventTypes {
+		if typ != "event.started" && typ != "event.ended" {
 			t.Fatalf("unexpected filter type: `%s`", typ)
 		}
 	}
@@ -255,16 +255,16 @@ func TestModelSerialization(t *testing.T) {
 
 	uid := "test"
 	ep_in.Uid = &uid
-	assertMarshalEq(ep_in, `{"uid":"test","url":"http://example.local"}`, t)
+	assertMarshalEq(ep_in, `{"url":"http://example.local","uid":"test"}`, t)
 
 	uid = ""
 	ep_in.Uid = &uid
-	assertMarshalEq(ep_in, `{"uid":"","url":"http://example.local"}`, t)
+	assertMarshalEq(ep_in, `{"url":"http://example.local","uid":""}`, t)
 
 	metadata := make(map[string]string)
 	ep_in.Uid = nil
 	ep_in.Metadata = &metadata
-	assertMarshalEq(ep_in, `{"metadata":{},"url":"http://example.local"}`, t)
+	assertMarshalEq(ep_in, `{"url":"http://example.local","metadata":{}}`, t)
 
 	ep_patch := models.EndpointPatch{}
 	assertMarshalEq(ep_patch, `{}`, t)
@@ -360,20 +360,17 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Disabled != nil {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
 	}
-	if len(ep_out.FilterTypes) != 0 {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if len(ep_out.EventTypes) != 0 {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
-	if ep_out.RateLimit != nil {
-		t.Error("unexpected value for rateLimit", ep_out.RateLimit)
+	if ep_out.ThrottleRate != nil {
+		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
 	}
 	if ep_out.Uid != nil {
 		t.Error("unexpected value for uid", ep_out.Uid)
 	}
 	if ep_out.Url != "http://example.local" {
 		t.Error("unexpected value for url", ep_out.Url)
-	}
-	if ep_out.Version != 1 {
-		t.Error("unexpected value for version", ep_out.Version)
 	}
 
 	ep_out = models.EndpointOut{}
@@ -386,12 +383,12 @@ func TestModelDeserialization(t *testing.T) {
 				"property2": "string"
 			},
 			"description": "string",
-			"rateLimit": 0,
+			"throttleRate": 0,
 			"uid": "unique-ep-identifier",
 			"url": "https://example.com/webhook/",
 			"version": 1,
 			"disabled": false,
-			"filterTypes": [
+			"eventTypes": [
 				"user.signup",
 				"user.deleted"
 			],
@@ -422,8 +419,8 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Description != "string" {
 		t.Error("unexpected value for description", ep_out.Description)
 	}
-	if *ep_out.RateLimit != 0 {
-		t.Error("unexpected value for rateLimit", ep_out.RateLimit)
+	if *ep_out.ThrottleRate != 0 {
+		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
 	}
 	if *ep_out.Uid != "unique-ep-identifier" {
 		t.Error("unexpected value for uid", ep_out.Uid)
@@ -431,20 +428,17 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Url != "https://example.com/webhook/" {
 		t.Error("unexpected value for url", ep_out.Url)
 	}
-	if ep_out.Version != 1 {
-		t.Error("unexpected value for version", ep_out.Version)
-	}
 	if *ep_out.Disabled != false {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
 	}
-	if len(ep_out.FilterTypes) != 2 {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if len(ep_out.EventTypes) != 2 {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
-	if ep_out.FilterTypes[0] != "user.signup" {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if ep_out.EventTypes[0] != "user.signup" {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
-	if ep_out.FilterTypes[1] != "user.deleted" {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if ep_out.EventTypes[1] != "user.deleted" {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
 	if len(ep_out.Channels) != 2 {
 		t.Error("unexpected value for channels", ep_out.Channels)
@@ -464,12 +458,12 @@ func TestModelDeserialization(t *testing.T) {
 			"id": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
 			"metadata": {},
 			"description": "string",
-			"rateLimit": null,
+			"throttleRate": null,
 			"uid": null,
 			"url": "https://example.com/webhook/",
 			"version": 1,
 			"disabled": null,
-			"filterTypes": null,
+			"eventTypes": null,
 			"channels": null,
 			"createdAt": "2019-08-24T14:15:22Z",
 			"updatedAt": "2019-08-24T14:15:22Z"
@@ -488,8 +482,8 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Description != "string" {
 		t.Error("unexpected value for description", ep_out.Description)
 	}
-	if ep_out.RateLimit != nil {
-		t.Error("unexpected value for rateLimit", ep_out.RateLimit)
+	if ep_out.ThrottleRate != nil {
+		t.Error("unexpected value for throttleRate", ep_out.ThrottleRate)
 	}
 	if ep_out.Uid != nil {
 		t.Error("unexpected value for uid", ep_out.Uid)
@@ -497,14 +491,11 @@ func TestModelDeserialization(t *testing.T) {
 	if ep_out.Url != "https://example.com/webhook/" {
 		t.Error("unexpected value for url", ep_out.Url)
 	}
-	if ep_out.Version != 1 {
-		t.Error("unexpected value for version", ep_out.Version)
-	}
 	if ep_out.Disabled != nil {
 		t.Error("unexpected value for disabled", ep_out.Disabled)
 	}
-	if len(ep_out.FilterTypes) != 0 {
-		t.Error("unexpected value for filterTypes", ep_out.FilterTypes)
+	if len(ep_out.EventTypes) != 0 {
+		t.Error("unexpected value for eventTypes", ep_out.EventTypes)
 	}
 	if len(ep_out.Channels) != 0 {
 		t.Error("unexpected value for channels", ep_out.Channels)
@@ -545,7 +536,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
 	origUid := strconv.FormatUint(rand.Uint64(), 10)
-	app, err := client.Application.Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}, Uid: &origUid}, nil)
+	app, err := client.Application().Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}, Uid: &origUid}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -558,7 +549,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 			"key2": "val2",
 		},
 	}
-	patchRes1, err := client.Application.Patch(ctx, app.Id, appPatch1)
+	patchRes1, err := client.Application().Patch(ctx, app.Id, appPatch1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -573,7 +564,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	appPatch2 := models.ApplicationPatch{
 		Uid: utils.NewNullableFromPtr[string](nil),
 	}
-	patchRes2, err := client.Application.Patch(ctx, app.Id, appPatch2)
+	patchRes2, err := client.Application().Patch(ctx, app.Id, appPatch2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -586,7 +577,7 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 	appPatch3 := models.ApplicationPatch{
 		Uid: utils.NewNullable(newUid),
 	}
-	patchRes3, err := client.Application.Patch(ctx, app.Id, appPatch3)
+	patchRes3, err := client.Application().Patch(ctx, app.Id, appPatch3)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -601,12 +592,12 @@ func TestApplicationPatchNullableAgainstServer(t *testing.T) {
 func TestEndpointPatchNullableAgainstServer(t *testing.T) {
 	ctx := context.Background()
 	client := getTestClient(t)
-	app, err := client.Application.Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}}, nil)
+	app, err := client.Application().Create(ctx, models.ApplicationIn{Name: "test app", Metadata: &map[string]string{"key1": "old val1", "key3": "untouched"}}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer deleteApp(t, ctx, *client, app.Id)
-	endp, err := client.Endpoint.Create(ctx, app.Id, models.EndpointIn{
+	endp, err := client.Endpoint().Create(ctx, app.Id, models.EndpointIn{
 		Url: "https://play.svix.com",
 	}, nil)
 	if err != nil {
@@ -620,7 +611,7 @@ func TestEndpointPatchNullableAgainstServer(t *testing.T) {
 	patch1 := models.EndpointPatch{
 		Channels: utils.NewNullable([]string{"non-sorted-text", "ch2", "ch7"}),
 	}
-	endp2, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, patch1)
+	endp2, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, patch1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -634,7 +625,7 @@ func TestEndpointPatchNullableAgainstServer(t *testing.T) {
 	patch2 := models.EndpointPatch{
 		Channels: utils.NewNullable[[]string](nil),
 	}
-	endp3, err := client.Endpoint.Patch(ctx, app.Id, endp.Id, patch2)
+	endp3, err := client.Endpoint().Patch(ctx, app.Id, endp.Id, patch2)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -668,7 +659,7 @@ func TestEndpointPatchSerialization(t *testing.T) {
 		Channels: utils.NewNullable[[]string](nil),
 	}
 
-	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
+	_, err := svx.Endpoint().Patch(ctx, "app1", "endp1", patch)
 	if err != nil {
 		t.Error(err)
 	}
@@ -700,7 +691,7 @@ func TestEndpointPatchUnsetNotSentToServer(t *testing.T) {
 		Channels: utils.NewUnsetNullable[[]string](),
 	}
 
-	_, err := svx.Endpoint.Patch(ctx, "app1", "endp1", patch)
+	_, err := svx.Endpoint().Patch(ctx, "app1", "endp1", patch)
 	if err != nil {
 		t.Error(err)
 	}
@@ -747,7 +738,7 @@ func TestTransportWrapperCanModifyRequests(t *testing.T) {
 		},
 	)
 
-	_, err = svx.Application.List(context.Background(), nil)
+	_, err = svx.Application().List(context.Background(), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -771,7 +762,7 @@ func TestListResponseOutModels(t *testing.T) {
 			return httpmock.NewStringResponse(200, `{"data":[],"done":true,"iterator":null,"prevIterator":null}`), nil
 		},
 	)
-	res, err := svx.Application.List(ctx, nil)
+	res, err := svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -782,7 +773,7 @@ func TestListResponseOutModels(t *testing.T) {
 }
 
 func TestStructEnumWithFields(t *testing.T) {
-	expectedJson := `{"name":"Mendy","type":"cron","config":{"payload":"Hello from space","schedule":"0 0 0 * *"}}`
+	expectedJson := `{"name":"Mendy","type":"cron","config":{"schedule":"0 0 0 * *","payload":"Hello from space"}}`
 	sourceIn := models.IngestSourceIn{
 		Name: "Mendy",
 		Type: models.IngestSourceInTypeCron,
@@ -874,7 +865,7 @@ func TestUnknownKeysAreIgnored(t *testing.T) {
 			return httpmock.NewStringResponse(200, `{"data":[],"done":true,"iterator":null,"prevIterator":null,"extra-key":"ignored"}`), nil
 		},
 	)
-	_, err := svx.Application.List(ctx, nil)
+	_, err := svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -903,7 +894,7 @@ func TestDatetimeInQueryParam(t *testing.T) {
 	opts := svix.MessageAttemptListByEndpointOptions{
 		Before: &expectedTime,
 	}
-	_, err := svx.MessageAttempt.ListByEndpoint(ctx, "app1", "endp", &opts)
+	_, err := svx.MessageAttempt().ListByEndpoint(ctx, "app1", "endp", &opts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -931,7 +922,7 @@ func TestMsgInRaw(t *testing.T) {
 	})
 
 	contentType := "custom/non-standard"
-	_, err := svx.Message.Create(ctx, "app1", *svix.NewMessageInRaw("ev-ty", "raw payload", &contentType), nil)
+	_, err := svx.Message().Create(ctx, "app1", *svix.NewMessageInRaw("ev-ty", "raw payload", &contentType), nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -947,14 +938,14 @@ func TestUserAgent(t *testing.T) {
 		defer r.Body.Close()
 		userAgent := r.Header.Get("User-Agent")
 
-		rxp := regexp.MustCompile("^svix-libs/[0-9.]+/go go/go[0-9.]+$")
+		rxp := regexp.MustCompile("^svix-libs/[0-9.]+(-[a-z]+.[0-9]+)?/go go/go[0-9.]+$")
 
 		if !rxp.Match([]byte(userAgent)) {
 			t.Errorf("Unexpected UA %s", userAgent)
 		}
 		return httpmock.NewStringResponse(200, "{\"data\": [], \"iterator\": \"app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\", \"prevIterator\": \"-app_3Ead4bUeXzV2bCjMcrHYjHHzf1w\"}"), nil
 	})
-	_, err := svx.Application.List(ctx, nil)
+	_, err := svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -970,7 +961,7 @@ func TestSetUserAgentSuffix(t *testing.T) {
 		defer r.Body.Close()
 		userAgent := r.Header.Get("User-Agent")
 
-		rxp := regexp.MustCompile("^svix-libs/[0-9.]+/go/foo go/go[0-9.]+$")
+		rxp := regexp.MustCompile("^svix-libs/[0-9.]+(-[a-z]+.[0-9]+)?/go/foo go/go[0-9.]+$")
 
 		if !rxp.Match([]byte(userAgent)) {
 			t.Errorf("Unexpected UA %s", userAgent)
@@ -981,7 +972,7 @@ func TestSetUserAgentSuffix(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	_, err = svx.Application.List(ctx, nil)
+	_, err = svx.Application().List(ctx, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -1029,7 +1020,7 @@ func TestCmgWithContentDefault(t *testing.T) {
 		"email":    "test@example.com",
 		"username": "test_user",
 	}
-	out, err := svx.Message.Create(
+	out, err := svx.Message().Create(
 		ctx,
 		appId,
 		svix.MessageIn{
@@ -1043,7 +1034,10 @@ func TestCmgWithContentDefault(t *testing.T) {
 		t.Fatal(err, info)
 	}
 
-	if !reflect.DeepEqual(out.Payload, payload) {
+	expectedPayload := map[string]any{
+		"m": "FILTERED",
+	}
+	if !reflect.DeepEqual(out.Payload, expectedPayload) {
 		t.Error("Wrong output payload: ", out.Payload)
 	}
 }

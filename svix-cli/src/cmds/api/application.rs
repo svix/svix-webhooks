@@ -1,24 +1,31 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct ApplicationListOptions {
     /// Exclude applications that have no endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_no_endpoints: Option<bool>,
+
     /// Exclude applications that have only disabled endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_disabled_endpoints: Option<bool>,
+
     /// Exclude applications that only have Svix Play endpoints. Default is false.
     #[arg(long)]
     pub exclude_apps_with_svix_play_endpoints: Option<bool>,
+
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -80,18 +87,17 @@ pub enum ApplicationCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"metadata\": {\"key\": \"...\"},
-    \"name\": \"My first application\",
-    \"rateLimit\": 123,
-    \"throttleRate\": 123,
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"name\": \"My first application\",
+    \"throttleRate\": 123,
+    \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -108,21 +114,19 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"uid\": \"unique-identifier\",
+  \"name\": \"My first application\",
+  \"throttleRate\": 123,
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         application_in: crate::json::JsonOf<ApplicationIn>,
@@ -140,44 +144,41 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"My first application\",
-  \"rateLimit\": 123,
-  \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"My first application\",
+  \"throttleRate\": 123,
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { id: String },
-    /// Update an application.
+    /// Create or update an application.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix application update app_abc000000000000000000000000 {...}\n",
+            "Example: svix application upsert app_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"My first application\",
-  \"rateLimit\": 123,
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"uid\": \"unique-identifier\",
+  \"name\": \"My first application\",
+  \"throttleRate\": 123,
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
-    Update {
+    Upsert {
         id: String,
         application_in: crate::json::JsonOf<ApplicationIn>,
     },
@@ -202,21 +203,19 @@ pub enum ApplicationCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
-  \"rateLimit\": 123,
-  \"throttleRate\": 123,
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"My first application\",
-  \"rateLimit\": 123,
   \"throttleRate\": 123,
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"uid\": \"unique-identifier\",
+  \"name\": \"My first application\",
+  \"throttleRate\": 123,
+  \"id\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Patch {
         id: String,
@@ -249,10 +248,10 @@ impl ApplicationCommands {
                 let resp = client.application().get(id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update { id, application_in } => {
+            Self::Upsert { id, application_in } => {
                 let resp = client
                     .application()
-                    .update(id, application_in.into_inner())
+                    .upsert(id, application_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

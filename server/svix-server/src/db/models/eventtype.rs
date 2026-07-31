@@ -3,6 +3,7 @@
 
 use std::collections::HashMap;
 
+use async_trait::async_trait;
 use chrono::Utc;
 use jsonschema::Draft;
 use schemars::JsonSchema;
@@ -41,7 +42,7 @@ impl RelationTrait for Relation {
     }
 }
 
-#[axum::async_trait]
+#[async_trait]
 impl ActiveModelBehavior for ActiveModel {
     fn new() -> Self {
         let timestamp = Utc::now();

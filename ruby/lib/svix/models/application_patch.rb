@@ -4,18 +4,16 @@ require "json"
 
 module Svix
   class ApplicationPatch
-    attr_accessor :metadata
     attr_accessor :name
-    # Deprecated, use `throttleRate` instead.
-    attr_accessor :rate_limit
     # Maximum messages per second to send to this application.
     #
     # Outgoing messages will be throttled to this rate.
     attr_accessor :throttle_rate
     # The Application's UID.
     attr_accessor :uid
+    attr_accessor :metadata
 
-    ALL_FIELD ||= ["metadata", "name", "rate_limit", "throttle_rate", "uid"].freeze
+    ALL_FIELD ||= ["name", "throttle_rate", "uid", "metadata"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -36,21 +34,19 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["metadata"] = attributes["metadata"]
       attrs["name"] = attributes["name"]
-      attrs["rate_limit"] = attributes["rateLimit"]
       attrs["throttle_rate"] = attributes["throttleRate"]
       attrs["uid"] = attributes["uid"]
+      attrs["metadata"] = attributes["metadata"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["name"] = Svix::serialize_primitive(@name) if @name
-      out["rateLimit"] = Svix::serialize_primitive(@rate_limit) if @__rate_limit_is_defined
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @__throttle_rate_is_defined
       out["uid"] = Svix::serialize_primitive(@uid) if @__uid_is_defined
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out
     end
 

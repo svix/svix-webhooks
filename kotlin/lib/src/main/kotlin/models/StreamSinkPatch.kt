@@ -14,13 +14,13 @@ import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = StreamSinkPatchSerializer::class)
 data class StreamSinkPatch(
-    val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
-    val eventTypes: List<String>? = null,
-    val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
-    val metadata: Map<String, String>? = null,
-    val status: MaybeUnset<SinkStatusIn> = MaybeUnset.Unset,
     /** The StreamSink's UID. */
     val uid: MaybeUnset<String> = MaybeUnset.Unset,
+    val status: MaybeUnset<SinkStatusIn> = MaybeUnset.Unset,
+    val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
+    val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
+    val eventTypes: List<String>? = null,
+    val metadata: Map<String, String>? = null,
     val config: StreamSinkPatchConfig,
 )
 
@@ -223,13 +223,13 @@ sealed class StreamSinkPatchConfig {
 class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
     @Serializable
     private data class StreamSinkPatchSurrogate(
-        val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
-        val eventTypes: List<String>? = null,
-        val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
-        val metadata: Map<String, String>? = null,
-        val status: MaybeUnset<SinkStatusIn> = MaybeUnset.Unset,
         /** The StreamSink's UID. */
         val uid: MaybeUnset<String> = MaybeUnset.Unset,
+        val status: MaybeUnset<SinkStatusIn> = MaybeUnset.Unset,
+        val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
+        val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
+        val eventTypes: List<String>? = null,
+        val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
     )
@@ -239,12 +239,12 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
     override fun serialize(encoder: Encoder, value: StreamSinkPatch) {
         val surrogate =
             StreamSinkPatchSurrogate(
-                batchSize = value.batchSize,
-                eventTypes = value.eventTypes,
-                maxWaitSecs = value.maxWaitSecs,
-                metadata = value.metadata,
-                status = value.status,
                 uid = value.uid,
+                status = value.status,
+                batchSize = value.batchSize,
+                maxWaitSecs = value.maxWaitSecs,
+                eventTypes = value.eventTypes,
+                metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
             )
@@ -254,12 +254,12 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
     override fun deserialize(decoder: Decoder): StreamSinkPatch {
         val surrogate = decoder.decodeSerializableValue(StreamSinkPatchSurrogate.serializer())
         return StreamSinkPatch(
-            batchSize = surrogate.batchSize,
-            eventTypes = surrogate.eventTypes,
-            maxWaitSecs = surrogate.maxWaitSecs,
-            metadata = surrogate.metadata,
-            status = surrogate.status,
             uid = surrogate.uid,
+            status = surrogate.status,
+            batchSize = surrogate.batchSize,
+            maxWaitSecs = surrogate.maxWaitSecs,
+            eventTypes = surrogate.eventTypes,
+            metadata = surrogate.metadata,
             config = StreamSinkPatchConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )
     }

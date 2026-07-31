@@ -1,6 +1,8 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct AuthenticationAppPortalAccessOptions {
@@ -13,19 +15,6 @@ impl From<AuthenticationAppPortalAccessOptions>
 {
     fn from(value: AuthenticationAppPortalAccessOptions) -> Self {
         let AuthenticationAppPortalAccessOptions { idempotency_key } = value;
-        Self { idempotency_key }
-    }
-}
-
-#[derive(Args, Clone)]
-pub struct AuthenticationExpireAllOptions {
-    #[arg(long)]
-    pub idempotency_key: Option<String>,
-}
-
-impl From<AuthenticationExpireAllOptions> for svix::api::AuthenticationExpireAllOptions {
-    fn from(value: AuthenticationExpireAllOptions) -> Self {
-        let AuthenticationExpireAllOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -44,14 +33,14 @@ impl From<AuthenticationLogoutOptions> for svix::api::AuthenticationLogoutOption
 }
 
 #[derive(Args, Clone)]
-pub struct AuthenticationStreamLogoutOptions {
+pub struct AuthenticationExpireAllOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
 }
 
-impl From<AuthenticationStreamLogoutOptions> for svix::api::AuthenticationStreamLogoutOptions {
-    fn from(value: AuthenticationStreamLogoutOptions) -> Self {
-        let AuthenticationStreamLogoutOptions { idempotency_key } = value;
+impl From<AuthenticationExpireAllOptions> for svix::api::AuthenticationExpireAllOptions {
+    fn from(value: AuthenticationExpireAllOptions) -> Self {
+        let AuthenticationExpireAllOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -67,6 +56,19 @@ impl From<AuthenticationStreamPortalAccessOptions>
 {
     fn from(value: AuthenticationStreamPortalAccessOptions) -> Self {
         let AuthenticationStreamPortalAccessOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct AuthenticationStreamLogoutOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<AuthenticationStreamLogoutOptions> for svix::api::AuthenticationStreamLogoutOptions {
+    fn from(value: AuthenticationStreamLogoutOptions) -> Self {
+        let AuthenticationStreamLogoutOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
@@ -123,27 +125,59 @@ pub enum AuthenticationCommands {
     #[command(after_help = "Example body:
 {
   \"application\": {
-    \"metadata\": {\"key\": \"...\"},
     \"name\": \"My first application\",
-    \"rateLimit\": 123,
     \"throttleRate\": 123,
-    \"uid\": \"unique-identifier\"
+    \"uid\": \"unique-identifier\",
+    \"metadata\": {\"key\": \"...\"}
   },
-  \"capabilities\": [\"ViewBase\",\"ViewEndpointSecret\"],
-  \"expiry\": 123,
-  \"featureFlags\": [],
   \"readOnly\": true,
+  \"capabilities\": [\"ViewBase\",\"ViewEndpointSecret\"],
+  \"featureFlags\": [],
+  \"expiry\": 123,
   \"sessionId\": \"user_1FB8\"
 }\n\nExample response:
 {
-  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\",
-  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\"
+  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\",
+  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
 }\n")]
     AppPortalAccess {
         app_id: String,
         app_portal_access_in: Option<crate::json::JsonOf<AppPortalAccessIn>>,
         #[clap(flatten)]
         options: AuthenticationAppPortalAccessOptions,
+    },
+    /// Return information about the account associated with the current token
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix authentication whoami\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"envId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"appId\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"streamAppId\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"permissionSource\": \"OidcJwt\",
+  \"sessionId\": \"user_1FB8\"
+}\n")]
+    Whoami {},
+    /// Logout an app token.
+    ///
+    /// Trying to log out other tokens will fail.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix authentication logout\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    Logout {
+        #[clap(flatten)]
+        options: AuthenticationLogoutOptions,
     },
     /// Expire all of the tokens associated with a specific application.
     #[command(help_template = concat!(
@@ -165,20 +199,30 @@ pub enum AuthenticationCommands {
         #[clap(flatten)]
         options: AuthenticationExpireAllOptions,
     },
-    /// Logout an app token.
-    ///
-    /// Trying to log out other tokens will fail.
+    /// Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix authentication logout\n",
+            "Example: svix authentication stream-portal-access strm_abc000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
-    Logout {
+    #[command(after_help = "Example body:
+{
+  \"featureFlags\": [],
+  \"expiry\": 123,
+  \"sessionId\": \"user_1FB8\"
+}\n\nExample response:
+{
+  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\",
+  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\"
+}\n")]
+    StreamPortalAccess {
+        stream_id: String,
+        stream_portal_access_in: Option<crate::json::JsonOf<StreamPortalAccessIn>>,
         #[clap(flatten)]
-        options: AuthenticationLogoutOptions,
+        options: AuthenticationStreamPortalAccessOptions,
     },
     /// Logout a stream token.
     ///
@@ -194,31 +238,6 @@ pub enum AuthenticationCommands {
     StreamLogout {
         #[clap(flatten)]
         options: AuthenticationStreamLogoutOptions,
-    },
-    /// Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix authentication stream-portal-access strm_abc000000000000000000 {...}\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example body:
-{
-  \"expiry\": 123,
-  \"featureFlags\": [],
-  \"sessionId\": \"user_1FB8\"
-}\n\nExample response:
-{
-  \"token\": \"appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O\",
-  \"url\": \"https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl\"
-}\n")]
-    StreamPortalAccess {
-        stream_id: String,
-        stream_portal_access_in: Option<crate::json::JsonOf<StreamPortalAccessIn>>,
-        #[clap(flatten)]
-        options: AuthenticationStreamPortalAccessOptions,
     },
     /// Expire all of the tokens associated with a specific stream.
     #[command(help_template = concat!(
@@ -240,25 +259,6 @@ pub enum AuthenticationCommands {
         #[clap(flatten)]
         options: AuthenticationStreamExpireAllOptions,
     },
-    /// Get the current auth token for the stream poller.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix authentication get-stream-poller-token strm_abc000000000000000000 sink_abc000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"expiresAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"...\",
-  \"name\": \"...\",
-  \"scopes\": [\"...\"],
-  \"token\": \"...\"
-}\n")]
-    GetStreamPollerToken { stream_id: String, sink_id: String },
     /// Create a new auth token for the stream poller API.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -274,12 +274,12 @@ pub enum AuthenticationCommands {
   \"oldTokenExpiry\": 123
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"token\": \"...\",
   \"id\": \"...\",
   \"name\": \"...\",
-  \"scopes\": [\"...\"],
-  \"token\": \"...\"
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"scopes\": [\"...\"]
 }\n")]
     RotateStreamPollerToken {
         stream_id: String,
@@ -288,24 +288,25 @@ pub enum AuthenticationCommands {
         #[clap(flatten)]
         options: AuthenticationRotateStreamPollerTokenOptions,
     },
-    /// Return information about the account associated with the current token
+    /// Get the current auth token for the stream poller.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix authentication whoami\n",
+            "Example: svix authentication get-stream-poller-token strm_abc000000000000000000 sink_abc000000000000000000\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example response:
 {
-  \"appId\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"envId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-  \"permissionSource\": \"OidcJwt\",
-  \"sessionId\": \"user_1FB8\",
-  \"streamAppId\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\"
+  \"token\": \"...\",
+  \"id\": \"...\",
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"expiresAt\": \"2030-01-01T00:00:00Z\",
+  \"scopes\": [\"...\"]
 }\n")]
-    Whoami {},
+    GetStreamPollerToken { stream_id: String, sink_id: String },
 }
 
 impl AuthenticationCommands {
@@ -330,6 +331,13 @@ impl AuthenticationCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
+            Self::Whoami {} => {
+                let resp = client.authentication().whoami().await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::Logout { options } => {
+                client.authentication().logout(Some(options.into())).await?;
+            }
             Self::ExpireAll {
                 app_id,
                 application_token_expire_in,
@@ -342,15 +350,6 @@ impl AuthenticationCommands {
                         application_token_expire_in.unwrap_or_default().into_inner(),
                         Some(options.into()),
                     )
-                    .await?;
-            }
-            Self::Logout { options } => {
-                client.authentication().logout(Some(options.into())).await?;
-            }
-            Self::StreamLogout { options } => {
-                client
-                    .authentication()
-                    .stream_logout(Some(options.into()))
                     .await?;
             }
             Self::StreamPortalAccess {
@@ -368,6 +367,12 @@ impl AuthenticationCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
+            Self::StreamLogout { options } => {
+                client
+                    .authentication()
+                    .stream_logout(Some(options.into()))
+                    .await?;
+            }
             Self::StreamExpireAll {
                 stream_id,
                 stream_token_expire_in,
@@ -381,13 +386,6 @@ impl AuthenticationCommands {
                         Some(options.into()),
                     )
                     .await?;
-            }
-            Self::GetStreamPollerToken { stream_id, sink_id } => {
-                let resp = client
-                    .authentication()
-                    .get_stream_poller_token(stream_id, sink_id)
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::RotateStreamPollerToken {
                 stream_id,
@@ -406,8 +404,11 @@ impl AuthenticationCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Whoami {} => {
-                let resp = client.authentication().whoami().await?;
+            Self::GetStreamPollerToken { stream_id, sink_id } => {
+                let resp = client
+                    .authentication()
+                    .get_stream_poller_token(stream_id, sink_id)
+                    .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
         }

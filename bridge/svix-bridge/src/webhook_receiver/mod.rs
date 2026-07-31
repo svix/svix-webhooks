@@ -1,19 +1,19 @@
 use std::{convert::Infallible, net::SocketAddr, sync::Arc, time::Duration};
 
 use axum::{
+    Router,
     extract::{FromRequestParts, Path, State},
     http::{self, request},
     routing::{get, post},
-    Router,
 };
 use svix_bridge_types::{
-    async_trait,
-    svix::{
-        api::{MessagePollerConsumerPollOptions, PollingEndpointMessageOut, Svix},
-        error::Error,
-    },
     ForwardRequest, PollerInput, ReceiverOutput, TransformationConfig, TransformerInput,
-    TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx,
+    TransformerInputFormat, TransformerJob, TransformerOutput, TransformerTx, async_trait,
+    svix::{
+        api::{MessagePollerConsumerPollOptions, Svix},
+        error::Error,
+        models::PollingEndpointMessageOut,
+    },
 };
 use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
@@ -30,11 +30,11 @@ mod verification;
 fn router() -> Router<InternalState> {
     Router::new()
         .route(
-            "/webhook/:integration_id",
+            "/webhook/{integration_id}",
             post(route).put(route).get(route).patch(route),
         )
         .route(
-            "/webhook/:integration_id/",
+            "/webhook/{integration_id}/",
             post(route).put(route).get(route).patch(route),
         )
         .route("/health", get(health_handler))
@@ -80,8 +80,10 @@ pub async fn run(
 
 struct WebhookIdHeader(Option<String>);
 
-#[async_trait]
-impl<S> FromRequestParts<S> for WebhookIdHeader {
+impl<S> FromRequestParts<S> for WebhookIdHeader
+where
+    S: Send + Sync,
+{
     type Rejection = Infallible;
 
     async fn from_request_parts(

@@ -1,15 +1,19 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct IngestSourceListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -78,9 +82,9 @@ pub enum IngestSourceCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{\"...\": \"...\"}],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -97,18 +101,18 @@ pub enum IngestSourceCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"ingestUrl\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"ingestUrl\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         ingest_source_in: crate::json::JsonOf<IngestSourceIn>,
@@ -126,40 +130,40 @@ pub enum IngestSourceCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"ingestUrl\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"...\",
+  \"ingestUrl\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { source_id: String },
-    /// Update an Ingest Source.
+    /// Create or update an Ingest Source.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix ingest source update src_abc000000000000000000 {...}\n",
+            "Example: svix ingest source upsert src_abc000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"ingestUrl\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"src_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"ingestUrl\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
-    Update {
+    Upsert {
         source_id: String,
         ingest_source_in: crate::json::JsonOf<IngestSourceIn>,
     },
@@ -224,14 +228,14 @@ impl IngestSourceCommands {
                 let resp = client.ingest().source().get(source_id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 source_id,
                 ingest_source_in,
             } => {
                 let resp = client
                     .ingest()
                     .source()
-                    .update(source_id, ingest_source_in.into_inner())
+                    .upsert(source_id, ingest_source_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

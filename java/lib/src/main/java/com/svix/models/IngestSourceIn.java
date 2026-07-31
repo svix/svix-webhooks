@@ -33,15 +33,10 @@ import java.util.Map;
 @JsonSerialize(using = IngestSourceInSerializer.class)
 @JsonDeserialize(using = IngestSourceInDeserializer.class)
 public class IngestSourceIn {
-    private Map<String, String> metadata;
     private String name;
     private String uid;
+    private Map<String, String> metadata;
     private IngestSourceInConfig config;
-
-    public IngestSourceIn metadata(Map<String, String> metadata) {
-        this.metadata = metadata;
-        return this;
-    }
 
     public IngestSourceIn name(String name) {
         this.name = name;
@@ -50,6 +45,11 @@ public class IngestSourceIn {
 
     public IngestSourceIn uid(String uid) {
         this.uid = uid;
+        return this;
+    }
+
+    public IngestSourceIn metadata(Map<String, String> metadata) {
+        this.metadata = metadata;
         return this;
     }
 
@@ -70,14 +70,14 @@ public class IngestSourceIn {
 @Getter
 @NoArgsConstructor
 class IngestSourceInSurrogate {
-    @JsonProperty("metadata")
-    Map<String, String> metadata;
-
     @JsonProperty("name")
     String name;
 
     @JsonProperty("uid")
     String uid;
+
+    @JsonProperty("metadata")
+    Map<String, String> metadata;
 
     @JsonProperty("type")
     String type;
@@ -86,9 +86,9 @@ class IngestSourceInSurrogate {
     JsonNode config;
 
     IngestSourceInSurrogate(IngestSourceIn o, String type, JsonNode config) {
-        this.metadata = o.getMetadata();
         this.name = o.getName();
         this.uid = o.getUid();
+        this.metadata = o.getMetadata();
         this.type = type;
         this.config = config;
     }
@@ -127,12 +127,12 @@ class IngestSourceInDeserializer extends StdDeserializer<IngestSourceIn> {
             throws IOException {
         IngestSourceInSurrogate surrogate =
                 p.getCodec().readValue(p, IngestSourceInSurrogate.class);
-        Map<String, String> metadata = surrogate.getMetadata();
         String name = surrogate.getName();
         String uid = surrogate.getUid();
+        Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         IngestSourceInConfig sourceType = IngestSourceInConfig.fromTypeAndConfig(type, config);
-        return new IngestSourceIn(metadata, name, uid, sourceType);
+        return new IngestSourceIn(name, uid, metadata, sourceType);
     }
 }

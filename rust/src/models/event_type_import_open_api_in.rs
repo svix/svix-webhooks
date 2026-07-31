@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 /// object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by
 /// the server. Sending neither or both is invalid, resulting in a `400` **Bad
 /// Request**.
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventTypeImportOpenApiIn {
     /// If `true`, return the event types that would be modified without
     /// actually modifying them.
@@ -39,5 +39,11 @@ impl EventTypeImportOpenApiIn {
             spec: None,
             spec_raw: None,
         }
+    }
+}
+
+impl Default for EventTypeImportOpenApiIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

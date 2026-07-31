@@ -6,22 +6,22 @@ from .common import BaseModel
 
 
 class MessageOut(BaseModel):
-    channels: t.Optional[t.List[str]] = None
-    """List of free-form identifiers that endpoints can filter by"""
-
-    deliver_at: t.Optional[datetime] = None
-
     event_id: t.Optional[str] = None
     """Optional unique identifier for the message"""
 
     event_type: str
     """The event type's name"""
 
+    payload: t.Dict[str, t.Any]
+
+    channels: t.Optional[t.List[str]] = None
+    """List of free-form identifiers that endpoints can filter by"""
+
     id: str
     """The Message's ID."""
 
-    payload: t.Dict[str, t.Any]
+    timestamp: datetime
 
     tags: t.Optional[t.List[str]] = None
 
-    timestamp: datetime
+    deliver_at: t.Optional[datetime] = None

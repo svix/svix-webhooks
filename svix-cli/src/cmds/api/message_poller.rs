@@ -1,18 +1,23 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct MessagePollerPollOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// Filters messages sent with this event type (optional).
     #[arg(long)]
     pub event_type: Option<String>,
+
     /// Filters messages sent with this channel (optional).
     #[arg(long)]
     pub channel: Option<String>,
@@ -34,25 +39,8 @@ impl From<MessagePollerPollOptions> for svix::api::MessagePollerPollOptions {
             iterator,
             event_type,
             channel,
-            after: after.map(|dt| dt.to_rfc3339()),
+            after,
         }
-    }
-}
-
-#[derive(Args, Clone)]
-pub struct MessagePollerConsumerPollOptions {
-    /// Limit the number of returned items
-    #[arg(long)]
-    pub limit: Option<i32>,
-    /// The iterator returned from a prior invocation
-    #[arg(long)]
-    pub iterator: Option<String>,
-}
-
-impl From<MessagePollerConsumerPollOptions> for svix::api::MessagePollerConsumerPollOptions {
-    fn from(value: MessagePollerConsumerPollOptions) -> Self {
-        let MessagePollerConsumerPollOptions { limit, iterator } = value;
-        Self { limit, iterator }
     }
 }
 
@@ -66,6 +54,24 @@ impl From<MessagePollerConsumerSeekOptions> for svix::api::MessagePollerConsumer
     fn from(value: MessagePollerConsumerSeekOptions) -> Self {
         let MessagePollerConsumerSeekOptions { idempotency_key } = value;
         Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
+pub struct MessagePollerConsumerPollOptions {
+    /// Limit the number of returned items
+    #[arg(long)]
+    pub limit: Option<u64>,
+
+    /// The iterator returned from a prior invocation
+    #[arg(long)]
+    pub iterator: Option<String>,
+}
+
+impl From<MessagePollerConsumerPollOptions> for svix::api::MessagePollerConsumerPollOptions {
+    fn from(value: MessagePollerConsumerPollOptions) -> Self {
+        let MessagePollerConsumerPollOptions { limit, iterator } = value;
+        Self { limit, iterator }
     }
 }
 
@@ -91,65 +97,28 @@ pub enum MessagePollerCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
+    \"headers\": {\"key\": \"...\"},
     \"eventId\": \"unique-identifier\",
     \"eventType\": \"user.signup\",
-    \"headers\": {\"key\": \"...\"},
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
     \"payload\": {
       \"email\": \"test@example.com\",
       \"type\": \"user.created\",
       \"username\": \"test_user\"
     },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
     \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
   }],
-  \"done\": true,
-  \"iterator\": \"...\"
+  \"iterator\": \"...\",
+  \"done\": true
 }\n")]
     Poll {
         app_id: String,
         sink_id: String,
         #[clap(flatten)]
         options: MessagePollerPollOptions,
-    },
-    /// Reads the stream of created messages for an application, filtered on the Sink's event types and
-    /// Channels, using server-managed iterator tracking.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix message poller consumer-poll app_abc000000000000000000000000 sink_abc000000000000000000 CONSUMER_ID\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"data\": [{
-    \"channels\": [\"project_123\",\"group_2\"],
-    \"deliverAt\": \"2030-01-01T00:00:00Z\",
-    \"eventId\": \"unique-identifier\",
-    \"eventType\": \"user.signup\",
-    \"headers\": {\"key\": \"...\"},
-    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
-    \"payload\": {
-      \"email\": \"test@example.com\",
-      \"type\": \"user.created\",
-      \"username\": \"test_user\"
-    },
-    \"tags\": [\"...\"],
-    \"timestamp\": \"2030-01-01T00:00:00Z\"
-  }],
-  \"done\": true,
-  \"iterator\": \"...\"
-}\n")]
-    ConsumerPoll {
-        app_id: String,
-        sink_id: String,
-        consumer_id: String,
-        #[clap(flatten)]
-        options: MessagePollerConsumerPollOptions,
     },
     /// Sets the starting offset for the consumer of a polling endpoint.
     #[command(help_template = concat!(
@@ -175,6 +144,43 @@ pub enum MessagePollerCommands {
         #[clap(flatten)]
         options: MessagePollerConsumerSeekOptions,
     },
+    /// Reads the stream of created messages for an application, filtered on the Sink's event types and
+    /// Channels, using server-managed iterator tracking.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix message poller consumer-poll app_abc000000000000000000000000 sink_abc000000000000000000 CONSUMER_ID\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"data\": [{
+    \"headers\": {\"key\": \"...\"},
+    \"eventId\": \"unique-identifier\",
+    \"eventType\": \"user.signup\",
+    \"payload\": {
+      \"email\": \"test@example.com\",
+      \"type\": \"user.created\",
+      \"username\": \"test_user\"
+    },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"id\": \"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+    \"timestamp\": \"2030-01-01T00:00:00Z\",
+    \"tags\": [\"...\"],
+    \"deliverAt\": \"2030-01-01T00:00:00Z\"
+  }],
+  \"iterator\": \"...\",
+  \"done\": true
+}\n")]
+    ConsumerPoll {
+        app_id: String,
+        sink_id: String,
+        consumer_id: String,
+        #[clap(flatten)]
+        options: MessagePollerConsumerPollOptions,
+    },
 }
 
 impl MessagePollerCommands {
@@ -196,19 +202,6 @@ impl MessagePollerCommands {
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::ConsumerPoll {
-                app_id,
-                sink_id,
-                consumer_id,
-                options,
-            } => {
-                let resp = client
-                    .message()
-                    .poller()
-                    .consumer_poll(app_id, sink_id, consumer_id, Some(options.into()))
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
             Self::ConsumerSeek {
                 app_id,
                 sink_id,
@@ -226,6 +219,19 @@ impl MessagePollerCommands {
                         polling_endpoint_consumer_seek_in.into_inner(),
                         Some(options.into()),
                     )
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::ConsumerPoll {
+                app_id,
+                sink_id,
+                consumer_id,
+                options,
+            } => {
+                let resp = client
+                    .message()
+                    .poller()
+                    .consumer_poll(app_id, sink_id, consumer_id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

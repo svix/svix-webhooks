@@ -1,6 +1,8 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 use super::{
     streaming_event_type::StreamingEventTypeArgs, streaming_events::StreamingEventsArgs,
@@ -74,24 +76,6 @@ pub enum StreamingCommands {
         sink_id: String,
         http_sink_headers_patch_in: crate::json::JsonOf<HttpSinkHeadersPatchIn>,
     },
-    /// Get the transformation code associated with this sink.
-    #[command(help_template = concat!(
-            "{about-with-newline}\n",
-            "{usage-heading} {usage}\n\n",
-            "Example: svix streaming sink-transformation-get strm_abc000000000000000000 sink_abc000000000000000000\n",
-            "{after-help}",
-            "\n",
-            "{all-args}",
-        ))]
-    #[command(after_help = "Example response:
-{
-  \"code\": \"...\",
-  \"enabled\": true
-}\n")]
-    SinkTransformationGet {
-        stream_id: String,
-        sink_id: String,
-    },
 }
 
 impl StreamingCommands {
@@ -128,13 +112,6 @@ impl StreamingCommands {
                 let resp = client
                     .streaming()
                     .sink_headers_patch(stream_id, sink_id, http_sink_headers_patch_in.into_inner())
-                    .await?;
-                crate::json::print_json_output(&resp, color_mode)?;
-            }
-            Self::SinkTransformationGet { stream_id, sink_id } => {
-                let resp = client
-                    .streaming()
-                    .sink_transformation_get(stream_id, sink_id)
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

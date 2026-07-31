@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class IntegrationUpdate(
+    val name: String,
     /** The set of feature flags the integration will have access to. */
     val featureFlags: Set<String>? = null,
-    val name: String,
 )

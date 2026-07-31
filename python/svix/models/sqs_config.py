@@ -7,12 +7,12 @@ from .common import BaseModel
 class SqsConfig(BaseModel):
     """Configuration for an SQS sink."""
 
-    access_key_id: str
-
-    endpoint_url: t.Optional[str] = None
-
     queue_url: str
 
     region: str
 
+    access_key_id: str
+
     secret_access_key: str
+
+    endpoint_url: t.Optional[str] = None

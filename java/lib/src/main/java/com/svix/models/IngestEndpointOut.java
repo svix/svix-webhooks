@@ -21,35 +21,54 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class IngestEndpointOut {
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
     @JsonProperty private String id;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
-    @JsonProperty private String uid;
-    @JsonProperty private OffsetDateTime updatedAt;
     @JsonProperty private URI url;
+    @JsonProperty private String description;
+    @JsonProperty private Short throttleRate;
+    @JsonProperty private String uid;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private Map<String, String> metadata;
 
     public IngestEndpointOut() {}
 
-    public IngestEndpointOut createdAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public IngestEndpointOut id(String id) {
+        this.id = id;
         return this;
     }
 
     /**
-     * Get createdAt
+     * The Endpoint's ID.
      *
-     * @return createdAt
+     * @return id
      */
     @javax.annotation.Nonnull
-    public OffsetDateTime getCreatedAt() {
-        return createdAt;
+    public String getId() {
+        return id;
     }
 
-    public void setCreatedAt(OffsetDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public IngestEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
     }
 
     public IngestEndpointOut description(String description) {
@@ -58,7 +77,7 @@ public class IngestEndpointOut {
     }
 
     /**
-     * An example endpoint name.
+     * Get description
      *
      * @return description
      */
@@ -69,6 +88,46 @@ public class IngestEndpointOut {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public IngestEndpointOut throttleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Short getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public IngestEndpointOut uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public IngestEndpointOut disabled(Boolean disabled) {
@@ -90,23 +149,42 @@ public class IngestEndpointOut {
         this.disabled = disabled;
     }
 
-    public IngestEndpointOut id(String id) {
-        this.id = id;
+    public IngestEndpointOut createdAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
         return this;
     }
 
     /**
-     * The Endpoint's ID.
+     * Get createdAt
      *
-     * @return id
+     * @return createdAt
      */
     @javax.annotation.Nonnull
-    public String getId() {
-        return id;
+    public OffsetDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setCreatedAt(OffsetDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public IngestEndpointOut updatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return updatedAt
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(OffsetDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public IngestEndpointOut metadata(Map<String, String> metadata) {
@@ -135,82 +213,6 @@ public class IngestEndpointOut {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    public IngestEndpointOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Get rateLimit
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
-    public IngestEndpointOut uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public IngestEndpointOut updatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return updatedAt
-     */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(OffsetDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public IngestEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

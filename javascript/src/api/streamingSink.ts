@@ -11,16 +11,13 @@ import {
 } from "../models/listResponseStreamSinkOut";
 import type { Ordering } from "../models/ordering";
 import { type SinkSecretOut, SinkSecretOutSerializer } from "../models/sinkSecretOut";
-import {
-  type SinkTransformIn,
-  SinkTransformInSerializer,
-} from "../models/sinkTransformIn";
 import { type StreamSinkIn, StreamSinkInSerializer } from "../models/streamSinkIn";
 import { type StreamSinkOut, StreamSinkOutSerializer } from "../models/streamSinkOut";
 import {
   type StreamSinkPatch,
   StreamSinkPatchSerializer,
 } from "../models/streamSinkPatch";
+import { StreamingSinkTransformation } from "./streamingSinkTransformation";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface StreamingSinkListOptions {
@@ -42,6 +39,10 @@ export interface StreamingSinkRotateSecretOptions {
 
 export class StreamingSink {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get transformation() {
+    return new StreamingSinkTransformation(this.requestCtx);
+  }
 
   /** List of all the stream's sinks. */
   public async list(
@@ -91,8 +92,8 @@ export class StreamingSink {
     return await request.send(this.requestCtx, StreamSinkOutSerializer._fromJsonObject);
   }
 
-  /** Update a sink. */
-  public async update(
+  /** Create or update a sink. */
+  public async upsert(
     streamId: string,
     sinkId: string,
     streamSinkIn: StreamSinkIn
@@ -163,7 +164,7 @@ export class StreamingSink {
   public async rotateSecret(
     streamId: string,
     sinkId: string,
-    endpointSecretRotateIn: EndpointSecretRotateIn,
+    endpointSecretRotateIn: EndpointSecretRotateIn = {},
     options?: StreamingSinkRotateSecretOptions
   ): Promise<EmptyResponse> {
     const request = new SvixRequest(
@@ -177,24 +178,6 @@ export class StreamingSink {
     request.setBody(
       EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
     );
-
-    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
-  }
-
-  /** Set or unset the transformation code associated with this sink. */
-  public async transformationPartialUpdate(
-    streamId: string,
-    sinkId: string,
-    sinkTransformIn: SinkTransformIn
-  ): Promise<EmptyResponse> {
-    const request = new SvixRequest(
-      HttpMethod.PATCH,
-      "/api/v1/stream/{stream_id}/sink/{sink_id}/transformation"
-    );
-
-    request.setPathParam("stream_id", streamId);
-    request.setPathParam("sink_id", sinkId);
-    request.setBody(SinkTransformInSerializer._toJsonObject(sinkTransformIn));
 
     return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }

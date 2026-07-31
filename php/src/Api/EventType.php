@@ -11,7 +11,7 @@ use Svix\Models\EventTypeImportOpenApiOut;
 use Svix\Models\EventTypeIn;
 use Svix\Models\EventTypeOut;
 use Svix\Models\EventTypePatch;
-use Svix\Models\EventTypeUpdate;
+use Svix\Models\EventTypeUpsertIn;
 use Svix\Models\ListResponseEventTypeOut;
 use Svix\Request\SvixHttpClient;
 
@@ -28,14 +28,14 @@ class EventType
      * @throws ApiException
      */
     public function list(
-        ?EventTypeListOptions $options = null,
+        EventTypeListOptions $options = new EventTypeListOptions(),
     ): ListResponseEventTypeOut {
         $request = $this->client->newReq('GET', '/api/v1/event-type');
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
-        $request->setQueryParam('include_archived', $options?->includeArchived);
-        $request->setQueryParam('with_content', $options?->withContent);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
+        $request->setQueryParam('include_archived', $options->includeArchived);
+        $request->setQueryParam('with_content', $options->withContent);
         $res = $this->client->send($request);
 
         return ListResponseEventTypeOut::fromJson($res);
@@ -52,10 +52,10 @@ class EventType
      */
     public function create(
         EventTypeIn $eventTypeIn,
-        ?EventTypeCreateOptions $options = null,
+        EventTypeCreateOptions $options = new EventTypeCreateOptions(),
     ): EventTypeOut {
         $request = $this->client->newReq('POST', '/api/v1/event-type');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($eventTypeIn));
         $res = $this->client->send($request);
 
@@ -73,10 +73,10 @@ class EventType
      */
     public function importOpenapi(
         EventTypeImportOpenApiIn $eventTypeImportOpenApiIn,
-        ?EventTypeImportOpenapiOptions $options = null,
+        EventTypeImportOpenapiOptions $options = new EventTypeImportOpenapiOptions(),
     ): EventTypeImportOpenApiOut {
         $request = $this->client->newReq('POST', '/api/v1/event-type/import/openapi');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($eventTypeImportOpenApiIn));
         $res = $this->client->send($request);
 
@@ -98,16 +98,16 @@ class EventType
     }
 
     /**
-     * Update an event type.
+     * Create or update an event type.
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $eventTypeName,
-        EventTypeUpdate $eventTypeUpdate,
+        EventTypeUpsertIn $eventTypeUpsertIn,
     ): EventTypeOut {
         $request = $this->client->newReq('PUT', "/api/v1/event-type/{$eventTypeName}");
-        $request->setBody(json_encode($eventTypeUpdate));
+        $request->setBody(json_encode($eventTypeUpsertIn));
         $res = $this->client->send($request);
 
         return EventTypeOut::fromJson($res);
@@ -125,10 +125,10 @@ class EventType
      */
     public function delete(
         string $eventTypeName,
-        ?EventTypeDeleteOptions $options = null,
+        EventTypeDeleteOptions $options = new EventTypeDeleteOptions(),
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/event-type/{$eventTypeName}");
-        $request->setQueryParam('expunge', $options?->expunge);
+        $request->setQueryParam('expunge', $options->expunge);
         $res = $this->client->sendNoResponseBody($request);
     }
 

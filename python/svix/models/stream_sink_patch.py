@@ -23,18 +23,18 @@ from .sqs_patch_config import SqsPatchConfig
 
 
 class StreamSinkPatch(BaseModel):
-    batch_size: t.Optional[int] = None
-
-    event_types: t.Optional[t.List[str]] = None
-
-    max_wait_secs: t.Optional[int] = None
-
-    metadata: t.Optional[t.Dict[str, str]] = None
+    uid: t.Optional[str] = None
+    """The StreamSink's UID."""
 
     status: t.Optional[SinkStatusIn] = None
 
-    uid: t.Optional[str] = None
-    """The StreamSink's UID."""
+    batch_size: t.Optional[int] = None
+
+    max_wait_secs: t.Optional[int] = None
+
+    event_types: t.Optional[t.List[str]] = None
+
+    metadata: t.Optional[t.Dict[str, str]] = None
 
     type: t.Union[
         t.Literal["poller"],
@@ -76,6 +76,8 @@ class StreamSinkPatch(BaseModel):
     def validate_model(
         cls, data: t.Any, handler: ModelWrapValidatorHandler[Self]
     ) -> Self:
+        if isinstance(data, cls):
+            return handler(data)
         if "config" not in data:
             data["config"] = {}
         output = handler(data)

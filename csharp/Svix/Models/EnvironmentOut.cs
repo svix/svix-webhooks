@@ -6,8 +6,8 @@ namespace Svix.Models
 {
     public class EnvironmentOut
     {
-        [JsonProperty("connectors", Required = Required.Always)]
-        public required List<ConnectorOut> Connectors { get; set; }
+        [JsonProperty("version")]
+        public long? Version { get; set; } = null;
 
         [JsonProperty("createdAt", Required = Required.Always)]
         public required DateTime CreatedAt { get; set; }
@@ -18,19 +18,19 @@ namespace Svix.Models
         [JsonProperty("settings")]
         public Object? Settings { get; set; } = null;
 
-        [JsonProperty("version")]
-        public long? Version { get; set; } = null;
+        [JsonProperty("connectors", Required = Required.Always)]
+        public required List<ConnectorOut> Connectors { get; set; }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class EnvironmentOut {\n");
-            sb.Append("  Connectors: ").Append(Connectors).Append('\n');
+            sb.Append("  Version: ").Append(Version).Append('\n');
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
             sb.Append("  Settings: ").Append(Settings).Append('\n');
-            sb.Append("  Version: ").Append(Version).Append('\n');
+            sb.Append("  Connectors: ").Append(Connectors).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

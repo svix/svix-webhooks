@@ -2,17 +2,17 @@
 package models
 
 type RedshiftPatchConfig struct {
-	AccessKeyId *string `json:"accessKeyId,omitempty"`
+	AccessKeyId     *string `json:"accessKeyId,omitempty"`
+	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+	Region          *string `json:"region,omitempty"`
 	// Database name.
 	//
 	// Only required if not using transformations.
 	DbName *string `json:"dbName,omitempty"`
-	Region *string `json:"region,omitempty"`
 	// Schema name.
 	//
 	// Only used if not using transformations.
-	SchemaName      *string `json:"schemaName,omitempty"`
-	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+	SchemaName *string `json:"schemaName,omitempty"`
 	// Table name.
 	//
 	// Only required if not using transformations.

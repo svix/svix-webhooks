@@ -12,53 +12,55 @@ type ManagementAuthentication struct {
 	client *internal.SvixHttpClient
 }
 
-func newManagementAuthentication(client *internal.SvixHttpClient) *ManagementAuthentication {
-	return &ManagementAuthentication{
-		client: client,
-	}
-}
-
-type ManagementAuthenticationCreateApiTokenOptions struct {
-	IdempotencyKey *string
+func newManagementAuthentication(client *internal.SvixHttpClient) ManagementAuthentication {
+	return ManagementAuthentication{client}
 }
 
 type ManagementAuthenticationExpireApiTokenOptions struct {
 	IdempotencyKey *string
 }
 
-// Create a new API Token.
-func (managementAuthentication *ManagementAuthentication) CreateApiToken(
+type ManagementAuthenticationCreateApiTokenOptions struct {
+	IdempotencyKey *string
+}
+
+// Expire the selected API Token.
+func (managementAuthentication ManagementAuthentication) ExpireApiToken(
 	ctx context.Context,
 	envId string,
-	apiTokenIn models.ApiTokenIn,
-	o *ManagementAuthenticationCreateApiTokenOptions,
-) (*models.ApiTokenOut, error) {
+	keyId string,
+	apiTokenExpireIn models.ApiTokenExpireIn,
+	o *ManagementAuthenticationExpireApiTokenOptions,
+) error {
+	var err error
 	pathMap := map[string]string{
 		"env_id": envId,
+		"key_id": keyId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := ManagementAuthenticationExpireApiTokenOptions{}
+		o = &opts
 	}
-	return internal.ExecuteRequest[models.ApiTokenIn, models.ApiTokenOut](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[models.ApiTokenExpireIn, any](
 		ctx,
 		managementAuthentication.client,
 		"POST",
-		"/api/v1/management/authentication/{env_id}/api-token",
+		"/api/v1/management/authentication/{env_id}/api-token/{key_id}/expire",
 		pathMap,
 		nil,
 		headerMap,
-		&apiTokenIn,
+		&apiTokenExpireIn,
 	)
+	return err
 }
 
 // Patch an API token
-func (managementAuthentication *ManagementAuthentication) PatchApiToken(
+func (managementAuthentication ManagementAuthentication) PatchApiToken(
 	ctx context.Context,
 	envId string,
 	keyId string,
@@ -80,36 +82,34 @@ func (managementAuthentication *ManagementAuthentication) PatchApiToken(
 	)
 }
 
-// Expire the selected API Token.
-func (managementAuthentication *ManagementAuthentication) ExpireApiToken(
+// Create a new API Token.
+func (managementAuthentication ManagementAuthentication) CreateApiToken(
 	ctx context.Context,
 	envId string,
-	keyId string,
-	apiTokenExpireIn models.ApiTokenExpireIn,
-	o *ManagementAuthenticationExpireApiTokenOptions,
-) error {
+	apiTokenIn models.ApiTokenIn,
+	o *ManagementAuthenticationCreateApiTokenOptions,
+) (*models.ApiTokenOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"env_id": envId,
-		"key_id": keyId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := ManagementAuthenticationCreateApiTokenOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[models.ApiTokenExpireIn, any](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.ApiTokenIn, models.ApiTokenOut](
 		ctx,
 		managementAuthentication.client,
 		"POST",
-		"/api/v1/management/authentication/{env_id}/api-token/{key_id}/expire",
+		"/api/v1/management/authentication/{env_id}/api-token",
 		pathMap,
 		nil,
 		headerMap,
-		&apiTokenExpireIn,
+		&apiTokenIn,
 	)
-	return err
 }

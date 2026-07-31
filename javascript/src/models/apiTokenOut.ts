@@ -1,34 +1,34 @@
 // this file is @generated
 
 export interface ApiTokenOut {
-  createdAt: Date;
-  expiresAt?: Date | null;
+  token: string;
   id: string;
   name?: string | null;
+  createdAt: Date;
+  expiresAt?: Date | null;
   scopes?: string[] | null;
-  token: string;
 }
 
 export const ApiTokenOutSerializer = {
   _fromJsonObject(object: any): ApiTokenOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      expiresAt: object["expiresAt"] ? new Date(object["expiresAt"]) : null,
+      token: object["token"],
       id: object["id"],
       name: object["name"],
+      createdAt: new Date(object["createdAt"]),
+      expiresAt: object["expiresAt"] ? new Date(object["expiresAt"]) : null,
       scopes: object["scopes"],
-      token: object["token"],
     };
   },
 
   _toJsonObject(self: ApiTokenOut): any {
     return {
-      createdAt: self.createdAt,
-      expiresAt: self.expiresAt,
+      token: self.token,
       id: self.id,
       name: self.name,
+      createdAt: self.createdAt,
+      expiresAt: self.expiresAt,
       scopes: self.scopes,
-      token: self.token,
     };
   },
 };

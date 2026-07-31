@@ -7,9 +7,9 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.svix.kotlin.SvixOptions
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.models.*
+import kotlin.time.Instant
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Instant
 import org.junit.jupiter.api.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -78,7 +78,7 @@ class WiremockTests {
         }
         wireMockServer.verify(
             1,
-            getRequestedFor(urlEqualTo("/api/v1/app/app_asd123/msg?event_types=key1%2Ckey3%2Ckey4")),
+            getRequestedFor(urlEqualTo("/api/v1/app/app_asd123/msg?with_content=false&event_types=key1%2Ckey3%2Ckey4")),
         )
     }
 
@@ -120,34 +120,34 @@ class WiremockTests {
             svx.endpoint.patch(
                 "ap",
                 "endp",
-                EndpointPatch(filterTypes = MaybeUnset.Present(setOf("ft1", "ft2"))),
+                EndpointPatch(eventTypes = MaybeUnset.Present(setOf("ft1", "ft2"))),
             )
             // MaybeUnset.Null
-            svx.endpoint.patch("ap", "endp", EndpointPatch(filterTypes = MaybeUnset.Null))
+            svx.endpoint.patch("ap", "endp", EndpointPatch(eventTypes = MaybeUnset.Null))
             // MaybeUnset.Unset
             svx.endpoint.patch(
                 "ap",
                 "endp",
-                EndpointPatch(filterTypes = MaybeUnset.Unset, version = 42u),
+                EndpointPatch(eventTypes = MaybeUnset.Unset, disabled = false),
             )
         }
         // MaybeUnset.Present
         wireMockServer.verify(
             1,
             patchRequestedFor(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
-                .withRequestBody(equalTo("""{"filterTypes":["ft1","ft2"]}""")),
+                .withRequestBody(equalTo("""{"eventTypes":["ft1","ft2"]}""")),
         )
         // MaybeUnset.Null
         wireMockServer.verify(
             1,
             patchRequestedFor(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
-                .withRequestBody(equalTo("""{"filterTypes":null}""")),
+                .withRequestBody(equalTo("""{"eventTypes":null}""")),
         )
         // MaybeUnset.Unset
         wireMockServer.verify(
             1,
             patchRequestedFor(urlEqualTo("/api/v1/app/ap/endpoint/endp"))
-                .withRequestBody(equalTo("""{"version":42}""")),
+                .withRequestBody(equalTo("""{"disabled":false}""")),
         )
     }
 
@@ -252,7 +252,7 @@ class WiremockTests {
     fun optionsHeadersAreSent() {
         val svx = testClient()
         wireMockServer.stubFor(
-            WireMock.post(urlMatching("/api/v1/app/ap/msg"))
+            WireMock.post(urlPathEqualTo("/api/v1/app/ap/msg"))
                 .willReturn(WireMock.ok().withBodyFile("MessageOut.json"))
         )
         runBlocking {
@@ -269,7 +269,7 @@ class WiremockTests {
         }
         wireMockServer.verify(
             1,
-            postRequestedFor(urlEqualTo("/api/v1/app/ap/msg"))
+            postRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
                 .withHeader("idempotency-key", equalTo("key123")),
         )
     }
@@ -278,13 +278,13 @@ class WiremockTests {
     fun userAgentHeaderIsSent() {
         val svx = testClient()
         wireMockServer.stubFor(
-            WireMock.get(urlMatching("/api/v1/app/ap/msg"))
+            WireMock.get(urlPathEqualTo("/api/v1/app/ap/msg"))
                 .willReturn(WireMock.ok().withBodyFile("ListResponseMessageOut.json"))
         )
         runBlocking { svx.message.list("ap") }
         wireMockServer.verify(
             1,
-            getRequestedFor(urlEqualTo("/api/v1/app/ap/msg"))
+            getRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
                 .withHeader("User-Agent", matching("svix-libs/.*/kotlin kotlin/2.* jre/.*")),
         )
     }
@@ -293,7 +293,7 @@ class WiremockTests {
     fun defaultRetryStatusCode500() {
         val svx = testClient()
         wireMockServer.stubFor(
-            WireMock.get(urlMatching("/api/v1/app/ap/msg"))
+            WireMock.get(urlPathEqualTo("/api/v1/app/ap/msg"))
                 .willReturn(WireMock.status(500).withBodyFile("ListResponseMessageOut.json"))
         )
         runBlocking {
@@ -306,7 +306,7 @@ class WiremockTests {
 
         wireMockServer.verify(
             1,
-            getRequestedFor(urlEqualTo("/api/v1/app/ap/msg"))
+            getRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
                 // first request does not have `svix-retry-count` header
                 .withHeader("svix-retry-count", absent()),
         )
@@ -315,7 +315,7 @@ class WiremockTests {
         for (retryCount in 1..3) {
             wireMockServer.verify(
                 1,
-                getRequestedFor(urlEqualTo("/api/v1/app/ap/msg"))
+                getRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
                     .withHeader("svix-retry-count", equalTo("$retryCount")),
             )
         }
@@ -325,7 +325,7 @@ class WiremockTests {
     fun instantSerializedCorrectly() {
         val svx = testClient()
         wireMockServer.stubFor(
-            WireMock.get(urlMatching("/api/v1/app/ap/msg/msg_asd123"))
+            WireMock.get(urlPathEqualTo("/api/v1/app/ap/msg/msg_asd123"))
                 // this file includes a string timestamp `2025-02-12T22:24:32.864755Z`
                 .willReturn(WireMock.ok().withBodyFile("MessageOut.json"))
         )
@@ -334,7 +334,7 @@ class WiremockTests {
             assertEquals(Instant.fromEpochSeconds(1739399072, 864755000), res.timestamp)
         }
 
-        wireMockServer.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/msg/msg_asd123")))
+        wireMockServer.verify(1, getRequestedFor(urlEqualTo("/api/v1/app/ap/msg/msg_asd123?with_content=false")))
     }
 
     @Test
@@ -386,7 +386,7 @@ class WiremockTests {
     fun octothorpeInUrlQuery() {
         val svx = testClient()
         wireMockServer.stubFor(
-            get(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test"))
+            get(urlPathEqualTo("/api/v1/app/app1/msg"))
                 .willReturn(ok().withBodyFile("ListResponseMessageOut.json"))
         )
 
@@ -394,7 +394,7 @@ class WiremockTests {
 
         wireMockServer.verify(
             1,
-            getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?tag=test%23test")),
+            getRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false&tag=test%23test")),
         )
     }
 
@@ -402,7 +402,7 @@ class WiremockTests {
     fun headersInTransformationParamsNotOverwritten() {
         val svx = testClient()
         wireMockServer.stubFor(
-            post(urlEqualTo("/api/v1/app/app1/msg"))
+            post(urlPathEqualTo("/api/v1/app/app1/msg"))
                 .willReturn(ok().withBodyFile("MessageOut.json"))
         )
 
@@ -419,7 +419,7 @@ class WiremockTests {
             """{"eventType":"event.type","payload":{},"transformationsParams":{"headers":{"header-key":"header-val"},"rawPayload":"{\"key\":\"val\",\"key1\":[\"list\"]}"}}"""
         wireMockServer.verify(
             1,
-            postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+            postRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false"))
                 .withRequestBody(equalTo(expectedBody)),
         )
     }
@@ -428,7 +428,7 @@ class WiremockTests {
     fun jsonEncodedMessageIn() {
         val svx = testClient()
         wireMockServer.stubFor(
-            post(urlEqualTo("/api/v1/app/app1/msg"))
+            post(urlPathEqualTo("/api/v1/app/app1/msg"))
                 .willReturn(ok().withBodyFile("MessageOut.json"))
         )
 
@@ -441,7 +441,7 @@ class WiremockTests {
 
         wireMockServer.verify(
             1,
-            postRequestedFor(urlEqualTo("/api/v1/app/app1/msg"))
+            postRequestedFor(urlEqualTo("/api/v1/app/app1/msg?with_content=false"))
                 .withRequestBody(equalTo(expectedBody)),
         )
     }
@@ -498,7 +498,7 @@ class WiremockTests {
   }
 
   @Test
-  fun testExpandedStatusesDefaultTrue() {
+  fun testQueryParamDefaults() {
     val svx = testClient()
     wireMockServer.stubFor(
       WireMock.get(urlPathEqualTo("/api/v1/app/ap/attempt/endpoint/endp"))
@@ -510,7 +510,7 @@ class WiremockTests {
 
     wireMockServer.verify(
       1,
-      getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?expanded_statuses=true"))
+      getRequestedFor(urlEqualTo("/api/v1/app/ap/attempt/endpoint/endp?with_content=false&expanded_statuses=true"))
     )
   }
 }

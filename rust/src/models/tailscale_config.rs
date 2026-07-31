@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct TailscaleConfig {
     /// Shared secret for Tailscale Webhooks
     pub secret: String,
@@ -11,7 +11,7 @@ pub struct TailscaleConfig {
     /// If not passed, timestamp age will not be checked.
     #[serde(rename = "timestampGraceSeconds")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub timestamp_grace_seconds: Option<i32>,
+    pub timestamp_grace_seconds: Option<u32>,
 }
 
 impl TailscaleConfig {

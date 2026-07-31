@@ -20,65 +20,75 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointMessageOut {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime deliverAt;
-    @JsonProperty private String eventId;
-    @JsonProperty private String eventType;
-    @JsonProperty private String id;
-    @JsonProperty private OffsetDateTime nextAttempt;
-    @JsonProperty private Object payload;
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
-    @JsonProperty private Set<String> tags;
+    @JsonProperty private OffsetDateTime nextAttempt;
+    @JsonProperty private String eventId;
+    @JsonProperty private String eventType;
+    @JsonProperty private Object payload;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private String id;
     @JsonProperty private OffsetDateTime timestamp;
+    @JsonProperty private Set<String> tags;
+    @JsonProperty private OffsetDateTime deliverAt;
 
     public EndpointMessageOut() {}
 
-    public EndpointMessageOut channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public EndpointMessageOut addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
+    public EndpointMessageOut status(MessageStatus status) {
+        this.status = status;
         return this;
     }
 
     /**
-     * List of free-form identifiers that endpoints can filter by
+     * Get status
      *
-     * @return channels
+     * @return status
      */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
+    @javax.annotation.Nonnull
+    public MessageStatus getStatus() {
+        return status;
     }
 
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
+    public void setStatus(MessageStatus status) {
+        this.status = status;
     }
 
-    public EndpointMessageOut deliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
+    public EndpointMessageOut statusText(MessageStatusText statusText) {
+        this.statusText = statusText;
         return this;
     }
 
     /**
-     * Get deliverAt
+     * Get statusText
      *
-     * @return deliverAt
+     * @return statusText
      */
-    @javax.annotation.Nullable
-    public OffsetDateTime getDeliverAt() {
-        return deliverAt;
+    @javax.annotation.Nonnull
+    public MessageStatusText getStatusText() {
+        return statusText;
     }
 
-    public void setDeliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
+    public void setStatusText(MessageStatusText statusText) {
+        this.statusText = statusText;
+    }
+
+    public EndpointMessageOut nextAttempt(OffsetDateTime nextAttempt) {
+        this.nextAttempt = nextAttempt;
+        return this;
+    }
+
+    /**
+     * Get nextAttempt
+     *
+     * @return nextAttempt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getNextAttempt() {
+        return nextAttempt;
+    }
+
+    public void setNextAttempt(OffsetDateTime nextAttempt) {
+        this.nextAttempt = nextAttempt;
     }
 
     public EndpointMessageOut eventId(String eventId) {
@@ -119,44 +129,6 @@ public class EndpointMessageOut {
         this.eventType = eventType;
     }
 
-    public EndpointMessageOut id(String id) {
-        this.id = id;
-        return this;
-    }
-
-    /**
-     * The Message's ID.
-     *
-     * @return id
-     */
-    @javax.annotation.Nonnull
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public EndpointMessageOut nextAttempt(OffsetDateTime nextAttempt) {
-        this.nextAttempt = nextAttempt;
-        return this;
-    }
-
-    /**
-     * Get nextAttempt
-     *
-     * @return nextAttempt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getNextAttempt() {
-        return nextAttempt;
-    }
-
-    public void setNextAttempt(OffsetDateTime nextAttempt) {
-        this.nextAttempt = nextAttempt;
-    }
-
     public EndpointMessageOut payload(Object payload) {
         this.payload = payload;
         return this;
@@ -176,42 +148,70 @@ public class EndpointMessageOut {
         this.payload = payload;
     }
 
-    public EndpointMessageOut status(MessageStatus status) {
-        this.status = status;
+    public EndpointMessageOut channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public EndpointMessageOut addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
         return this;
     }
 
     /**
-     * Get status
+     * List of free-form identifiers that endpoints can filter by
      *
-     * @return status
+     * @return channels
      */
-    @javax.annotation.Nonnull
-    public MessageStatus getStatus() {
-        return status;
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
     }
 
-    public void setStatus(MessageStatus status) {
-        this.status = status;
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
     }
 
-    public EndpointMessageOut statusText(MessageStatusText statusText) {
-        this.statusText = statusText;
+    public EndpointMessageOut id(String id) {
+        this.id = id;
         return this;
     }
 
     /**
-     * Get statusText
+     * The Message's ID.
      *
-     * @return statusText
+     * @return id
      */
     @javax.annotation.Nonnull
-    public MessageStatusText getStatusText() {
-        return statusText;
+    public String getId() {
+        return id;
     }
 
-    public void setStatusText(MessageStatusText statusText) {
-        this.statusText = statusText;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public EndpointMessageOut timestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    /**
+     * Get timestamp
+     *
+     * @return timestamp
+     */
+    @javax.annotation.Nonnull
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public EndpointMessageOut tags(Set<String> tags) {
@@ -242,23 +242,23 @@ public class EndpointMessageOut {
         this.tags = tags;
     }
 
-    public EndpointMessageOut timestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+    public EndpointMessageOut deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
         return this;
     }
 
     /**
-     * Get timestamp
+     * Get deliverAt
      *
-     * @return timestamp
+     * @return deliverAt
      */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
     }
 
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
     }
 
     /**

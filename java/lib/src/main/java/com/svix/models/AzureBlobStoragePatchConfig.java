@@ -16,29 +16,29 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AzureBlobStoragePatchConfig {
-    @JsonProperty private String accessKey;
-    @JsonProperty private String account;
     @JsonProperty private String container;
+    @JsonProperty private String account;
+    @JsonProperty private String accessKey;
 
     public AzureBlobStoragePatchConfig() {}
 
-    public AzureBlobStoragePatchConfig accessKey(String accessKey) {
-        this.accessKey = accessKey;
+    public AzureBlobStoragePatchConfig container(String container) {
+        this.container = container;
         return this;
     }
 
     /**
-     * Get accessKey
+     * Get container
      *
-     * @return accessKey
+     * @return container
      */
     @javax.annotation.Nullable
-    public String getAccessKey() {
-        return accessKey;
+    public String getContainer() {
+        return container;
     }
 
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
+    public void setContainer(String container) {
+        this.container = container;
     }
 
     public AzureBlobStoragePatchConfig account(String account) {
@@ -60,23 +60,23 @@ public class AzureBlobStoragePatchConfig {
         this.account = account;
     }
 
-    public AzureBlobStoragePatchConfig container(String container) {
-        this.container = container;
+    public AzureBlobStoragePatchConfig accessKey(String accessKey) {
+        this.accessKey = accessKey;
         return this;
     }
 
     /**
-     * Get container
+     * Get accessKey
      *
-     * @return container
+     * @return accessKey
      */
     @javax.annotation.Nullable
-    public String getContainer() {
-        return container;
+    public String getAccessKey() {
+        return accessKey;
     }
 
-    public void setContainer(String container) {
-        this.container = container;
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
     }
 
     /**

@@ -7,10 +7,10 @@ from ..models import (
     ConnectorIn,
     ConnectorOut,
     ConnectorPatch,
-    ConnectorUpdate,
+    ConnectorUpsertIn,
     ListResponseConnectorOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -46,7 +46,7 @@ class ConnectorCreateOptions(BaseOptions):
         )
 
 
-class ConnectorAsync(ApiBase):
+class ConnectorAsync(ApiBaseAsync):
     async def list(
         self, options: ConnectorListOptions = (ConnectorListOptions())
     ) -> ListResponseConnectorOut:
@@ -87,17 +87,17 @@ class ConnectorAsync(ApiBase):
         )
         return ConnectorOut.model_validate(response.json())
 
-    async def update(
-        self, connector_id: str, connector_update: ConnectorUpdate
+    async def upsert(
+        self, connector_id: str, connector_upsert_in: ConnectorUpsertIn
     ) -> ConnectorOut:
-        """Update a connector."""
+        """Create or update a connector."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/connector/{connector_id}",
             path_params={
                 "connector_id": connector_id,
             },
-            json_body=connector_update.model_dump_json(
+            json_body=connector_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -130,7 +130,7 @@ class ConnectorAsync(ApiBase):
         return ConnectorOut.model_validate(response.json())
 
 
-class Connector(ApiBase):
+class Connector(ApiBaseSync):
     def list(
         self, options: ConnectorListOptions = (ConnectorListOptions())
     ) -> ListResponseConnectorOut:
@@ -171,17 +171,17 @@ class Connector(ApiBase):
         )
         return ConnectorOut.model_validate(response.json())
 
-    def update(
-        self, connector_id: str, connector_update: ConnectorUpdate
+    def upsert(
+        self, connector_id: str, connector_upsert_in: ConnectorUpsertIn
     ) -> ConnectorOut:
-        """Update a connector."""
+        """Create or update a connector."""
         response = self._request_sync(
             method="put",
             path="/api/v1/connector/{connector_id}",
             path_params={
                 "connector_id": connector_id,
             },
-            json_body=connector_update.model_dump_json(
+            json_body=connector_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )

@@ -11,17 +11,17 @@ class StreamOut implements \JsonSerializable
 
     /**
      * @param string                $id       the stream's ID
-     * @param array<string, string> $metadata
-     * @param string|null           $name     the stream's name
      * @param string|null           $uid      the stream's UID
+     * @param string|null           $name     the stream's name
+     * @param array<string, string> $metadata
      */
     private function __construct(
-        public readonly \DateTimeImmutable $createdAt,
         public readonly string $id,
-        public readonly array $metadata,
+        public readonly \DateTimeImmutable $createdAt,
         public readonly \DateTimeImmutable $updatedAt,
-        public readonly ?string $name = null,
+        public readonly array $metadata,
         public readonly ?string $uid = null,
+        public readonly ?string $name = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -31,35 +31,19 @@ class StreamOut implements \JsonSerializable
      * Create an instance of StreamOut with required fields.
      */
     public static function create(
-        \DateTimeImmutable $createdAt,
         string $id,
-        array $metadata,
+        \DateTimeImmutable $createdAt,
         \DateTimeImmutable $updatedAt,
+        array $metadata,
     ): self {
         return new self(
-            createdAt: $createdAt,
             id: $id,
-            metadata: $metadata,
-            name: null,
             uid: null,
+            name: null,
+            createdAt: $createdAt,
             updatedAt: $updatedAt,
-            setFields: ['createdAt' => true, 'id' => true, 'metadata' => true, 'updatedAt' => true]
-        );
-    }
-
-    public function withName(?string $name): self
-    {
-        $setFields = $this->setFields;
-        $setFields['name'] = true;
-
-        return new self(
-            createdAt: $this->createdAt,
-            id: $this->id,
-            metadata: $this->metadata,
-            name: $name,
-            uid: $this->uid,
-            updatedAt: $this->updatedAt,
-            setFields: $setFields
+            metadata: $metadata,
+            setFields: ['id' => true, 'createdAt' => true, 'updatedAt' => true, 'metadata' => true]
         );
     }
 
@@ -69,12 +53,28 @@ class StreamOut implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            createdAt: $this->createdAt,
             id: $this->id,
-            metadata: $this->metadata,
-            name: $this->name,
             uid: $uid,
+            name: $this->name,
+            createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withName(?string $name): self
+    {
+        $setFields = $this->setFields;
+        $setFields['name'] = true;
+
+        return new self(
+            id: $this->id,
+            uid: $this->uid,
+            name: $name,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -82,16 +82,16 @@ class StreamOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'createdAt' => $this->createdAt->format('c'),
             'id' => $this->id,
-            'metadata' => $this->metadata,
-            'updatedAt' => $this->updatedAt->format('c')];
+            'createdAt' => $this->createdAt->format('c'),
+            'updatedAt' => $this->updatedAt->format('c'),
+            'metadata' => $this->metadata];
 
-        if (isset($this->setFields['name'])) {
-            $data['name'] = $this->name;
-        }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
+        }
+        if (isset($this->setFields['name'])) {
+            $data['name'] = $this->name;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -103,12 +103,12 @@ class StreamOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'StreamOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'StreamOut'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'StreamOut'),
-            name: \Svix\Utils::deserializeString($data, 'name', false, 'StreamOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'StreamOut'),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'StreamOut')
+            name: \Svix\Utils::deserializeString($data, 'name', false, 'StreamOut'),
+            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'StreamOut'),
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'StreamOut'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'StreamOut')
         );
     }
 

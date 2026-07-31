@@ -28,6 +28,18 @@ namespace Svix
         }
     }
 
+    public class MessagePollerConsumerSeekOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class MessagePollerConsumerPollOptions : SvixOptionsBase
     {
         public ulong? Limit { get; set; }
@@ -37,18 +49,6 @@ namespace Svix
         {
             return SerializeParams(
                 new Dictionary<string, object?> { { "limit", Limit }, { "iterator", Iterator } }
-            );
-        }
-    }
-
-    public class MessagePollerConsumerSeekOptions : SvixOptionsBase
-    {
-        public string? IdempotencyKey { get; set; }
-
-        public new Dictionary<string, string> HeaderParams()
-        {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
             );
         }
     }
@@ -67,6 +67,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerPollOptions();
+            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<PollingEndpointOut>(
@@ -77,8 +81,8 @@ namespace Svix
                         { "app_id", appId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -100,6 +104,10 @@ namespace Svix
             MessagePollerPollOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerPollOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<PollingEndpointOut>(
@@ -110,86 +118,14 @@ namespace Svix
                         { "app_id", appId },
                         { "sink_id", sinkId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Poll)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Reads the stream of created messages for an application, filtered on the Sink's event types and
-        /// Channels, using server-managed iterator tracking.
-        /// </summary>
-        public async Task<PollingEndpointOut> ConsumerPollAsync(
-            string appId,
-            string sinkId,
-            string consumerId,
-            MessagePollerConsumerPollOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<PollingEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "sink_id", sinkId },
-                        { "consumer_id", consumerId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(ConsumerPollAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Reads the stream of created messages for an application, filtered on the Sink's event types and
-        /// Channels, using server-managed iterator tracking.
-        /// </summary>
-        public PollingEndpointOut ConsumerPoll(
-            string appId,
-            string sinkId,
-            string consumerId,
-            MessagePollerConsumerPollOptions? options = null
-        )
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<PollingEndpointOut>(
-                    method: HttpMethod.Get,
-                    path: "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "app_id", appId },
-                        { "sink_id", sinkId },
-                        { "consumer_id", consumerId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(ConsumerPoll)} failed");
 
                 throw;
             }
@@ -207,6 +143,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerSeekOptions();
+            }
             pollingEndpointConsumerSeekIn =
                 pollingEndpointConsumerSeekIn
                 ?? throw new ArgumentNullException(nameof(pollingEndpointConsumerSeekIn));
@@ -222,8 +162,8 @@ namespace Svix
                             { "sink_id", sinkId },
                             { "consumer_id", consumerId },
                         },
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         content: pollingEndpointConsumerSeekIn,
                         cancellationToken: cancellationToken
                     );
@@ -248,6 +188,10 @@ namespace Svix
             MessagePollerConsumerSeekOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerSeekOptions();
+            }
             pollingEndpointConsumerSeekIn =
                 pollingEndpointConsumerSeekIn
                 ?? throw new ArgumentNullException(nameof(pollingEndpointConsumerSeekIn));
@@ -262,8 +206,8 @@ namespace Svix
                         { "sink_id", sinkId },
                         { "consumer_id", consumerId },
                     },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: pollingEndpointConsumerSeekIn
                 );
                 return response.Data;
@@ -271,6 +215,86 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(ConsumerSeek)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Reads the stream of created messages for an application, filtered on the Sink's event types and
+        /// Channels, using server-managed iterator tracking.
+        /// </summary>
+        public async Task<PollingEndpointOut> ConsumerPollAsync(
+            string appId,
+            string sinkId,
+            string consumerId,
+            MessagePollerConsumerPollOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerPollOptions();
+            }
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<PollingEndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "sink_id", sinkId },
+                        { "consumer_id", consumerId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ConsumerPollAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Reads the stream of created messages for an application, filtered on the Sink's event types and
+        /// Channels, using server-managed iterator tracking.
+        /// </summary>
+        public PollingEndpointOut ConsumerPoll(
+            string appId,
+            string sinkId,
+            string consumerId,
+            MessagePollerConsumerPollOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new MessagePollerConsumerPollOptions();
+            }
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<PollingEndpointOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "sink_id", sinkId },
+                        { "consumer_id", consumerId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(ConsumerPoll)} failed");
 
                 throw;
             }

@@ -3,9 +3,9 @@ import { type ApplicationOut, ApplicationOutSerializer } from "./applicationOut"
 
 export interface ListResponseApplicationOut {
   data: ApplicationOut[];
-  done: boolean;
   iterator: string | null;
   prevIterator?: string | null;
+  done: boolean;
 }
 
 export const ListResponseApplicationOutSerializer = {
@@ -14,18 +14,18 @@ export const ListResponseApplicationOutSerializer = {
       data: object["data"].map((item: ApplicationOut) =>
         ApplicationOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
       iterator: object["iterator"],
       prevIterator: object["prevIterator"],
+      done: object["done"],
     };
   },
 
   _toJsonObject(self: ListResponseApplicationOut): any {
     return {
       data: self.data.map((item) => ApplicationOutSerializer._toJsonObject(item)),
-      done: self.done,
       iterator: self.iterator,
       prevIterator: self.prevIterator,
+      done: self.done,
     };
   },
 };

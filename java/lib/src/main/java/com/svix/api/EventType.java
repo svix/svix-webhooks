@@ -9,7 +9,7 @@ import com.svix.models.EventTypeImportOpenApiOut;
 import com.svix.models.EventTypeIn;
 import com.svix.models.EventTypeOut;
 import com.svix.models.EventTypePatch;
-import com.svix.models.EventTypeUpdate;
+import com.svix.models.EventTypeUpsertIn;
 import com.svix.models.ListResponseEventTypeOut;
 
 import okhttp3.Headers;
@@ -51,6 +51,8 @@ public class EventType {
         }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
+        } else {
+            url.addQueryParameter("with_content", "false");
         }
         return this.client.executeRequest(
                 "GET", url.build(), null, null, ListResponseEventTypeOut.class);
@@ -130,15 +132,16 @@ public class EventType {
         return this.client.executeRequest("GET", url.build(), null, null, EventTypeOut.class);
     }
 
-    /** Update an event type. */
-    public EventTypeOut update(final String eventTypeName, final EventTypeUpdate eventTypeUpdate)
+    /** Create or update an event type. */
+    public EventTypeOut upsert(
+            final String eventTypeName, final EventTypeUpsertIn eventTypeUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
                         .newUrlBuilder()
                         .encodedPath(String.format("/api/v1/event-type/%s", eventTypeName));
         return this.client.executeRequest(
-                "PUT", url.build(), null, eventTypeUpdate, EventTypeOut.class);
+                "PUT", url.build(), null, eventTypeUpsertIn, EventTypeOut.class);
     }
 
     /**

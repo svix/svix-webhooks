@@ -2,6 +2,6 @@
 package models
 
 type MessagePrecheckIn struct {
-	Channels  []string `json:"channels,omitempty"`
 	EventType string   `json:"eventType"` // The event type's name
+	Channels  []string `json:"channels,omitempty"`
 }

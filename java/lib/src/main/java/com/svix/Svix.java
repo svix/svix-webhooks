@@ -24,7 +24,6 @@ public class Svix {
     private final Statistics statistics;
     private final Streaming streaming;
     private final OperationalWebhook operationalWebhook;
-    private final OperationalWebhookEndpoint operationalWebhookEndpoint;
 
     public Svix(String token) {
         this(token, new SvixOptions());
@@ -83,6 +82,5 @@ public class Svix {
         this.statistics = new Statistics(this.httpClient);
         this.streaming = new Streaming(this.httpClient);
         this.operationalWebhook = new OperationalWebhook(this.httpClient);
-        this.operationalWebhookEndpoint = new OperationalWebhookEndpoint(this.httpClient);
     }
 }

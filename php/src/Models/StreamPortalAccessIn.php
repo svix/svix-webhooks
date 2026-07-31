@@ -10,17 +10,17 @@ class StreamPortalAccessIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param int|null $expiry How long the token will be valid for, in seconds.
+     * @param list<string>|null $featureFlags the set of feature flags the created token will have access to
+     * @param int|null          $expiry       How long the token will be valid for, in seconds.
      *
      * Valid values are between 1 hour and 7 days. The default is 7 days.
-     * @param list<string>|null $featureFlags the set of feature flags the created token will have access to
-     * @param string|null       $sessionId    An optional session ID to attach to the token.
+     * @param string|null $sessionId An optional session ID to attach to the token.
      *
      * When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
      */
     private function __construct(
-        public readonly ?int $expiry = null,
         public readonly ?array $featureFlags = null,
+        public readonly ?int $expiry = null,
         public readonly ?string $sessionId = null,
         array $setFields = [],
     ) {
@@ -33,23 +33,10 @@ class StreamPortalAccessIn implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            expiry: null,
             featureFlags: null,
+            expiry: null,
             sessionId: null,
             setFields: []
-        );
-    }
-
-    public function withExpiry(?int $expiry): self
-    {
-        $setFields = $this->setFields;
-        $setFields['expiry'] = true;
-
-        return new self(
-            expiry: $expiry,
-            featureFlags: $this->featureFlags,
-            sessionId: $this->sessionId,
-            setFields: $setFields
         );
     }
 
@@ -59,8 +46,21 @@ class StreamPortalAccessIn implements \JsonSerializable
         $setFields['featureFlags'] = true;
 
         return new self(
-            expiry: $this->expiry,
             featureFlags: $featureFlags,
+            expiry: $this->expiry,
+            sessionId: $this->sessionId,
+            setFields: $setFields
+        );
+    }
+
+    public function withExpiry(?int $expiry): self
+    {
+        $setFields = $this->setFields;
+        $setFields['expiry'] = true;
+
+        return new self(
+            featureFlags: $this->featureFlags,
+            expiry: $expiry,
             sessionId: $this->sessionId,
             setFields: $setFields
         );
@@ -72,8 +72,8 @@ class StreamPortalAccessIn implements \JsonSerializable
         $setFields['sessionId'] = true;
 
         return new self(
-            expiry: $this->expiry,
             featureFlags: $this->featureFlags,
+            expiry: $this->expiry,
             sessionId: $sessionId,
             setFields: $setFields
         );
@@ -84,11 +84,11 @@ class StreamPortalAccessIn implements \JsonSerializable
         $data = [
         ];
 
-        if (isset($this->setFields['expiry'])) {
-            $data['expiry'] = $this->expiry;
-        }
         if (null !== $this->featureFlags) {
             $data['featureFlags'] = $this->featureFlags;
+        }
+        if (isset($this->setFields['expiry'])) {
+            $data['expiry'] = $this->expiry;
         }
         if (isset($this->setFields['sessionId'])) {
             $data['sessionId'] = $this->sessionId;
@@ -103,8 +103,8 @@ class StreamPortalAccessIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            expiry: \Svix\Utils::deserializeInt($data, 'expiry', false, 'StreamPortalAccessIn'),
             featureFlags: \Svix\Utils::getValFromJson($data, 'featureFlags', false, 'StreamPortalAccessIn'),
+            expiry: \Svix\Utils::deserializeInt($data, 'expiry', false, 'StreamPortalAccessIn'),
             sessionId: \Svix\Utils::deserializeString($data, 'sessionId', false, 'StreamPortalAccessIn')
         );
     }

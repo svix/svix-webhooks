@@ -60,8 +60,10 @@ def docker_compose_command():
 @pytest.fixture(scope="session")
 def docker_compose_file():
     return [
-        os.path.join(os.path.dirname(__file__), "../../server/docker-compose.yml"),
-        os.path.join(os.path.dirname(__file__), "docker-compose.override.yml"),
+        os.path.join(
+            os.path.dirname(__file__),
+            "../../client-integration-tests/docker-compose.yml",
+        ),
     ]
 
 

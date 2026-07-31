@@ -18,9 +18,7 @@ from ..models import (
     EndpointSecretRotateIn,
     EndpointStats,
     EndpointTransformationIn,
-    EndpointTransformationOut,
-    EndpointTransformationPatch,
-    EndpointUpdate,
+    EndpointUpsertIn,
     EventExampleIn,
     ListResponseEndpointOut,
     MessageOut,
@@ -29,7 +27,11 @@ from ..models import (
     ReplayIn,
     ReplayOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .endpoint_transformation import (
+    EndpointTransformation,
+    EndpointTransformationAsync,
+)
 
 
 @dataclass
@@ -64,19 +66,7 @@ class EndpointCreateOptions(BaseOptions):
 
 
 @dataclass
-class EndpointBulkReplayOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
-@dataclass
-class EndpointRecoverOptions(BaseOptions):
+class EndpointRotateSecretOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -100,19 +90,7 @@ class EndpointReplayMissingOptions(BaseOptions):
 
 
 @dataclass
-class EndpointRotateSecretOptions(BaseOptions):
-    idempotency_key: t.Optional[str] = None
-
-    def _header_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "idempotency-key": self.idempotency_key,
-            }
-        )
-
-
-@dataclass
-class EndpointSendExampleOptions(BaseOptions):
+class EndpointBulkReplayOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -139,7 +117,35 @@ class EndpointGetStatsOptions(BaseOptions):
         )
 
 
-class EndpointAsync(ApiBase):
+@dataclass
+class EndpointRecoverOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class EndpointSendExampleOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+class EndpointAsync(ApiBaseAsync):
+    @property
+    def transformation(self) -> EndpointTransformationAsync:
+        return EndpointTransformationAsync(self._client, self._httpx_client)
+
     async def list(
         self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
     ) -> ListResponseEndpointOut:
@@ -188,10 +194,10 @@ class EndpointAsync(ApiBase):
         )
         return EndpointOut.model_validate(response.json())
 
-    async def update(
-        self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
+    async def upsert(
+        self, app_id: str, endpoint_id: str, endpoint_upsert_in: EndpointUpsertIn
     ) -> EndpointOut:
-        """Update an endpoint."""
+        """Create or update an endpoint."""
         response = await self._request_asyncio(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -199,7 +205,7 @@ class EndpointAsync(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_update.model_dump_json(
+            json_body=endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -231,41 +237,44 @@ class EndpointAsync(ApiBase):
         )
         return EndpointOut.model_validate(response.json())
 
-    async def bulk_replay(
+    async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
+        """Get the endpoint's signing secret.
+
+        This is used to verify the authenticity of the webhook.
+        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return EndpointSecretOut.model_validate(response.json())
+
+    async def rotate_secret(
         self,
         app_id: str,
         endpoint_id: str,
-        bulk_replay_in: BulkReplayIn,
-        options: EndpointBulkReplayOptions = (EndpointBulkReplayOptions()),
-    ) -> ReplayOut:
-        """Bulk replay messages sent to the endpoint.
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
+    ) -> None:
+        """Rotates the endpoint's signing secret.
 
-        Only messages that were created after `since` will be sent.
-        This will replay both successful, and failed messages
-
-        A completed task will return a payload like the following:
-        ```json
-        {
-          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-          "status": "finished",
-          "task": "endpoint.bulk-replay",
-          "data": {
-            "messagesSent": 2
-          }
-        }
-        ```"""
-        response = await self._request_asyncio(
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
+        await self._request_asyncio(
             method="post",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
+            json_body=endpoint_secret_rotate_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return ReplayOut.model_validate(response.json())
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -279,7 +288,7 @@ class EndpointAsync(ApiBase):
         )
         return EndpointHeadersOut.model_validate(response.json())
 
-    async def update_headers(
+    async def set_headers(
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
     ) -> None:
         """Set the additional headers to be sent with the webhook."""
@@ -313,41 +322,6 @@ class EndpointAsync(ApiBase):
                 exclude_unset=True, by_alias=True
             ),
         )
-
-    async def recover(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        recover_in: RecoverIn,
-        options: EndpointRecoverOptions = (EndpointRecoverOptions()),
-    ) -> RecoverOut:
-        """Resend all failed messages since a given time.
-
-        Messages that were sent successfully, even if failed initially, are not resent.
-
-        A completed task will return a payload like the following:
-        ```json
-        {
-          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-          "status": "finished",
-          "task": "endpoint.recover",
-          "data": {
-            "messagesSent": 2
-          }
-        }
-        ```"""
-        response = await self._request_asyncio(
-            method="post",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=recover_in.model_dump_json(exclude_unset=True, by_alias=True),
-        )
-        return RecoverOut.model_validate(response.json())
 
     async def replay_missing(
         self,
@@ -385,44 +359,95 @@ class EndpointAsync(ApiBase):
         )
         return ReplayOut.model_validate(response.json())
 
-    async def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
-        """Get the endpoint's signing secret.
-
-        This is used to verify the authenticity of the webhook.
-        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return EndpointSecretOut.model_validate(response.json())
-
-    async def rotate_secret(
+    async def bulk_replay(
         self,
         app_id: str,
         endpoint_id: str,
-        endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
-    ) -> None:
-        """Rotates the endpoint's signing secret.
+        bulk_replay_in: BulkReplayIn,
+        options: EndpointBulkReplayOptions = (EndpointBulkReplayOptions()),
+    ) -> ReplayOut:
+        """Bulk replay messages sent to the endpoint.
 
-        The previous secret will remain valid for the next 24 hours."""
-        await self._request_asyncio(
+        Only messages that were created after `since` will be sent.
+        This will replay both successful, and failed messages
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.bulk-replay",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
+        response = await self._request_asyncio(
             method="post",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
             path_params={
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=endpoint_secret_rotate_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
+            json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
+        return ReplayOut.model_validate(response.json())
+
+    async def get_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointGetStatsOptions = (EndpointGetStatsOptions()),
+    ) -> EndpointStats:
+        """Get basic statistics for the endpoint."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return EndpointStats.model_validate(response.json())
+
+    async def recover(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        recover_in: RecoverIn,
+        options: EndpointRecoverOptions = (EndpointRecoverOptions()),
+    ) -> RecoverOut:
+        """Resend all failed messages since a given time.
+
+        Messages that were sent successfully, even if failed initially, are not resent.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.recover",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=recover_in.model_dump_json(exclude_unset=True, by_alias=True),
+        )
+        return RecoverOut.model_validate(response.json())
 
     async def send_example(
         self,
@@ -447,58 +472,6 @@ class EndpointAsync(ApiBase):
         )
         return MessageOut.model_validate(response.json())
 
-    async def get_stats(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        options: EndpointGetStatsOptions = (EndpointGetStatsOptions()),
-    ) -> EndpointStats:
-        """Get basic statistics for the endpoint."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return EndpointStats.model_validate(response.json())
-
-    async def transformation_get(
-        self, app_id: str, endpoint_id: str
-    ) -> EndpointTransformationOut:
-        """Get the transformation code associated with this endpoint."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return EndpointTransformationOut.model_validate(response.json())
-
-    async def patch_transformation(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        endpoint_transformation_patch: EndpointTransformationPatch,
-    ) -> None:
-        """Set or unset the transformation code associated with this endpoint."""
-        await self._request_asyncio(
-            method="patch",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=endpoint_transformation_patch.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
-
     @deprecated
     async def transformation_partial_update(
         self,
@@ -520,7 +493,11 @@ class EndpointAsync(ApiBase):
         )
 
 
-class Endpoint(ApiBase):
+class Endpoint(ApiBaseSync):
+    @property
+    def transformation(self) -> EndpointTransformation:
+        return EndpointTransformation(self._client, self._httpx_client)
+
     def list(
         self, app_id: str, options: EndpointListOptions = (EndpointListOptions())
     ) -> ListResponseEndpointOut:
@@ -569,10 +546,10 @@ class Endpoint(ApiBase):
         )
         return EndpointOut.model_validate(response.json())
 
-    def update(
-        self, app_id: str, endpoint_id: str, endpoint_update: EndpointUpdate
+    def upsert(
+        self, app_id: str, endpoint_id: str, endpoint_upsert_in: EndpointUpsertIn
     ) -> EndpointOut:
-        """Update an endpoint."""
+        """Create or update an endpoint."""
         response = self._request_sync(
             method="put",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}",
@@ -580,7 +557,7 @@ class Endpoint(ApiBase):
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
-            json_body=endpoint_update.model_dump_json(
+            json_body=endpoint_upsert_in.model_dump_json(
                 exclude_unset=True, by_alias=True
             ),
         )
@@ -612,41 +589,44 @@ class Endpoint(ApiBase):
         )
         return EndpointOut.model_validate(response.json())
 
-    def bulk_replay(
+    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
+        """Get the endpoint's signing secret.
+
+        This is used to verify the authenticity of the webhook.
+        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return EndpointSecretOut.model_validate(response.json())
+
+    def rotate_secret(
         self,
         app_id: str,
         endpoint_id: str,
-        bulk_replay_in: BulkReplayIn,
-        options: EndpointBulkReplayOptions = (EndpointBulkReplayOptions()),
-    ) -> ReplayOut:
-        """Bulk replay messages sent to the endpoint.
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
+    ) -> None:
+        """Rotates the endpoint's signing secret.
 
-        Only messages that were created after `since` will be sent.
-        This will replay both successful, and failed messages
-
-        A completed task will return a payload like the following:
-        ```json
-        {
-          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-          "status": "finished",
-          "task": "endpoint.bulk-replay",
-          "data": {
-            "messagesSent": 2
-          }
-        }
-        ```"""
-        response = self._request_sync(
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
+        self._request_sync(
             method="post",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
+            json_body=endpoint_secret_rotate_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
-        return ReplayOut.model_validate(response.json())
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -660,7 +640,7 @@ class Endpoint(ApiBase):
         )
         return EndpointHeadersOut.model_validate(response.json())
 
-    def update_headers(
+    def set_headers(
         self, app_id: str, endpoint_id: str, endpoint_headers_in: EndpointHeadersIn
     ) -> None:
         """Set the additional headers to be sent with the webhook."""
@@ -694,41 +674,6 @@ class Endpoint(ApiBase):
                 exclude_unset=True, by_alias=True
             ),
         )
-
-    def recover(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        recover_in: RecoverIn,
-        options: EndpointRecoverOptions = (EndpointRecoverOptions()),
-    ) -> RecoverOut:
-        """Resend all failed messages since a given time.
-
-        Messages that were sent successfully, even if failed initially, are not resent.
-
-        A completed task will return a payload like the following:
-        ```json
-        {
-          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-          "status": "finished",
-          "task": "endpoint.recover",
-          "data": {
-            "messagesSent": 2
-          }
-        }
-        ```"""
-        response = self._request_sync(
-            method="post",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-            json_body=recover_in.model_dump_json(exclude_unset=True, by_alias=True),
-        )
-        return RecoverOut.model_validate(response.json())
 
     def replay_missing(
         self,
@@ -766,44 +711,95 @@ class Endpoint(ApiBase):
         )
         return ReplayOut.model_validate(response.json())
 
-    def get_secret(self, app_id: str, endpoint_id: str) -> EndpointSecretOut:
-        """Get the endpoint's signing secret.
-
-        This is used to verify the authenticity of the webhook.
-        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return EndpointSecretOut.model_validate(response.json())
-
-    def rotate_secret(
+    def bulk_replay(
         self,
         app_id: str,
         endpoint_id: str,
-        endpoint_secret_rotate_in: EndpointSecretRotateIn,
-        options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
-    ) -> None:
-        """Rotates the endpoint's signing secret.
+        bulk_replay_in: BulkReplayIn,
+        options: EndpointBulkReplayOptions = (EndpointBulkReplayOptions()),
+    ) -> ReplayOut:
+        """Bulk replay messages sent to the endpoint.
 
-        The previous secret will remain valid for the next 24 hours."""
-        self._request_sync(
+        Only messages that were created after `since` will be sent.
+        This will replay both successful, and failed messages
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.bulk-replay",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
+        response = self._request_sync(
             method="post",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
             path_params={
                 "app_id": app_id,
                 "endpoint_id": endpoint_id,
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
-            json_body=endpoint_secret_rotate_in.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
+            json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
+        return ReplayOut.model_validate(response.json())
+
+    def get_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointGetStatsOptions = (EndpointGetStatsOptions()),
+    ) -> EndpointStats:
+        """Get basic statistics for the endpoint."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return EndpointStats.model_validate(response.json())
+
+    def recover(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        recover_in: RecoverIn,
+        options: EndpointRecoverOptions = (EndpointRecoverOptions()),
+    ) -> RecoverOut:
+        """Resend all failed messages since a given time.
+
+        Messages that were sent successfully, even if failed initially, are not resent.
+
+        A completed task will return a payload like the following:
+        ```json
+        {
+          "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+          "status": "finished",
+          "task": "endpoint.recover",
+          "data": {
+            "messagesSent": 2
+          }
+        }
+        ```"""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=recover_in.model_dump_json(exclude_unset=True, by_alias=True),
+        )
+        return RecoverOut.model_validate(response.json())
 
     def send_example(
         self,
@@ -827,58 +823,6 @@ class Endpoint(ApiBase):
             ),
         )
         return MessageOut.model_validate(response.json())
-
-    def get_stats(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        options: EndpointGetStatsOptions = (EndpointGetStatsOptions()),
-    ) -> EndpointStats:
-        """Get basic statistics for the endpoint."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return EndpointStats.model_validate(response.json())
-
-    def transformation_get(
-        self, app_id: str, endpoint_id: str
-    ) -> EndpointTransformationOut:
-        """Get the transformation code associated with this endpoint."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-        )
-        return EndpointTransformationOut.model_validate(response.json())
-
-    def patch_transformation(
-        self,
-        app_id: str,
-        endpoint_id: str,
-        endpoint_transformation_patch: EndpointTransformationPatch,
-    ) -> None:
-        """Set or unset the transformation code associated with this endpoint."""
-        self._request_sync(
-            method="patch",
-            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
-            path_params={
-                "app_id": app_id,
-                "endpoint_id": endpoint_id,
-            },
-            json_body=endpoint_transformation_patch.model_dump_json(
-                exclude_unset=True, by_alias=True
-            ),
-        )
 
     @deprecated
     def transformation_partial_update(

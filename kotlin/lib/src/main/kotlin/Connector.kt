@@ -5,7 +5,7 @@ import com.svix.kotlin.models.ConnectorIn
 import com.svix.kotlin.models.ConnectorOut
 import com.svix.kotlin.models.ConnectorPatch
 import com.svix.kotlin.models.ConnectorProduct
-import com.svix.kotlin.models.ConnectorUpdate
+import com.svix.kotlin.models.ConnectorUpsertIn
 import com.svix.kotlin.models.ListResponseConnectorOut
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
@@ -58,14 +58,14 @@ class Connector(private val client: SvixHttpClient) {
         return client.executeRequest<Any, ConnectorOut>("GET", url.build())
     }
 
-    /** Update a connector. */
-    suspend fun update(connectorId: String, connectorUpdate: ConnectorUpdate): ConnectorOut {
+    /** Create or update a connector. */
+    suspend fun upsert(connectorId: String, connectorUpsertIn: ConnectorUpsertIn): ConnectorOut {
         val url = client.newUrlBuilder().encodedPath("/api/v1/connector/$connectorId")
 
-        return client.executeRequest<ConnectorUpdate, ConnectorOut>(
+        return client.executeRequest<ConnectorUpsertIn, ConnectorOut>(
             "PUT",
             url.build(),
-            reqBody = connectorUpdate,
+            reqBody = connectorUpsertIn,
         )
     }
 

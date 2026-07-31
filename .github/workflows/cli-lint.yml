@@ -24,6 +24,21 @@ jobs:
       - name: rustfmt
         run: cargo fmt -- --check
 
+  cargo-sort:
+    name: 'Run cargo-sort'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        name: Checkout
+
+      - name: Install cargo sort
+        uses: taiki-e/install-action@7a79fe8c3a13344501c80d99cae481c1c9085912 # v2.81.10
+        with:
+          tool: cargo-sort
+
+      - name: Run cargo sort
+        run: cargo sort --workspace --check --check-format
+
   test-versions:
     name: CLI Lint
     runs-on: ubuntu-24.04
@@ -33,9 +48,6 @@ jobs:
         rust: ["1.88.0", stable, beta]
     steps:
       - uses: actions/checkout@v6
-
-      - name: Regen openapi libs
-        run: ../regen_openapi.py
 
       - uses: dtolnay/rust-toolchain@master
         with:

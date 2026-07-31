@@ -4,11 +4,11 @@ require "json"
 
 module Svix
   class EnvironmentIn
-    attr_accessor :connectors
     attr_accessor :event_types
     attr_accessor :settings
+    attr_accessor :connectors
 
-    ALL_FIELD ||= ["connectors", "event_types", "settings"].freeze
+    ALL_FIELD ||= ["event_types", "settings", "connectors"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -29,23 +29,23 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      if attributes["connectors"]
-        attrs["connectors"] = attributes["connectors"].map { |v| Svix::ConnectorIn.deserialize(v) }
-      end
-
       if attributes["eventTypes"]
         attrs["event_types"] = attributes["eventTypes"].map { |v| Svix::EventTypeIn.deserialize(v) }
       end
 
       attrs["settings"] = attributes["settings"]
+      if attributes["connectors"]
+        attrs["connectors"] = attributes["connectors"].map { |v| Svix::ConnectorIn.deserialize(v) }
+      end
+
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["connectors"] = @connectors.map { |v| v.serialize } if @connectors
       out["eventTypes"] = @event_types.map { |v| v.serialize } if @event_types
       out["settings"] = Svix::serialize_primitive(@settings) if @settings
+      out["connectors"] = @connectors.map { |v| v.serialize } if @connectors
       out
     end
 

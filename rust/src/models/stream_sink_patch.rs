@@ -15,29 +15,29 @@ use super::{
     sns_patch_config::SnsPatchConfig, sqs_patch_config::SqsPatchConfig,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamSinkPatch {
+    /// The StreamSink's UID.
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub uid: JsOption<String>,
+
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub status: JsOption<SinkStatusIn>,
+
     #[serde(rename = "batchSize")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub batch_size: JsOption<u16>,
-
-    #[serde(rename = "eventTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub event_types: Option<Vec<String>>,
 
     #[serde(rename = "maxWaitSecs")]
     #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
     pub max_wait_secs: JsOption<u16>,
 
+    #[serde(rename = "eventTypes")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub metadata: Option<std::collections::HashMap<String, String>>,
+    pub event_types: Option<Vec<String>>,
 
-    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub status: JsOption<SinkStatusIn>,
-
-    /// The StreamSink's UID.
-    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
-    pub uid: JsOption<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<std::collections::BTreeMap<String, String>>,
 
     #[serde(flatten)]
     pub config: StreamSinkPatchConfig,
@@ -76,11 +76,4 @@ pub enum StreamSinkPatchConfig {
     RabbitMq(RabbitMqPatchConfig),
     #[serde(rename = "redshift")]
     Redshift(RedshiftPatchConfig),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for StreamSinkPatchConfig {
-    fn default() -> Self {
-        Self::Poller
-    }
 }

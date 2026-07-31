@@ -10,21 +10,23 @@ class IngestEndpointOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string                $description an example endpoint name
-     * @param string                $id          the Endpoint's ID
+     * @param string   $id           the Endpoint's ID
+     * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
+     *
+     * Outgoing messages will be throttled to this rate.
+     * @param string|null           $uid      optional unique identifier for the endpoint
      * @param array<string, string> $metadata
-     * @param string|null           $uid         optional unique identifier for the endpoint
      */
     private function __construct(
-        public readonly \DateTimeImmutable $createdAt,
-        public readonly string $description,
         public readonly string $id,
-        public readonly array $metadata,
-        public readonly \DateTimeImmutable $updatedAt,
         public readonly string $url,
-        public readonly ?bool $disabled = null,
-        public readonly ?int $rateLimit = null,
+        public readonly string $description,
+        public readonly \DateTimeImmutable $createdAt,
+        public readonly \DateTimeImmutable $updatedAt,
+        public readonly array $metadata,
+        public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
+        public readonly ?bool $disabled = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -34,61 +36,42 @@ class IngestEndpointOut implements \JsonSerializable
      * Create an instance of IngestEndpointOut with required fields.
      */
     public static function create(
-        \DateTimeImmutable $createdAt,
-        string $description,
         string $id,
-        array $metadata,
-        \DateTimeImmutable $updatedAt,
         string $url,
+        string $description,
+        \DateTimeImmutable $createdAt,
+        \DateTimeImmutable $updatedAt,
+        array $metadata,
     ): self {
         return new self(
-            createdAt: $createdAt,
-            description: $description,
-            disabled: null,
             id: $id,
-            metadata: $metadata,
-            rateLimit: null,
-            uid: null,
-            updatedAt: $updatedAt,
             url: $url,
-            setFields: ['createdAt' => true, 'description' => true, 'id' => true, 'metadata' => true, 'updatedAt' => true, 'url' => true]
+            description: $description,
+            throttleRate: null,
+            uid: null,
+            disabled: null,
+            createdAt: $createdAt,
+            updatedAt: $updatedAt,
+            metadata: $metadata,
+            setFields: ['id' => true, 'url' => true, 'description' => true, 'createdAt' => true, 'updatedAt' => true, 'metadata' => true]
         );
     }
 
-    public function withDisabled(?bool $disabled): self
+    public function withThrottleRate(?int $throttleRate): self
     {
         $setFields = $this->setFields;
-        $setFields['disabled'] = true;
+        $setFields['throttleRate'] = true;
 
         return new self(
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $disabled,
             id: $this->id,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            uid: $this->uid,
-            updatedAt: $this->updatedAt,
             url: $this->url,
-            setFields: $setFields
-        );
-    }
-
-    public function withRateLimit(?int $rateLimit): self
-    {
-        $setFields = $this->setFields;
-        $setFields['rateLimit'] = true;
-
-        return new self(
-            createdAt: $this->createdAt,
             description: $this->description,
+            throttleRate: $throttleRate,
+            uid: $this->uid,
             disabled: $this->disabled,
-            id: $this->id,
-            metadata: $this->metadata,
-            rateLimit: $rateLimit,
-            uid: $this->uid,
+            createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
-            url: $this->url,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -99,15 +82,34 @@ class IngestEndpointOut implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            createdAt: $this->createdAt,
-            description: $this->description,
-            disabled: $this->disabled,
             id: $this->id,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            uid: $uid,
-            updatedAt: $this->updatedAt,
             url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $uid,
+            disabled: $this->disabled,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            metadata: $this->metadata,
+            setFields: $setFields
+        );
+    }
+
+    public function withDisabled(?bool $disabled): self
+    {
+        $setFields = $this->setFields;
+        $setFields['disabled'] = true;
+
+        return new self(
+            id: $this->id,
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $disabled,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            metadata: $this->metadata,
             setFields: $setFields
         );
     }
@@ -115,21 +117,21 @@ class IngestEndpointOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'createdAt' => $this->createdAt->format('c'),
-            'description' => $this->description,
             'id' => $this->id,
-            'metadata' => $this->metadata,
+            'url' => $this->url,
+            'description' => $this->description,
+            'createdAt' => $this->createdAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c'),
-            'url' => $this->url];
+            'metadata' => $this->metadata];
 
-        if (null !== $this->disabled) {
-            $data['disabled'] = $this->disabled;
-        }
-        if (isset($this->setFields['rateLimit'])) {
-            $data['rateLimit'] = $this->rateLimit;
+        if (isset($this->setFields['throttleRate'])) {
+            $data['throttleRate'] = $this->throttleRate;
         }
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
+        }
+        if (null !== $this->disabled) {
+            $data['disabled'] = $this->disabled;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -141,15 +143,15 @@ class IngestEndpointOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'IngestEndpointOut'),
-            description: \Svix\Utils::deserializeString($data, 'description', true, 'IngestEndpointOut'),
-            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'IngestEndpointOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'IngestEndpointOut'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'IngestEndpointOut'),
-            rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'IngestEndpointOut'),
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointOut'),
+            description: \Svix\Utils::deserializeString($data, 'description', true, 'IngestEndpointOut'),
+            throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'IngestEndpointOut'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'IngestEndpointOut'),
+            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'IngestEndpointOut'),
+            createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'IngestEndpointOut'),
             updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'IngestEndpointOut'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'IngestEndpointOut')
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', true, 'IngestEndpointOut')
         );
     }
 

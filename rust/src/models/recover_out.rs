@@ -5,7 +5,7 @@ use super::{
     background_task_status::BackgroundTaskStatus, background_task_type::BackgroundTaskType,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RecoverOut {
     /// The QueueBackgroundTask's ID.
     pub id: String,
@@ -15,21 +15,5 @@ pub struct RecoverOut {
     pub task: BackgroundTaskType,
 
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
-}
-
-impl RecoverOut {
-    pub fn new(
-        id: String,
-        status: BackgroundTaskStatus,
-        task: BackgroundTaskType,
-        updated_at: String,
-    ) -> Self {
-        Self {
-            id,
-            status,
-            task,
-            updated_at,
-        }
-    }
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }

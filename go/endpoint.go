@@ -13,10 +13,12 @@ type Endpoint struct {
 	client *internal.SvixHttpClient
 }
 
-func newEndpoint(client *internal.SvixHttpClient) *Endpoint {
-	return &Endpoint{
-		client: client,
-	}
+func newEndpoint(client *internal.SvixHttpClient) Endpoint {
+	return Endpoint{client}
+}
+
+func (endpoint Endpoint) Transformation() EndpointTransformation {
+	return newEndpointTransformation(endpoint.client)
 }
 
 type EndpointListOptions struct {
@@ -33,11 +35,7 @@ type EndpointCreateOptions struct {
 	IdempotencyKey *string
 }
 
-type EndpointBulkReplayOptions struct {
-	IdempotencyKey *string
-}
-
-type EndpointRecoverOptions struct {
+type EndpointRotateSecretOptions struct {
 	IdempotencyKey *string
 }
 
@@ -45,11 +43,7 @@ type EndpointReplayMissingOptions struct {
 	IdempotencyKey *string
 }
 
-type EndpointRotateSecretOptions struct {
-	IdempotencyKey *string
-}
-
-type EndpointSendExampleOptions struct {
+type EndpointBulkReplayOptions struct {
 	IdempotencyKey *string
 }
 
@@ -60,25 +54,34 @@ type EndpointGetStatsOptions struct {
 	Until *time.Time
 }
 
+type EndpointRecoverOptions struct {
+	IdempotencyKey *string
+}
+
+type EndpointSendExampleOptions struct {
+	IdempotencyKey *string
+}
+
 // List the application's endpoints.
-func (endpoint *Endpoint) List(
+func (endpoint Endpoint) List(
 	ctx context.Context,
 	appId string,
 	o *EndpointListOptions,
 ) (*models.ListResponseEndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EndpointListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseEndpointOut](
 		ctx,
@@ -95,23 +98,24 @@ func (endpoint *Endpoint) List(
 // Create a new endpoint for the application.
 //
 // When `secret` is `null` the secret is automatically generated (recommended).
-func (endpoint *Endpoint) Create(
+func (endpoint Endpoint) Create(
 	ctx context.Context,
 	appId string,
 	endpointIn models.EndpointIn,
 	o *EndpointCreateOptions,
 ) (*models.EndpointOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EndpointCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.EndpointIn, models.EndpointOut](
 		ctx,
@@ -126,7 +130,7 @@ func (endpoint *Endpoint) Create(
 }
 
 // Get an endpoint.
-func (endpoint *Endpoint) Get(
+func (endpoint Endpoint) Get(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -147,18 +151,18 @@ func (endpoint *Endpoint) Get(
 	)
 }
 
-// Update an endpoint.
-func (endpoint *Endpoint) Update(
+// Create or update an endpoint.
+func (endpoint Endpoint) Upsert(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointUpdate models.EndpointUpdate,
+	endpointUpsertIn models.EndpointUpsertIn,
 ) (*models.EndpointOut, error) {
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	return internal.ExecuteRequest[models.EndpointUpdate, models.EndpointOut](
+	return internal.ExecuteRequest[models.EndpointUpsertIn, models.EndpointOut](
 		ctx,
 		endpoint.client,
 		"PUT",
@@ -166,21 +170,22 @@ func (endpoint *Endpoint) Update(
 		pathMap,
 		nil,
 		nil,
-		&endpointUpdate,
+		&endpointUpsertIn,
 	)
 }
 
 // Delete an endpoint.
-func (endpoint *Endpoint) Delete(
+func (endpoint Endpoint) Delete(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		endpoint.client,
 		"DELETE",
@@ -194,7 +199,7 @@ func (endpoint *Endpoint) Delete(
 }
 
 // Partially update an endpoint.
-func (endpoint *Endpoint) Patch(
+func (endpoint Endpoint) Patch(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -216,230 +221,11 @@ func (endpoint *Endpoint) Patch(
 	)
 }
 
-// Bulk replay messages sent to the endpoint.
-//
-// Only messages that were created after `since` will be sent.
-// This will replay both successful, and failed messages
-//
-// A completed task will return a payload like the following:
-// ```json
-//
-//	{
-//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-//	  "status": "finished",
-//	  "task": "endpoint.bulk-replay",
-//	  "data": {
-//	    "messagesSent": 2
-//	  }
-//	}
-//
-// ```
-func (endpoint *Endpoint) BulkReplay(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	bulkReplayIn models.BulkReplayIn,
-	o *EndpointBulkReplayOptions,
-) (*models.ReplayOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.BulkReplayIn, models.ReplayOut](
-		ctx,
-		endpoint.client,
-		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
-		pathMap,
-		nil,
-		headerMap,
-		&bulkReplayIn,
-	)
-}
-
-// Get the additional headers to be sent with the webhook.
-func (endpoint *Endpoint) GetHeaders(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-) (*models.EndpointHeadersOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	return internal.ExecuteRequest[any, models.EndpointHeadersOut](
-		ctx,
-		endpoint.client,
-		"GET",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-}
-
-// Set the additional headers to be sent with the webhook.
-func (endpoint *Endpoint) UpdateHeaders(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	endpointHeadersIn models.EndpointHeadersIn,
-) error {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	_, err := internal.ExecuteRequest[models.EndpointHeadersIn, any](
-		ctx,
-		endpoint.client,
-		"PUT",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		&endpointHeadersIn,
-	)
-	return err
-}
-
-// Partially set the additional headers to be sent with the webhook.
-func (endpoint *Endpoint) PatchHeaders(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	endpointHeadersPatchIn models.EndpointHeadersPatchIn,
-) error {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	_, err := internal.ExecuteRequest[models.EndpointHeadersPatchIn, any](
-		ctx,
-		endpoint.client,
-		"PATCH",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
-		pathMap,
-		nil,
-		nil,
-		&endpointHeadersPatchIn,
-	)
-	return err
-}
-
-// Resend all failed messages since a given time.
-//
-// Messages that were sent successfully, even if failed initially, are not resent.
-//
-// A completed task will return a payload like the following:
-// ```json
-//
-//	{
-//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-//	  "status": "finished",
-//	  "task": "endpoint.recover",
-//	  "data": {
-//	    "messagesSent": 2
-//	  }
-//	}
-//
-// ```
-func (endpoint *Endpoint) Recover(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	recoverIn models.RecoverIn,
-	o *EndpointRecoverOptions,
-) (*models.RecoverOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.RecoverIn, models.RecoverOut](
-		ctx,
-		endpoint.client,
-		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
-		pathMap,
-		nil,
-		headerMap,
-		&recoverIn,
-	)
-}
-
-// Replays messages to the endpoint.
-//
-// Only messages that were created after `since` will be sent.
-// Messages that were previously sent to the endpoint are not resent.
-//
-// A completed task will return a payload like the following:
-// ```json
-//
-//	{
-//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-//	  "status": "finished",
-//	  "task": "endpoint.replay",
-//	  "data": {
-//	    "messagesSent": 2
-//	  }
-//	}
-//
-// ```
-func (endpoint *Endpoint) ReplayMissing(
-	ctx context.Context,
-	appId string,
-	endpointId string,
-	replayIn models.ReplayIn,
-	o *EndpointReplayMissingOptions,
-) (*models.ReplayOut, error) {
-	pathMap := map[string]string{
-		"app_id":      appId,
-		"endpoint_id": endpointId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.ReplayIn, models.ReplayOut](
-		ctx,
-		endpoint.client,
-		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
-		pathMap,
-		nil,
-		headerMap,
-		&replayIn,
-	)
-}
-
 // Get the endpoint's signing secret.
 //
 // This is used to verify the authenticity of the webhook.
 // For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-func (endpoint *Endpoint) GetSecret(
+func (endpoint Endpoint) GetSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -462,28 +248,29 @@ func (endpoint *Endpoint) GetSecret(
 
 // Rotates the endpoint's signing secret.
 //
-// The previous secret will remain valid for the next 24 hours.
-func (endpoint *Endpoint) RotateSecret(
+// The previous secret will remain valid for the specified grace period (default 24 hours).
+func (endpoint Endpoint) RotateSecret(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	endpointSecretRotateIn models.EndpointSecretRotateIn,
 	o *EndpointRotateSecretOptions,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := EndpointRotateSecretOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -496,59 +283,201 @@ func (endpoint *Endpoint) RotateSecret(
 	return err
 }
 
-// Send an example message for an event.
-func (endpoint *Endpoint) SendExample(
+// Get the additional headers to be sent with the webhook.
+func (endpoint Endpoint) GetHeaders(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	eventExampleIn models.EventExampleIn,
-	o *EndpointSendExampleOptions,
-) (*models.MessageOut, error) {
+) (*models.EndpointHeadersOut, error) {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.EndpointHeadersOut](
+		ctx,
+		endpoint.client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Set the additional headers to be sent with the webhook.
+func (endpoint Endpoint) SetHeaders(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointHeadersIn models.EndpointHeadersIn,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err = internal.ExecuteRequest[models.EndpointHeadersIn, any](
+		ctx,
+		endpoint.client,
+		"PUT",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		&endpointHeadersIn,
+	)
+	return err
+}
+
+// Partially set the additional headers to be sent with the webhook.
+func (endpoint Endpoint) PatchHeaders(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointHeadersPatchIn models.EndpointHeadersPatchIn,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err = internal.ExecuteRequest[models.EndpointHeadersPatchIn, any](
+		ctx,
+		endpoint.client,
+		"PATCH",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/headers",
+		pathMap,
+		nil,
+		nil,
+		&endpointHeadersPatchIn,
+	)
+	return err
+}
+
+// Replays messages to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// Messages that were previously sent to the endpoint are not resent.
+//
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "endpoint.replay",
+//	  "data": {
+//	    "messagesSent": 2
+//	  }
+//	}
+//
+// ```
+func (endpoint Endpoint) ReplayMissing(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	replayIn models.ReplayIn,
+	o *EndpointReplayMissingOptions,
+) (*models.ReplayOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EndpointReplayMissingOptions{}
+		o = &opts
 	}
-	return internal.ExecuteRequest[models.EventExampleIn, models.MessageOut](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.ReplayIn, models.ReplayOut](
 		ctx,
 		endpoint.client,
 		"POST",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/replay-missing",
 		pathMap,
 		nil,
 		headerMap,
-		&eventExampleIn,
+		&replayIn,
+	)
+}
+
+// Bulk replay messages sent to the endpoint.
+//
+// Only messages that were created after `since` will be sent.
+// This will replay both successful, and failed messages
+//
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "endpoint.bulk-replay",
+//	  "data": {
+//	    "messagesSent": 2
+//	  }
+//	}
+//
+// ```
+func (endpoint Endpoint) BulkReplay(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	bulkReplayIn models.BulkReplayIn,
+	o *EndpointBulkReplayOptions,
+) (*models.ReplayOut, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := EndpointBulkReplayOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.BulkReplayIn, models.ReplayOut](
+		ctx,
+		endpoint.client,
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay",
+		pathMap,
+		nil,
+		headerMap,
+		&bulkReplayIn,
 	)
 }
 
 // Get basic statistics for the endpoint.
-func (endpoint *Endpoint) GetStats(
+func (endpoint Endpoint) GetStats(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	o *EndpointGetStatsOptions,
 ) (*models.EndpointStats, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("since", o.Since, queryMap, &err)
-		internal.SerializeParamToMap("until", o.Until, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := EndpointGetStatsOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("since", o.Since, queryMap, &err)
+	internal.SerializeParamToMap("until", o.Until, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.EndpointStats](
 		ctx,
@@ -562,66 +491,105 @@ func (endpoint *Endpoint) GetStats(
 	)
 }
 
-// Get the transformation code associated with this endpoint.
-func (endpoint *Endpoint) TransformationGet(
+// Resend all failed messages since a given time.
+//
+// Messages that were sent successfully, even if failed initially, are not resent.
+//
+// A completed task will return a payload like the following:
+// ```json
+//
+//	{
+//	  "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+//	  "status": "finished",
+//	  "task": "endpoint.recover",
+//	  "data": {
+//	    "messagesSent": 2
+//	  }
+//	}
+//
+// ```
+func (endpoint Endpoint) Recover(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-) (*models.EndpointTransformationOut, error) {
+	recoverIn models.RecoverIn,
+	o *EndpointRecoverOptions,
+) (*models.RecoverOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	return internal.ExecuteRequest[any, models.EndpointTransformationOut](
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := EndpointRecoverOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.RecoverIn, models.RecoverOut](
 		ctx,
 		endpoint.client,
-		"GET",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover",
 		pathMap,
 		nil,
-		nil,
-		nil,
+		headerMap,
+		&recoverIn,
 	)
 }
 
-// Set or unset the transformation code associated with this endpoint.
-func (endpoint *Endpoint) PatchTransformation(
+// Send an example message for an event.
+func (endpoint Endpoint) SendExample(
 	ctx context.Context,
 	appId string,
 	endpointId string,
-	endpointTransformationPatch models.EndpointTransformationPatch,
-) error {
+	eventExampleIn models.EventExampleIn,
+	o *EndpointSendExampleOptions,
+) (*models.MessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[models.EndpointTransformationPatch, any](
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := EndpointSendExampleOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.EventExampleIn, models.MessageOut](
 		ctx,
 		endpoint.client,
-		"PATCH",
-		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation",
+		"POST",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example",
 		pathMap,
 		nil,
-		nil,
-		&endpointTransformationPatch,
+		headerMap,
+		&eventExampleIn,
 	)
-	return err
 }
 
 // This operation was renamed to `set-transformation`.
 //
 // Deprecated: TransformationPartialUpdate is deprecated.
-func (endpoint *Endpoint) TransformationPartialUpdate(
+func (endpoint Endpoint) TransformationPartialUpdate(
 	ctx context.Context,
 	appId string,
 	endpointId string,
 	endpointTransformationIn models.EndpointTransformationIn,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
 		"endpoint_id": endpointId,
 	}
-	_, err := internal.ExecuteRequest[models.EndpointTransformationIn, any](
+	_, err = internal.ExecuteRequest[models.EndpointTransformationIn, any](
 		ctx,
 		endpoint.client,
 		"PATCH",

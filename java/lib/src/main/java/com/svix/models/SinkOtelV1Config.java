@@ -20,10 +20,29 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SinkOtelV1Config {
-    @JsonProperty private Map<String, String> headers;
     @JsonProperty private URI url;
+    @JsonProperty private Map<String, String> headers;
 
     public SinkOtelV1Config() {}
+
+    public SinkOtelV1Config url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public SinkOtelV1Config headers(Map<String, String> headers) {
         this.headers = headers;
@@ -51,25 +70,6 @@ public class SinkOtelV1Config {
 
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
-    }
-
-    public SinkOtelV1Config url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

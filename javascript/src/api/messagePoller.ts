@@ -26,15 +26,15 @@ export interface MessagePollerPollOptions {
   after?: Date | null;
 }
 
+export interface MessagePollerConsumerSeekOptions {
+  idempotencyKey?: string;
+}
+
 export interface MessagePollerConsumerPollOptions {
   /** Limit the number of returned items */
   limit?: number;
   /** The iterator returned from a prior invocation */
   iterator?: string | null;
-}
-
-export interface MessagePollerConsumerSeekOptions {
-  idempotencyKey?: string;
 }
 
 export class MessagePoller {
@@ -67,6 +67,33 @@ export class MessagePoller {
     );
   }
 
+  /** Sets the starting offset for the consumer of a polling endpoint. */
+  public async consumerSeek(
+    appId: string,
+    sinkId: string,
+    consumerId: string,
+    pollingEndpointConsumerSeekIn: PollingEndpointConsumerSeekIn,
+    options?: MessagePollerConsumerSeekOptions
+  ): Promise<PollingEndpointConsumerSeekOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("sink_id", sinkId);
+    request.setPathParam("consumer_id", consumerId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(
+      PollingEndpointConsumerSeekInSerializer._toJsonObject(pollingEndpointConsumerSeekIn)
+    );
+
+    return await request.send(
+      this.requestCtx,
+      PollingEndpointConsumerSeekOutSerializer._fromJsonObject
+    );
+  }
+
   /**
    * Reads the stream of created messages for an application, filtered on the Sink's event types and
    * Channels, using server-managed iterator tracking.
@@ -93,33 +120,6 @@ export class MessagePoller {
     return await request.send(
       this.requestCtx,
       PollingEndpointOutSerializer._fromJsonObject
-    );
-  }
-
-  /** Sets the starting offset for the consumer of a polling endpoint. */
-  public async consumerSeek(
-    appId: string,
-    sinkId: string,
-    consumerId: string,
-    pollingEndpointConsumerSeekIn: PollingEndpointConsumerSeekIn,
-    options?: MessagePollerConsumerSeekOptions
-  ): Promise<PollingEndpointConsumerSeekOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("sink_id", sinkId);
-    request.setPathParam("consumer_id", consumerId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(
-      PollingEndpointConsumerSeekInSerializer._toJsonObject(pollingEndpointConsumerSeekIn)
-    );
-
-    return await request.send(
-      this.requestCtx,
-      PollingEndpointConsumerSeekOutSerializer._fromJsonObject
     );
   }
 }

@@ -11,14 +11,14 @@ import (
 
 type Message struct {
 	client *internal.SvixHttpClient
-	Poller *MessagePoller
 }
 
-func newMessage(client *internal.SvixHttpClient) *Message {
-	return &Message{
-		client: client,
-		Poller: newMessagePoller(client),
-	}
+func newMessage(client *internal.SvixHttpClient) Message {
+	return Message{client}
+}
+
+func (message Message) Poller() MessagePoller {
+	return newMessagePoller(message.client)
 }
 
 type MessageListOptions struct {
@@ -33,6 +33,8 @@ type MessageListOptions struct {
 	// Only include items created after a certain date.
 	After *time.Time
 	// When `true` message payloads are included in the response.
+	//
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
 	WithContent *bool
 	// Filter messages matching the provided tag.
 	Tag *string
@@ -42,11 +44,9 @@ type MessageListOptions struct {
 
 type MessageCreateOptions struct {
 	// When `true`, message payloads are included in the response.
+	//
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
 	WithContent    *bool
-	IdempotencyKey *string
-}
-
-type MessageExpungeAllContentsOptions struct {
 	IdempotencyKey *string
 }
 
@@ -56,7 +56,13 @@ type MessagePrecheckOptions struct {
 
 type MessageGetOptions struct {
 	// When `true` message payloads are included in the response.
+	//
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
 	WithContent *bool
+}
+
+type MessageExpungeAllContentsOptions struct {
+	IdempotencyKey *string
 }
 
 // List all of the application's messages.
@@ -68,29 +74,30 @@ type MessageGetOptions struct {
 // relative to now or, if an iterator is provided, 90 days before/after the time indicated
 // by the iterator ID. If you require data beyond those time ranges, you will need to explicitly
 // set the `before` or `after` parameter as appropriate.
-func (message *Message) List(
+func (message Message) List(
 	ctx context.Context,
 	appId string,
 	o *MessageListOptions,
 ) (*models.ListResponseMessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
-		internal.SerializeParamToMap("before", o.Before, queryMap, &err)
-		internal.SerializeParamToMap("after", o.After, queryMap, &err)
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
-		internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("channel", o.Channel, queryMap, &err)
+	internal.SerializeParamToMap("before", o.Before, queryMap, &err)
+	internal.SerializeParamToMap("after", o.After, queryMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	internal.SerializeParamToMap("tag", o.Tag, queryMap, &err)
+	internal.SerializeParamToMap("event_types", o.EventTypes, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseMessageOut](
 		ctx,
@@ -113,27 +120,28 @@ func (message *Message) List(
 // Messages can also have `channels`, which similar to event types let endpoints filter by them. Unlike event types, messages can have multiple channels, and channels don't imply a specific message content or schema.
 //
 // The `payload` property is the webhook's body (the actual webhook message). Svix supports payload sizes of up to 1MiB, though it's generally a good idea to keep webhook payloads small, probably no larger than 40kb.
-func (message *Message) Create(
+func (message Message) Create(
 	ctx context.Context,
 	appId string,
 	messageIn models.MessageIn,
 	o *MessageCreateOptions,
 ) (*models.MessageOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	queryMap := map[string]string{}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageCreateOptions{}
+		o = &opts
 	}
-	queryMap["with_content"] = "false"
-	response, err := internal.ExecuteRequest[models.MessageIn, models.MessageOut](
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.MessageIn, models.MessageOut](
 		ctx,
 		message.client,
 		"POST",
@@ -143,13 +151,103 @@ func (message *Message) Create(
 		headerMap,
 		&messageIn,
 	)
+}
+
+// A pre-check call for `message.create` that checks whether any active endpoints are
+// listening to this message.
+//
+// Note: most people shouldn't be using this API. Svix doesn't bill you for
+// messages not actually sent, so using this API doesn't save money.
+// If unsure, please ask Svix support before using this API.
+func (message Message) Precheck(
+	ctx context.Context,
+	appId string,
+	messagePrecheckIn models.MessagePrecheckIn,
+	o *MessagePrecheckOptions,
+) (*models.MessagePrecheckOut, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := MessagePrecheckOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 	if err != nil {
 		return nil, err
 	}
-	if o == nil || o.WithContent == nil || *o.WithContent == true {
-		response.Payload = messageIn.Payload
+	return internal.ExecuteRequest[models.MessagePrecheckIn, models.MessagePrecheckOut](
+		ctx,
+		message.client,
+		"POST",
+		"/api/v1/app/{app_id}/msg/precheck/active",
+		pathMap,
+		nil,
+		headerMap,
+		&messagePrecheckIn,
+	)
+}
+
+// Get a message by its ID or eventID.
+func (message Message) Get(
+	ctx context.Context,
+	appId string,
+	msgId string,
+	o *MessageGetOptions,
+) (*models.MessageOut, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id": appId,
+		"msg_id": msgId,
 	}
-	return response, nil
+	queryMap := map[string]string{}
+	if o == nil {
+		opts := MessageGetOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[any, models.MessageOut](
+		ctx,
+		message.client,
+		"GET",
+		"/api/v1/app/{app_id}/msg/{msg_id}",
+		pathMap,
+		queryMap,
+		nil,
+		nil,
+	)
+}
+
+// Delete the given message's payload.
+//
+// Useful in cases when a message was accidentally sent with sensitive content.
+// The message can't be replayed or resent once its payload has been deleted or expired.
+func (message Message) ExpungeContent(
+	ctx context.Context,
+	appId string,
+	msgId string,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id": appId,
+		"msg_id": msgId,
+	}
+	_, err = internal.ExecuteRequest[any, any](
+		ctx,
+		message.client,
+		"DELETE",
+		"/api/v1/app/{app_id}/msg/{msg_id}/content",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+	return err
 }
 
 // Delete all message payloads for the application.
@@ -169,22 +267,23 @@ func (message *Message) Create(
 //	}
 //
 // ```
-func (message *Message) ExpungeAllContents(
+func (message Message) ExpungeAllContents(
 	ctx context.Context,
 	appId string,
 	o *MessageExpungeAllContentsOptions,
 ) (*models.ExpungeAllContentsOut, error) {
+	var err error
 	pathMap := map[string]string{
 		"app_id": appId,
 	}
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := MessageExpungeAllContentsOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ExpungeAllContentsOut](
 		ctx,
@@ -196,98 +295,4 @@ func (message *Message) ExpungeAllContents(
 		headerMap,
 		nil,
 	)
-}
-
-// A pre-check call for `message.create` that checks whether any active endpoints are
-// listening to this message.
-//
-// Note: most people shouldn't be using this API. Svix doesn't bill you for
-// messages not actually sent, so using this API doesn't save money.
-// If unsure, please ask Svix support before using this API.
-func (message *Message) Precheck(
-	ctx context.Context,
-	appId string,
-	messagePrecheckIn models.MessagePrecheckIn,
-	o *MessagePrecheckOptions,
-) (*models.MessagePrecheckOut, error) {
-	pathMap := map[string]string{
-		"app_id": appId,
-	}
-	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[models.MessagePrecheckIn, models.MessagePrecheckOut](
-		ctx,
-		message.client,
-		"POST",
-		"/api/v1/app/{app_id}/msg/precheck/active",
-		pathMap,
-		nil,
-		headerMap,
-		&messagePrecheckIn,
-	)
-}
-
-// Get a message by its ID or eventID.
-func (message *Message) Get(
-	ctx context.Context,
-	appId string,
-	msgId string,
-	o *MessageGetOptions,
-) (*models.MessageOut, error) {
-	pathMap := map[string]string{
-		"app_id": appId,
-		"msg_id": msgId,
-	}
-	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("with_content", o.WithContent, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
-	}
-	return internal.ExecuteRequest[any, models.MessageOut](
-		ctx,
-		message.client,
-		"GET",
-		"/api/v1/app/{app_id}/msg/{msg_id}",
-		pathMap,
-		queryMap,
-		nil,
-		nil,
-	)
-}
-
-// Delete the given message's payload.
-//
-// Useful in cases when a message was accidentally sent with sensitive content.
-// The message can't be replayed or resent once its payload has been deleted or expired.
-func (message *Message) ExpungeContent(
-	ctx context.Context,
-	appId string,
-	msgId string,
-) error {
-	pathMap := map[string]string{
-		"app_id": appId,
-		"msg_id": msgId,
-	}
-	_, err := internal.ExecuteRequest[any, any](
-		ctx,
-		message.client,
-		"DELETE",
-		"/api/v1/app/{app_id}/msg/{msg_id}/content",
-		pathMap,
-		nil,
-		nil,
-		nil,
-	)
-	return err
 }

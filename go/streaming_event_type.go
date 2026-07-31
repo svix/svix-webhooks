@@ -12,10 +12,8 @@ type StreamingEventType struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingEventType(client *internal.SvixHttpClient) *StreamingEventType {
-	return &StreamingEventType{
-		client: client,
-	}
+func newStreamingEventType(client *internal.SvixHttpClient) StreamingEventType {
+	return StreamingEventType{client}
 }
 
 type StreamingEventTypeListOptions struct {
@@ -40,21 +38,22 @@ type StreamingEventTypeDeleteOptions struct {
 }
 
 // List of all the organization's event types for streaming.
-func (streamingEventType *StreamingEventType) List(
+func (streamingEventType StreamingEventType) List(
 	ctx context.Context,
 	o *StreamingEventTypeListOptions,
 ) (*models.ListResponseStreamEventTypeOut, error) {
+	var err error
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
-		internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
-		internal.SerializeParamToMap("order", o.Order, queryMap, &err)
-		internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventTypeListOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("limit", o.Limit, queryMap, &err)
+	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
+	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
+	internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[any, models.ListResponseStreamEventTypeOut](
 		ctx,
@@ -69,19 +68,20 @@ func (streamingEventType *StreamingEventType) List(
 }
 
 // Create an event type for Streams.
-func (streamingEventType *StreamingEventType) Create(
+func (streamingEventType StreamingEventType) Create(
 	ctx context.Context,
 	streamEventTypeIn models.StreamEventTypeIn,
 	o *StreamingEventTypeCreateOptions,
 ) (*models.StreamEventTypeOut, error) {
+	var err error
 	headerMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
-		if err != nil {
-			return nil, err
-		}
+	if o == nil {
+		opts := StreamingEventTypeCreateOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
 	}
 	return internal.ExecuteRequest[models.StreamEventTypeIn, models.StreamEventTypeOut](
 		ctx,
@@ -96,7 +96,7 @@ func (streamingEventType *StreamingEventType) Create(
 }
 
 // Get an event type.
-func (streamingEventType *StreamingEventType) Get(
+func (streamingEventType StreamingEventType) Get(
 	ctx context.Context,
 	name string,
 ) (*models.StreamEventTypeOut, error) {
@@ -115,8 +115,8 @@ func (streamingEventType *StreamingEventType) Get(
 	)
 }
 
-// Update or create a event type for Streams.
-func (streamingEventType *StreamingEventType) Update(
+// Create or update or create a event type for Streams.
+func (streamingEventType StreamingEventType) Upsert(
 	ctx context.Context,
 	name string,
 	streamEventTypeIn models.StreamEventTypeIn,
@@ -137,24 +137,25 @@ func (streamingEventType *StreamingEventType) Update(
 }
 
 // Delete an event type.
-func (streamingEventType *StreamingEventType) Delete(
+func (streamingEventType StreamingEventType) Delete(
 	ctx context.Context,
 	name string,
 	o *StreamingEventTypeDeleteOptions,
 ) error {
+	var err error
 	pathMap := map[string]string{
 		"name": name,
 	}
 	queryMap := map[string]string{}
-	if o != nil {
-		var err error
-
-		internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
-		if err != nil {
-			return err
-		}
+	if o == nil {
+		opts := StreamingEventTypeDeleteOptions{}
+		o = &opts
 	}
-	_, err := internal.ExecuteRequest[any, any](
+	internal.SerializeParamToMap("expunge", o.Expunge, queryMap, &err)
+	if err != nil {
+		return err
+	}
+	_, err = internal.ExecuteRequest[any, any](
 		ctx,
 		streamingEventType.client,
 		"DELETE",
@@ -168,7 +169,7 @@ func (streamingEventType *StreamingEventType) Delete(
 }
 
 // Patch an event type for Streams.
-func (streamingEventType *StreamingEventType) Patch(
+func (streamingEventType StreamingEventType) Patch(
 	ctx context.Context,
 	name string,
 	streamEventTypePatch models.StreamEventTypePatch,

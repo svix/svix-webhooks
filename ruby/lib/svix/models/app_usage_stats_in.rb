@@ -4,14 +4,14 @@ require "json"
 
 module Svix
   class AppUsageStatsIn
+    attr_accessor :since
+    attr_accessor :until
     # Specific app IDs or UIDs to aggregate stats for.
     #
     # Note that if none of the given IDs or UIDs are resolved, a 422 response will be given.
     attr_accessor :app_ids
-    attr_accessor :since
-    attr_accessor :until
 
-    ALL_FIELD ||= ["app_ids", "since", "until"].freeze
+    ALL_FIELD ||= ["since", "until", "app_ids"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -32,17 +32,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["app_ids"] = attributes["appIds"]
       attrs["since"] = DateTime.rfc3339(attributes["since"]).to_time
       attrs["until"] = DateTime.rfc3339(attributes["until"]).to_time
+      attrs["app_ids"] = attributes["appIds"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["appIds"] = Svix::serialize_primitive(@app_ids) if @app_ids
       out["since"] = Svix::serialize_primitive(@since) if @since
       out["until"] = Svix::serialize_primitive(@until) if @until
+      out["appIds"] = Svix::serialize_primitive(@app_ids) if @app_ids
       out
     end
 

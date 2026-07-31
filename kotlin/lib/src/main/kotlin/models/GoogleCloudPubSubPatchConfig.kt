@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GoogleCloudPubSubPatchConfig(
-    val credentials: String? = null,
     val projectId: String? = null,
     val topicId: String? = null,
+    val credentials: String? = null,
 )

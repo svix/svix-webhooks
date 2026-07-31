@@ -45,7 +45,7 @@ var appListOut = `{
     {
       "uid": "unique-identifier",
       "name": "My first application",
-      "rateLimit": 0,
+      "throttleRate": 0,
       "id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
       "createdAt": "2019-08-24T14:15:22Z",
       "updatedAt": "2019-08-24T14:15:22Z",
@@ -63,7 +63,7 @@ var appListOut = `{
 var appCreateOut = `{
 	"uid": "unique-identifier",
 	"name": "My first application",
-	"rateLimit": 0,
+	"throttleRate": 0,
 	"id": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
 	"createdAt": "2019-08-24T14:15:22Z",
 	"updatedAt": "2019-08-24T14:15:22Z",
@@ -120,7 +120,7 @@ func TestReqIdHeaderIsSetCorrectly(t *testing.T) {
 		},
 	)
 
-	_, err := svx.Application.List(context.Background(), nil)
+	_, err := svx.Application().List(context.Background(), nil)
 	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
@@ -145,7 +145,7 @@ func TestRetryCountHeadersIsSetCorrectly(t *testing.T) {
 		},
 	)
 
-	_, err := svx.Application.List(context.Background(), nil)
+	_, err := svx.Application().List(context.Background(), nil)
 	assertExpectedError(t, err, "status code 500")
 
 	if httpmock.GetTotalCallCount() != 4 {
@@ -184,7 +184,7 @@ func TestOptionsSerialization(t *testing.T) {
 		Order:    &order,
 		Iterator: &iter,
 	}
-	_, err := svx.Application.List(context.Background(), &listOpts)
+	_, err := svx.Application().List(context.Background(), &listOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -197,7 +197,7 @@ func TestQueryParamListSerialization(t *testing.T) {
 
 	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app/random_app_id/msg",
 		func(r *http.Request) (*http.Response, error) {
-			if !reflect.DeepEqual(r.URL.RawQuery, "event_types=asd13%2C123asd") {
+			if !reflect.DeepEqual(r.URL.RawQuery, "event_types=asd13%2C123asd&with_content=false") {
 				t.Errorf("Unexpected MessageListOptions serialization, got: %v", r.URL.RawQuery)
 			}
 
@@ -207,7 +207,7 @@ func TestQueryParamListSerialization(t *testing.T) {
 	listOpts := svix.MessageListOptions{
 		EventTypes: &[]string{"asd13", "123asd"},
 	}
-	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
+	_, err := svx.Message().List(context.Background(), "random_app_id", &listOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -220,7 +220,7 @@ func TestOctothorpeUrlParam(t *testing.T) {
 
 	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app/random_app_id/msg",
 		func(r *http.Request) (*http.Response, error) {
-			if !reflect.DeepEqual(r.URL.RawQuery, "tag=test%23test") {
+			if !reflect.DeepEqual(r.URL.RawQuery, "tag=test%23test&with_content=false") {
 				t.Errorf("Unexpected MessageListOptions serialization, got: %v", r.URL.RawQuery)
 			}
 
@@ -231,7 +231,7 @@ func TestOctothorpeUrlParam(t *testing.T) {
 	listOpts := svix.MessageListOptions{
 		Tag: &tag,
 	}
-	_, err := svx.Message.List(context.Background(), "random_app_id", &listOpts)
+	_, err := svx.Message().List(context.Background(), "random_app_id", &listOpts)
 	if err != nil {
 		t.Error(err)
 	}
@@ -258,7 +258,7 @@ func TestIdempotencyKeyIsSentForCreateRequest(t *testing.T) {
 	appIn := models.ApplicationIn{
 		Name: "test app",
 	}
-	_, err := svx.Application.Create(context.Background(), appIn, nil)
+	_, err := svx.Application().Create(context.Background(), appIn, nil)
 	if err != nil {
 		t.Error(err)
 	}
@@ -294,7 +294,7 @@ func TestClientProvidedIdempotencyKeyIsNotOverridden(t *testing.T) {
 	createOpts := svix.ApplicationCreateOptions{
 		IdempotencyKey: &clientProvidedKey,
 	}
-	_, err := svx.Application.Create(context.Background(), appIn, &createOpts)
+	_, err := svx.Application().Create(context.Background(), appIn, &createOpts)
 	if err != nil {
 		t.Error(err)
 	}

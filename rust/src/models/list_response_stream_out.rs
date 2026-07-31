@@ -3,11 +3,9 @@ use serde::{Deserialize, Serialize};
 
 use super::stream_out::StreamOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseStreamOut {
     pub data: Vec<StreamOut>,
-
-    pub done: bool,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub iterator: Option<String>,
@@ -15,15 +13,17 @@ pub struct ListResponseStreamOut {
     #[serde(rename = "prevIterator")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_iterator: Option<String>,
+
+    pub done: bool,
 }
 
 impl ListResponseStreamOut {
     pub fn new(data: Vec<StreamOut>, done: bool) -> Self {
         Self {
             data,
-            done,
             iterator: None,
             prev_iterator: None,
+            done,
         }
     }
 }

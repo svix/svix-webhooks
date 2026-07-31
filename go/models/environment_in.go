@@ -2,7 +2,7 @@
 package models
 
 type EnvironmentIn struct {
-	Connectors []ConnectorIn   `json:"connectors,omitempty"`
 	EventTypes []EventTypeIn   `json:"eventTypes,omitempty"`
 	Settings   *map[string]any `json:"settings,omitempty"`
+	Connectors []ConnectorIn   `json:"connectors,omitempty"`
 }

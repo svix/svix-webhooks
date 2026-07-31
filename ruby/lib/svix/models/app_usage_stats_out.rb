@@ -4,17 +4,17 @@ require "json"
 
 module Svix
   class AppUsageStatsOut
-    # The QueueBackgroundTask's ID.
-    attr_accessor :id
-    attr_accessor :status
-    attr_accessor :task
     # Any app IDs or UIDs received in the request that weren't found.
     #
     # Stats will be produced for all the others.
     attr_accessor :unresolved_app_ids
+    # The QueueBackgroundTask's ID.
+    attr_accessor :id
+    attr_accessor :status
+    attr_accessor :task
     attr_accessor :updated_at
 
-    ALL_FIELD ||= ["id", "status", "task", "unresolved_app_ids", "updated_at"].freeze
+    ALL_FIELD ||= ["unresolved_app_ids", "id", "status", "task", "updated_at"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -35,20 +35,20 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["unresolved_app_ids"] = attributes["unresolvedAppIds"]
       attrs["id"] = attributes["id"]
       attrs["status"] = Svix::BackgroundTaskStatus.deserialize(attributes["status"])
       attrs["task"] = Svix::BackgroundTaskType.deserialize(attributes["task"])
-      attrs["unresolved_app_ids"] = attributes["unresolvedAppIds"]
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
       new(attrs)
     end
 
     def serialize
       out = Hash.new
+      out["unresolvedAppIds"] = Svix::serialize_primitive(@unresolved_app_ids) if @unresolved_app_ids
       out["id"] = Svix::serialize_primitive(@id) if @id
       out["status"] = Svix::serialize_schema_ref(@status) if @status
       out["task"] = Svix::serialize_schema_ref(@task) if @task
-      out["unresolvedAppIds"] = Svix::serialize_primitive(@unresolved_app_ids) if @unresolved_app_ids
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
       out
     end

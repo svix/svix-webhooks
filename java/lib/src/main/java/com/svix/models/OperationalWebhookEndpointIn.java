@@ -22,17 +22,35 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointIn {
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
-    @JsonProperty private String secret;
-    @JsonProperty private Long throttleRate;
-    @JsonProperty private String uid;
     @JsonProperty private URI url;
+    @JsonProperty private String description;
+    @JsonProperty private Short throttleRate;
+    @JsonProperty private String uid;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> eventTypes;
+    @JsonProperty private String secret;
+    @JsonProperty private Map<String, String> metadata;
 
     public OperationalWebhookEndpointIn() {}
+
+    public OperationalWebhookEndpointIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
 
     public OperationalWebhookEndpointIn description(String description) {
         this.description = description;
@@ -51,6 +69,46 @@ public class OperationalWebhookEndpointIn {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public OperationalWebhookEndpointIn throttleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Short getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public OperationalWebhookEndpointIn uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public OperationalWebhookEndpointIn disabled(Boolean disabled) {
@@ -72,32 +130,54 @@ public class OperationalWebhookEndpointIn {
         this.disabled = disabled;
     }
 
-    public OperationalWebhookEndpointIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public OperationalWebhookEndpointIn eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
         return this;
     }
 
-    public OperationalWebhookEndpointIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
+    public OperationalWebhookEndpointIn addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
         }
-        this.filterTypes.add(filterTypesItem);
+        this.eventTypes.add(eventTypesItem);
 
         return this;
     }
 
     /**
-     * Get filterTypes
+     * Get eventTypes
      *
-     * @return filterTypes
+     * @return eventTypes
      */
     @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
+    public Set<String> getEventTypes() {
+        return eventTypes;
     }
 
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+    }
+
+    public OperationalWebhookEndpointIn secret(String secret) {
+        this.secret = secret;
+        return this;
+    }
+
+    /**
+     * The endpoint's verification secret.
+     *
+     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
+     * to not set this and let the server generate the secret.
+     *
+     * @return secret
+     */
+    @javax.annotation.Nullable
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public OperationalWebhookEndpointIn metadata(Map<String, String> metadata) {
@@ -126,109 +206,6 @@ public class OperationalWebhookEndpointIn {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
-    }
-
-    @Deprecated
-    public OperationalWebhookEndpointIn rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
-    public OperationalWebhookEndpointIn secret(String secret) {
-        this.secret = secret;
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public OperationalWebhookEndpointIn throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-    }
-
-    public OperationalWebhookEndpointIn uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public OperationalWebhookEndpointIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
     }
 
     /**

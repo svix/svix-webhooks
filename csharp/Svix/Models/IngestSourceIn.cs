@@ -9,14 +9,14 @@ namespace Svix.Models
     [JsonConverter(typeof(IngestSourceInConverter))]
     public class IngestSourceIn
     {
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
         [JsonIgnore]
         public required IngestSourceInConfig Config { get; set; }
@@ -36,9 +36,9 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class IngestSourceIn {\n");
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Name: ").Append(Name).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
@@ -121,8 +121,14 @@ namespace Svix.Models
         public static IngestSourceInConfig Meta(MetaConfig metaConfig) =>
             new(metaConfig, ConfigType.Meta);
 
+        public static IngestSourceInConfig Nango(NangoConfig nangoConfig) =>
+            new(nangoConfig, ConfigType.Nango);
+
         public static IngestSourceInConfig Nash(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Nash);
+
+        public static IngestSourceInConfig Openclaw(OpenClawConfig openClawConfig) =>
+            new(openClawConfig, ConfigType.Openclaw);
 
         public static IngestSourceInConfig OrumIo(OrumIoConfig orumIoConfig) =>
             new(orumIoConfig, ConfigType.OrumIo);
@@ -246,8 +252,14 @@ namespace Svix.Models
             [EnumMember(Value = "meta")]
             Meta,
 
+            [EnumMember(Value = "nango")]
+            Nango,
+
             [EnumMember(Value = "nash")]
             Nash,
+
+            [EnumMember(Value = "openclaw")]
+            Openclaw,
 
             [EnumMember(Value = "orum-io")]
             OrumIo,
@@ -341,7 +353,9 @@ namespace Svix.Models
             Func<SvixConfig, TResult> onIncidentIo,
             Func<SvixConfig, TResult> onLithic,
             Func<MetaConfig, TResult> onMeta,
+            Func<NangoConfig, TResult> onNango,
             Func<SvixConfig, TResult> onNash,
+            Func<OpenClawConfig, TResult> onOpenclaw,
             Func<OrumIoConfig, TResult> onOrumIo,
             Func<PandaDocConfig, TResult> onPandaDoc,
             Func<PortIoConfig, TResult> onPortIo,
@@ -386,7 +400,9 @@ namespace Svix.Models
                 ConfigType.IncidentIo => onIncidentIo((SvixConfig)_value),
                 ConfigType.Lithic => onLithic((SvixConfig)_value),
                 ConfigType.Meta => onMeta((MetaConfig)_value),
+                ConfigType.Nango => onNango((NangoConfig)_value),
                 ConfigType.Nash => onNash((SvixConfig)_value),
+                ConfigType.Openclaw => onOpenclaw((OpenClawConfig)_value),
                 ConfigType.OrumIo => onOrumIo((OrumIoConfig)_value),
                 ConfigType.PandaDoc => onPandaDoc((PandaDocConfig)_value),
                 ConfigType.PortIo => onPortIo((PortIoConfig)_value),
@@ -433,7 +449,9 @@ namespace Svix.Models
             Action<SvixConfig> onIncidentIo,
             Action<SvixConfig> onLithic,
             Action<MetaConfig> onMeta,
+            Action<NangoConfig> onNango,
             Action<SvixConfig> onNash,
+            Action<OpenClawConfig> onOpenclaw,
             Action<OrumIoConfig> onOrumIo,
             Action<PandaDocConfig> onPandaDoc,
             Action<PortIoConfig> onPortIo,
@@ -508,8 +526,14 @@ namespace Svix.Models
                 case ConfigType.Meta:
                     onMeta((MetaConfig)_value);
                     break;
+                case ConfigType.Nango:
+                    onNango((NangoConfig)_value);
+                    break;
                 case ConfigType.Nash:
                     onNash((SvixConfig)_value);
+                    break;
+                case ConfigType.Openclaw:
+                    onOpenclaw((OpenClawConfig)_value);
                     break;
                 case ConfigType.OrumIo:
                     onOrumIo((OrumIoConfig)_value);
@@ -595,14 +619,14 @@ namespace Svix.Models
 
     internal class IngestSourceInSurrogate
     {
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
         [JsonProperty("name", Required = Required.Always)]
         public required string Name { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
 
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
@@ -657,9 +681,9 @@ namespace Svix.Models
 
             return new IngestSourceIn
             {
-                Metadata = surrogate.Metadata,
                 Name = surrogate.Name,
                 Uid = surrogate.Uid,
+                Metadata = surrogate.Metadata,
                 Config = config,
             };
         }
@@ -692,7 +716,9 @@ namespace Svix.Models
                 ["incident-io"] = c => IngestSourceInConfig.IncidentIo(ToObj<SvixConfig>(c)),
                 ["lithic"] = c => IngestSourceInConfig.Lithic(ToObj<SvixConfig>(c)),
                 ["meta"] = c => IngestSourceInConfig.Meta(ToObj<MetaConfig>(c)),
+                ["nango"] = c => IngestSourceInConfig.Nango(ToObj<NangoConfig>(c)),
                 ["nash"] = c => IngestSourceInConfig.Nash(ToObj<SvixConfig>(c)),
+                ["openclaw"] = c => IngestSourceInConfig.Openclaw(ToObj<OpenClawConfig>(c)),
                 ["orum-io"] = c => IngestSourceInConfig.OrumIo(ToObj<OrumIoConfig>(c)),
                 ["panda-doc"] = c => IngestSourceInConfig.PandaDoc(ToObj<PandaDocConfig>(c)),
                 ["port-io"] = c => IngestSourceInConfig.PortIo(ToObj<PortIoConfig>(c)),

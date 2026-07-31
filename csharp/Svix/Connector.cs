@@ -50,14 +50,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new ConnectorListOptions();
+            }
             try
             {
                 var response =
                     await _client.SvixHttpClient.SendRequestAsync<ListResponseConnectorOut>(
                         method: HttpMethod.Get,
                         path: "/api/v1/connector",
-                        queryParams: options?.QueryParams(),
-                        headerParams: options?.HeaderParams(),
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
                     );
                 return response.Data;
@@ -75,13 +79,17 @@ namespace Svix
         /// </summary>
         public ListResponseConnectorOut List(ConnectorListOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new ConnectorListOptions();
+            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ListResponseConnectorOut>(
                     method: HttpMethod.Get,
                     path: "/api/v1/connector",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
                 );
                 return response.Data;
             }
@@ -102,14 +110,18 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new ConnectorCreateOptions();
+            }
             connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/connector",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: connectorIn,
                     cancellationToken: cancellationToken
                 );
@@ -128,14 +140,18 @@ namespace Svix
         /// </summary>
         public ConnectorOut Create(ConnectorIn connectorIn, ConnectorCreateOptions? options = null)
         {
+            if (options == null)
+            {
+                options = new ConnectorCreateOptions();
+            }
             connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/connector",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: connectorIn
                 );
                 return response.Data;
@@ -197,55 +213,55 @@ namespace Svix
         }
 
         /// <summary>
-        /// Update a connector.
+        /// Create or update a connector.
         /// </summary>
-        public async Task<ConnectorOut> UpdateAsync(
+        public async Task<ConnectorOut> UpsertAsync(
             string connectorId,
-            ConnectorUpdate connectorUpdate,
+            ConnectorUpsertIn connectorUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            connectorUpdate =
-                connectorUpdate ?? throw new ArgumentNullException(nameof(connectorUpdate));
+            connectorUpsertIn =
+                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Put,
                     path: "/api/v1/connector/{connector_id}",
                     pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorUpdate,
+                    content: connectorUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Update a connector.
+        /// Create or update a connector.
         /// </summary>
-        public ConnectorOut Update(string connectorId, ConnectorUpdate connectorUpdate)
+        public ConnectorOut Upsert(string connectorId, ConnectorUpsertIn connectorUpsertIn)
         {
-            connectorUpdate =
-                connectorUpdate ?? throw new ArgumentNullException(nameof(connectorUpdate));
+            connectorUpsertIn =
+                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Put,
                     path: "/api/v1/connector/{connector_id}",
                     pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorUpdate
+                    content: connectorUpsertIn
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
 
                 throw;
             }

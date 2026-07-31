@@ -71,20 +71,20 @@ public class SvixClientTests
 
         ep.Channels.Sort();
         Assert.Equal(new List<string> { "ch0", "ch1" }, ep.Channels);
-        Assert.Null(ep.FilterTypes);
+        Assert.Null(ep.EventTypes);
 
         var epPatched = client.Endpoint.Patch(
             app.Id,
             ep.Id,
             new EndpointPatch
             {
-                FilterTypes = new List<string> { "event.started", "event.ended" },
+                EventTypes = new List<string> { "event.started", "event.ended" },
             }
         );
         epPatched.Channels.Sort();
-        epPatched.FilterTypes.Sort();
+        epPatched.EventTypes.Sort();
         Assert.Equal(new List<string> { "ch0", "ch1" }, epPatched.Channels);
-        Assert.Equal(new List<string> { "event.ended", "event.started" }, epPatched.FilterTypes);
+        Assert.Equal(new List<string> { "event.ended", "event.started" }, epPatched.EventTypes);
 
         // Should not throw an exception if the serialization code handles empty bodies properly
         client.Endpoint.Delete(app.Id, ep.Id);

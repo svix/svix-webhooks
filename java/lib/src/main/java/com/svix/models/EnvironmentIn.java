@@ -19,39 +19,11 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EnvironmentIn {
-    @JsonProperty private List<ConnectorIn> connectors;
     @JsonProperty private List<EventTypeIn> eventTypes;
     @JsonProperty private Object settings;
+    @JsonProperty private List<ConnectorIn> connectors;
 
     public EnvironmentIn() {}
-
-    public EnvironmentIn connectors(List<ConnectorIn> connectors) {
-        this.connectors = connectors;
-        return this;
-    }
-
-    public EnvironmentIn addConnectorsItem(ConnectorIn connectorsItem) {
-        if (this.connectors == null) {
-            this.connectors = new ArrayList<>();
-        }
-        this.connectors.add(connectorsItem);
-
-        return this;
-    }
-
-    /**
-     * Get connectors
-     *
-     * @return connectors
-     */
-    @javax.annotation.Nullable
-    public List<ConnectorIn> getConnectors() {
-        return connectors;
-    }
-
-    public void setConnectors(List<ConnectorIn> connectors) {
-        this.connectors = connectors;
-    }
 
     public EnvironmentIn eventTypes(List<EventTypeIn> eventTypes) {
         this.eventTypes = eventTypes;
@@ -98,6 +70,34 @@ public class EnvironmentIn {
 
     public void setSettings(Object settings) {
         this.settings = settings;
+    }
+
+    public EnvironmentIn connectors(List<ConnectorIn> connectors) {
+        this.connectors = connectors;
+        return this;
+    }
+
+    public EnvironmentIn addConnectorsItem(ConnectorIn connectorsItem) {
+        if (this.connectors == null) {
+            this.connectors = new ArrayList<>();
+        }
+        this.connectors.add(connectorsItem);
+
+        return this;
+    }
+
+    /**
+     * Get connectors
+     *
+     * @return connectors
+     */
+    @javax.annotation.Nullable
+    public List<ConnectorIn> getConnectors() {
+        return connectors;
+    }
+
+    public void setConnectors(List<ConnectorIn> connectors) {
+        this.connectors = connectors;
     }
 
     /**

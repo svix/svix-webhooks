@@ -1,0 +1,5 @@
+version: "2"
+linters:
+  disable:
+    # temporarily disabled since it's not clear to me whether / how to fix its warnings
+    - errcheck

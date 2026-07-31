@@ -1,8 +1,8 @@
-use std::{collections::HashMap, fmt::Debug};
+use std::{collections::BTreeMap, fmt::Debug};
 
 use serde::de::DeserializeOwned;
 use serde_json::json;
-use svix::api::{
+use svix::models::{
     CronConfig, IngestSourceIn, IngestSourceInConfig, IngestSourceOut, IngestSourceOutConfig,
     ListResponseApplicationOut, SegmentConfig, SegmentConfigOut, SvixConfig, SvixConfigOut,
 };
@@ -30,7 +30,8 @@ fn test_list_response_xxx_out() {
     let expected_model = ListResponseApplicationOut {
         data: vec![],
         done: true,
-        ..Default::default()
+        iterator: None,
+        prev_iterator: None,
     };
 
     assert_eq!(expected_model, loaded_json);
@@ -43,7 +44,7 @@ fn test_ingest_source_in() {
             name: "foo".to_owned(),
             uid: None,
             config: IngestSourceInConfig::GenericWebhook,
-            metadata: Some(HashMap::new())
+            metadata: Some(BTreeMap::new())
         }),
         json!({
             "name": "foo",
@@ -59,7 +60,7 @@ fn test_ingest_source_in() {
             config: IngestSourceInConfig::Svix(SvixConfig {
                 secret: "xxx".to_owned()
             }),
-            metadata: Some(HashMap::new())
+            metadata: Some(BTreeMap::new())
         }),
         json!({
             "name": "foo",
@@ -74,7 +75,7 @@ fn test_ingest_source_in() {
             name: "foo".to_owned(),
             uid: None,
             config: IngestSourceInConfig::Segment(SegmentConfig { secret: None }),
-            metadata: Some(HashMap::new())
+            metadata: Some(BTreeMap::new())
         }),
         json!({
             "name": "foo",
@@ -93,7 +94,7 @@ fn test_ingest_source_in() {
                 payload: "💣".to_owned(),
                 schedule: "* * * * *".to_owned(),
             }),
-            metadata: Some(HashMap::new())
+            metadata: Some(BTreeMap::new())
         }),
         json!({
             "name": "foo",
@@ -120,14 +121,14 @@ fn test_ingest_source_out() {
             "metadata": {}
         }),
         IngestSourceOut {
-            created_at: "2006-01-02T15:04:05Z".to_owned(),
+            created_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             id: "Rjb52OFZK6aYPfF4EpqYqD8Ptcyr".to_owned(),
             ingest_url: Some("https://in.example.invalid/xyz".to_owned()),
             name: "foo".to_owned(),
             uid: None,
-            updated_at: "2006-01-02T15:04:05Z".to_owned(),
+            updated_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             config: IngestSourceOutConfig::GenericWebhook,
-            metadata: HashMap::new(),
+            metadata: BTreeMap::new(),
         },
     );
 
@@ -143,14 +144,14 @@ fn test_ingest_source_out() {
             "metadata": {}
         }),
         IngestSourceOut {
-            created_at: "2006-01-02T15:04:05Z".to_owned(),
+            created_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             id: "Rjb52OFZK6aYPfF4EpqYqD8Ptcyr".to_owned(),
             ingest_url: Some("https://in.example.invalid/xyz".to_owned()),
             name: "foo".to_owned(),
             uid: None,
-            updated_at: "2006-01-02T15:04:05Z".to_owned(),
+            updated_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             config: IngestSourceOutConfig::Svix(SvixConfigOut {}),
-            metadata: HashMap::new(),
+            metadata: BTreeMap::new(),
         },
     );
 
@@ -166,14 +167,14 @@ fn test_ingest_source_out() {
             "metadata": {}
         }),
         IngestSourceOut {
-            created_at: "2006-01-02T15:04:05Z".to_owned(),
+            created_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             id: "Rjb52OFZK6aYPfF4EpqYqD8Ptcyr".to_owned(),
             ingest_url: Some("https://in.example.invalid/xyz".to_owned()),
             name: "foo".to_owned(),
             uid: None,
-            updated_at: "2006-01-02T15:04:05Z".to_owned(),
-            config: IngestSourceOutConfig::Segment(SegmentConfigOut::default()),
-            metadata: HashMap::new(),
+            updated_at: "2006-01-02T15:04:05Z".parse().unwrap(),
+            config: IngestSourceOutConfig::Segment(SegmentConfigOut {}),
+            metadata: BTreeMap::new(),
         },
     );
 
@@ -191,18 +192,18 @@ fn test_ingest_source_out() {
             "metadata": {}
         }),
         IngestSourceOut {
-            created_at: "2006-01-02T15:04:05Z".to_owned(),
+            created_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             id: "Rjb52OFZK6aYPfF4EpqYqD8Ptcyr".to_owned(),
             ingest_url: None,
             name: "foo".to_owned(),
             uid: None,
-            updated_at: "2006-01-02T15:04:05Z".to_owned(),
+            updated_at: "2006-01-02T15:04:05Z".parse().unwrap(),
             config: IngestSourceOutConfig::Cron(CronConfig {
                 content_type: None,
                 payload: "💣".to_owned(),
                 schedule: "* * * * *".to_owned(),
             }),
-            metadata: HashMap::new(),
+            metadata: BTreeMap::new(),
         },
     );
 }

@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SnsConfig(
-    val accessKeyId: String,
-    val endpointUrl: String? = null,
-    val region: String,
-    val secretAccessKey: String,
     val topicArn: String,
+    val region: String,
+    val accessKeyId: String,
+    val secretAccessKey: String,
+    val endpointUrl: String? = null,
 )

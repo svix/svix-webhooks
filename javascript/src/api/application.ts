@@ -92,8 +92,8 @@ export class Application {
     return await request.send(this.requestCtx, ApplicationOutSerializer._fromJsonObject);
   }
 
-  /** Update an application. */
-  public async update(
+  /** Create or update an application. */
+  public async upsert(
     appId: string,
     applicationIn: ApplicationIn
   ): Promise<ApplicationOut> {

@@ -45,7 +45,8 @@ class {{ resource_type_name }}
         {% endif -%}
 
         {% if op | has_query_or_header_params -%}
-        ?{{ resource_type_name }}{{ op.name | to_upper_camel_case }}Options $options = null,
+        {% set options_type = resource_type_name ~ op.name | to_upper_camel_case ~ "Options" -%}
+        {{ options_type }} $options = new {{ options_type }}(),
         {% endif -%}
     )
     {%- if op.response_body_schema_name is defined -%}
@@ -58,11 +59,11 @@ class {{ resource_type_name }}
 
         {#- query/header params #}
         {%- for p in op.query_params %}
-        $request->setQueryParam('{{ p.name }}', $options?->{{ p.name | to_lower_camel_case }});
+        $request->setQueryParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
         {%- endfor %}
 
         {%- for p in op.header_params %}
-        $request->setHeaderParam('{{ p.name }}', $options?->{{ p.name | to_lower_camel_case }});
+        $request->setHeaderParam('{{ p.name }}', $options->{{ p.name | to_lower_camel_case }});
         {%- endfor %}
 
         {#- body params #}

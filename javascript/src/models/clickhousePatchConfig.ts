@@ -1,31 +1,31 @@
 // this file is @generated
 
 export interface ClickhousePatchConfig {
-  database?: string;
-  password?: string;
-  tableName?: string;
   url?: string;
   username?: string;
+  password?: string;
+  database?: string;
+  tableName?: string;
 }
 
 export const ClickhousePatchConfigSerializer = {
   _fromJsonObject(object: any): ClickhousePatchConfig {
     return {
-      database: object["database"],
-      password: object["password"],
-      tableName: object["tableName"],
       url: object["url"],
       username: object["username"],
+      password: object["password"],
+      database: object["database"],
+      tableName: object["tableName"],
     };
   },
 
   _toJsonObject(self: ClickhousePatchConfig): any {
     return {
-      database: self.database,
-      password: self.password,
-      tableName: self.tableName,
       url: self.url,
       username: self.username,
+      password: self.password,
+      database: self.database,
+      tableName: self.tableName,
     };
   },
 };

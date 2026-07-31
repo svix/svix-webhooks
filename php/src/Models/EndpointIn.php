@@ -10,33 +10,30 @@ class EndpointIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null          $channels    list of message channels this endpoint listens to (omit for all)
-     * @param list<string>|null          $filterTypes
-     * @param array<string, string>|null $headers
-     * @param array<string, string>|null $metadata
-     * @param int|null                   $rateLimit   deprecated, use `throttleRate` instead
-     * @param string|null                $secret      The endpoint's verification secret.
-     *
-     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
-     * It is recommended to not set this and let the server generate the secret.
      * @param int|null $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null $uid optional unique identifier for the endpoint
+     * @param string|null       $uid        optional unique identifier for the endpoint
+     * @param list<string>|null $eventTypes
+     * @param list<string>|null $channels   list of message channels this endpoint listens to (omit for all)
+     * @param string|null       $secret     The endpoint's verification secret.
+     *
+     * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
+     * It is recommended to not set this and let the server generate the secret.
+     * @param array<string, string>|null $metadata
+     * @param array<string, string>|null $headers
      */
     private function __construct(
         public readonly string $url,
-        public readonly ?array $channels = null,
         public readonly ?string $description = null,
-        public readonly ?bool $disabled = null,
-        public readonly ?array $filterTypes = null,
-        public readonly ?array $headers = null,
-        public readonly ?array $metadata = null,
-        public readonly ?int $rateLimit = null,
-        public readonly ?string $secret = null,
         public readonly ?int $throttleRate = null,
         public readonly ?string $uid = null,
-        public readonly ?int $version = null,
+        public readonly ?bool $disabled = null,
+        public readonly ?array $eventTypes = null,
+        public readonly ?array $channels = null,
+        public readonly ?string $secret = null,
+        public readonly ?array $metadata = null,
+        public readonly ?array $headers = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -49,41 +46,17 @@ class EndpointIn implements \JsonSerializable
         string $url,
     ): self {
         return new self(
-            channels: null,
+            url: $url,
             description: null,
-            disabled: null,
-            filterTypes: null,
-            headers: null,
-            metadata: null,
-            rateLimit: null,
-            secret: null,
             throttleRate: null,
             uid: null,
-            url: $url,
-            version: null,
+            disabled: null,
+            eventTypes: null,
+            channels: null,
+            secret: null,
+            metadata: null,
+            headers: null,
             setFields: ['url' => true]
-        );
-    }
-
-    public function withChannels(?array $channels): self
-    {
-        $setFields = $this->setFields;
-        $setFields['channels'] = true;
-
-        return new self(
-            channels: $channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
         );
     }
 
@@ -93,150 +66,16 @@ class EndpointIn implements \JsonSerializable
         $setFields['description'] = true;
 
         return new self(
-            channels: $this->channels,
+            url: $this->url,
             description: $description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
             disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withDisabled(?bool $disabled): self
-    {
-        $setFields = $this->setFields;
-        $setFields['disabled'] = true;
-
-        return new self(
+            eventTypes: $this->eventTypes,
             channels: $this->channels,
-            description: $this->description,
-            disabled: $disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
             secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withFilterTypes(?array $filterTypes): self
-    {
-        $setFields = $this->setFields;
-        $setFields['filterTypes'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $filterTypes,
-            headers: $this->headers,
             metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withHeaders(?array $headers): self
-    {
-        $setFields = $this->setFields;
-        $setFields['headers'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withMetadata(?array $metadata): self
-    {
-        $setFields = $this->setFields;
-        $setFields['metadata'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
             headers: $this->headers,
-            metadata: $metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withRateLimit(?int $rateLimit): self
-    {
-        $setFields = $this->setFields;
-        $setFields['rateLimit'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $rateLimit,
-            secret: $this->secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
-            setFields: $setFields
-        );
-    }
-
-    public function withSecret(?string $secret): self
-    {
-        $setFields = $this->setFields;
-        $setFields['secret'] = true;
-
-        return new self(
-            channels: $this->channels,
-            description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $secret,
-            throttleRate: $this->throttleRate,
-            uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
             setFields: $setFields
         );
     }
@@ -247,18 +86,16 @@ class EndpointIn implements \JsonSerializable
         $setFields['throttleRate'] = true;
 
         return new self(
-            channels: $this->channels,
+            url: $this->url,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
             throttleRate: $throttleRate,
             uid: $this->uid,
-            url: $this->url,
-            version: $this->version,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
@@ -269,40 +106,136 @@ class EndpointIn implements \JsonSerializable
         $setFields['uid'] = true;
 
         return new self(
-            channels: $this->channels,
+            url: $this->url,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $uid,
-            url: $this->url,
-            version: $this->version,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
 
-    public function withVersion(?int $version): self
+    public function withDisabled(?bool $disabled): self
     {
         $setFields = $this->setFields;
-        $setFields['version'] = true;
+        $setFields['disabled'] = true;
 
         return new self(
-            channels: $this->channels,
+            url: $this->url,
             description: $this->description,
-            disabled: $this->disabled,
-            filterTypes: $this->filterTypes,
-            headers: $this->headers,
-            metadata: $this->metadata,
-            rateLimit: $this->rateLimit,
-            secret: $this->secret,
             throttleRate: $this->throttleRate,
             uid: $this->uid,
+            disabled: $disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $this->headers,
+            setFields: $setFields
+        );
+    }
+
+    public function withEventTypes(?array $eventTypes): self
+    {
+        $setFields = $this->setFields;
+        $setFields['eventTypes'] = true;
+
+        return new self(
             url: $this->url,
-            version: $version,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            eventTypes: $eventTypes,
+            channels: $this->channels,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $this->headers,
+            setFields: $setFields
+        );
+    }
+
+    public function withChannels(?array $channels): self
+    {
+        $setFields = $this->setFields;
+        $setFields['channels'] = true;
+
+        return new self(
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $channels,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $this->headers,
+            setFields: $setFields
+        );
+    }
+
+    public function withSecret(?string $secret): self
+    {
+        $setFields = $this->setFields;
+        $setFields['secret'] = true;
+
+        return new self(
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            secret: $secret,
+            metadata: $this->metadata,
+            headers: $this->headers,
+            setFields: $setFields
+        );
+    }
+
+    public function withMetadata(?array $metadata): self
+    {
+        $setFields = $this->setFields;
+        $setFields['metadata'] = true;
+
+        return new self(
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            secret: $this->secret,
+            metadata: $metadata,
+            headers: $this->headers,
+            setFields: $setFields
+        );
+    }
+
+    public function withHeaders(?array $headers): self
+    {
+        $setFields = $this->setFields;
+        $setFields['headers'] = true;
+
+        return new self(
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $headers,
             setFields: $setFields
         );
     }
@@ -312,29 +245,8 @@ class EndpointIn implements \JsonSerializable
         $data = [
             'url' => $this->url];
 
-        if (isset($this->setFields['channels'])) {
-            $data['channels'] = $this->channels;
-        }
         if (null !== $this->description) {
             $data['description'] = $this->description;
-        }
-        if (null !== $this->disabled) {
-            $data['disabled'] = $this->disabled;
-        }
-        if (isset($this->setFields['filterTypes'])) {
-            $data['filterTypes'] = $this->filterTypes;
-        }
-        if (isset($this->setFields['headers'])) {
-            $data['headers'] = $this->headers;
-        }
-        if (null !== $this->metadata) {
-            $data['metadata'] = $this->metadata;
-        }
-        if (isset($this->setFields['rateLimit'])) {
-            $data['rateLimit'] = $this->rateLimit;
-        }
-        if (isset($this->setFields['secret'])) {
-            $data['secret'] = $this->secret;
         }
         if (isset($this->setFields['throttleRate'])) {
             $data['throttleRate'] = $this->throttleRate;
@@ -342,8 +254,23 @@ class EndpointIn implements \JsonSerializable
         if (isset($this->setFields['uid'])) {
             $data['uid'] = $this->uid;
         }
-        if (isset($this->setFields['version'])) {
-            $data['version'] = $this->version;
+        if (null !== $this->disabled) {
+            $data['disabled'] = $this->disabled;
+        }
+        if (isset($this->setFields['eventTypes'])) {
+            $data['eventTypes'] = $this->eventTypes;
+        }
+        if (isset($this->setFields['channels'])) {
+            $data['channels'] = $this->channels;
+        }
+        if (isset($this->setFields['secret'])) {
+            $data['secret'] = $this->secret;
+        }
+        if (null !== $this->metadata) {
+            $data['metadata'] = $this->metadata;
+        }
+        if (isset($this->setFields['headers'])) {
+            $data['headers'] = $this->headers;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -355,18 +282,16 @@ class EndpointIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointIn'),
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointIn'),
             description: \Svix\Utils::deserializeString($data, 'description', false, 'EndpointIn'),
-            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointIn'),
-            filterTypes: \Svix\Utils::getValFromJson($data, 'filterTypes', false, 'EndpointIn'),
-            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'EndpointIn'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointIn'),
-            rateLimit: \Svix\Utils::deserializeInt($data, 'rateLimit', false, 'EndpointIn'),
-            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'EndpointIn'),
             throttleRate: \Svix\Utils::deserializeInt($data, 'throttleRate', false, 'EndpointIn'),
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'EndpointIn'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'EndpointIn'),
-            version: \Svix\Utils::deserializeInt($data, 'version', false, 'EndpointIn')
+            disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'EndpointIn'),
+            eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointIn'),
+            channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointIn'),
+            secret: \Svix\Utils::deserializeString($data, 'secret', false, 'EndpointIn'),
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'EndpointIn'),
+            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'EndpointIn')
         );
     }
 

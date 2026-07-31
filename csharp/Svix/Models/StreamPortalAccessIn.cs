@@ -6,11 +6,11 @@ namespace Svix.Models
 {
     public class StreamPortalAccessIn
     {
-        [JsonProperty("expiry")]
-        public ulong? Expiry { get; set; } = null;
-
         [JsonProperty("featureFlags")]
         public List<string>? FeatureFlags { get; set; } = null;
+
+        [JsonProperty("expiry")]
+        public ulong? Expiry { get; set; } = null;
 
         [JsonProperty("sessionId")]
         public string? SessionId { get; set; } = null;
@@ -20,8 +20,8 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class StreamPortalAccessIn {\n");
-            sb.Append("  Expiry: ").Append(Expiry).Append('\n');
             sb.Append("  FeatureFlags: ").Append(FeatureFlags).Append('\n');
+            sb.Append("  Expiry: ").Append(Expiry).Append('\n');
             sb.Append("  SessionId: ").Append(SessionId).Append('\n');
             sb.Append("}\n");
             return sb.ToString();

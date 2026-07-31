@@ -10,13 +10,13 @@ class EnvironmentIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<ConnectorIn>|null $connectors
      * @param list<EventTypeIn>|null $eventTypes
+     * @param list<ConnectorIn>|null $connectors
      */
     private function __construct(
-        public readonly ?array $connectors = null,
         public readonly ?array $eventTypes = null,
         public readonly ?array $settings = null,
+        public readonly ?array $connectors = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -28,23 +28,10 @@ class EnvironmentIn implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            connectors: null,
             eventTypes: null,
             settings: null,
+            connectors: null,
             setFields: []
-        );
-    }
-
-    public function withConnectors(?array $connectors): self
-    {
-        $setFields = $this->setFields;
-        $setFields['connectors'] = true;
-
-        return new self(
-            connectors: $connectors,
-            eventTypes: $this->eventTypes,
-            settings: $this->settings,
-            setFields: $setFields
         );
     }
 
@@ -54,9 +41,9 @@ class EnvironmentIn implements \JsonSerializable
         $setFields['eventTypes'] = true;
 
         return new self(
-            connectors: $this->connectors,
             eventTypes: $eventTypes,
             settings: $this->settings,
+            connectors: $this->connectors,
             setFields: $setFields
         );
     }
@@ -67,9 +54,22 @@ class EnvironmentIn implements \JsonSerializable
         $setFields['settings'] = true;
 
         return new self(
-            connectors: $this->connectors,
             eventTypes: $this->eventTypes,
             settings: $settings,
+            connectors: $this->connectors,
+            setFields: $setFields
+        );
+    }
+
+    public function withConnectors(?array $connectors): self
+    {
+        $setFields = $this->setFields;
+        $setFields['connectors'] = true;
+
+        return new self(
+            eventTypes: $this->eventTypes,
+            settings: $this->settings,
+            connectors: $connectors,
             setFields: $setFields
         );
     }
@@ -79,14 +79,14 @@ class EnvironmentIn implements \JsonSerializable
         $data = [
         ];
 
-        if (isset($this->setFields['connectors'])) {
-            $data['connectors'] = $this->connectors;
-        }
         if (isset($this->setFields['eventTypes'])) {
             $data['eventTypes'] = $this->eventTypes;
         }
         if (isset($this->setFields['settings'])) {
             $data['settings'] = $this->settings;
+        }
+        if (isset($this->setFields['connectors'])) {
+            $data['connectors'] = $this->connectors;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -98,9 +98,9 @@ class EnvironmentIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            connectors: \Svix\Utils::deserializeObjectArray($data, 'connectors', true, 'EnvironmentIn', [ConnectorIn::class, 'fromMixed']),
             eventTypes: \Svix\Utils::deserializeObjectArray($data, 'eventTypes', true, 'EnvironmentIn', [EventTypeIn::class, 'fromMixed']),
-            settings: \Svix\Utils::getValFromJson($data, 'settings', false, 'EnvironmentIn')
+            settings: \Svix\Utils::getValFromJson($data, 'settings', false, 'EnvironmentIn'),
+            connectors: \Svix\Utils::deserializeObjectArray($data, 'connectors', true, 'EnvironmentIn', [ConnectorIn::class, 'fromMixed'])
         );
     }
 

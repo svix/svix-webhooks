@@ -5,8 +5,8 @@ mod output;
 
 pub use self::{
     config::{
-        into_receiver_output, into_sender_input, KafkaInputOpts, KafkaOutputOpts,
-        KafkaSecurityProtocol,
+        KafkaAutoOffsetReset, KafkaInputOpts, KafkaOutputOpts, KafkaSecurityProtocol,
+        KafkaTransformationInput, into_receiver_output, into_sender_input,
     },
     error::{Error, Result},
     input::KafkaConsumer,

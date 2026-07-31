@@ -10,7 +10,7 @@ import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
-  public get auto_config() {
+  public get autoConfig() {
     return new EndpointAutoConfig(this.requestCtx);
   }
 
@@ -22,7 +22,7 @@ export class Endpoint {
   public async transformationPartialUpdate(
     appId: string,
     endpointId: string,
-    endpointTransformationIn: EndpointTransformationIn
+    endpointTransformationIn: EndpointTransformationIn = {}
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.PATCH,

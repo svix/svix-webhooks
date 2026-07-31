@@ -1,8 +1,8 @@
 use anyhow::Context;
-use axum::http::{header, HeaderMap, HeaderName, HeaderValue};
+use axum::http::{HeaderMap, HeaderName, HeaderValue, header};
 use indexmap::IndexMap;
 use serde::Deserialize;
-use svix_bridge_types::{async_trait, BoxError, ForwardRequest, ReceiverOutput};
+use svix_bridge_types::{BoxError, ForwardRequest, ReceiverOutput, async_trait};
 use url::Url;
 
 const BRIDGE_USER_AGENT: HeaderValue =

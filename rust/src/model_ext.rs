@@ -10,10 +10,7 @@ use std::str::FromStr;
 
 use serde_json::json;
 
-use crate::{
-    api::{ConnectorProduct, MessageStatus, Ordering, StatusCodeClass},
-    models::MessageIn,
-};
+use crate::models::{ConnectorProduct, MessageIn, MessageStatus, Ordering, StatusCodeClass};
 
 impl MessageIn {
     /// Create a new message with a raw string payload.

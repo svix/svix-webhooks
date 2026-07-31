@@ -4,17 +4,17 @@ use schemars::{JsonSchema, visit::Visitor};
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn initialize_openapi() -> OpenApi {
-    aide::gen::on_error(|error| {
+    aide::generate::on_error(|error| {
         tracing::error!("Aide generation error: {error}");
     });
     // Extract schemas to `#/components/schemas/` instead of using inline schemas.
-    aide::gen::extract_schemas(true);
+    aide::generate::extract_schemas(true);
     // Have aide attempt to infer the `Content-Type` of responses based on the
     // handlers' return types.
-    aide::gen::infer_responses(true);
-    aide::gen::inferred_empty_response_status(204);
+    aide::generate::infer_responses(true);
+    aide::generate::inferred_empty_response_status(204);
 
-    aide::gen::in_context(|ctx| ctx.schema = schemars::gen::SchemaSettings::openapi3().into());
+    aide::generate::in_context(|ctx| ctx.schema = schemars::gen::SchemaSettings::openapi3().into());
 
     let tag_groups = serde_json::json![[
         {
@@ -157,7 +157,7 @@ fn replace_true_schemas(openapi: &mut OpenApi) {
 /// Adds the `Idempotency-Key` header parameter to all `POST` operations in the schema.
 fn add_idempotency_to_post(openapi: &mut OpenApi) {
     // The header's value can be any valid string
-    let string_schema = aide::gen::in_context(|ctx| String::json_schema(&mut ctx.schema));
+    let string_schema = aide::generate::in_context(|ctx| String::json_schema(&mut ctx.schema));
 
     let s = openapi::SchemaObject {
         json_schema: string_schema,
@@ -280,7 +280,7 @@ mod webhooks {
             .to_string();
 
         let body_schema =
-            aide::gen::in_context(|ctx| ctx.schema.subschema_for::<T>().into_object());
+            aide::generate::in_context(|ctx| ctx.schema.subschema_for::<T>().into_object());
 
         let body_media = openapi::MediaType {
             schema: Some(openapi::SchemaObject {

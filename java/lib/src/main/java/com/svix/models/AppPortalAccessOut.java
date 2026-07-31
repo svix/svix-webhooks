@@ -18,29 +18,10 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AppPortalAccessOut {
-    @JsonProperty private String token;
     @JsonProperty private URI url;
+    @JsonProperty private String token;
 
     public AppPortalAccessOut() {}
-
-    public AppPortalAccessOut token(String token) {
-        this.token = token;
-        return this;
-    }
-
-    /**
-     * Get token
-     *
-     * @return token
-     */
-    @javax.annotation.Nonnull
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 
     public AppPortalAccessOut url(URI url) {
         this.url = url;
@@ -59,6 +40,25 @@ public class AppPortalAccessOut {
 
     public void setUrl(URI url) {
         this.url = url;
+    }
+
+    public AppPortalAccessOut token(String token) {
+        this.token = token;
+        return this;
+    }
+
+    /**
+     * Get token
+     *
+     * @return token
+     */
+    @javax.annotation.Nonnull
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     /**

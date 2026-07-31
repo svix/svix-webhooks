@@ -19,16 +19,53 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypeIn {
+    @JsonProperty private String name;
+    @JsonProperty private String description;
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
-    @JsonProperty private String description;
-    @JsonProperty private String featureFlag;
-    @JsonProperty private Set<String> featureFlags;
-    @JsonProperty private String groupName;
-    @JsonProperty private String name;
     @JsonProperty private Object schemas;
+    @JsonProperty private String groupName;
+    @JsonProperty private Set<String> featureFlags;
 
     public EventTypeIn() {}
+
+    public EventTypeIn name(String name) {
+        this.name = name;
+        return this;
+    }
+
+    /**
+     * The event type's name
+     *
+     * @return name
+     */
+    @javax.annotation.Nonnull
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public EventTypeIn description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nonnull
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public EventTypeIn archived(Boolean archived) {
         this.archived = archived;
@@ -68,45 +105,42 @@ public class EventTypeIn {
         this.deprecated = deprecated;
     }
 
-    public EventTypeIn description(String description) {
-        this.description = description;
+    public EventTypeIn schemas(Object schemas) {
+        this.schemas = schemas;
         return this;
     }
 
     /**
-     * Get description
+     * The schema for the event type for a specific version as a JSON schema.
      *
-     * @return description
-     */
-    @javax.annotation.Nonnull
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @Deprecated
-    public EventTypeIn featureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `featureFlags` instead.
-     *
-     * @return featureFlag
+     * @return schemas
      */
     @javax.annotation.Nullable
-    @Deprecated
-    public String getFeatureFlag() {
-        return featureFlag;
+    public Object getSchemas() {
+        return schemas;
     }
 
-    @Deprecated
-    public void setFeatureFlag(String featureFlag) {
-        this.featureFlag = featureFlag;
+    public void setSchemas(Object schemas) {
+        this.schemas = schemas;
+    }
+
+    public EventTypeIn groupName(String groupName) {
+        this.groupName = groupName;
+        return this;
+    }
+
+    /**
+     * The event type group's name
+     *
+     * @return groupName
+     */
+    @javax.annotation.Nullable
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
     }
 
     public EventTypeIn featureFlags(Set<String> featureFlags) {
@@ -135,63 +169,6 @@ public class EventTypeIn {
 
     public void setFeatureFlags(Set<String> featureFlags) {
         this.featureFlags = featureFlags;
-    }
-
-    public EventTypeIn groupName(String groupName) {
-        this.groupName = groupName;
-        return this;
-    }
-
-    /**
-     * The event type group's name
-     *
-     * @return groupName
-     */
-    @javax.annotation.Nullable
-    public String getGroupName() {
-        return groupName;
-    }
-
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
-    }
-
-    public EventTypeIn name(String name) {
-        this.name = name;
-        return this;
-    }
-
-    /**
-     * The event type's name
-     *
-     * @return name
-     */
-    @javax.annotation.Nonnull
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public EventTypeIn schemas(Object schemas) {
-        this.schemas = schemas;
-        return this;
-    }
-
-    /**
-     * The schema for the event type for a specific version as a JSON schema.
-     *
-     * @return schemas
-     */
-    @javax.annotation.Nullable
-    public Object getSchemas() {
-        return schemas;
-    }
-
-    public void setSchemas(Object schemas) {
-        this.schemas = schemas;
     }
 
     /**

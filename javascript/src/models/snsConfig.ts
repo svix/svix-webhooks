@@ -2,31 +2,31 @@
 
 /** Configuration for a SNS sink. */
 export interface SnsConfig {
-  accessKeyId: string;
-  endpointUrl?: string | null;
-  region: string;
-  secretAccessKey: string;
   topicArn: string;
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  endpointUrl?: string | null;
 }
 
 export const SnsConfigSerializer = {
   _fromJsonObject(object: any): SnsConfig {
     return {
-      accessKeyId: object["accessKeyId"],
-      endpointUrl: object["endpointUrl"],
-      region: object["region"],
-      secretAccessKey: object["secretAccessKey"],
       topicArn: object["topicArn"],
+      region: object["region"],
+      accessKeyId: object["accessKeyId"],
+      secretAccessKey: object["secretAccessKey"],
+      endpointUrl: object["endpointUrl"],
     };
   },
 
   _toJsonObject(self: SnsConfig): any {
     return {
-      accessKeyId: self.accessKeyId,
-      endpointUrl: self.endpointUrl,
-      region: self.region,
-      secretAccessKey: self.secretAccessKey,
       topicArn: self.topicArn,
+      region: self.region,
+      accessKeyId: self.accessKeyId,
+      secretAccessKey: self.secretAccessKey,
+      endpointUrl: self.endpointUrl,
     };
   },
 };

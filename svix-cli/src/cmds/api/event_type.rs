@@ -1,21 +1,27 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct EventTypeListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
+
     /// When `true` archived (deleted but not expunged) items are included in the response.
     #[arg(long)]
     pub include_archived: Option<bool>,
+
     /// When `true` the full item (including the schema) is included in the response.
     #[arg(long)]
     pub with_content: Option<bool>,
@@ -102,14 +108,10 @@ pub enum EventTypeCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"archived\": false,
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"deprecated\": true,
-    \"description\": \"A user has signed up\",
-    \"featureFlag\": \"...\",
-    \"featureFlags\": [\"cool-new-feature\"],
-    \"groupName\": \"user\",
     \"name\": \"user.signup\",
+    \"description\": \"A user has signed up\",
+    \"archived\": false,
+    \"deprecated\": true,
     \"schemas\": {
       \"1\": {
         \"description\": \"An invoice was paid by a user\",
@@ -128,11 +130,15 @@ pub enum EventTypeCommands {
         \"type\": \"object\"
       }
     },
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"groupName\": \"user\",
+    \"featureFlags\": [\"cool-new-feature\"],
+    \"featureFlag\": \"...\"
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -153,41 +159,10 @@ pub enum EventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"name\": \"user.signup\",
+  \"description\": \"A user has signed up\",
   \"archived\": false,
   \"deprecated\": true,
-  \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
-  \"name\": \"user.signup\",
-  \"schemas\": {
-    \"1\": {
-      \"description\": \"An invoice was paid by a user\",
-      \"properties\": {
-        \"invoiceId\": {
-          \"description\": \"The invoice id\",
-          \"type\": \"string\"
-        },
-        \"userId\": {
-          \"description\": \"The user id\",
-          \"type\": \"string\"
-        }
-      },
-      \"required\": [\"invoiceId\",\"userId\"],
-      \"title\": \"Invoice Paid Event\",
-      \"type\": \"object\"
-    }
-  }
-}\n\nExample response:
-{
-  \"archived\": false,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
-  \"name\": \"user.signup\",
   \"schemas\": {
     \"1\": {
       \"description\": \"An invoice was paid by a user\",
@@ -206,7 +181,37 @@ pub enum EventTypeCommands {
       \"type\": \"object\"
     }
   },
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"groupName\": \"user\",
+  \"featureFlags\": [\"cool-new-feature\"]
+}\n\nExample response:
+{
+  \"name\": \"user.signup\",
+  \"description\": \"A user has signed up\",
+  \"archived\": false,
+  \"deprecated\": true,
+  \"schemas\": {
+    \"1\": {
+      \"description\": \"An invoice was paid by a user\",
+      \"properties\": {
+        \"invoiceId\": {
+          \"description\": \"The invoice id\",
+          \"type\": \"string\"
+        },
+        \"userId\": {
+          \"description\": \"The user id\",
+          \"type\": \"string\"
+        }
+      },
+      \"required\": [\"invoiceId\",\"userId\"],
+      \"title\": \"Invoice Paid Event\",
+      \"type\": \"object\"
+    }
+  },
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"groupName\": \"user\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"featureFlag\": \"...\"
 }\n")]
     Create {
         event_type_in: crate::json::JsonOf<EventTypeIn>,
@@ -276,12 +281,8 @@ pub enum EventTypeCommands {
   \"data\": {
     \"modified\": [\"...\"],
     \"to_modify\": [{
-      \"deprecated\": true,
-      \"description\": \"...\",
-      \"featureFlag\": \"...\",
-      \"featureFlags\": [\"...\"],
-      \"groupName\": \"user\",
       \"name\": \"user.signup\",
+      \"description\": \"...\",
       \"schemas\": {
         \"description\": \"An invoice was paid by a user\",
         \"properties\": {
@@ -297,7 +298,10 @@ pub enum EventTypeCommands {
         \"required\": [\"invoiceId\",\"userId\"],
         \"title\": \"Invoice Paid Event\",
         \"type\": \"object\"
-      }
+      },
+      \"deprecated\": true,
+      \"groupName\": \"user\",
+      \"featureFlags\": [\"...\"]
     }]
   }
 }\n")]
@@ -317,14 +321,10 @@ pub enum EventTypeCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"archived\": false,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
   \"name\": \"user.signup\",
+  \"description\": \"A user has signed up\",
+  \"archived\": false,
+  \"deprecated\": true,
   \"schemas\": {
     \"1\": {
       \"description\": \"An invoice was paid by a user\",
@@ -343,54 +343,27 @@ pub enum EventTypeCommands {
       \"type\": \"object\"
     }
   },
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"groupName\": \"user\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"featureFlag\": \"...\"
 }\n")]
     Get { event_type_name: String },
-    /// Update an event type.
+    /// Create or update an event type.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix event-type update example.event {...}\n",
+            "Example: svix event-type upsert example.event {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
+  \"description\": \"A user has signed up\",
   \"archived\": false,
   \"deprecated\": true,
-  \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
-  \"schemas\": {
-    \"1\": {
-      \"description\": \"An invoice was paid by a user\",
-      \"properties\": {
-        \"invoiceId\": {
-          \"description\": \"The invoice id\",
-          \"type\": \"string\"
-        },
-        \"userId\": {
-          \"description\": \"The user id\",
-          \"type\": \"string\"
-        }
-      },
-      \"required\": [\"invoiceId\",\"userId\"],
-      \"title\": \"Invoice Paid Event\",
-      \"type\": \"object\"
-    }
-  }
-}\n\nExample response:
-{
-  \"archived\": false,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
-  \"name\": \"user.signup\",
   \"schemas\": {
     \"1\": {
       \"description\": \"An invoice was paid by a user\",
@@ -409,11 +382,41 @@ pub enum EventTypeCommands {
       \"type\": \"object\"
     }
   },
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"groupName\": \"user\"
+}\n\nExample response:
+{
+  \"name\": \"user.signup\",
+  \"description\": \"A user has signed up\",
+  \"archived\": false,
+  \"deprecated\": true,
+  \"schemas\": {
+    \"1\": {
+      \"description\": \"An invoice was paid by a user\",
+      \"properties\": {
+        \"invoiceId\": {
+          \"description\": \"The invoice id\",
+          \"type\": \"string\"
+        },
+        \"userId\": {
+          \"description\": \"The user id\",
+          \"type\": \"string\"
+        }
+      },
+      \"required\": [\"invoiceId\",\"userId\"],
+      \"title\": \"Invoice Paid Event\",
+      \"type\": \"object\"
+    }
+  },
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"groupName\": \"user\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"featureFlag\": \"...\"
 }\n")]
-    Update {
+    Upsert {
         event_type_name: String,
-        event_type_update: crate::json::JsonOf<EventTypeUpdate>,
+        event_type_upsert_in: crate::json::JsonOf<EventTypeUpsertIn>,
     },
     /// Archive an event type.
     ///
@@ -445,12 +448,9 @@ pub enum EventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
+  \"description\": \"...\",
   \"archived\": true,
   \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
   \"schemas\": {
     \"description\": \"An invoice was paid by a user\",
     \"properties\": {
@@ -466,17 +466,15 @@ pub enum EventTypeCommands {
     \"required\": [\"invoiceId\",\"userId\"],
     \"title\": \"Invoice Paid Event\",
     \"type\": \"object\"
-  }
+  },
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"groupName\": \"user\"
 }\n\nExample response:
 {
-  \"archived\": false,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"A user has signed up\",
-  \"featureFlag\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
-  \"groupName\": \"user\",
   \"name\": \"user.signup\",
+  \"description\": \"A user has signed up\",
+  \"archived\": false,
+  \"deprecated\": true,
   \"schemas\": {
     \"1\": {
       \"description\": \"An invoice was paid by a user\",
@@ -495,7 +493,11 @@ pub enum EventTypeCommands {
       \"type\": \"object\"
     }
   },
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"groupName\": \"user\",
+  \"featureFlags\": [\"cool-new-feature\"],
+  \"featureFlag\": \"...\"
 }\n")]
     Patch {
         event_type_name: String,
@@ -543,13 +545,13 @@ impl EventTypeCommands {
                 let resp = client.event_type().get(event_type_name).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 event_type_name,
-                event_type_update,
+                event_type_upsert_in,
             } => {
                 let resp = client
                     .event_type()
-                    .update(event_type_name, event_type_update.into_inner())
+                    .upsert(event_type_name, event_type_upsert_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

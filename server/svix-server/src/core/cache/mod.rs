@@ -4,7 +4,7 @@
 use std::{string::FromUtf8Error, time::Duration};
 
 use ::redis::RedisError;
-use axum::async_trait;
+use async_trait::async_trait;
 use enum_dispatch::enum_dispatch;
 use serde::{Serialize, de::DeserializeOwned};
 

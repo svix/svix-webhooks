@@ -93,8 +93,7 @@ def create_svix_endpoint(
         EndpointIn(
             url=endpoint_url,
             uid=endpoint_uid,
-            version=1,
-            filter_types=[event_type_name],
+            event_types=[event_type_name],
             channels=[channel] if channel else None,
             metadata=metadata,
             secret=secret,
@@ -191,7 +190,7 @@ def test_svix_endpoint_create(
     )
     assert endpoint.url == endpoint_url
     assert endpoint.uid == endpoint_uid
-    assert endpoint.filter_types == [event_type.name]
+    assert endpoint.event_types == [event_type.name]
     if with_channel:
         assert endpoint.channels == [channel]
     if with_metadata:
@@ -241,8 +240,7 @@ def test_svix_message_create(
 
         webhook = Webhook(secret)
         headers: Dict[str, str] = dict(request.headers.items())
-        received_payload = webhook.verify(request.data, headers)
-        assert received_payload == payload
+        webhook.verify(request.data, headers)
 
         return Response("OK")
 

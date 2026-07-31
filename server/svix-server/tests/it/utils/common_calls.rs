@@ -11,7 +11,6 @@ use serde::{
     de::{DeserializeOwned, IgnoredAny},
 };
 use serde_json::json;
-use svix::api::DashboardAccessOut;
 use svix_server::{
     core::types::{
         ApplicationId, EventChannel, EventTypeName, FeatureFlagSet, MessageId, metadata::Metadata,
@@ -55,7 +54,6 @@ pub async fn delete_test_app(client: &TestClient, id: ApplicationId) -> Result<(
 // Endpoint
 
 pub fn default_test_endpoint() -> EndpointIn {
-    #[allow(deprecated)]
     EndpointIn {
         description: Default::default(),
         rate_limit: Default::default(),
@@ -64,7 +62,7 @@ pub fn default_test_endpoint() -> EndpointIn {
         url: Url::parse("http://example.com").unwrap(),
         version: Some(1),
         disabled: Default::default(),
-        event_types_ids: Default::default(),
+        event_types: Default::default(),
         channels: Default::default(),
         key: Default::default(),
         metadata: Default::default(),
@@ -413,7 +411,7 @@ pub async fn app_portal_access(
     application_id: &ApplicationId,
     feature_flags: FeatureFlagSet,
 ) -> TestClient {
-    let resp: DashboardAccessOut = org_client
+    let resp: serde_json::Value = org_client
         .post(
             &format!("api/v1/auth/app-portal-access/{application_id}/"),
             AppPortalAccessIn {
@@ -426,7 +424,7 @@ pub async fn app_portal_access(
         .unwrap();
 
     let mut app_client = org_client.clone();
-    app_client.set_auth_header(resp.token);
+    app_client.set_auth_header(resp["token"].as_str().unwrap().to_owned());
 
     app_client
 }

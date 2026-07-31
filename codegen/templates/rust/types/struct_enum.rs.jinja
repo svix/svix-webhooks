@@ -14,7 +14,7 @@ use super::{
     {% set enum_type_name %}{{ type_name }}{{ type.content_field | to_upper_camel_case }}{% endset -%}
 
     {{ doc_comment }}
-    #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+    #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
     pub struct {{ type_name }} {
         {% include "types/struct_fields.rs.jinja" %}
 
@@ -26,7 +26,7 @@ use super::{
         pub {{ enum_field_name }}: {{ enum_type_name }},
     }
 {% else -%}
-    {% set enum_type_name = type_name %}
+    {% set enum_type_name = type_name -%}
 {% endif %}
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -39,20 +39,4 @@ pub enum {{ enum_type_name }} {
             ({{ variant.schema_ref | to_upper_camel_case }})
         {%- endif %},
     {% endfor -%}
-}
-
-{#
-    unfortunately, it is not easy to disable the nonsense Default derives for new struct types,
-    and we have list responses containing struct-enums, so those also need to implement Default,
-    which then carries over to the enum type
--#}
-{% set first_variant = type.variants[0] -%}
-#[allow(clippy::derivable_impls)]
-impl Default for {{ enum_type_name }} {
-    fn default() -> Self {
-        Self::{{ first_variant.name | to_upper_camel_case }}
-        {%- if first_variant.schema_ref is defined -%}
-            ({{ first_variant.schema_ref | to_upper_camel_case }}::default())
-        {%- endif %}
-    }
 }

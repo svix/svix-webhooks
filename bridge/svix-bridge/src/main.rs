@@ -7,11 +7,11 @@ use std::{
 use clap::Parser;
 use itertools::{Either, Itertools};
 use once_cell::sync::Lazy;
-use opentelemetry::{trace::TracerProvider as _, InstrumentationScope};
+use opentelemetry::{InstrumentationScope, trace::TracerProvider as _};
 use opentelemetry_otlp::WithExportConfig as _;
 use opentelemetry_sdk::{
-    metrics::{periodic_reader_with_async_runtime::PeriodicReader, SdkMeterProvider},
-    trace::{span_processor_with_async_runtime::BatchSpanProcessor, SdkTracerProvider},
+    metrics::{SdkMeterProvider, periodic_reader_with_async_runtime::PeriodicReader},
+    trace::{SdkTracerProvider, span_processor_with_async_runtime::BatchSpanProcessor},
 };
 use svix_bridge_types::{PollerInput, SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
@@ -44,7 +44,7 @@ compile_error!("jemalloc cannot be enabled on msvc");
 // Seems like it would be useful to be able to configure this.
 // In some docker setups, hostname is sometimes the container id, and advertising this can be
 // helpful.
-static INSTANCE_ID: Lazy<String> = Lazy::new(|| KsuidMs::new(None, None).to_string());
+static INSTANCE_ID: Lazy<String> = Lazy::new(|| KsuidMs::now(None).to_string());
 
 fn get_svc_identifiers(cfg: &Config) -> opentelemetry_sdk::Resource {
     opentelemetry_sdk::Resource::builder()
@@ -107,7 +107,7 @@ fn setup_tracing(cfg: &Config) -> Option<SdkTracerProvider> {
             provider.tracer_with_scope(InstrumentationScope::builder("svix_bridge").build()),
         );
 
-        _ = opentelemetry::global::set_tracer_provider(provider.clone());
+        opentelemetry::global::set_tracer_provider(provider.clone());
         (layer, provider)
     });
 

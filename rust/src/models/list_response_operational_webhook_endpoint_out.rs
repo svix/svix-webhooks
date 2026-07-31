@@ -3,11 +3,9 @@ use serde::{Deserialize, Serialize};
 
 use super::operational_webhook_endpoint_out::OperationalWebhookEndpointOut;
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ListResponseOperationalWebhookEndpointOut {
     pub data: Vec<OperationalWebhookEndpointOut>,
-
-    pub done: bool,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub iterator: Option<String>,
@@ -15,15 +13,17 @@ pub struct ListResponseOperationalWebhookEndpointOut {
     #[serde(rename = "prevIterator")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub prev_iterator: Option<String>,
+
+    pub done: bool,
 }
 
 impl ListResponseOperationalWebhookEndpointOut {
     pub fn new(data: Vec<OperationalWebhookEndpointOut>, done: bool) -> Self {
         Self {
             data,
-            done,
             iterator: None,
             prev_iterator: None,
+            done,
         }
     }
 }

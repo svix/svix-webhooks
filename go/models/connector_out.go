@@ -4,19 +4,19 @@ package models
 import "time"
 
 type ConnectorOut struct {
-	AllowedEventTypes       []string         `json:"allowedEventTypes,omitempty"`
-	CreatedAt               time.Time        `json:"createdAt"`
-	Description             string           `json:"description"`
-	FeatureFlags            []string         `json:"featureFlags,omitempty"`
-	Id                      string           `json:"id"` // The Connector's ID.
-	Instructions            string           `json:"instructions"`
-	Kind                    ConnectorKind    `json:"kind"`
-	Logo                    *string          `json:"logo,omitempty"`
-	Name                    string           `json:"name"`
-	OrgId                   string           `json:"orgId"` // The Environment's ID.
-	ProductType             ConnectorProduct `json:"productType"`
-	Transformation          string           `json:"transformation"`
-	TransformationUpdatedAt time.Time        `json:"transformationUpdatedAt"`
+	Id                      string           `json:"id"`            // The Connector's ID.
+	OrgId                   string           `json:"orgId"`         // The Environment's ID.
 	Uid                     *string          `json:"uid,omitempty"` // The Connector's UID.
+	Kind                    ConnectorKind    `json:"kind"`
+	Name                    string           `json:"name"`
+	Logo                    *string          `json:"logo,omitempty"`
+	Description             string           `json:"description"`
+	Instructions            string           `json:"instructions"`
+	AllowedEventTypes       []string         `json:"allowedEventTypes,omitempty"`
+	Transformation          string           `json:"transformation"`
+	CreatedAt               time.Time        `json:"createdAt"`
 	UpdatedAt               time.Time        `json:"updatedAt"`
+	TransformationUpdatedAt time.Time        `json:"transformationUpdatedAt"`
+	FeatureFlags            []string         `json:"featureFlags,omitempty"`
+	ProductType             ConnectorProduct `json:"productType"`
 }

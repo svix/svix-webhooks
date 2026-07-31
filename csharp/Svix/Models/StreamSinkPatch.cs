@@ -9,35 +9,35 @@ namespace Svix.Models
     [JsonConverter(typeof(StreamSinkPatchConverter))]
     public class StreamSinkPatch
     {
-        [JsonProperty("batchSize")]
-        public MaybeUnset<ushort?> BatchSize { get; set; } = MaybeUnset<ushort?>.Unset();
+        [JsonProperty("uid")]
+        public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
 
-        public bool ShouldSerializeBatchSize() => !BatchSize.IsUnset;
-
-        [JsonProperty("eventTypes")]
-        public List<string>? EventTypes { get; set; } = null;
-
-        public bool ShouldSerializeEventTypes() => EventTypes != null;
-
-        [JsonProperty("maxWaitSecs")]
-        public MaybeUnset<ushort?> MaxWaitSecs { get; set; } = MaybeUnset<ushort?>.Unset();
-
-        public bool ShouldSerializeMaxWaitSecs() => !MaxWaitSecs.IsUnset;
-
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
-        public bool ShouldSerializeMetadata() => Metadata != null;
+        public bool ShouldSerializeUid() => !Uid.IsUnset;
 
         [JsonProperty("status")]
         public MaybeUnset<SinkStatusIn?> Status { get; set; } = MaybeUnset<SinkStatusIn?>.Unset();
 
         public bool ShouldSerializeStatus() => !Status.IsUnset;
 
-        [JsonProperty("uid")]
-        public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
+        [JsonProperty("batchSize")]
+        public MaybeUnset<ushort?> BatchSize { get; set; } = MaybeUnset<ushort?>.Unset();
 
-        public bool ShouldSerializeUid() => !Uid.IsUnset;
+        public bool ShouldSerializeBatchSize() => !BatchSize.IsUnset;
+
+        [JsonProperty("maxWaitSecs")]
+        public MaybeUnset<ushort?> MaxWaitSecs { get; set; } = MaybeUnset<ushort?>.Unset();
+
+        public bool ShouldSerializeMaxWaitSecs() => !MaxWaitSecs.IsUnset;
+
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
+
+        public bool ShouldSerializeEventTypes() => EventTypes != null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
+
+        public bool ShouldSerializeMetadata() => Metadata != null;
 
         [JsonIgnore]
         public required StreamSinkPatchConfig Config { get; set; }
@@ -57,12 +57,12 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class StreamSinkPatch {\n");
-            sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
-            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
-            sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
-            sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Status: ").Append(Status).Append('\n');
+            sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
+            sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
+            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
@@ -319,35 +319,35 @@ namespace Svix.Models
 
     internal class StreamSinkPatchSurrogate
     {
-        [JsonProperty("batchSize")]
-        public MaybeUnset<ushort?> BatchSize { get; set; } = MaybeUnset<ushort?>.Unset();
+        [JsonProperty("uid")]
+        public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
 
-        public bool ShouldSerializeBatchSize() => !BatchSize.IsUnset;
-
-        [JsonProperty("eventTypes")]
-        public List<string>? EventTypes { get; set; } = null;
-
-        public bool ShouldSerializeEventTypes() => EventTypes != null;
-
-        [JsonProperty("maxWaitSecs")]
-        public MaybeUnset<ushort?> MaxWaitSecs { get; set; } = MaybeUnset<ushort?>.Unset();
-
-        public bool ShouldSerializeMaxWaitSecs() => !MaxWaitSecs.IsUnset;
-
-        [JsonProperty("metadata")]
-        public Dictionary<string, string>? Metadata { get; set; } = null;
-
-        public bool ShouldSerializeMetadata() => Metadata != null;
+        public bool ShouldSerializeUid() => !Uid.IsUnset;
 
         [JsonProperty("status")]
         public MaybeUnset<SinkStatusIn?> Status { get; set; } = MaybeUnset<SinkStatusIn?>.Unset();
 
         public bool ShouldSerializeStatus() => !Status.IsUnset;
 
-        [JsonProperty("uid")]
-        public MaybeUnset<string?> Uid { get; set; } = MaybeUnset<string?>.Unset();
+        [JsonProperty("batchSize")]
+        public MaybeUnset<ushort?> BatchSize { get; set; } = MaybeUnset<ushort?>.Unset();
 
-        public bool ShouldSerializeUid() => !Uid.IsUnset;
+        public bool ShouldSerializeBatchSize() => !BatchSize.IsUnset;
+
+        [JsonProperty("maxWaitSecs")]
+        public MaybeUnset<ushort?> MaxWaitSecs { get; set; } = MaybeUnset<ushort?>.Unset();
+
+        public bool ShouldSerializeMaxWaitSecs() => !MaxWaitSecs.IsUnset;
+
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
+
+        public bool ShouldSerializeEventTypes() => EventTypes != null;
+
+        [JsonProperty("metadata")]
+        public Dictionary<string, string>? Metadata { get; set; } = null;
+
+        public bool ShouldSerializeMetadata() => Metadata != null;
 
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
@@ -402,12 +402,12 @@ namespace Svix.Models
 
             return new StreamSinkPatch
             {
-                BatchSize = surrogate.BatchSize,
-                EventTypes = surrogate.EventTypes,
-                MaxWaitSecs = surrogate.MaxWaitSecs,
-                Metadata = surrogate.Metadata,
-                Status = surrogate.Status,
                 Uid = surrogate.Uid,
+                Status = surrogate.Status,
+                BatchSize = surrogate.BatchSize,
+                MaxWaitSecs = surrogate.MaxWaitSecs,
+                EventTypes = surrogate.EventTypes,
+                Metadata = surrogate.Metadata,
                 Config = config,
             };
         }

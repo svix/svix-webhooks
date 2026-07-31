@@ -11,7 +11,7 @@ import com.svix.models.OperationalWebhookEndpointIn;
 import com.svix.models.OperationalWebhookEndpointOut;
 import com.svix.models.OperationalWebhookEndpointSecretIn;
 import com.svix.models.OperationalWebhookEndpointSecretOut;
-import com.svix.models.OperationalWebhookEndpointUpdate;
+import com.svix.models.OperationalWebhookEndpointUpsertIn;
 
 import okhttp3.Headers;
 import okhttp3.HttpUrl;
@@ -91,10 +91,10 @@ public class OperationalWebhookEndpoint {
                 "GET", url.build(), null, null, OperationalWebhookEndpointOut.class);
     }
 
-    /** Update an operational webhook endpoint. */
-    public OperationalWebhookEndpointOut update(
+    /** Create or update an operational webhook endpoint. */
+    public OperationalWebhookEndpointOut upsert(
             final String endpointId,
-            final OperationalWebhookEndpointUpdate operationalWebhookEndpointUpdate)
+            final OperationalWebhookEndpointUpsertIn operationalWebhookEndpointUpsertIn)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
@@ -106,7 +106,7 @@ public class OperationalWebhookEndpoint {
                 "PUT",
                 url.build(),
                 null,
-                operationalWebhookEndpointUpdate,
+                operationalWebhookEndpointUpsertIn,
                 OperationalWebhookEndpointOut.class);
     }
 
@@ -119,36 +119,6 @@ public class OperationalWebhookEndpoint {
                                 String.format(
                                         "/api/v1/operational-webhook/endpoint/%s", endpointId));
         this.client.executeRequest("DELETE", url.build(), null, null, null);
-    }
-
-    /** Get the additional headers to be sent with the operational webhook. */
-    public OperationalWebhookEndpointHeadersOut getHeaders(final String endpointId)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/operational-webhook/endpoint/%s/headers",
-                                        endpointId));
-        return this.client.executeRequest(
-                "GET", url.build(), null, null, OperationalWebhookEndpointHeadersOut.class);
-    }
-
-    /** Set the additional headers to be sent with the operational webhook. */
-    public void updateHeaders(
-            final String endpointId,
-            final OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn)
-            throws IOException, ApiException {
-        HttpUrl.Builder url =
-                this.client
-                        .newUrlBuilder()
-                        .encodedPath(
-                                String.format(
-                                        "/api/v1/operational-webhook/endpoint/%s/headers",
-                                        endpointId));
-        this.client.executeRequest(
-                "PUT", url.build(), null, operationalWebhookEndpointHeadersIn, null);
     }
 
     /**
@@ -208,5 +178,35 @@ public class OperationalWebhookEndpoint {
         }
         this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), operationalWebhookEndpointSecretIn, null);
+    }
+
+    /** Get the additional headers to be sent with the operational webhook. */
+    public OperationalWebhookEndpointHeadersOut getHeaders(final String endpointId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/operational-webhook/endpoint/%s/headers",
+                                        endpointId));
+        return this.client.executeRequest(
+                "GET", url.build(), null, null, OperationalWebhookEndpointHeadersOut.class);
+    }
+
+    /** Set the additional headers to be sent with the operational webhook. */
+    public void setHeaders(
+            final String endpointId,
+            final OperationalWebhookEndpointHeadersIn operationalWebhookEndpointHeadersIn)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/operational-webhook/endpoint/%s/headers",
+                                        endpointId));
+        this.client.executeRequest(
+                "PUT", url.build(), null, operationalWebhookEndpointHeadersIn, null);
     }
 }

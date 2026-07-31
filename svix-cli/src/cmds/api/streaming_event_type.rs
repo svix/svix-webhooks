@@ -1,18 +1,23 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct StreamingEventTypeListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
+
     /// Include archived (deleted but not expunged) items in the response.
     #[arg(long)]
     pub include_archived: Option<bool>,
@@ -84,17 +89,17 @@ pub enum StreamingEventTypeCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"archived\": true,
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"deprecated\": true,
-    \"description\": \"...\",
-    \"featureFlags\": [\"cool-new-feature\"],
     \"name\": \"user.signup\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"description\": \"...\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"deprecated\": true,
+    \"archived\": true,
+    \"featureFlags\": [\"cool-new-feature\"]
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -111,20 +116,20 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"archived\": true,
-  \"deprecated\": true,
+  \"name\": \"user.signup\",
   \"description\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
-  \"name\": \"user.signup\"
+  \"deprecated\": true,
+  \"archived\": true
 }\n\nExample response:
 {
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Create {
         stream_event_type_in: crate::json::JsonOf<StreamEventTypeIn>,
@@ -142,42 +147,42 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Get { name: String },
-    /// Update or create a event type for Streams.
+    /// Create or update or create a event type for Streams.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix streaming event-type update NAME {...}\n",
+            "Example: svix streaming event-type upsert NAME {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"archived\": true,
-  \"deprecated\": true,
+  \"name\": \"user.signup\",
   \"description\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
-  \"name\": \"user.signup\"
+  \"deprecated\": true,
+  \"archived\": true
 }\n\nExample response:
 {
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"],
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
-    Update {
+    Upsert {
         name: String,
         stream_event_type_in: crate::json::JsonOf<StreamEventTypeIn>,
     },
@@ -206,19 +211,19 @@ pub enum StreamingEventTypeCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"archived\": true,
-  \"deprecated\": true,
-  \"description\": \"...\",
-  \"featureFlags\": [\"cool-new-feature\"]
-}\n\nExample response:
-{
-  \"archived\": true,
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"deprecated\": true,
   \"description\": \"...\",
   \"featureFlags\": [\"cool-new-feature\"],
+  \"deprecated\": true,
+  \"archived\": true
+}\n\nExample response:
+{
   \"name\": \"user.signup\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"description\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"deprecated\": true,
+  \"archived\": true,
+  \"featureFlags\": [\"cool-new-feature\"]
 }\n")]
     Patch {
         name: String,
@@ -256,14 +261,14 @@ impl StreamingEventTypeCommands {
                 let resp = client.streaming().event_type().get(name).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 name,
                 stream_event_type_in,
             } => {
                 let resp = client
                     .streaming()
                     .event_type()
-                    .update(name, stream_event_type_in.into_inner())
+                    .upsert(name, stream_event_type_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

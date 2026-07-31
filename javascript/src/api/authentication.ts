@@ -25,17 +25,9 @@ import {
   type StreamTokenExpireIn,
   StreamTokenExpireInSerializer,
 } from "../models/streamTokenExpireIn";
-import {
-  type DashboardAccessOut,
-  DashboardAccessOutSerializer,
-} from "../models/dashboardAccessOut";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface AuthenticationAppPortalAccessOptions {
-  idempotencyKey?: string;
-}
-
-export interface AuthenticationExpireAllOptions {
   idempotencyKey?: string;
 }
 
@@ -43,11 +35,15 @@ export interface AuthenticationLogoutOptions {
   idempotencyKey?: string;
 }
 
-export interface AuthenticationStreamLogoutOptions {
+export interface AuthenticationExpireAllOptions {
   idempotencyKey?: string;
 }
 
 export interface AuthenticationStreamPortalAccessOptions {
+  idempotencyKey?: string;
+}
+
+export interface AuthenticationStreamLogoutOptions {
   idempotencyKey?: string;
 }
 
@@ -59,18 +55,13 @@ export interface AuthenticationRotateStreamPollerTokenOptions {
   idempotencyKey?: string;
 }
 
-/** @deprecated */
-export interface AuthenticationDashboardAccessOptions {
-  idempotencyKey?: string;
-}
-
 export class Authentication {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Consumer Application Portal. */
   public async appPortalAccess(
     appId: string,
-    appPortalAccessIn: AppPortalAccessIn,
+    appPortalAccessIn: AppPortalAccessIn = {},
     options?: AuthenticationAppPortalAccessOptions
   ): Promise<AppPortalAccessOut> {
     const request = new SvixRequest(
@@ -88,10 +79,23 @@ export class Authentication {
     );
   }
 
+  /**
+   * Logout an app token.
+   *
+   * Trying to log out other tokens will fail.
+   */
+  public async logout(options?: AuthenticationLogoutOptions): Promise<void> {
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/logout");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
   /** Expire all of the tokens associated with a specific application. */
   public async expireAll(
     appId: string,
-    applicationTokenExpireIn: ApplicationTokenExpireIn,
+    applicationTokenExpireIn: ApplicationTokenExpireIn = {},
     options?: AuthenticationExpireAllOptions
   ): Promise<void> {
     const request = new SvixRequest(
@@ -108,52 +112,10 @@ export class Authentication {
     return await request.sendNoResponseBody(this.requestCtx);
   }
 
-  /** @deprecated Please use `appPortalAccess` instead. */
-  public dashboardAccess(
-    appId: string,
-    options?: AuthenticationDashboardAccessOptions
-  ): Promise<DashboardAccessOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/auth/dashboard-access/{app_id}"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return request.send(this.requestCtx, DashboardAccessOutSerializer._fromJsonObject);
-  }
-
-  /**
-   * Logout an app token.
-   *
-   * Trying to log out other tokens will fail.
-   */
-  public async logout(options?: AuthenticationLogoutOptions): Promise<void> {
-    const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/logout");
-
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  /**
-   * Logout a stream token.
-   *
-   * Trying to log out other tokens will fail.
-   */
-  public async streamLogout(options?: AuthenticationStreamLogoutOptions): Promise<void> {
-    const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/stream-logout");
-
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-
-    return await request.sendNoResponseBody(this.requestCtx);
-  }
-
   /** Use this function to get magic links (and authentication codes) for connecting your users to the Stream Consumer Portal. */
   public async streamPortalAccess(
     streamId: string,
-    streamPortalAccessIn: StreamPortalAccessIn,
+    streamPortalAccessIn: StreamPortalAccessIn = {},
     options?: AuthenticationStreamPortalAccessOptions
   ): Promise<AppPortalAccessOut> {
     const request = new SvixRequest(
@@ -171,10 +133,23 @@ export class Authentication {
     );
   }
 
+  /**
+   * Logout a stream token.
+   *
+   * Trying to log out other tokens will fail.
+   */
+  public async streamLogout(options?: AuthenticationStreamLogoutOptions): Promise<void> {
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/auth/stream-logout");
+
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
   /** Expire all of the tokens associated with a specific stream. */
   public async streamExpireAll(
     streamId: string,
-    streamTokenExpireIn: StreamTokenExpireIn,
+    streamTokenExpireIn: StreamTokenExpireIn = {},
     options?: AuthenticationStreamExpireAllOptions
   ): Promise<void> {
     const request = new SvixRequest(
@@ -189,6 +164,26 @@ export class Authentication {
     return await request.sendNoResponseBody(this.requestCtx);
   }
 
+  /** Create a new auth token for the stream poller API. */
+  public async rotateStreamPollerToken(
+    streamId: string,
+    sinkId: string,
+    rotatePollerTokenIn: RotatePollerTokenIn = {},
+    options?: AuthenticationRotateStreamPollerTokenOptions
+  ): Promise<ApiTokenOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate"
+    );
+
+    request.setPathParam("stream_id", streamId);
+    request.setPathParam("sink_id", sinkId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(RotatePollerTokenInSerializer._toJsonObject(rotatePollerTokenIn));
+
+    return await request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
+  }
+
   /** Get the current auth token for the stream poller. */
   public async getStreamPollerToken(
     streamId: string,
@@ -201,26 +196,6 @@ export class Authentication {
 
     request.setPathParam("stream_id", streamId);
     request.setPathParam("sink_id", sinkId);
-
-    return await request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
-  }
-
-  /** Create a new auth token for the stream poller API. */
-  public async rotateStreamPollerToken(
-    streamId: string,
-    sinkId: string,
-    rotatePollerTokenIn: RotatePollerTokenIn,
-    options?: AuthenticationRotateStreamPollerTokenOptions
-  ): Promise<ApiTokenOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate"
-    );
-
-    request.setPathParam("stream_id", streamId);
-    request.setPathParam("sink_id", sinkId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(RotatePollerTokenInSerializer._toJsonObject(rotatePollerTokenIn));
 
     return await request.send(this.requestCtx, ApiTokenOutSerializer._fromJsonObject);
   }

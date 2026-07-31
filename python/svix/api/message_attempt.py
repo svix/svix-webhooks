@@ -11,7 +11,7 @@ from ..models import (
     ListResponseMessageEndpointOut,
     MessageAttemptOut,
 )
-from .common import ApiBase, BaseOptions, serialize_params
+from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
@@ -33,7 +33,9 @@ class MessageAttemptListByEndpointOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    """When `true` attempt content is included in the response"""
+    """When `true` attempt content is included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     with_msg: t.Optional[bool] = None
     """When `true`, the message information is included in the response
 
@@ -56,7 +58,7 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "tag": self.tag,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "with_msg": self.with_msg,
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
@@ -87,7 +89,9 @@ class MessageAttemptListByMsgOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    """When `true` attempt content is included in the response"""
+    """When `true` attempt content is included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     expanded_statuses: t.Optional[bool] = None
     """When `true`, return the Canceled (4) status in attempts.
 
@@ -107,7 +111,7 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "endpoint_id": self.endpoint_id,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
                 else True,
@@ -133,7 +137,9 @@ class MessageAttemptListAttemptedMessagesOptions(BaseOptions):
     after: t.Optional[datetime] = None
     """Only include items created after a certain date"""
     with_content: t.Optional[bool] = None
-    """When `true` message payloads are included in the response"""
+    """When `true` message payloads are included in the response.
+
+Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter."""
     expanded_statuses: t.Optional[bool] = None
     """When `true`, return the Canceled (4) status in attempts.
 
@@ -151,11 +157,27 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
                 "status": self.status,
                 "before": self.before,
                 "after": self.after,
-                "with_content": self.with_content,
+                "with_content": self.with_content or False,
                 "expanded_statuses": self.expanded_statuses
                 if self.expanded_statuses is not None
                 else True,
                 "event_types": self.event_types,
+            }
+        )
+
+
+@dataclass
+class MessageAttemptListAttemptedDestinationsOptions(BaseOptions):
+    limit: t.Optional[int] = None
+    """Limit the number of returned items"""
+    iterator: t.Optional[str] = None
+    """The iterator returned from a prior invocation"""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "limit": self.limit,
+                "iterator": self.iterator,
             }
         )
 
@@ -178,22 +200,6 @@ If `false`, canceled attempts are returned as Success (0) for backwards compatib
 
 
 @dataclass
-class MessageAttemptListAttemptedDestinationsOptions(BaseOptions):
-    limit: t.Optional[int] = None
-    """Limit the number of returned items"""
-    iterator: t.Optional[str] = None
-    """The iterator returned from a prior invocation"""
-
-    def _query_params(self) -> t.Dict[str, str]:
-        return serialize_params(
-            {
-                "limit": self.limit,
-                "iterator": self.iterator,
-            }
-        )
-
-
-@dataclass
 class MessageAttemptResendOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
@@ -205,7 +211,7 @@ class MessageAttemptResendOptions(BaseOptions):
         )
 
 
-class MessageAttemptAsync(ApiBase):
+class MessageAttemptAsync(ApiBaseAsync):
     async def list_by_endpoint(
         self,
         app_id: str,
@@ -286,6 +292,30 @@ class MessageAttemptAsync(ApiBase):
         )
         return ListResponseEndpointMessageOut.model_validate(response.json())
 
+    async def list_attempted_destinations(
+        self,
+        app_id: str,
+        msg_id: str,
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
+    ) -> ListResponseMessageEndpointOut:
+        """List endpoints attempted by a given message.
+
+        Additionally includes metadata about the latest message attempt.
+        By default, endpoints are listed in ascending order by ID."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ListResponseMessageEndpointOut.model_validate(response.json())
+
     async def get(
         self,
         app_id: str,
@@ -322,30 +352,6 @@ class MessageAttemptAsync(ApiBase):
             },
         )
 
-    async def list_attempted_destinations(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = (
-            MessageAttemptListAttemptedDestinationsOptions()
-        ),
-    ) -> ListResponseMessageEndpointOut:
-        """List endpoints attempted by a given message.
-
-        Additionally includes metadata about the latest message attempt.
-        By default, endpoints are listed in ascending order by ID."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-            path_params={
-                "app_id": app_id,
-                "msg_id": msg_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return ListResponseMessageEndpointOut.model_validate(response.json())
-
     async def resend(
         self,
         app_id: str,
@@ -368,7 +374,7 @@ class MessageAttemptAsync(ApiBase):
         return EmptyResponse.model_validate(response.json())
 
 
-class MessageAttempt(ApiBase):
+class MessageAttempt(ApiBaseSync):
     def list_by_endpoint(
         self,
         app_id: str,
@@ -449,6 +455,30 @@ class MessageAttempt(ApiBase):
         )
         return ListResponseEndpointMessageOut.model_validate(response.json())
 
+    def list_attempted_destinations(
+        self,
+        app_id: str,
+        msg_id: str,
+        options: MessageAttemptListAttemptedDestinationsOptions = (
+            MessageAttemptListAttemptedDestinationsOptions()
+        ),
+    ) -> ListResponseMessageEndpointOut:
+        """List endpoints attempted by a given message.
+
+        Additionally includes metadata about the latest message attempt.
+        By default, endpoints are listed in ascending order by ID."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
+            path_params={
+                "app_id": app_id,
+                "msg_id": msg_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return ListResponseMessageEndpointOut.model_validate(response.json())
+
     def get(
         self,
         app_id: str,
@@ -484,30 +514,6 @@ class MessageAttempt(ApiBase):
                 "attempt_id": attempt_id,
             },
         )
-
-    def list_attempted_destinations(
-        self,
-        app_id: str,
-        msg_id: str,
-        options: MessageAttemptListAttemptedDestinationsOptions = (
-            MessageAttemptListAttemptedDestinationsOptions()
-        ),
-    ) -> ListResponseMessageEndpointOut:
-        """List endpoints attempted by a given message.
-
-        Additionally includes metadata about the latest message attempt.
-        By default, endpoints are listed in ascending order by ID."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/app/{app_id}/msg/{msg_id}/endpoint",
-            path_params={
-                "app_id": app_id,
-                "msg_id": msg_id,
-            },
-            query_params=options._query_params(),
-            header_params=options._header_params(),
-        )
-        return ListResponseMessageEndpointOut.model_validate(response.json())
 
     def resend(
         self,

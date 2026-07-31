@@ -6,8 +6,8 @@ import {
 
 export interface PollingEndpointOut {
   data: PollingEndpointMessageOut[];
-  done: boolean;
   iterator: string;
+  done: boolean;
 }
 
 export const PollingEndpointOutSerializer = {
@@ -16,8 +16,8 @@ export const PollingEndpointOutSerializer = {
       data: object["data"].map((item: PollingEndpointMessageOut) =>
         PollingEndpointMessageOutSerializer._fromJsonObject(item)
       ),
-      done: object["done"],
       iterator: object["iterator"],
+      done: object["done"],
     };
   },
 
@@ -26,8 +26,8 @@ export const PollingEndpointOutSerializer = {
       data: self.data.map((item) =>
         PollingEndpointMessageOutSerializer._toJsonObject(item)
       ),
-      done: self.done,
       iterator: self.iterator,
+      done: self.done,
     };
   },
 };

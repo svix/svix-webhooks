@@ -21,23 +21,222 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MessageEndpointOut {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime createdAt;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
     @JsonProperty private String id;
-    @JsonProperty private OffsetDateTime nextAttempt;
-    @JsonProperty private Long rateLimit;
     @JsonProperty private MessageStatus status;
     @JsonProperty private MessageStatusText statusText;
-    @JsonProperty private Long throttleRate;
-    @JsonProperty private String uid;
-    @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private OffsetDateTime nextAttempt;
     @JsonProperty private URI url;
-    @JsonProperty private Integer version;
+    @JsonProperty private String description;
+    @JsonProperty private Short throttleRate;
+    @JsonProperty private String uid;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> eventTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private OffsetDateTime createdAt;
+    @JsonProperty private OffsetDateTime updatedAt;
 
     public MessageEndpointOut() {}
+
+    public MessageEndpointOut id(String id) {
+        this.id = id;
+        return this;
+    }
+
+    /**
+     * The Endpoint's ID.
+     *
+     * @return id
+     */
+    @javax.annotation.Nonnull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public MessageEndpointOut status(MessageStatus status) {
+        this.status = status;
+        return this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return status
+     */
+    @javax.annotation.Nonnull
+    public MessageStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MessageStatus status) {
+        this.status = status;
+    }
+
+    public MessageEndpointOut statusText(MessageStatusText statusText) {
+        this.statusText = statusText;
+        return this;
+    }
+
+    /**
+     * Get statusText
+     *
+     * @return statusText
+     */
+    @javax.annotation.Nonnull
+    public MessageStatusText getStatusText() {
+        return statusText;
+    }
+
+    public void setStatusText(MessageStatusText statusText) {
+        this.statusText = statusText;
+    }
+
+    public MessageEndpointOut nextAttempt(OffsetDateTime nextAttempt) {
+        this.nextAttempt = nextAttempt;
+        return this;
+    }
+
+    /**
+     * Get nextAttempt
+     *
+     * @return nextAttempt
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getNextAttempt() {
+        return nextAttempt;
+    }
+
+    public void setNextAttempt(OffsetDateTime nextAttempt) {
+        this.nextAttempt = nextAttempt;
+    }
+
+    public MessageEndpointOut url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
+    public MessageEndpointOut description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nonnull
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public MessageEndpointOut throttleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Short getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public MessageEndpointOut uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public MessageEndpointOut disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public MessageEndpointOut eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public MessageEndpointOut addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
+        }
+        this.eventTypes.add(eventTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get eventTypes
+     *
+     * @return eventTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getEventTypes() {
+        return eventTypes;
+    }
+
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+    }
 
     public MessageEndpointOut channels(Set<String> channels) {
         this.channels = channels;
@@ -86,210 +285,6 @@ public class MessageEndpointOut {
         this.createdAt = createdAt;
     }
 
-    public MessageEndpointOut description(String description) {
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * An example endpoint name.
-     *
-     * @return description
-     */
-    @javax.annotation.Nonnull
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public MessageEndpointOut disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public MessageEndpointOut filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public MessageEndpointOut addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
-
-    public MessageEndpointOut id(String id) {
-        this.id = id;
-        return this;
-    }
-
-    /**
-     * The Endpoint's ID.
-     *
-     * @return id
-     */
-    @javax.annotation.Nonnull
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public MessageEndpointOut nextAttempt(OffsetDateTime nextAttempt) {
-        this.nextAttempt = nextAttempt;
-        return this;
-    }
-
-    /**
-     * Get nextAttempt
-     *
-     * @return nextAttempt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getNextAttempt() {
-        return nextAttempt;
-    }
-
-    public void setNextAttempt(OffsetDateTime nextAttempt) {
-        this.nextAttempt = nextAttempt;
-    }
-
-    @Deprecated
-    public MessageEndpointOut rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-        return this;
-    }
-
-    /**
-     * Deprecated, use `throttleRate` instead.
-     *
-     * @return rateLimit
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
-    }
-
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
-    public MessageEndpointOut status(MessageStatus status) {
-        this.status = status;
-        return this;
-    }
-
-    /**
-     * Get status
-     *
-     * @return status
-     */
-    @javax.annotation.Nonnull
-    public MessageStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(MessageStatus status) {
-        this.status = status;
-    }
-
-    public MessageEndpointOut statusText(MessageStatusText statusText) {
-        this.statusText = statusText;
-        return this;
-    }
-
-    /**
-     * Get statusText
-     *
-     * @return statusText
-     */
-    @javax.annotation.Nonnull
-    public MessageStatusText getStatusText() {
-        return statusText;
-    }
-
-    public void setStatusText(MessageStatusText statusText) {
-        this.statusText = statusText;
-    }
-
-    public MessageEndpointOut throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-    }
-
-    public MessageEndpointOut uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
     public MessageEndpointOut updatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
@@ -307,47 +302,6 @@ public class MessageEndpointOut {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public MessageEndpointOut url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
-    @Deprecated
-    public MessageEndpointOut version(Integer version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nonnull
-    @Deprecated
-    public Integer getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Integer version) {
-        this.version = version;
     }
 
     /**

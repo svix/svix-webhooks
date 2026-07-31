@@ -9,41 +9,41 @@ namespace Svix.Models
     [JsonConverter(typeof(StreamSinkOutConverter))]
     public class StreamSinkOut
     {
-        [JsonProperty("batchSize", Required = Required.Always)]
-        public required int BatchSize { get; set; }
-
-        [JsonProperty("createdAt", Required = Required.Always)]
-        public required DateTime CreatedAt { get; set; }
-
-        [JsonProperty("currentIterator", Required = Required.Always)]
-        public required string CurrentIterator { get; set; }
-
-        [JsonProperty("eventTypes")]
-        public List<string>? EventTypes { get; set; } = null;
-
-        [JsonProperty("failureReason")]
-        public string? FailureReason { get; set; } = null;
-
         [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
-
-        [JsonProperty("maxWaitSecs", Required = Required.Always)]
-        public required int MaxWaitSecs { get; set; }
-
-        [JsonProperty("metadata", Required = Required.Always)]
-        public required Dictionary<string, string> Metadata { get; set; }
-
-        [JsonProperty("nextRetryAt")]
-        public DateTime? NextRetryAt { get; set; } = null;
-
-        [JsonProperty("status", Required = Required.Always)]
-        public required SinkStatus Status { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
+        [JsonProperty("status", Required = Required.Always)]
+        public required SinkStatus Status { get; set; }
+
+        [JsonProperty("currentIterator", Required = Required.Always)]
+        public required string CurrentIterator { get; set; }
+
+        [JsonProperty("failureReason")]
+        public string? FailureReason { get; set; } = null;
+
+        [JsonProperty("createdAt", Required = Required.Always)]
+        public required DateTime CreatedAt { get; set; }
+
         [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
+
+        [JsonProperty("batchSize", Required = Required.Always)]
+        public required int BatchSize { get; set; }
+
+        [JsonProperty("maxWaitSecs", Required = Required.Always)]
+        public required int MaxWaitSecs { get; set; }
+
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
+
+        [JsonProperty("nextRetryAt")]
+        public DateTime? NextRetryAt { get; set; } = null;
+
+        [JsonProperty("metadata", Required = Required.Always)]
+        public required Dictionary<string, string> Metadata { get; set; }
 
         [JsonIgnore]
         public required StreamSinkOutConfig Config { get; set; }
@@ -63,18 +63,18 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class StreamSinkOut {\n");
-            sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
-            sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
-            sb.Append("  CurrentIterator: ").Append(CurrentIterator).Append('\n');
-            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
-            sb.Append("  FailureReason: ").Append(FailureReason).Append('\n');
             sb.Append("  Id: ").Append(Id).Append('\n');
-            sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
-            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
-            sb.Append("  NextRetryAt: ").Append(NextRetryAt).Append('\n');
-            sb.Append("  Status: ").Append(Status).Append('\n');
             sb.Append("  Uid: ").Append(Uid).Append('\n');
+            sb.Append("  Status: ").Append(Status).Append('\n');
+            sb.Append("  CurrentIterator: ").Append(CurrentIterator).Append('\n');
+            sb.Append("  FailureReason: ").Append(FailureReason).Append('\n');
+            sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
+            sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
+            sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
+            sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
+            sb.Append("  NextRetryAt: ").Append(NextRetryAt).Append('\n');
+            sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
@@ -326,41 +326,41 @@ namespace Svix.Models
 
     internal class StreamSinkOutSurrogate
     {
-        [JsonProperty("batchSize", Required = Required.Always)]
-        public required int BatchSize { get; set; }
-
-        [JsonProperty("createdAt", Required = Required.Always)]
-        public required DateTime CreatedAt { get; set; }
-
-        [JsonProperty("currentIterator", Required = Required.Always)]
-        public required string CurrentIterator { get; set; }
-
-        [JsonProperty("eventTypes")]
-        public List<string>? EventTypes { get; set; } = null;
-
-        [JsonProperty("failureReason")]
-        public string? FailureReason { get; set; } = null;
-
         [JsonProperty("id", Required = Required.Always)]
         public required string Id { get; set; }
-
-        [JsonProperty("maxWaitSecs", Required = Required.Always)]
-        public required int MaxWaitSecs { get; set; }
-
-        [JsonProperty("metadata", Required = Required.Always)]
-        public required Dictionary<string, string> Metadata { get; set; }
-
-        [JsonProperty("nextRetryAt")]
-        public DateTime? NextRetryAt { get; set; } = null;
-
-        [JsonProperty("status", Required = Required.Always)]
-        public required SinkStatus Status { get; set; }
 
         [JsonProperty("uid")]
         public string? Uid { get; set; } = null;
 
+        [JsonProperty("status", Required = Required.Always)]
+        public required SinkStatus Status { get; set; }
+
+        [JsonProperty("currentIterator", Required = Required.Always)]
+        public required string CurrentIterator { get; set; }
+
+        [JsonProperty("failureReason")]
+        public string? FailureReason { get; set; } = null;
+
+        [JsonProperty("createdAt", Required = Required.Always)]
+        public required DateTime CreatedAt { get; set; }
+
         [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
+
+        [JsonProperty("batchSize", Required = Required.Always)]
+        public required int BatchSize { get; set; }
+
+        [JsonProperty("maxWaitSecs", Required = Required.Always)]
+        public required int MaxWaitSecs { get; set; }
+
+        [JsonProperty("eventTypes")]
+        public List<string>? EventTypes { get; set; } = null;
+
+        [JsonProperty("nextRetryAt")]
+        public DateTime? NextRetryAt { get; set; } = null;
+
+        [JsonProperty("metadata", Required = Required.Always)]
+        public required Dictionary<string, string> Metadata { get; set; }
 
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
@@ -415,18 +415,18 @@ namespace Svix.Models
 
             return new StreamSinkOut
             {
-                BatchSize = surrogate.BatchSize,
-                CreatedAt = surrogate.CreatedAt,
-                CurrentIterator = surrogate.CurrentIterator,
-                EventTypes = surrogate.EventTypes,
-                FailureReason = surrogate.FailureReason,
                 Id = surrogate.Id,
-                MaxWaitSecs = surrogate.MaxWaitSecs,
-                Metadata = surrogate.Metadata,
-                NextRetryAt = surrogate.NextRetryAt,
-                Status = surrogate.Status,
                 Uid = surrogate.Uid,
+                Status = surrogate.Status,
+                CurrentIterator = surrogate.CurrentIterator,
+                FailureReason = surrogate.FailureReason,
+                CreatedAt = surrogate.CreatedAt,
                 UpdatedAt = surrogate.UpdatedAt,
+                BatchSize = surrogate.BatchSize,
+                MaxWaitSecs = surrogate.MaxWaitSecs,
+                EventTypes = surrogate.EventTypes,
+                NextRetryAt = surrogate.NextRetryAt,
+                Metadata = surrogate.Metadata,
                 Config = config,
             };
         }

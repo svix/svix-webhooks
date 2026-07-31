@@ -1,11 +1,13 @@
 use crate::{
-    api::{EndpointIn, EndpointOut, Svix, SvixOptions},
+    api::{Svix, SvixOptions},
     api_internal,
     error::Result,
-    models::SubscribeIn,
-    webhooks::{HeaderMap, Webhook, WebhookError},
+    models::{EndpointIn, EndpointOut, SubscribeIn},
+    webhooks::{Webhook, WebhookError},
 };
 
+use base64::{engine::general_purpose::STANDARD as BASE64_STANDARD, Engine};
+use http::HeaderMap;
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -47,7 +49,9 @@ pub fn decode_autoconfig_token_v1(
         .strip_prefix(AUTOCONFIG_TOKEN_PREFIX_V1)
         .ok_or(AutoConfigError::InvalidToken)?;
 
-    let decoded = base64::decode(token).map_err(|_| AutoConfigError::InvalidToken)?;
+    let decoded = BASE64_STANDARD
+        .decode(token)
+        .map_err(|_| AutoConfigError::InvalidToken)?;
 
     serde_json::from_slice::<AutoConfigTokenContentV1>(&decoded)
         .map_err(|_| AutoConfigError::InvalidToken)
@@ -85,10 +89,10 @@ impl AutoConfig {
             .await
     }
 
-    pub fn verify<HM: HeaderMap>(
+    pub fn verify(
         &self,
         payload: &[u8],
-        headers: &HM,
+        headers: &HeaderMap,
     ) -> std::result::Result<(), WebhookError> {
         self.webhook.verify(payload, headers)
     }
@@ -101,7 +105,8 @@ mod tests {
     #[test]
     fn decode_autoconfig_token_v1_parses_payload() {
         let json = r#"{"aid":"app_1","eid":"ep_2","surl":"https://api.example.test","esec":"whsec_Zm9v","tok":"sk_test_xyz"}"#;
-        let token = format!("{AUTOCONFIG_TOKEN_PREFIX_V1}{}", base64::encode(json));
+        let base64_json = BASE64_STANDARD.encode(json);
+        let token = format!("{AUTOCONFIG_TOKEN_PREFIX_V1}{base64_json}",);
         let content = decode_autoconfig_token_v1(&token).expect("valid token");
 
         assert_eq!(content.app_id, "app_1");
@@ -114,7 +119,8 @@ mod tests {
     #[test]
     fn decode_autoconfig_token_v1_rejects_bad_prefix() {
         let json = r#"{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}"#;
-        let token = format!("wrong_{}", base64::encode(json));
+        let base64_json = BASE64_STANDARD.encode(json);
+        let token = format!("wrong_{base64_json}");
         assert!(matches!(
             decode_autoconfig_token_v1(&token),
             Err(AutoConfigError::InvalidToken)
@@ -123,7 +129,8 @@ mod tests {
 
     #[test]
     fn decode_autoconfig_token_v1_rejects_invalid_json() {
-        let token = format!("{AUTOCONFIG_TOKEN_PREFIX_V1}{}", base64::encode("not json"));
+        let base64_not_json = BASE64_STANDARD.encode("not json");
+        let token = format!("{AUTOCONFIG_TOKEN_PREFIX_V1}{base64_not_json}",);
         assert!(matches!(
             decode_autoconfig_token_v1(&token),
             Err(AutoConfigError::InvalidToken)

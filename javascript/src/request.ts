@@ -1,18 +1,20 @@
 import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 
-export const LIB_VERSION = "1.96.1";
+export const LIB_VERSION = "2.0.0-rc.2";
 
 function getUserAgent() {
   var fields = [`svix-libs/${LIB_VERSION}/javascript`];
-  if (process !== undefined) {
+  // `typeof`, not a bare reference: outside their own runtime these are
+  // undeclared, and reading an undeclared binding throws a ReferenceError.
+  if (typeof process !== "undefined") {
     if (process.version !== undefined) {
       fields.push(`node/${process.version}`);
     }
     if (process.platform !== undefined && process.arch !== undefined) {
       fields.push(`${process.platform}/${process.arch}`);
     }
-  } else if (navigator?.userAgent !== undefined) {
+  } else if (typeof navigator !== "undefined" && navigator.userAgent !== undefined) {
     fields.push(navigator.userAgent);
   }
   return fields.join(" ");
@@ -55,6 +57,61 @@ export type SvixRequestContext = {
     numRetries?: number;
   }
 >;
+
+export type SvixRequestContextOptions = {
+  serverUrl?: string;
+  requestTimeout?: number;
+  fetch?: typeof fetch;
+} & XOR<
+  {
+    retryScheduleInMs?: number[];
+  },
+  {
+    numRetries?: number;
+  }
+>;
+
+const REGIONS = [
+  { region: "us", url: "https://api.us.svix.com" },
+  { region: "eu", url: "https://api.eu.svix.com" },
+  { region: "in", url: "https://api.in.svix.com" },
+  { region: "ca", url: "https://api.ca.svix.com" },
+  { region: "au", url: "https://api.au.svix.com" },
+];
+
+/** Shared by `Svix` and `api_internal` so the latter need not import the package barrel. */
+export function createSvixRequestContext(
+  token: string,
+  options: SvixRequestContextOptions = {}
+): SvixRequestContext {
+  const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
+  const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
+
+  if (options.retryScheduleInMs) {
+    return {
+      baseUrl,
+      token,
+      timeout: options.requestTimeout,
+      retryScheduleInMs: options.retryScheduleInMs,
+      fetch: options.fetch,
+    };
+  }
+  if (options.numRetries) {
+    return {
+      baseUrl,
+      token,
+      timeout: options.requestTimeout,
+      numRetries: options.numRetries,
+      fetch: options.fetch,
+    };
+  }
+  return {
+    baseUrl,
+    token,
+    timeout: options.requestTimeout,
+    fetch: options.fetch,
+  };
+}
 
 type QueryParameter = string | boolean | number | Date | string[] | null | undefined;
 
@@ -183,7 +240,7 @@ export class SvixRequest {
       },
       ctx.retryScheduleInMs,
       ctx.retryScheduleInMs?.[0],
-      ctx.retryScheduleInMs?.length || ctx.numRetries,
+      ctx.retryScheduleInMs?.length ?? ctx.numRetries,
       ctx.fetch
     );
     return filterResponseForErrors(response);
@@ -244,7 +301,7 @@ async function sendWithRetry(
 
   await sleep(nextInterval);
   init.headers["svix-retry-count"] = retryCount.toString();
-  nextInterval = retryScheduleInMs?.[retryCount] || nextInterval * 2;
+  nextInterval = retryScheduleInMs?.[retryCount] ?? nextInterval * 2;
   return await sendWithRetry(
     url,
     init,

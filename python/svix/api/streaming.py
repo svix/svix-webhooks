@@ -1,6 +1,6 @@
 # This file is @generated
-from ..models import EndpointHeadersOut, HttpSinkHeadersPatchIn, SinkTransformationOut
-from .common import ApiBase
+from ..models import EndpointHeadersOut, HttpSinkHeadersPatchIn
+from .common import ApiBaseAsync, ApiBaseSync
 from .streaming_event_type import (
     StreamingEventType,
     StreamingEventTypeAsync,
@@ -19,22 +19,22 @@ from .streaming_stream import (
 )
 
 
-class StreamingAsync(ApiBase):
+class StreamingAsync(ApiBaseAsync):
     @property
     def event_type(self) -> StreamingEventTypeAsync:
-        return StreamingEventTypeAsync(self._client)
+        return StreamingEventTypeAsync(self._client, self._httpx_client)
 
     @property
     def events(self) -> StreamingEventsAsync:
-        return StreamingEventsAsync(self._client)
+        return StreamingEventsAsync(self._client, self._httpx_client)
 
     @property
     def sink(self) -> StreamingSinkAsync:
-        return StreamingSinkAsync(self._client)
+        return StreamingSinkAsync(self._client, self._httpx_client)
 
     @property
     def stream(self) -> StreamingStreamAsync:
-        return StreamingStreamAsync(self._client)
+        return StreamingStreamAsync(self._client, self._httpx_client)
 
     async def sink_headers_get(
         self, stream_id: str, sink_id: str
@@ -74,37 +74,23 @@ class StreamingAsync(ApiBase):
         )
         return EndpointHeadersOut.model_validate(response.json())
 
-    async def sink_transformation_get(
-        self, stream_id: str, sink_id: str
-    ) -> SinkTransformationOut:
-        """Get the transformation code associated with this sink."""
-        response = await self._request_asyncio(
-            method="get",
-            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-            path_params={
-                "stream_id": stream_id,
-                "sink_id": sink_id,
-            },
-        )
-        return SinkTransformationOut.model_validate(response.json())
 
-
-class Streaming(ApiBase):
+class Streaming(ApiBaseSync):
     @property
     def event_type(self) -> StreamingEventType:
-        return StreamingEventType(self._client)
+        return StreamingEventType(self._client, self._httpx_client)
 
     @property
     def events(self) -> StreamingEvents:
-        return StreamingEvents(self._client)
+        return StreamingEvents(self._client, self._httpx_client)
 
     @property
     def sink(self) -> StreamingSink:
-        return StreamingSink(self._client)
+        return StreamingSink(self._client, self._httpx_client)
 
     @property
     def stream(self) -> StreamingStream:
-        return StreamingStream(self._client)
+        return StreamingStream(self._client, self._httpx_client)
 
     def sink_headers_get(self, stream_id: str, sink_id: str) -> EndpointHeadersOut:
         """Get the HTTP sink headers.
@@ -141,17 +127,3 @@ class Streaming(ApiBase):
             ),
         )
         return EndpointHeadersOut.model_validate(response.json())
-
-    def sink_transformation_get(
-        self, stream_id: str, sink_id: str
-    ) -> SinkTransformationOut:
-        """Get the transformation code associated with this sink."""
-        response = self._request_sync(
-            method="get",
-            path="/api/v1/stream/{stream_id}/sink/{sink_id}/transformation",
-            path_params={
-                "stream_id": stream_id,
-                "sink_id": sink_id,
-            },
-        )
-        return SinkTransformationOut.model_validate(response.json())

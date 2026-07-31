@@ -10,8 +10,8 @@ class AppPortalAccessOut implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly string $token,
         public readonly string $url,
+        public readonly string $token,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -21,21 +21,21 @@ class AppPortalAccessOut implements \JsonSerializable
      * Create an instance of AppPortalAccessOut with required fields.
      */
     public static function create(
-        string $token,
         string $url,
+        string $token,
     ): self {
         return new self(
-            token: $token,
             url: $url,
-            setFields: ['token' => true, 'url' => true]
+            token: $token,
+            setFields: ['url' => true, 'token' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'token' => $this->token,
-            'url' => $this->url];
+            'url' => $this->url,
+            'token' => $this->token];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -46,8 +46,8 @@ class AppPortalAccessOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            token: \Svix\Utils::deserializeString($data, 'token', true, 'AppPortalAccessOut'),
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'AppPortalAccessOut')
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'AppPortalAccessOut'),
+            token: \Svix\Utils::deserializeString($data, 'token', true, 'AppPortalAccessOut')
         );
     }
 

@@ -1,20 +1,10 @@
 // this file is @generated
 
 export interface OperationalWebhookEndpointOut {
-  createdAt: Date;
-  /** An example endpoint name. */
-  description: string;
-  disabled?: boolean;
-  filterTypes?: string[] | null;
   /** The Endpoint's ID. */
   id: string;
-  metadata: { [key: string]: string };
-  /**
-   * Deprecated, use `throttleRate` instead.
-   *
-   * @deprecated
-   */
-  rateLimit?: number | null;
+  url: string;
+  description: string;
   /**
    * Maximum messages per second to send to this endpoint.
    *
@@ -23,40 +13,41 @@ export interface OperationalWebhookEndpointOut {
   throttleRate?: number | null;
   /** Optional unique identifier for the endpoint. */
   uid?: string | null;
+  disabled?: boolean;
+  eventTypes?: string[] | null;
+  createdAt: Date;
   updatedAt: Date;
-  url: string;
+  metadata: { [key: string]: string };
 }
 
 export const OperationalWebhookEndpointOutSerializer = {
   _fromJsonObject(object: any): OperationalWebhookEndpointOut {
     return {
-      createdAt: new Date(object["createdAt"]),
-      description: object["description"],
-      disabled: object["disabled"],
-      filterTypes: object["filterTypes"],
       id: object["id"],
-      metadata: object["metadata"],
-      rateLimit: object["rateLimit"],
+      url: object["url"],
+      description: object["description"],
       throttleRate: object["throttleRate"],
       uid: object["uid"],
+      disabled: object["disabled"],
+      eventTypes: object["eventTypes"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
-      url: object["url"],
+      metadata: object["metadata"],
     };
   },
 
   _toJsonObject(self: OperationalWebhookEndpointOut): any {
     return {
-      createdAt: self.createdAt,
-      description: self.description,
-      disabled: self.disabled,
-      filterTypes: self.filterTypes,
       id: self.id,
-      metadata: self.metadata,
-      rateLimit: self.rateLimit,
+      url: self.url,
+      description: self.description,
       throttleRate: self.throttleRate,
       uid: self.uid,
+      disabled: self.disabled,
+      eventTypes: self.eventTypes,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
-      url: self.url,
+      metadata: self.metadata,
     };
   },
 };

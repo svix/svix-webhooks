@@ -1,31 +1,31 @@
 // this file is @generated
 
 export interface EndpointStats {
-  canceled: number;
-  fail: number;
+  success: number;
   pending: number;
   sending: number;
-  success: number;
+  fail: number;
+  canceled: number;
 }
 
 export const EndpointStatsSerializer = {
   _fromJsonObject(object: any): EndpointStats {
     return {
-      canceled: object["canceled"],
-      fail: object["fail"],
+      success: object["success"],
       pending: object["pending"],
       sending: object["sending"],
-      success: object["success"],
+      fail: object["fail"],
+      canceled: object["canceled"],
     };
   },
 
   _toJsonObject(self: EndpointStats): any {
     return {
-      canceled: self.canceled,
-      fail: self.fail,
+      success: self.success,
       pending: self.pending,
       sending: self.sending,
-      success: self.success,
+      fail: self.fail,
+      canceled: self.canceled,
     };
   },
 };

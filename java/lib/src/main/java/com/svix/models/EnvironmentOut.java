@@ -20,40 +20,31 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EnvironmentOut {
-    @JsonProperty private List<ConnectorOut> connectors;
+    @JsonProperty private Long version;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private List<EventTypeOut> eventTypes;
     @JsonProperty private Object settings;
-    @JsonProperty private Long version;
+    @JsonProperty private List<ConnectorOut> connectors;
 
     public EnvironmentOut() {}
 
-    public EnvironmentOut connectors(List<ConnectorOut> connectors) {
-        this.connectors = connectors;
-        return this;
-    }
-
-    public EnvironmentOut addConnectorsItem(ConnectorOut connectorsItem) {
-        if (this.connectors == null) {
-            this.connectors = new ArrayList<>();
-        }
-        this.connectors.add(connectorsItem);
-
+    public EnvironmentOut version(Long version) {
+        this.version = version;
         return this;
     }
 
     /**
-     * Get connectors
+     * Get version
      *
-     * @return connectors
+     * @return version
      */
-    @javax.annotation.Nonnull
-    public List<ConnectorOut> getConnectors() {
-        return connectors;
+    @javax.annotation.Nullable
+    public Long getVersion() {
+        return version;
     }
 
-    public void setConnectors(List<ConnectorOut> connectors) {
-        this.connectors = connectors;
+    public void setVersion(Long version) {
+        this.version = version;
     }
 
     public EnvironmentOut createdAt(OffsetDateTime createdAt) {
@@ -122,23 +113,32 @@ public class EnvironmentOut {
         this.settings = settings;
     }
 
-    public EnvironmentOut version(Long version) {
-        this.version = version;
+    public EnvironmentOut connectors(List<ConnectorOut> connectors) {
+        this.connectors = connectors;
+        return this;
+    }
+
+    public EnvironmentOut addConnectorsItem(ConnectorOut connectorsItem) {
+        if (this.connectors == null) {
+            this.connectors = new ArrayList<>();
+        }
+        this.connectors.add(connectorsItem);
+
         return this;
     }
 
     /**
-     * Get version
+     * Get connectors
      *
-     * @return version
+     * @return connectors
      */
-    @javax.annotation.Nullable
-    public Long getVersion() {
-        return version;
+    @javax.annotation.Nonnull
+    public List<ConnectorOut> getConnectors() {
+        return connectors;
     }
 
-    public void setVersion(Long version) {
-        this.version = version;
+    public void setConnectors(List<ConnectorOut> connectors) {
+        this.connectors = connectors;
     }
 
     /**

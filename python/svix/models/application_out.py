@@ -6,25 +6,22 @@ from .common import BaseModel
 
 
 class ApplicationOut(BaseModel):
-    created_at: datetime
-
-    id: str
-    """The Application's ID."""
-
-    metadata: t.Dict[str, str]
+    uid: t.Optional[str] = None
+    """Optional unique identifier for the application."""
 
     name: str
     """Application name for human consumption."""
-
-    rate_limit: t.Optional[int] = None
-    """Deprecated, use `throttleRate` instead."""
 
     throttle_rate: t.Optional[int] = None
     """Maximum messages per second to send to this application.
 
     Outgoing messages will be throttled to this rate."""
 
-    uid: t.Optional[str] = None
-    """Optional unique identifier for the application."""
+    id: str
+    """The Application's ID."""
+
+    created_at: datetime
 
     updated_at: datetime
+
+    metadata: t.Dict[str, str]

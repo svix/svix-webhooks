@@ -16,29 +16,29 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class AzureBlobStorageConfig {
-    @JsonProperty private String accessKey;
-    @JsonProperty private String account;
     @JsonProperty private String container;
+    @JsonProperty private String account;
+    @JsonProperty private String accessKey;
 
     public AzureBlobStorageConfig() {}
 
-    public AzureBlobStorageConfig accessKey(String accessKey) {
-        this.accessKey = accessKey;
+    public AzureBlobStorageConfig container(String container) {
+        this.container = container;
         return this;
     }
 
     /**
-     * Get accessKey
+     * Get container
      *
-     * @return accessKey
+     * @return container
      */
     @javax.annotation.Nonnull
-    public String getAccessKey() {
-        return accessKey;
+    public String getContainer() {
+        return container;
     }
 
-    public void setAccessKey(String accessKey) {
-        this.accessKey = accessKey;
+    public void setContainer(String container) {
+        this.container = container;
     }
 
     public AzureBlobStorageConfig account(String account) {
@@ -60,23 +60,23 @@ public class AzureBlobStorageConfig {
         this.account = account;
     }
 
-    public AzureBlobStorageConfig container(String container) {
-        this.container = container;
+    public AzureBlobStorageConfig accessKey(String accessKey) {
+        this.accessKey = accessKey;
         return this;
     }
 
     /**
-     * Get container
+     * Get accessKey
      *
-     * @return container
+     * @return accessKey
      */
     @javax.annotation.Nonnull
-    public String getContainer() {
-        return container;
+    public String getAccessKey() {
+        return accessKey;
     }
 
-    public void setContainer(String container) {
-        this.container = container;
+    public void setAccessKey(String accessKey) {
+        this.accessKey = accessKey;
     }
 
     /**

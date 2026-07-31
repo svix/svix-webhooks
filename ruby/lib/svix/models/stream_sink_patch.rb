@@ -80,16 +80,16 @@ module Svix
   end
 
   class StreamSinkPatch
-    attr_accessor :batch_size
-    attr_accessor :event_types
-    attr_accessor :max_wait_secs
-    attr_accessor :metadata
-    attr_accessor :status
     # The StreamSink's UID.
     attr_accessor :uid
+    attr_accessor :status
+    attr_accessor :batch_size
+    attr_accessor :max_wait_secs
+    attr_accessor :event_types
+    attr_accessor :metadata
     attr_accessor :config
 
-    ALL_FIELD ||= ["batch_size", "event_types", "max_wait_secs", "metadata", "status", "uid", "config"].freeze
+    ALL_FIELD ||= ["uid", "status", "batch_size", "max_wait_secs", "event_types", "metadata", "config"].freeze
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       StreamSinkPatchConfig::Poller => "poller",
@@ -145,12 +145,12 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["batch_size"] = attributes["batchSize"]
-      attrs["event_types"] = attributes["eventTypes"]
-      attrs["max_wait_secs"] = attributes["maxWaitSecs"]
-      attrs["metadata"] = attributes["metadata"]
-      attrs["status"] = Svix::SinkStatusIn.deserialize(attributes["status"]) if attributes["status"]
       attrs["uid"] = attributes["uid"]
+      attrs["status"] = Svix::SinkStatusIn.deserialize(attributes["status"]) if attributes["status"]
+      attrs["batch_size"] = attributes["batchSize"]
+      attrs["max_wait_secs"] = attributes["maxWaitSecs"]
+      attrs["event_types"] = attributes["eventTypes"]
+      attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
@@ -165,12 +165,12 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @__batch_size_is_defined
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @__max_wait_secs_is_defined
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
-      out["status"] = Svix::serialize_schema_ref(@status) if @__status_is_defined
       out["uid"] = Svix::serialize_primitive(@uid) if @__uid_is_defined
+      out["status"] = Svix::serialize_schema_ref(@status) if @__status_is_defined
+      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @__batch_size_is_defined
+      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @__max_wait_secs_is_defined
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

@@ -4,7 +4,7 @@ use crate::{error::Result, models::*, Configuration};
 #[derive(Default)]
 pub struct MessagePollerPollOptions {
     /// Limit the number of returned items
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
 
     /// The iterator returned from a prior invocation
     pub iterator: Option<String>,
@@ -15,21 +15,21 @@ pub struct MessagePollerPollOptions {
     /// Filters messages sent with this channel (optional).
     pub channel: Option<String>,
 
-    pub after: Option<String>,
-}
-
-#[derive(Default)]
-pub struct MessagePollerConsumerPollOptions {
-    /// Limit the number of returned items
-    pub limit: Option<i32>,
-
-    /// The iterator returned from a prior invocation
-    pub iterator: Option<String>,
+    pub after: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(Default)]
 pub struct MessagePollerConsumerSeekOptions {
     pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
+pub struct MessagePollerConsumerPollOptions {
+    /// Limit the number of returned items
+    pub limit: Option<u64>,
+
+    /// The iterator returned from a prior invocation
+    pub iterator: Option<String>,
 }
 
 pub struct MessagePoller<'a> {
@@ -57,7 +57,7 @@ impl<'a> MessagePoller<'a> {
             after,
         } = options.unwrap_or_default();
 
-        crate::request::Request::new(http1::Method::GET, "/api/v1/app/{app_id}/poller/{sink_id}")
+        crate::request::Request::new(http::Method::GET, "/api/v1/app/{app_id}/poller/{sink_id}")
             .with_path_param("app_id", app_id)
             .with_path_param("sink_id", sink_id)
             .with_optional_query_param("limit", limit)
@@ -67,6 +67,30 @@ impl<'a> MessagePoller<'a> {
             .with_optional_query_param("after", after)
             .execute(self.cfg)
             .await
+    }
+
+    /// Sets the starting offset for the consumer of a polling endpoint.
+    pub async fn consumer_seek(
+        &self,
+        app_id: String,
+        sink_id: String,
+        consumer_id: String,
+        polling_endpoint_consumer_seek_in: PollingEndpointConsumerSeekIn,
+        options: Option<MessagePollerConsumerSeekOptions>,
+    ) -> Result<PollingEndpointConsumerSeekOut> {
+        let MessagePollerConsumerSeekOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http::Method::POST,
+            "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("sink_id", sink_id)
+        .with_path_param("consumer_id", consumer_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_body_param(polling_endpoint_consumer_seek_in)
+        .execute(self.cfg)
+        .await
     }
 
     /// Reads the stream of created messages for an application, filtered on the
@@ -82,7 +106,7 @@ impl<'a> MessagePoller<'a> {
         let MessagePollerConsumerPollOptions { limit, iterator } = options.unwrap_or_default();
 
         crate::request::Request::new(
-            http1::Method::GET,
+            http::Method::GET,
             "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}",
         )
         .with_path_param("app_id", app_id)
@@ -90,30 +114,6 @@ impl<'a> MessagePoller<'a> {
         .with_path_param("consumer_id", consumer_id)
         .with_optional_query_param("limit", limit)
         .with_optional_query_param("iterator", iterator)
-        .execute(self.cfg)
-        .await
-    }
-
-    /// Sets the starting offset for the consumer of a polling endpoint.
-    pub async fn consumer_seek(
-        &self,
-        app_id: String,
-        sink_id: String,
-        consumer_id: String,
-        polling_endpoint_consumer_seek_in: PollingEndpointConsumerSeekIn,
-        options: Option<MessagePollerConsumerSeekOptions>,
-    ) -> Result<PollingEndpointConsumerSeekOut> {
-        let MessagePollerConsumerSeekOptions { idempotency_key } = options.unwrap_or_default();
-
-        crate::request::Request::new(
-            http1::Method::POST,
-            "/api/v1/app/{app_id}/poller/{sink_id}/consumer/{consumer_id}/seek",
-        )
-        .with_path_param("app_id", app_id)
-        .with_path_param("sink_id", sink_id)
-        .with_path_param("consumer_id", consumer_id)
-        .with_optional_header_param("idempotency-key", idempotency_key)
-        .with_body_param(polling_endpoint_consumer_seek_in)
         .execute(self.cfg)
         .await
     }

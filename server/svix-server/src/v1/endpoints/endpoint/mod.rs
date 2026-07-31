@@ -56,8 +56,8 @@ use crate::{
 pub fn validate_event_types_ids(event_types_ids: &EventTypeNameSet) -> Result<(), ValidationError> {
     if event_types_ids.0.is_empty() {
         Err(validation_error(
-            Some("filterTypes"),
-            Some("filterTypes can't be empty, it must have at least one item."),
+            Some("eventTypes"),
+            Some("eventTypes can't be empty, it must have at least one item."),
         ))
     } else {
         Ok(())
@@ -133,10 +133,6 @@ fn example_endpoint_url() -> &'static str {
     "https://example.com/webhook/"
 }
 
-fn example_endpoint_version() -> u16 {
-    1
-}
-
 fn default_endpoint_version() -> Option<u16> {
     Some(1)
 }
@@ -145,14 +141,14 @@ fn default_endpoint_version() -> Option<u16> {
 #[serde(rename_all = "camelCase")]
 pub struct EndpointIn {
     #[serde(default)]
-    #[validate(custom = "validate_no_control_characters")]
+    #[validate(custom(function = "validate_no_control_characters"))]
     #[schemars(example = "example_endpoint_description")]
     pub description: String,
 
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(skip)]
     pub rate_limit: Option<u16>,
 
     /// Maximum messages per second to send to this endpoint.
@@ -166,37 +162,39 @@ pub struct EndpointIn {
     pub throttle_rate: Option<u16>,
 
     /// Optional unique identifier for the endpoint
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
 
-    #[validate(custom = "validate_url")]
+    #[validate(custom(function = "validate_url"))]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[deprecated]
+    /// Deprecated, kept for backwards compatibility only.
     #[serde(default = "default_endpoint_version")]
     #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[schemars(skip)]
     pub version: Option<u16>,
 
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
-    #[serde(rename = "filterTypes")]
-    #[validate(custom = "validate_event_types_ids")]
-    #[validate]
+
+    #[serde(alias = "filterTypes")]
+    #[validate(custom(function = "validate_event_types_ids"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_filter_types", length(min = 1))]
-    pub event_types_ids: Option<EventTypeNameSet>,
+    pub event_types: Option<EventTypeNameSet>,
+
     /// List of message channels this endpoint listens to (omit for all)
-    #[validate(custom = "validate_channels_endpoint")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_endpoint"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
-    #[validate]
+    #[validate(nested)]
     #[serde(default)]
     #[serde(rename = "secret")]
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -224,18 +222,16 @@ impl EndpointIn {
 impl ModelIn for EndpointIn {
     type ActiveModel = endpoint::ActiveModel;
 
-    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointIn {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             key: _,
             metadata: _,
@@ -256,14 +252,14 @@ impl ModelIn for EndpointIn {
 #[serde(rename_all = "camelCase")]
 struct EndpointUpdate {
     #[serde(default)]
-    #[validate(custom = "validate_no_control_characters")]
+    #[validate(custom(function = "validate_no_control_characters"))]
     #[schemars(example = "example_endpoint_description")]
     pub description: String,
 
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
     #[validate(range(min = 1, message = "Endpoint rate limits must be at least one if set"))]
     #[serde(skip_serializing_if = "Option::is_none")]
+    #[schemars(skip)]
     pub rate_limit: Option<u16>,
 
     /// Maximum messages per second to send to this endpoint.
@@ -277,33 +273,33 @@ struct EndpointUpdate {
     pub throttle_rate: Option<u16>,
 
     /// Optional unique identifier for the endpoint
-    #[validate]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<EndpointUid>,
 
-    #[validate(custom = "validate_url")]
+    #[validate(custom(function = "validate_url"))]
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: Url,
 
-    #[deprecated]
+    /// Deprecated, kept for backwards compatibility only.
     #[serde(default = "default_endpoint_version")]
     #[validate(range(min = 1, message = "Endpoint versions must be at least one if set"))]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[schemars(skip)]
     pub version: Option<u16>,
 
     #[serde(default)]
     #[schemars(example = "endpoint_disabled_default")]
     pub disabled: bool,
 
-    #[serde(rename = "filterTypes")]
-    #[validate(custom = "validate_event_types_ids")]
-    #[validate]
+    #[serde(alias = "filterTypes")]
+    #[validate(custom(function = "validate_event_types_ids"))]
+    #[validate(nested)]
     #[schemars(example = "example_filter_types", length(min = 1))]
-    pub event_types_ids: Option<EventTypeNameSet>,
+    pub event_types: Option<EventTypeNameSet>,
 
     /// List of message channels this endpoint listens to (omit for all)
-    #[validate(custom = "validate_channels_endpoint")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_endpoint"))]
+    #[validate(nested)]
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
 
@@ -314,18 +310,16 @@ struct EndpointUpdate {
 impl ModelIn for EndpointUpdate {
     type ActiveModel = endpoint::ActiveModel;
 
-    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointUpdate {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata: _,
         } = self;
@@ -342,32 +336,29 @@ impl ModelIn for EndpointUpdate {
 }
 
 impl EndpointUpdate {
-    #[allow(deprecated)]
     pub fn into_in_with_default_key(self) -> EndpointIn {
         let EndpointUpdate {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata,
         } = self;
 
         EndpointIn {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata,
 
@@ -381,48 +372,47 @@ impl EndpointUpdate {
 pub struct EndpointPatch {
     #[serde(default)]
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
-    #[validate(custom = "validate_no_control_characters_unrequired")]
+    #[validate(custom(function = "validate_no_control_characters_unrequired"))]
     pub description: UnrequiredField<String>,
 
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
-    #[validate(custom = "validate_rate_limit_patch")]
+    #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    #[schemars(skip)]
     pub rate_limit: UnrequiredNullableField<u16>,
 
     /// Maximum messages per second to send to this endpoint.
     ///
     /// Outgoing messages will be throttled to this rate.
-    #[validate(custom = "validate_rate_limit_patch")]
+    #[validate(custom(function = "validate_rate_limit_patch"))]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub throttle_rate: UnrequiredNullableField<u16>,
 
-    #[validate]
+    #[validate(nested)]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub uid: UnrequiredNullableField<EndpointUid>,
 
-    #[validate(custom = "validate_url_unrequired")]
+    #[validate(custom(function = "validate_url_unrequired"))]
     #[serde(default)]
     pub url: UnrequiredField<Url>,
 
-    #[deprecated]
-    #[validate(custom = "validate_minimum_version_patch")]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[validate(custom(function = "validate_minimum_version_patch"))]
     #[serde(default)]
+    #[schemars(skip)]
     pub version: UnrequiredField<u16>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "UnrequiredField::is_absent")]
     pub disabled: UnrequiredField<bool>,
 
-    #[serde(default, rename = "filterTypes")]
-    #[validate(custom = "validate_event_types_ids_unrequired_nullable")]
-    #[validate]
+    #[serde(default, alias = "filterTypes")]
+    #[validate(custom(function = "validate_event_types_ids_unrequired_nullable"))]
+    #[validate(nested)]
     #[serde(skip_serializing_if = "UnrequiredNullableField::is_absent")]
-    pub event_types_ids: UnrequiredNullableField<EventTypeNameSet>,
+    pub event_types: UnrequiredNullableField<EventTypeNameSet>,
 
-    #[validate(custom = "validate_channels_endpoint_unrequired_nullable")]
-    #[validate]
+    #[validate(custom(function = "validate_channels_endpoint_unrequired_nullable"))]
+    #[validate(nested)]
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     pub channels: UnrequiredNullableField<EventChannelSet>,
 
@@ -434,18 +424,16 @@ pub struct EndpointPatch {
 impl ModelIn for EndpointPatch {
     type ActiveModel = endpoint::ActiveModel;
 
-    #[allow(deprecated)]
     fn update_model(self, model: &mut Self::ActiveModel) {
         let EndpointPatch {
             description,
-            #[allow(deprecated)]
             rate_limit,
             throttle_rate,
             uid,
             url,
             version,
             disabled,
-            event_types_ids,
+            event_types: event_types_ids,
             channels,
             metadata: _,
         } = self;
@@ -510,7 +498,7 @@ pub struct EndpointOutCommon {
     /// An example endpoint name
     pub description: String,
     /// Deprecated, use `throttleRate` instead.
-    #[deprecated]
+    #[schemars(skip)]
     pub rate_limit: Option<u16>,
     /// Maximum messages per second to send to this endpoint.
     ///
@@ -520,17 +508,19 @@ pub struct EndpointOutCommon {
     pub uid: Option<EndpointUid>,
     #[schemars(url, length(min = 1, max = 65_536), example = "example_endpoint_url")]
     pub url: String,
-    #[deprecated]
-    #[schemars(range(min = 1), example = "example_endpoint_version")]
+    #[schemars(skip)]
     pub version: u16,
     #[schemars(
         example = "endpoint_disabled_default",
         default = "endpoint_disabled_default"
     )]
     pub disabled: bool,
-    #[serde(rename = "filterTypes")]
     #[schemars(example = "example_filter_types", length(min = 1))]
-    pub event_types_ids: Option<EventTypeNameSet>,
+    pub event_types: Option<EventTypeNameSet>,
+    /// Deprecated alias of `event_types`.
+    #[serde(rename = "filterTypes")]
+    #[schemars(skip)]
+    pub filter_types: Option<EventTypeNameSet>,
     /// List of message channels this endpoint listens to (omit for all)
     #[schemars(example = "example_channel_set", length(min = 1, max = 10))]
     pub channels: Option<EventChannelSet>,
@@ -539,7 +529,6 @@ pub struct EndpointOutCommon {
 }
 
 impl From<endpoint::Model> for EndpointOutCommon {
-    #[allow(deprecated)]
     fn from(model: endpoint::Model) -> Self {
         Self {
             description: model.description,
@@ -549,7 +538,8 @@ impl From<endpoint::Model> for EndpointOutCommon {
             url: model.url,
             version: model.version as u16,
             disabled: model.disabled,
-            event_types_ids: model.event_types_ids,
+            event_types: model.event_types_ids.clone(),
+            filter_types: model.event_types_ids,
             channels: model.channels,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
@@ -580,9 +570,37 @@ impl From<(endpoint::Model, Metadata)> for EndpointOut {
 #[derive(Default, Clone, Debug, PartialEq, Eq, Validate, Serialize, Deserialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointSecretRotateIn {
-    #[validate]
+    #[validate(nested)]
     #[serde(default)]
     key: Option<EndpointSecret>,
+    /// How long the old secret will be valid for, in seconds.
+    ///
+    /// Valid values are between 0 (immediate expiry) and 7 days.
+    /// The default is 24 hours.
+    #[serde(default)]
+    #[schemars(
+        default = "default_grace_period_seconds",
+        length(min = 0, max = 604_800)
+    )]
+    #[validate(range(
+        min = 0,
+        max = 604_800,
+        message = "Duration must be between 0 and 7 days"
+    ))]
+    pub grace_period_seconds: Option<u32>,
+}
+
+impl EndpointSecretRotateIn {
+    pub fn grace_period(&self) -> Duration {
+        Duration::seconds(
+            self.grace_period_seconds
+                .unwrap_or_else(default_grace_period_seconds) as _,
+        )
+    }
+}
+
+const fn default_grace_period_seconds() -> u32 {
+    86_400
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, JsonSchema)]
@@ -669,7 +687,7 @@ fn endpoint_headers_patch_example() -> EndpointHeadersPatch {
 #[derive(Clone, Debug, PartialEq, Eq, Validate, Deserialize, Serialize, JsonSchema)]
 #[serde(rename_all = "camelCase")]
 pub struct EndpointHeadersPatchIn {
-    #[validate]
+    #[validate(nested)]
     #[schemars(example = "endpoint_headers_patch_example")]
     pub headers: EndpointHeadersPatch,
 }
@@ -876,13 +894,13 @@ pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Endpoint");
     ApiRouter::new()
         .api_route_with(
-            "/app/:app_id/endpoint",
+            "/app/{app_id}/endpoint",
             post_with(crud::create_endpoint, crud::create_endpoint_operation)
                 .get_with(crud::list_endpoints, crud::list_endpoints_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id",
+            "/app/{app_id}/endpoint/{endpoint_id}",
             get_with(crud::get_endpoint, crud::get_endpoint_operation)
                 .put_with(crud::update_endpoint, crud::update_endpoint_operation)
                 .patch_with(crud::patch_endpoint, crud::patch_endpoint_operation)
@@ -890,7 +908,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/secret",
+            "/app/{app_id}/endpoint/{endpoint_id}/secret",
             get_with(
                 secrets::get_endpoint_secret,
                 secrets::get_endpoint_secret_operation,
@@ -898,7 +916,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/secret/rotate",
+            "/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             post_with(
                 secrets::rotate_endpoint_secret,
                 secrets::rotate_endpoint_secret_operation,
@@ -906,17 +924,17 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/stats",
+            "/app/{app_id}/endpoint/{endpoint_id}/stats",
             get_with(endpoint_stats, endpoint_stats_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/send-example",
+            "/app/{app_id}/endpoint/{endpoint_id}/send-example",
             post_with(send_example, send_example_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/recover",
+            "/app/{app_id}/endpoint/{endpoint_id}/recover",
             post_with(
                 recovery::recover_failed_webhooks,
                 recovery::recover_failed_webhooks_operation,
@@ -924,7 +942,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/headers",
+            "/app/{app_id}/endpoint/{endpoint_id}/headers",
             get_with(
                 headers::get_endpoint_headers,
                 headers::get_endpoint_headers_operation,
@@ -965,46 +983,45 @@ mod tests {
     const ENDPOINT_ID_INVALID: &str = "$$invalid-endpoint";
     const ENDPOINT_ID_VALID: &str = "valid-endpoint";
 
-    #[allow(deprecated)]
     #[test]
     fn test_endpoint_in_validation() {
         let invalid_1: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_INVALID,
-             "url": URL_VALID
+            "version": VERSION_INVALID,
+            "url": URL_VALID
         }))
         .unwrap();
 
         let invalid_2: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "channels": EVENT_CHANNELS_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "channels": EVENT_CHANNELS_INVALID
         }))
         .unwrap();
 
         let invalid_3: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "rateLimit": RATE_LIMIT_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_INVALID
         }))
         .unwrap();
 
         let invalid_4: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "uid": ENDPOINT_ID_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "uid": ENDPOINT_ID_INVALID
         }))
         .unwrap();
 
         let invalid_5: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "filterTypes": EVENT_TYPES_INVALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "filterTypes": EVENT_TYPES_INVALID
         }))
         .unwrap();
 
         let invalid_6: Result<EndpointIn, _> = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_INVALID
+            "version": VERSION_VALID,
+            "url": URL_INVALID
         }));
         assert!(invalid_6.is_err());
 
@@ -1013,22 +1030,22 @@ mod tests {
         }
 
         let valid_1: EndpointIn = serde_json::from_value(json!({
-             "version": VERSION_VALID,
-             "url": URL_VALID,
-             "rateLimit": RATE_LIMIT_VALID,
-             "uid": ENDPOINT_ID_VALID,
-             "filterTypes": EVENT_TYPES_VALID,
-             "channels": EVENT_CHANNELS_VALID
+            "version": VERSION_VALID,
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": ENDPOINT_ID_VALID,
+            "filterTypes": EVENT_TYPES_VALID,
+            "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
         valid_1.validate().unwrap();
 
         let valid_2: EndpointIn = serde_json::from_value(json!({
-             "url": URL_VALID,
-             "rateLimit": RATE_LIMIT_VALID,
-             "uid": ENDPOINT_ID_VALID,
-             "filterTypes": EVENT_TYPES_VALID,
-             "channels": EVENT_CHANNELS_VALID
+            "url": URL_VALID,
+            "rateLimit": RATE_LIMIT_VALID,
+            "uid": ENDPOINT_ID_VALID,
+            "filterTypes": EVENT_TYPES_VALID,
+            "channels": EVENT_CHANNELS_VALID
         }))
         .unwrap();
         valid_2.validate().unwrap();

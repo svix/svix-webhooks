@@ -22,20 +22,143 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EndpointIn {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private String description;
-    @JsonProperty private Boolean disabled;
-    @JsonProperty private Set<String> filterTypes;
-    @JsonProperty private Map<String, String> headers;
-    @JsonProperty private Map<String, String> metadata;
-    @JsonProperty private Long rateLimit;
-    @JsonProperty private String secret;
-    @JsonProperty private Long throttleRate;
-    @JsonProperty private String uid;
     @JsonProperty private URI url;
-    @JsonProperty private Long version;
+    @JsonProperty private String description;
+    @JsonProperty private Short throttleRate;
+    @JsonProperty private String uid;
+    @JsonProperty private Boolean disabled;
+    @JsonProperty private Set<String> eventTypes;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private String secret;
+    @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private Map<String, String> headers;
 
     public EndpointIn() {}
+
+    public EndpointIn url(URI url) {
+        this.url = url;
+        return this;
+    }
+
+    /**
+     * Get url
+     *
+     * @return url
+     */
+    @javax.annotation.Nonnull
+    public URI getUrl() {
+        return url;
+    }
+
+    public void setUrl(URI url) {
+        this.url = url;
+    }
+
+    public EndpointIn description(String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return description
+     */
+    @javax.annotation.Nullable
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public EndpointIn throttleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+        return this;
+    }
+
+    /**
+     * Maximum messages per second to send to this endpoint.
+     *
+     * <p>Outgoing messages will be throttled to this rate.
+     *
+     * @return throttleRate
+     */
+    @javax.annotation.Nullable
+    public Short getThrottleRate() {
+        return throttleRate;
+    }
+
+    public void setThrottleRate(Short throttleRate) {
+        this.throttleRate = throttleRate;
+    }
+
+    public EndpointIn uid(String uid) {
+        this.uid = uid;
+        return this;
+    }
+
+    /**
+     * Optional unique identifier for the endpoint.
+     *
+     * @return uid
+     */
+    @javax.annotation.Nullable
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public EndpointIn disabled(Boolean disabled) {
+        this.disabled = disabled;
+        return this;
+    }
+
+    /**
+     * Get disabled
+     *
+     * @return disabled
+     */
+    @javax.annotation.Nullable
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
+    public EndpointIn eventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public EndpointIn addEventTypesItem(String eventTypesItem) {
+        if (this.eventTypes == null) {
+            this.eventTypes = new LinkedHashSet<>();
+        }
+        this.eventTypes.add(eventTypesItem);
+
+        return this;
+    }
+
+    /**
+     * Get eventTypes
+     *
+     * @return eventTypes
+     */
+    @javax.annotation.Nullable
+    public Set<String> getEventTypes() {
+        return eventTypes;
+    }
+
+    public void setEventTypes(Set<String> eventTypes) {
+        this.eventTypes = eventTypes;
+    }
 
     public EndpointIn channels(Set<String> channels) {
         this.channels = channels;
@@ -65,98 +188,26 @@ public class EndpointIn {
         this.channels = channels;
     }
 
-    public EndpointIn description(String description) {
-        this.description = description;
+    public EndpointIn secret(String secret) {
+        this.secret = secret;
         return this;
     }
 
     /**
-     * Get description
+     * The endpoint's verification secret.
      *
-     * @return description
+     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
+     * to not set this and let the server generate the secret.
+     *
+     * @return secret
      */
     @javax.annotation.Nullable
-    public String getDescription() {
-        return description;
+    public String getSecret() {
+        return secret;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public EndpointIn disabled(Boolean disabled) {
-        this.disabled = disabled;
-        return this;
-    }
-
-    /**
-     * Get disabled
-     *
-     * @return disabled
-     */
-    @javax.annotation.Nullable
-    public Boolean getDisabled() {
-        return disabled;
-    }
-
-    public void setDisabled(Boolean disabled) {
-        this.disabled = disabled;
-    }
-
-    public EndpointIn filterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-        return this;
-    }
-
-    public EndpointIn addFilterTypesItem(String filterTypesItem) {
-        if (this.filterTypes == null) {
-            this.filterTypes = new LinkedHashSet<>();
-        }
-        this.filterTypes.add(filterTypesItem);
-
-        return this;
-    }
-
-    /**
-     * Get filterTypes
-     *
-     * @return filterTypes
-     */
-    @javax.annotation.Nullable
-    public Set<String> getFilterTypes() {
-        return filterTypes;
-    }
-
-    public void setFilterTypes(Set<String> filterTypes) {
-        this.filterTypes = filterTypes;
-    }
-
-    public EndpointIn headers(Map<String, String> headers) {
-        this.headers = headers;
-        return this;
-    }
-
-    public EndpointIn putHeadersItem(String key, String headersItem) {
-        if (this.headers == null) {
-            this.headers = new HashMap<>();
-        }
-        this.headers.put(key, headersItem);
-
-        return this;
-    }
-
-    /**
-     * Get headers
-     *
-     * @return headers
-     */
-    @javax.annotation.Nullable
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 
     public EndpointIn metadata(Map<String, String> metadata) {
@@ -187,129 +238,32 @@ public class EndpointIn {
         this.metadata = metadata;
     }
 
-    @Deprecated
-    public EndpointIn rateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
+    public EndpointIn headers(Map<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public EndpointIn putHeadersItem(String key, String headersItem) {
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
+        this.headers.put(key, headersItem);
+
         return this;
     }
 
     /**
-     * Deprecated, use `throttleRate` instead.
+     * Get headers
      *
-     * @return rateLimit
+     * @return headers
      */
     @javax.annotation.Nullable
-    @Deprecated
-    public Long getRateLimit() {
-        return rateLimit;
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
-    @Deprecated
-    public void setRateLimit(Long rateLimit) {
-        this.rateLimit = rateLimit;
-    }
-
-    public EndpointIn secret(String secret) {
-        this.secret = secret;
-        return this;
-    }
-
-    /**
-     * The endpoint's verification secret.
-     *
-     * <p>Format: `base64` encoded random bytes optionally prefixed with `whsec_`. It is recommended
-     * to not set this and let the server generate the secret.
-     *
-     * @return secret
-     */
-    @javax.annotation.Nullable
-    public String getSecret() {
-        return secret;
-    }
-
-    public void setSecret(String secret) {
-        this.secret = secret;
-    }
-
-    public EndpointIn throttleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-        return this;
-    }
-
-    /**
-     * Maximum messages per second to send to this endpoint.
-     *
-     * <p>Outgoing messages will be throttled to this rate.
-     *
-     * @return throttleRate
-     */
-    @javax.annotation.Nullable
-    public Long getThrottleRate() {
-        return throttleRate;
-    }
-
-    public void setThrottleRate(Long throttleRate) {
-        this.throttleRate = throttleRate;
-    }
-
-    public EndpointIn uid(String uid) {
-        this.uid = uid;
-        return this;
-    }
-
-    /**
-     * Optional unique identifier for the endpoint.
-     *
-     * @return uid
-     */
-    @javax.annotation.Nullable
-    public String getUid() {
-        return uid;
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
-    }
-
-    public EndpointIn url(URI url) {
-        this.url = url;
-        return this;
-    }
-
-    /**
-     * Get url
-     *
-     * @return url
-     */
-    @javax.annotation.Nonnull
-    public URI getUrl() {
-        return url;
-    }
-
-    public void setUrl(URI url) {
-        this.url = url;
-    }
-
-    @Deprecated
-    public EndpointIn version(Long version) {
-        this.version = version;
-        return this;
-    }
-
-    /**
-     * Get version
-     *
-     * @return version
-     */
-    @javax.annotation.Nullable
-    @Deprecated
-    public Long getVersion() {
-        return version;
-    }
-
-    @Deprecated
-    public void setVersion(Long version) {
-        this.version = version;
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     /**

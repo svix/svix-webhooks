@@ -20,9 +20,9 @@ import java.util.List;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ListResponseOperationalWebhookEndpointOut {
     @JsonProperty private List<OperationalWebhookEndpointOut> data;
-    @JsonProperty private Boolean done;
     @JsonProperty private String iterator;
     @JsonProperty private String prevIterator;
+    @JsonProperty private Boolean done;
 
     public ListResponseOperationalWebhookEndpointOut() {}
 
@@ -54,25 +54,6 @@ public class ListResponseOperationalWebhookEndpointOut {
 
     public void setData(List<OperationalWebhookEndpointOut> data) {
         this.data = data;
-    }
-
-    public ListResponseOperationalWebhookEndpointOut done(Boolean done) {
-        this.done = done;
-        return this;
-    }
-
-    /**
-     * Get done
-     *
-     * @return done
-     */
-    @javax.annotation.Nonnull
-    public Boolean getDone() {
-        return done;
-    }
-
-    public void setDone(Boolean done) {
-        this.done = done;
     }
 
     public ListResponseOperationalWebhookEndpointOut iterator(String iterator) {
@@ -111,6 +92,25 @@ public class ListResponseOperationalWebhookEndpointOut {
 
     public void setPrevIterator(String prevIterator) {
         this.prevIterator = prevIterator;
+    }
+
+    public ListResponseOperationalWebhookEndpointOut done(Boolean done) {
+        this.done = done;
+        return this;
+    }
+
+    /**
+     * Get done
+     *
+     * @return done
+     */
+    @javax.annotation.Nonnull
+    public Boolean getDone() {
+        return done;
+    }
+
+    public void setDone(Boolean done) {
+        this.done = done;
     }
 
     /**

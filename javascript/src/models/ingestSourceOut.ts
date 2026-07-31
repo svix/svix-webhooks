@@ -17,6 +17,8 @@ import { type EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostC
 import { type GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { type HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
 import { type MetaConfigOut, MetaConfigOutSerializer } from "./metaConfigOut";
+import { type NangoConfigOut, NangoConfigOutSerializer } from "./nangoConfigOut";
+import { type OpenClawConfigOut, OpenClawConfigOutSerializer } from "./openClawConfigOut";
 import { type OrumIoConfigOut, OrumIoConfigOutSerializer } from "./orumIoConfigOut";
 import { type PandaDocConfigOut, PandaDocConfigOutSerializer } from "./pandaDocConfigOut";
 import { type PortIoConfigOut, PortIoConfigOutSerializer } from "./portIoConfigOut";
@@ -37,15 +39,15 @@ import { type VgsConfigOut, VgsConfigOutSerializer } from "./vgsConfigOut";
 import { type ZoomConfigOut, ZoomConfigOutSerializer } from "./zoomConfigOut";
 
 interface _IngestSourceOutFields {
-  createdAt: Date;
   /** The Source's ID. */
   id: string;
-  ingestUrl?: string | null;
-  metadata: { [key: string]: string };
-  name: string;
   /** The Source's UID. */
   uid?: string | null;
+  name: string;
+  ingestUrl?: string | null;
+  createdAt: Date;
   updatedAt: Date;
+  metadata: { [key: string]: string };
 }
 
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
@@ -126,9 +128,19 @@ interface IngestSourceOutMeta {
   config: MetaConfigOut;
 }
 
+interface IngestSourceOutNango {
+  type: "nango";
+  config: NangoConfigOut;
+}
+
 interface IngestSourceOutNash {
   type: "nash";
   config: SvixConfigOut;
+}
+
+interface IngestSourceOutOpenclaw {
+  type: "openclaw";
+  config: OpenClawConfigOut;
 }
 
 interface IngestSourceOutOrumIo {
@@ -273,7 +285,9 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutIncidentIo
     | IngestSourceOutLithic
     | IngestSourceOutMeta
+    | IngestSourceOutNango
     | IngestSourceOutNash
+    | IngestSourceOutOpenclaw
     | IngestSourceOutOrumIo
     | IngestSourceOutPandaDoc
     | IngestSourceOutPortIo
@@ -337,8 +351,12 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "meta":
           return MetaConfigOutSerializer._fromJsonObject(object["config"]);
+        case "nango":
+          return NangoConfigOutSerializer._fromJsonObject(object["config"]);
         case "nash":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "openclaw":
+          return OpenClawConfigOutSerializer._fromJsonObject(object["config"]);
         case "orum-io":
           return OrumIoConfigOutSerializer._fromJsonObject(object["config"]);
         case "panda-doc":
@@ -397,13 +415,13 @@ export const IngestSourceOutSerializer = {
     return {
       type,
       config: getConfig(type),
-      createdAt: new Date(object["createdAt"]),
       id: object["id"],
-      ingestUrl: object["ingestUrl"],
-      metadata: object["metadata"],
-      name: object["name"],
       uid: object["uid"],
+      name: object["name"],
+      ingestUrl: object["ingestUrl"],
+      createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
+      metadata: object["metadata"],
     };
   },
 
@@ -456,8 +474,14 @@ export const IngestSourceOutSerializer = {
       case "meta":
         config = MetaConfigOutSerializer._toJsonObject(self.config);
         break;
+      case "nango":
+        config = NangoConfigOutSerializer._toJsonObject(self.config);
+        break;
       case "nash":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "openclaw":
+        config = OpenClawConfigOutSerializer._toJsonObject(self.config);
         break;
       case "orum-io":
         config = OrumIoConfigOutSerializer._toJsonObject(self.config);
@@ -539,13 +563,13 @@ export const IngestSourceOutSerializer = {
     return {
       type: self.type,
       config: config,
-      createdAt: self.createdAt,
       id: self.id,
-      ingestUrl: self.ingestUrl,
-      metadata: self.metadata,
-      name: self.name,
       uid: self.uid,
+      name: self.name,
+      ingestUrl: self.ingestUrl,
+      createdAt: self.createdAt,
       updatedAt: self.updatedAt,
+      metadata: self.metadata,
     };
   },
 };

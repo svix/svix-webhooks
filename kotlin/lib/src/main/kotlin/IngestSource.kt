@@ -56,8 +56,8 @@ class IngestSource(private val client: SvixHttpClient) {
         return client.executeRequest<Any, IngestSourceOut>("GET", url.build())
     }
 
-    /** Update an Ingest Source. */
-    suspend fun update(sourceId: String, ingestSourceIn: IngestSourceIn): IngestSourceOut {
+    /** Create or update an Ingest Source. */
+    suspend fun upsert(sourceId: String, ingestSourceIn: IngestSourceIn): IngestSourceOut {
         val url = client.newUrlBuilder().encodedPath("/ingest/api/v1/source/$sourceId")
 
         return client.executeRequest<IngestSourceIn, IngestSourceOut>(

@@ -45,9 +45,14 @@ class SvixRequest
     public function setQueryParam(string $name, $value): void
     {
         if ($value === null) {
-            // HACK: default expanded_statuses to true, it only defaults to false
-            //       server-side because of backwards-compatibility for old SDKs
-            if ($name === 'expanded_statuses') {
+            // default with_content to true, it only defaults to false
+            // server-side because of backwards-compatibility for old SDKs
+            if ($name == 'with_content') {
+                $this->queryParams[$name] = 'false';
+            }
+            // default expanded_statuses to true, it only defaults to false
+            // server-side because of backwards-compatibility for old SDKs
+            elseif ($name === 'expanded_statuses') {
                 $this->queryParams[$name] = 'true';
             }
         } elseif (is_string($value)) {

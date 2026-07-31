@@ -1,31 +1,31 @@
 // this file is @generated
 
 export interface EventBridgePatchConfig {
-  accessKeyId?: string;
-  detailType?: string;
   eventBusName?: string;
-  region?: string;
+  detailType?: string;
+  accessKeyId?: string;
   secretAccessKey?: string;
+  region?: string;
 }
 
 export const EventBridgePatchConfigSerializer = {
   _fromJsonObject(object: any): EventBridgePatchConfig {
     return {
-      accessKeyId: object["accessKeyId"],
-      detailType: object["detailType"],
       eventBusName: object["eventBusName"],
-      region: object["region"],
+      detailType: object["detailType"],
+      accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      region: object["region"],
     };
   },
 
   _toJsonObject(self: EventBridgePatchConfig): any {
     return {
-      accessKeyId: self.accessKeyId,
-      detailType: self.detailType,
       eventBusName: self.eventBusName,
-      region: self.region,
+      detailType: self.detailType,
+      accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      region: self.region,
     };
   },
 };

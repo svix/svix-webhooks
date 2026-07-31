@@ -1,0 +1,15 @@
+// this file is @generated
+
+{% macro resource_mods(resource) -%}
+pub(crate) mod {{ resource.name | to_snake_case }};
+{%- for _, sub in resource.subresources | items -%}
+    {{- resource_mods(sub) -}}
+{%- endfor -%}
+{% endmacro -%}
+
+{% for res in api.resources -%}
+    {# HACK: these would be empty due to exclusions and don't get generated at the moment -#}
+    {% if res.name not in ["background-task", "statistics"] -%}
+    {{ resource_mods(res) }}
+    {% endif -%}
+{% endfor %}

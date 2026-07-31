@@ -166,7 +166,7 @@ impl<'de> Deserialize<'de> for EndpointMessageOut {
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptedMessagesQueryParams {
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Filter response based on the delivery status
     status: Option<MessageStatus>,
@@ -450,7 +450,7 @@ pub struct ListAttemptsByEndpointQueryParams {
     /// Filter response based on the HTTP status code
     status_code_class: Option<StatusCodeClass>,
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
@@ -599,10 +599,10 @@ pub struct ListAttemptsByMsgQueryParams {
     /// Filter response based on the HTTP status code
     status_code_class: Option<StatusCodeClass>,
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     channel: Option<EventChannel>,
     /// Filter the attempts based on the attempted endpoint
-    #[validate]
+    #[validate(nested)]
     endpoint_id: Option<EndpointIdOrUid>,
     /// Only include items created before a certain date
     before: Option<DateTime<Utc>>,
@@ -800,7 +800,7 @@ async fn list_attempted_destinations(
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct ListAttemptsForEndpointQueryParams {
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     pub channel: Option<EventChannel>,
     /// Filter response based on the delivery status
     pub status: Option<MessageStatus>,
@@ -822,14 +822,13 @@ impl From<MessageAttemptOut> for MessageAttemptEndpointOut {
     }
 }
 
-/// DEPRECATED: please use list_attempts with endpoint_id as a query parameter instead.
+/// Deprecated: please use list_attempts with endpoint_id as a query parameter instead.
 ///
 /// List the message attempts for a particular endpoint.
 ///
 /// Returning the endpoint.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
-#[aide_annotate(op_id = "v1.message-attempt.list-by-endpoint-deprecated")]
 async fn list_attempts_for_endpoint(
     state: State<AppState>,
     pagination: ValidatedQuery<PaginationDescending<ReversibleIterator<MessageAttemptId>>>,
@@ -880,10 +879,10 @@ async fn list_attempts_for_endpoint(
 #[derive(Debug, Deserialize, Validate, JsonSchema)]
 pub struct AttemptListFetchQueryParams {
     /// Filter the attempts based on the attempted endpoint
-    #[validate]
+    #[validate(nested)]
     pub endpoint_id: Option<EndpointIdOrUid>,
     /// Filter response based on the channel
-    #[validate]
+    #[validate(nested)]
     pub channel: Option<EventChannel>,
     /// Filter response based on the delivery status
     pub status: Option<MessageStatus>,
@@ -896,7 +895,6 @@ pub struct AttemptListFetchQueryParams {
 /// Deprecated: Please use "List Attempts by Endpoint" and "List Attempts by Msg" instead.
 ///
 /// `msg_id`: Use a message id or a message `eventId`
-#[aide_annotate(op_id = "v1.message-attempt.list-by-msg-deprecated")]
 async fn list_messageattempts(
     State(AppState { ref db, .. }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<
@@ -1061,24 +1059,23 @@ async fn expunge_attempt_content(
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Message Attempt");
     ApiRouter::new()
-        // NOTE: [`list_messageattempts`] is deprecated
-        .api_route_with(
-            "/app/:app_id/msg/:msg_id/attempt",
-            get_with(list_messageattempts, list_messageattempts_operation),
-            &tag,
+        // use route / axum::routing to skip OpenAPI inclusion for the deprecated route
+        .route(
+            "/app/{app_id}/msg/{msg_id}/attempt",
+            axum::routing::get(list_messageattempts),
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/attempt/:attempt_id",
+            "/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}",
             get_with(get_messageattempt, get_messageattempt_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/attempt/:attempt_id/content",
+            "/app/{app_id}/msg/{msg_id}/attempt/{attempt_id}/content",
             delete_with(expunge_attempt_content, expunge_attempt_content_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/endpoint",
+            "/app/{app_id}/msg/{msg_id}/endpoint",
             get_with(
                 list_attempted_destinations,
                 list_attempted_destinations_operation,
@@ -1086,26 +1083,22 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/resend",
+            "/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/resend",
             post_with(resend_webhook, resend_webhook_operation),
             &tag,
         )
-        // NOTE: [`list_attempts_for_endpoint`] is deprecated
-        .api_route_with(
-            "/app/:app_id/msg/:msg_id/endpoint/:endpoint_id/attempt",
-            get_with(
-                list_attempts_for_endpoint,
-                list_attempts_for_endpoint_operation,
-            ),
-            &tag,
+        // use route / axum::routing to skip OpenAPI inclusion for the deprecated route
+        .route(
+            "/app/{app_id}/msg/{msg_id}/endpoint/{endpoint_id}/attempt",
+            axum::routing::get(list_attempts_for_endpoint),
         )
         .api_route_with(
-            "/app/:app_id/endpoint/:endpoint_id/msg",
+            "/app/{app_id}/endpoint/{endpoint_id}/msg",
             get_with(list_attempted_messages, list_attempted_messages_operation),
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/attempt/endpoint/:endpoint_id",
+            "/app/{app_id}/attempt/endpoint/{endpoint_id}",
             get_with(
                 list_attempts_by_endpoint,
                 list_attempts_by_endpoint_operation,
@@ -1113,7 +1106,7 @@ pub fn router() -> ApiRouter<AppState> {
             &tag,
         )
         .api_route_with(
-            "/app/:app_id/attempt/msg/:msg_id",
+            "/app/{app_id}/attempt/msg/{msg_id}",
             get_with(list_attempts_by_msg, list_attempts_by_msg_operation),
             tag,
         )

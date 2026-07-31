@@ -44,7 +44,7 @@ module Svix
       StreamOut.deserialize(res)
     end
 
-    def update(stream_id, stream_in)
+    def upsert(stream_id, stream_in)
       res = @client.execute_request(
         "PUT",
         "/api/v1/stream/#{stream_id}",

@@ -1,15 +1,19 @@
 // this file is @generated
 use clap::{Args, Subcommand};
-use svix::api::*;
+use svix::api::Svix;
+#[allow(unused_imports)]
+use svix::models::*;
 
 #[derive(Args, Clone)]
 pub struct StreamingStreamListOptions {
     /// Limit the number of returned items
     #[arg(long)]
-    pub limit: Option<i32>,
+    pub limit: Option<u64>,
+
     /// The iterator returned from a prior invocation
     #[arg(long)]
     pub iterator: Option<String>,
+
     /// The sorting order of the returned items
     #[arg(long)]
     pub order: Option<Ordering>,
@@ -65,16 +69,16 @@ pub enum StreamingStreamCommands {
     #[command(after_help = "Example response:
 {
   \"data\": [{
-    \"createdAt\": \"2030-01-01T00:00:00Z\",
     \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-    \"metadata\": {\"key\": \"...\"},
-    \"name\": \"...\",
     \"uid\": \"unique-identifier\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"name\": \"...\",
+    \"createdAt\": \"2030-01-01T00:00:00Z\",
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"metadata\": {\"key\": \"...\"}
   }],
-  \"done\": true,
   \"iterator\": \"iterator\",
-  \"prevIterator\": \"-iterator\"
+  \"prevIterator\": \"-iterator\",
+  \"done\": true
 }\n")]
     List {
         #[clap(flatten)]
@@ -91,17 +95,17 @@ pub enum StreamingStreamCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Create {
         stream_in: crate::json::JsonOf<StreamIn>,
@@ -119,38 +123,38 @@ pub enum StreamingStreamCommands {
         ))]
     #[command(after_help = "Example response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Get { stream_id: String },
-    /// Update a stream.
+    /// Create or update a stream.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix streaming stream update strm_abc000000000000000000 {...}\n",
+            "Example: svix streaming stream upsert strm_abc000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
     #[command(after_help = "Example body:
 {
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
-  \"uid\": \"unique-identifier\"
-}\n\nExample response:
-{
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
   \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"metadata\": {\"key\": \"...\"}
+}\n\nExample response:
+{
+  \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
+  \"uid\": \"unique-identifier\",
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
-    Update {
+    Upsert {
         stream_id: String,
         stream_in: crate::json::JsonOf<StreamIn>,
     },
@@ -176,16 +180,16 @@ pub enum StreamingStreamCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"...\",
-  \"metadata\": {\"key\": \"...\"},
-  \"uid\": \"unique-identifier\"
+  \"uid\": \"unique-identifier\",
+  \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
-  \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"id\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
-  \"metadata\": {\"key\": \"...\"},
-  \"name\": \"...\",
   \"uid\": \"unique-identifier\",
-  \"updatedAt\": \"2030-01-01T00:00:00Z\"
+  \"name\": \"...\",
+  \"createdAt\": \"2030-01-01T00:00:00Z\",
+  \"updatedAt\": \"2030-01-01T00:00:00Z\",
+  \"metadata\": {\"key\": \"...\"}
 }\n")]
     Patch {
         stream_id: String,
@@ -220,14 +224,14 @@ impl StreamingStreamCommands {
                 let resp = client.streaming().stream().get(stream_id).await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }
-            Self::Update {
+            Self::Upsert {
                 stream_id,
                 stream_in,
             } => {
                 let resp = client
                     .streaming()
                     .stream()
-                    .update(stream_id, stream_in.into_inner())
+                    .upsert(stream_id, stream_in.into_inner())
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

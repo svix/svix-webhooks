@@ -1,9 +1,9 @@
 # This file is @generated
 from ..models import EndpointOut, SubscribeIn
-from .common import ApiBase
+from .common import ApiBaseAsync, ApiBaseSync
 
 
-class EndpointAutoConfigAsync(ApiBase):
+class EndpointAutoConfigAsync(ApiBaseAsync):
     async def update(
         self, app_id: str, endpoint_id: str, subscribe_in: SubscribeIn
     ) -> EndpointOut:
@@ -20,7 +20,7 @@ class EndpointAutoConfigAsync(ApiBase):
         return EndpointOut.model_validate(response.json())
 
 
-class EndpointAutoConfig(ApiBase):
+class EndpointAutoConfig(ApiBaseSync):
     def update(
         self, app_id: str, endpoint_id: str, subscribe_in: SubscribeIn
     ) -> EndpointOut:

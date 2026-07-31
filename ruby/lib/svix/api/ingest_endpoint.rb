@@ -5,8 +5,10 @@ require "net/http"
 
 module Svix
   class IngestEndpoint
+    attr_accessor :transformation
     def initialize(client)
       @client = client
+      @transformation = IngestEndpointTransformation.new(client)
     end
 
     def list(source_id, options = {})
@@ -44,11 +46,11 @@ module Svix
       IngestEndpointOut.deserialize(res)
     end
 
-    def update(source_id, endpoint_id, ingest_endpoint_update)
+    def upsert(source_id, endpoint_id, ingest_endpoint_upsert_in)
       res = @client.execute_request(
         "PUT",
         "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}",
-        body: ingest_endpoint_update
+        body: ingest_endpoint_upsert_in
       )
       IngestEndpointOut.deserialize(res)
     end
@@ -57,22 +59,6 @@ module Svix
       @client.execute_request(
         "DELETE",
         "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}"
-      )
-    end
-
-    def get_headers(source_id, endpoint_id)
-      res = @client.execute_request(
-        "GET",
-        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers"
-      )
-      IngestEndpointHeadersOut.deserialize(res)
-    end
-
-    def update_headers(source_id, endpoint_id, ingest_endpoint_headers_in)
-      @client.execute_request(
-        "PUT",
-        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers",
-        body: ingest_endpoint_headers_in
       )
     end
 
@@ -96,19 +82,19 @@ module Svix
       )
     end
 
-    def get_transformation(source_id, endpoint_id)
+    def get_headers(source_id, endpoint_id)
       res = @client.execute_request(
         "GET",
-        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/transformation"
+        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers"
       )
-      IngestEndpointTransformationOut.deserialize(res)
+      IngestEndpointHeadersOut.deserialize(res)
     end
 
-    def set_transformation(source_id, endpoint_id, ingest_endpoint_transformation_patch)
+    def set_headers(source_id, endpoint_id, ingest_endpoint_headers_in)
       @client.execute_request(
-        "PATCH",
-        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/transformation",
-        body: ingest_endpoint_transformation_patch
+        "PUT",
+        "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/headers",
+        body: ingest_endpoint_headers_in
       )
     end
 

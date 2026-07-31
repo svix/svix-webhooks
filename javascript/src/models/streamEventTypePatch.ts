@@ -1,28 +1,28 @@
 // this file is @generated
 
 export interface StreamEventTypePatch {
-  archived?: boolean;
-  deprecated?: boolean;
   description?: string | null;
   featureFlags?: string[] | null;
+  deprecated?: boolean;
+  archived?: boolean;
 }
 
 export const StreamEventTypePatchSerializer = {
   _fromJsonObject(object: any): StreamEventTypePatch {
     return {
-      archived: object["archived"],
-      deprecated: object["deprecated"],
       description: object["description"],
       featureFlags: object["featureFlags"],
+      deprecated: object["deprecated"],
+      archived: object["archived"],
     };
   },
 
   _toJsonObject(self: StreamEventTypePatch): any {
     return {
-      archived: self.archived,
-      deprecated: self.deprecated,
       description: self.description,
       featureFlags: self.featureFlags,
+      deprecated: self.deprecated,
+      archived: self.archived,
     };
   },
 };

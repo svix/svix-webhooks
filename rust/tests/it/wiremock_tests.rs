@@ -1,5 +1,8 @@
 use serde_json::json;
-use svix::api::{MessageIn, MessageListOptions, Svix, SvixOptions};
+use svix::{
+    api::{MessageListOptions, Svix, SvixOptions},
+    models::{ApplicationIn, MessageIn},
+};
 
 use wiremock::{
     matchers::{method, path, query_param},
@@ -53,14 +56,17 @@ async fn test_urlencoded_octothorpe() {
         .expect("we should have sent a request");
 
     assert_eq!(1, requests.len());
-    assert_eq!(Some("tag=test%23test"), requests[0].url.query());
+    assert_eq!(
+        Some("with_content=false&tag=test%23test"),
+        requests[0].url.query()
+    );
 }
 
 #[tokio::test]
 async fn test_idempotency_key_is_sent_for_create_request() {
     let mock_server = MockServer::start().await;
 
-    let json_body = r#"{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
+    let json_body = r#"{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
     Mock::given(method("POST"))
         .and(path("/api/v1/app"))
         .respond_with(ResponseTemplate::new(200).set_body_string(json_body))
@@ -70,7 +76,7 @@ async fn test_idempotency_key_is_sent_for_create_request() {
     mock_server
         .svix_client()
         .application()
-        .create(svix::api::ApplicationIn::new("test app".to_string()), None)
+        .create(ApplicationIn::new("test app".to_string()), None)
         .await
         .unwrap();
 
@@ -94,7 +100,7 @@ async fn test_idempotency_key_is_sent_for_create_request() {
 async fn test_client_provided_idempotency_key_is_not_overridden() {
     let mock_server = MockServer::start().await;
 
-    let json_body = r#"{"uid":"unique-identifier","name":"My first application","rateLimit":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
+    let json_body = r#"{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
     Mock::given(method("POST"))
         .and(path("/api/v1/app"))
         .respond_with(ResponseTemplate::new(200).set_body_string(json_body))
@@ -106,7 +112,7 @@ async fn test_client_provided_idempotency_key_is_not_overridden() {
         .svix_client()
         .application()
         .create(
-            svix::api::ApplicationIn::new("test app".to_string()),
+            ApplicationIn::new("test app".to_string()),
             Some(svix::api::ApplicationCreateOptions {
                 idempotency_key: Some(client_provided_key.to_string()),
             }),
@@ -188,12 +194,12 @@ async fn test_cmg_with_content_default() {
         .message()
         .create(
             app_id.to_owned(),
-            MessageIn::new(event_type.to_owned(), payload.clone()),
+            MessageIn::new(event_type.to_owned(), payload),
             None,
         )
         .await
         .unwrap();
 
-    assert_eq!(response.payload, payload);
+    assert_eq!(response.payload, json!({ "m": "FILTERED" }));
     mock_server.verify().await;
 }

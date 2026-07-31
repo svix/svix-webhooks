@@ -9,7 +9,7 @@ use Svix\Exception\ApiException;
 use Svix\Models\ConnectorIn;
 use Svix\Models\ConnectorOut;
 use Svix\Models\ConnectorPatch;
-use Svix\Models\ConnectorUpdate;
+use Svix\Models\ConnectorUpsertIn;
 use Svix\Models\ListResponseConnectorOut;
 use Svix\Request\SvixHttpClient;
 
@@ -26,13 +26,13 @@ class Connector
      * @throws ApiException
      */
     public function list(
-        ?ConnectorListOptions $options = null,
+        ConnectorListOptions $options = new ConnectorListOptions(),
     ): ListResponseConnectorOut {
         $request = $this->client->newReq('GET', '/api/v1/connector');
-        $request->setQueryParam('limit', $options?->limit);
-        $request->setQueryParam('iterator', $options?->iterator);
-        $request->setQueryParam('order', $options?->order);
-        $request->setQueryParam('product_type', $options?->productType);
+        $request->setQueryParam('limit', $options->limit);
+        $request->setQueryParam('iterator', $options->iterator);
+        $request->setQueryParam('order', $options->order);
+        $request->setQueryParam('product_type', $options->productType);
         $res = $this->client->send($request);
 
         return ListResponseConnectorOut::fromJson($res);
@@ -45,10 +45,10 @@ class Connector
      */
     public function create(
         ConnectorIn $connectorIn,
-        ?ConnectorCreateOptions $options = null,
+        ConnectorCreateOptions $options = new ConnectorCreateOptions(),
     ): ConnectorOut {
         $request = $this->client->newReq('POST', '/api/v1/connector');
-        $request->setHeaderParam('idempotency-key', $options?->idempotencyKey);
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($connectorIn));
         $res = $this->client->send($request);
 
@@ -70,16 +70,16 @@ class Connector
     }
 
     /**
-     * Update a connector.
+     * Create or update a connector.
      *
      * @throws ApiException
      */
-    public function update(
+    public function upsert(
         string $connectorId,
-        ConnectorUpdate $connectorUpdate,
+        ConnectorUpsertIn $connectorUpsertIn,
     ): ConnectorOut {
         $request = $this->client->newReq('PUT', "/api/v1/connector/{$connectorId}");
-        $request->setBody(json_encode($connectorUpdate));
+        $request->setBody(json_encode($connectorUpsertIn));
         $res = $this->client->send($request);
 
         return ConnectorOut::fromJson($res);

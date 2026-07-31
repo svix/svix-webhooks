@@ -20,63 +20,16 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class MessageOut {
-    @JsonProperty private Set<String> channels;
-    @JsonProperty private OffsetDateTime deliverAt;
     @JsonProperty private String eventId;
     @JsonProperty private String eventType;
-    @JsonProperty private String id;
     @JsonProperty private Object payload;
-    @JsonProperty private Set<String> tags;
+    @JsonProperty private Set<String> channels;
+    @JsonProperty private String id;
     @JsonProperty private OffsetDateTime timestamp;
+    @JsonProperty private Set<String> tags;
+    @JsonProperty private OffsetDateTime deliverAt;
 
     public MessageOut() {}
-
-    public MessageOut channels(Set<String> channels) {
-        this.channels = channels;
-        return this;
-    }
-
-    public MessageOut addChannelsItem(String channelsItem) {
-        if (this.channels == null) {
-            this.channels = new LinkedHashSet<>();
-        }
-        this.channels.add(channelsItem);
-
-        return this;
-    }
-
-    /**
-     * List of free-form identifiers that endpoints can filter by
-     *
-     * @return channels
-     */
-    @javax.annotation.Nullable
-    public Set<String> getChannels() {
-        return channels;
-    }
-
-    public void setChannels(Set<String> channels) {
-        this.channels = channels;
-    }
-
-    public MessageOut deliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
-        return this;
-    }
-
-    /**
-     * Get deliverAt
-     *
-     * @return deliverAt
-     */
-    @javax.annotation.Nullable
-    public OffsetDateTime getDeliverAt() {
-        return deliverAt;
-    }
-
-    public void setDeliverAt(OffsetDateTime deliverAt) {
-        this.deliverAt = deliverAt;
-    }
 
     public MessageOut eventId(String eventId) {
         this.eventId = eventId;
@@ -116,6 +69,53 @@ public class MessageOut {
         this.eventType = eventType;
     }
 
+    public MessageOut payload(Object payload) {
+        this.payload = payload;
+        return this;
+    }
+
+    /**
+     * Get payload
+     *
+     * @return payload
+     */
+    @javax.annotation.Nonnull
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
+    }
+
+    public MessageOut channels(Set<String> channels) {
+        this.channels = channels;
+        return this;
+    }
+
+    public MessageOut addChannelsItem(String channelsItem) {
+        if (this.channels == null) {
+            this.channels = new LinkedHashSet<>();
+        }
+        this.channels.add(channelsItem);
+
+        return this;
+    }
+
+    /**
+     * List of free-form identifiers that endpoints can filter by
+     *
+     * @return channels
+     */
+    @javax.annotation.Nullable
+    public Set<String> getChannels() {
+        return channels;
+    }
+
+    public void setChannels(Set<String> channels) {
+        this.channels = channels;
+    }
+
     public MessageOut id(String id) {
         this.id = id;
         return this;
@@ -135,23 +135,23 @@ public class MessageOut {
         this.id = id;
     }
 
-    public MessageOut payload(Object payload) {
-        this.payload = payload;
+    public MessageOut timestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
         return this;
     }
 
     /**
-     * Get payload
+     * Get timestamp
      *
-     * @return payload
+     * @return timestamp
      */
     @javax.annotation.Nonnull
-    public Object getPayload() {
-        return payload;
+    public OffsetDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setPayload(Object payload) {
-        this.payload = payload;
+    public void setTimestamp(OffsetDateTime timestamp) {
+        this.timestamp = timestamp;
     }
 
     public MessageOut tags(Set<String> tags) {
@@ -182,23 +182,23 @@ public class MessageOut {
         this.tags = tags;
     }
 
-    public MessageOut timestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+    public MessageOut deliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
         return this;
     }
 
     /**
-     * Get timestamp
+     * Get deliverAt
      *
-     * @return timestamp
+     * @return deliverAt
      */
-    @javax.annotation.Nonnull
-    public OffsetDateTime getTimestamp() {
-        return timestamp;
+    @javax.annotation.Nullable
+    public OffsetDateTime getDeliverAt() {
+        return deliverAt;
     }
 
-    public void setTimestamp(OffsetDateTime timestamp) {
-        this.timestamp = timestamp;
+    public void setDeliverAt(OffsetDateTime deliverAt) {
+        this.deliverAt = deliverAt;
     }
 
     /**

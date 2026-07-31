@@ -22,10 +22,11 @@ jemalloc = ["dep:tikv-jemallocator"]
 tikv-jemallocator = { version = "0.7.0", optional = true }
 
 [dependencies]
-aide = { version = "0.13.4", features = ["axum", "redoc", "macros", "axum-headers"] }
+aide = { version = "0.14.2", features = ["axum", "axum-json", "axum-query", "redoc", "macros"] }
 anyhow = "1.0.56"
-axum = "0.7.9"
-axum-extra = { version = "0.9.3", features = ["typed-header"] }
+async-trait = "0.1.89"
+axum = "0.8.9"
+axum-extra = { version = "0.10.3", features = ["typed-header"] }
 base64 = "0.22"
 bb8 = "0.9.0"
 bb8-redis = "0.24.0"
@@ -55,18 +56,18 @@ hyper-util = { version = "0.1.16", features = ["client-legacy", "client-proxy", 
 idna_adapter = "=1.1.0"
 indexmap = "2.6.0"
 ipnet = { version = "2.5", features = ["serde"] }
-itertools = "0.14"
-jsonschema = "0.46.5"
+itertools = "0.15.0"
+jsonschema = "0.49.2"
 jwt-simple = "0.11.6"
 lapin = "4.10.0"
 num_enum = "0.7.2"
 omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "acb40983ed65f6cbebb19c05d590249306674a33", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
 openssl = "0.10.72"
-opentelemetry = { version = "0.29.0", features = ["metrics"] }
-opentelemetry-http = "0.29.0"
-opentelemetry-otlp = { version = "0.29.0", default-features = false, features = ["grpc-tonic", "internal-logs", "metrics", "trace"] }
-opentelemetry-semantic-conventions = "0.29.0"
-opentelemetry_sdk = { version = "0.29.0", features = ["rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
+opentelemetry = { version = "0.32.0", features = ["metrics"] }
+opentelemetry-http = "0.32.0"
+opentelemetry-otlp = { version = "0.32.0", default-features = false, features = ["grpc-tonic", "internal-logs", "metrics", "trace"] }
+opentelemetry-semantic-conventions = "0.32.0"
+opentelemetry_sdk = { version = "0.32.0", features = ["rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
 rand = "0.10"
 redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
 regex = "1.5.5"
@@ -78,7 +79,7 @@ serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 serde_path_to_error = "0.1.7"
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "migrate"] }
-svix = "1.17.0"
+svix = "1.99.0"
 svix-ksuid = { version = "0.10.0", default-features = false, features = ["chrono04"] }
 svix-server-derive = { path = "../svix-server-derive" }
 thiserror = "2.0.11"
@@ -88,14 +89,14 @@ tokio-util = "0.7"
 tower = "0.5.1"
 tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id"] }
 tracing = "0.1.35"
-tracing-opentelemetry = "0.30.0"
+tracing-opentelemetry = "0.33.0"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 url = { version = "2.2.2", features = ["serde"] }
 urlencoding = "2.1.2"
-# Forked version of 0.16 with a small fix and dependency upgrades, since we
-# haven't gotten around to doing a proper upgrade yet (0.17 is a large
-# rewrite with a barely-useful changelog)
-validator = { git = "https://github.com/svix/validator.git", rev = "aebdc34a4ed72524902ff6d63397b9c435b0578f", features = ["derive"] }
+validator = { version = "0.20.0", features = ["derive"] }
+
+[build-dependencies]
+rust-executable-metadata = { git = "https://github.com/svix/rust-executable-metadata", rev = "7a32435fbdab53f33e6abab9c1ab500afef0a7a8" }
 
 [dev-dependencies]
 assert_matches = "1.5.0"

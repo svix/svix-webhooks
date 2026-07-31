@@ -1,0 +1,21 @@
+{% do set_summary_filename("Svix.kt") -%}
+// this file is @generated
+package com.svix.kotlin
+
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+
+class Svix(token: String, options: SvixOptions = SvixOptions()) {
+{%- for resource in api.resources %}
+    val {{ resource.name | to_lower_camel_case }}: {{ resource.name | to_upper_camel_case }}
+{%- endfor %}
+
+    init {
+        val baseUrl = options.baseUrl ?: baseUrlFromToken(token)
+        val parsedUrl = baseUrl.toHttpUrlOrNull() ?: throw Exception("Invalid base url")
+        val httpClient = SvixHttpClient(token, parsedUrl, options.retrySchedule)
+
+{% for resource in api.resources %}
+        {{ resource.name | to_lower_camel_case }} = {{ resource.name | to_upper_camel_case }}(httpClient)
+{%- endfor %}
+    }
+}

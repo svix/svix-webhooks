@@ -25,23 +25,6 @@ type (
 		// hidden field. allows me to override the user agent in `SvixHttpClient.DefaultHeaders["User-Agent"]`
 		// to override the user agent use `SetUseragentSuffix`
 		client *internal.SvixHttpClient
-
-		Application                *Application
-		Authentication             *Authentication
-		BackgroundTask             *BackgroundTask
-		Connector                  *Connector
-		Endpoint                   *Endpoint
-		Environment                *Environment
-		EventType                  *EventType
-		Health                     *Health
-		Ingest                     *Ingest
-		Integration                *Integration
-		Message                    *Message
-		MessageAttempt             *MessageAttempt
-		OperationalWebhook         *OperationalWebhook
-		Statistics                 *Statistics
-		Streaming                  *Streaming
-		OperationalWebhookEndpoint *OperationalWebhookEndpoint
 	}
 )
 
@@ -74,25 +57,68 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 
 	svx := Svix{
 		client: &svixHttpClient,
-
-		Application:                newApplication(&svixHttpClient),
-		Authentication:             newAuthentication(&svixHttpClient),
-		BackgroundTask:             newBackgroundTask(&svixHttpClient),
-		Connector:                  newConnector(&svixHttpClient),
-		Endpoint:                   newEndpoint(&svixHttpClient),
-		Environment:                newEnvironment(&svixHttpClient),
-		EventType:                  newEventType(&svixHttpClient),
-		Health:                     newHealth(&svixHttpClient),
-		Ingest:                     newIngest(&svixHttpClient),
-		Integration:                newIntegration(&svixHttpClient),
-		Message:                    newMessage(&svixHttpClient),
-		MessageAttempt:             newMessageAttempt(&svixHttpClient),
-		OperationalWebhook:         newOperationalWebhook(&svixHttpClient),
-		Statistics:                 newStatistics(&svixHttpClient),
-		Streaming:                  newStreaming(&svixHttpClient),
-		OperationalWebhookEndpoint: newOperationalWebhookEndpoint(&svixHttpClient),
 	}
 	return &svx, nil
+}
+
+func (svix Svix) Application() Application {
+	return newApplication(svix.client)
+}
+
+func (svix Svix) Authentication() Authentication {
+	return newAuthentication(svix.client)
+}
+
+func (svix Svix) BackgroundTask() BackgroundTask {
+	return newBackgroundTask(svix.client)
+}
+
+func (svix Svix) Connector() Connector {
+	return newConnector(svix.client)
+}
+
+func (svix Svix) Endpoint() Endpoint {
+	return newEndpoint(svix.client)
+}
+
+func (svix Svix) Environment() Environment {
+	return newEnvironment(svix.client)
+}
+
+func (svix Svix) EventType() EventType {
+	return newEventType(svix.client)
+}
+
+func (svix Svix) Health() Health {
+	return newHealth(svix.client)
+}
+
+func (svix Svix) Ingest() Ingest {
+	return newIngest(svix.client)
+}
+
+func (svix Svix) Integration() Integration {
+	return newIntegration(svix.client)
+}
+
+func (svix Svix) Message() Message {
+	return newMessage(svix.client)
+}
+
+func (svix Svix) MessageAttempt() MessageAttempt {
+	return newMessageAttempt(svix.client)
+}
+
+func (svix Svix) OperationalWebhook() OperationalWebhook {
+	return newOperationalWebhook(svix.client)
+}
+
+func (svix Svix) Statistics() Statistics {
+	return newStatistics(svix.client)
+}
+
+func (svix Svix) Streaming() Streaming {
+	return newStreaming(svix.client)
 }
 
 // Add a custom suffix to the default user-agent
@@ -129,17 +155,18 @@ func (s Svix) SetUserAgentSuffix(userAgentSuffix string) error {
 func getDefaultBaseUrl(token string) string {
 	var tokenParts = strings.Split(token, ".")
 	var region = tokenParts[len(tokenParts)-1]
-	if region == "us" {
+	switch region {
+	case "us":
 		return "https://api.us.svix.com"
-	} else if region == "eu" {
+	case "eu":
 		return "https://api.eu.svix.com"
-	} else if region == "in" {
+	case "in":
 		return "https://api.in.svix.com"
-	} else if region == "ca" {
+	case "ca":
 		return "https://api.ca.svix.com"
-	} else if region == "au" {
+	case "au":
 		return "https://api.au.svix.com"
-	} else {
+	default:
 		return "https://api.svix.com"
 	}
 }

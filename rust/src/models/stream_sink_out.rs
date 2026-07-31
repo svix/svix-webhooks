@@ -11,45 +11,45 @@ use super::{
     snowflake_config::SnowflakeConfig, sns_config::SnsConfig, sqs_config::SqsConfig,
 };
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct StreamSinkOut {
-    #[serde(rename = "batchSize")]
-    pub batch_size: i32,
-
-    #[serde(rename = "createdAt")]
-    pub created_at: String,
-
-    #[serde(rename = "currentIterator")]
-    pub current_iterator: String,
-
-    #[serde(rename = "eventTypes")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub event_types: Option<Vec<String>>,
-
-    #[serde(rename = "failureReason")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub failure_reason: Option<String>,
-
     /// The sink's ID.
     pub id: String,
-
-    #[serde(rename = "maxWaitSecs")]
-    pub max_wait_secs: i32,
-
-    pub metadata: std::collections::HashMap<String, String>,
-
-    #[serde(rename = "nextRetryAt")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub next_retry_at: Option<String>,
-
-    pub status: SinkStatus,
 
     /// The sink's UID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 
+    pub status: SinkStatus,
+
+    #[serde(rename = "currentIterator")]
+    pub current_iterator: String,
+
+    #[serde(rename = "failureReason")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub failure_reason: Option<String>,
+
+    #[serde(rename = "createdAt")]
+    pub created_at: chrono::DateTime<chrono::Utc>,
+
     #[serde(rename = "updatedAt")]
-    pub updated_at: String,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+
+    #[serde(rename = "batchSize")]
+    pub batch_size: i32,
+
+    #[serde(rename = "maxWaitSecs")]
+    pub max_wait_secs: i32,
+
+    #[serde(rename = "eventTypes")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub event_types: Option<Vec<String>>,
+
+    #[serde(rename = "nextRetryAt")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub next_retry_at: Option<chrono::DateTime<chrono::Utc>>,
+
+    pub metadata: std::collections::BTreeMap<String, String>,
 
     #[serde(flatten)]
     pub config: StreamSinkOutConfig,
@@ -88,11 +88,4 @@ pub enum StreamSinkOutConfig {
     RabbitMq(RabbitMqConfig),
     #[serde(rename = "redshift")]
     Redshift(RedshiftConfig),
-}
-
-#[allow(clippy::derivable_impls)]
-impl Default for StreamSinkOutConfig {
-    fn default() -> Self {
-        Self::Poller
-    }
 }

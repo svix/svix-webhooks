@@ -2,31 +2,31 @@
 
 /** Configuration for an SQS sink. */
 export interface SqsConfig {
-  accessKeyId: string;
-  endpointUrl?: string | null;
   queueUrl: string;
   region: string;
+  accessKeyId: string;
   secretAccessKey: string;
+  endpointUrl?: string | null;
 }
 
 export const SqsConfigSerializer = {
   _fromJsonObject(object: any): SqsConfig {
     return {
-      accessKeyId: object["accessKeyId"],
-      endpointUrl: object["endpointUrl"],
       queueUrl: object["queueUrl"],
       region: object["region"],
+      accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      endpointUrl: object["endpointUrl"],
     };
   },
 
   _toJsonObject(self: SqsConfig): any {
     return {
-      accessKeyId: self.accessKeyId,
-      endpointUrl: self.endpointUrl,
       queueUrl: self.queueUrl,
       region: self.region,
+      accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      endpointUrl: self.endpointUrl,
     };
   },
 };

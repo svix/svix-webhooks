@@ -86,13 +86,13 @@ class BasicTest {
                     EndpointIn(url = "https://example.svix.com", channels = setOf("ch0", "ch1")),
                 )
             assertEquals(setOf("ch0", "ch1"), epOut.channels, "initial ep should have 2 channels")
-            assertEquals(0, epOut.filterTypes?.size ?: 0, "initial ep should have 0 filter types")
+            assertEquals(0, epOut.eventTypes?.size ?: 0, "initial ep should have 0 filter types")
             val epPatched =
                 svix.endpoint.patch(
                     appOut.id,
                     epOut.id,
                     EndpointPatch(
-                        filterTypes = MaybeUnset.Present(setOf("event.started", "event.ended"))
+                        eventTypes = MaybeUnset.Present(setOf("event.started", "event.ended"))
                     ),
                 )
             assertEquals(
@@ -102,7 +102,7 @@ class BasicTest {
             )
             assertEquals(
                 setOf("event.started", "event.ended"),
-                epPatched.filterTypes,
+                epPatched.eventTypes,
                 "patched ep should have 2 filter types",
             )
             svix.application.delete(appOut.id)

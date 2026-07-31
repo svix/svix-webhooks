@@ -1,31 +1,31 @@
 // this file is @generated
 
 export interface S3Config {
-  accessKeyId: string;
   bucket: string;
-  endpointUrl?: string | null;
-  region: string;
+  accessKeyId: string;
   secretAccessKey: string;
+  region: string;
+  endpointUrl?: string | null;
 }
 
 export const S3ConfigSerializer = {
   _fromJsonObject(object: any): S3Config {
     return {
-      accessKeyId: object["accessKeyId"],
       bucket: object["bucket"],
-      endpointUrl: object["endpointUrl"],
-      region: object["region"],
+      accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      region: object["region"],
+      endpointUrl: object["endpointUrl"],
     };
   },
 
   _toJsonObject(self: S3Config): any {
     return {
-      accessKeyId: self.accessKeyId,
       bucket: self.bucket,
-      endpointUrl: self.endpointUrl,
-      region: self.region,
+      accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      region: self.region,
+      endpointUrl: self.endpointUrl,
     };
   },
 };

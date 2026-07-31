@@ -10,11 +10,11 @@ class EventBridgePatchConfig implements \JsonSerializable
     private array $setFields = [];
 
     private function __construct(
-        public readonly ?string $accessKeyId = null,
-        public readonly ?string $detailType = null,
         public readonly ?string $eventBusName = null,
-        public readonly ?string $region = null,
+        public readonly ?string $detailType = null,
+        public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $region = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -26,26 +26,26 @@ class EventBridgePatchConfig implements \JsonSerializable
     public static function create(
     ): self {
         return new self(
-            accessKeyId: null,
-            detailType: null,
             eventBusName: null,
-            region: null,
+            detailType: null,
+            accessKeyId: null,
             secretAccessKey: null,
+            region: null,
             setFields: []
         );
     }
 
-    public function withAccessKeyId(?string $accessKeyId): self
+    public function withEventBusName(?string $eventBusName): self
     {
         $setFields = $this->setFields;
-        $setFields['accessKeyId'] = true;
+        $setFields['eventBusName'] = true;
 
         return new self(
-            accessKeyId: $accessKeyId,
+            eventBusName: $eventBusName,
             detailType: $this->detailType,
-            eventBusName: $this->eventBusName,
-            region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
             setFields: $setFields
         );
     }
@@ -56,41 +56,26 @@ class EventBridgePatchConfig implements \JsonSerializable
         $setFields['detailType'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
+            eventBusName: $this->eventBusName,
             detailType: $detailType,
-            eventBusName: $this->eventBusName,
-            region: $this->region,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
             setFields: $setFields
         );
     }
 
-    public function withEventBusName(?string $eventBusName): self
+    public function withAccessKeyId(?string $accessKeyId): self
     {
         $setFields = $this->setFields;
-        $setFields['eventBusName'] = true;
+        $setFields['accessKeyId'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            detailType: $this->detailType,
-            eventBusName: $eventBusName,
-            region: $this->region,
-            secretAccessKey: $this->secretAccessKey,
-            setFields: $setFields
-        );
-    }
-
-    public function withRegion(?string $region): self
-    {
-        $setFields = $this->setFields;
-        $setFields['region'] = true;
-
-        return new self(
-            accessKeyId: $this->accessKeyId,
-            detailType: $this->detailType,
             eventBusName: $this->eventBusName,
-            region: $region,
+            detailType: $this->detailType,
+            accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
             setFields: $setFields
         );
     }
@@ -101,11 +86,26 @@ class EventBridgePatchConfig implements \JsonSerializable
         $setFields['secretAccessKey'] = true;
 
         return new self(
-            accessKeyId: $this->accessKeyId,
-            detailType: $this->detailType,
             eventBusName: $this->eventBusName,
-            region: $this->region,
+            detailType: $this->detailType,
+            accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            region: $this->region,
+            setFields: $setFields
+        );
+    }
+
+    public function withRegion(?string $region): self
+    {
+        $setFields = $this->setFields;
+        $setFields['region'] = true;
+
+        return new self(
+            eventBusName: $this->eventBusName,
+            detailType: $this->detailType,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            region: $region,
             setFields: $setFields
         );
     }
@@ -115,20 +115,20 @@ class EventBridgePatchConfig implements \JsonSerializable
         $data = [
         ];
 
-        if (null !== $this->accessKeyId) {
-            $data['accessKeyId'] = $this->accessKeyId;
+        if (null !== $this->eventBusName) {
+            $data['eventBusName'] = $this->eventBusName;
         }
         if (null !== $this->detailType) {
             $data['detailType'] = $this->detailType;
         }
-        if (null !== $this->eventBusName) {
-            $data['eventBusName'] = $this->eventBusName;
-        }
-        if (null !== $this->region) {
-            $data['region'] = $this->region;
+        if (null !== $this->accessKeyId) {
+            $data['accessKeyId'] = $this->accessKeyId;
         }
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
+        }
+        if (null !== $this->region) {
+            $data['region'] = $this->region;
         }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
@@ -140,11 +140,11 @@ class EventBridgePatchConfig implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'EventBridgePatchConfig'),
-            detailType: \Svix\Utils::deserializeString($data, 'detailType', false, 'EventBridgePatchConfig'),
             eventBusName: \Svix\Utils::deserializeString($data, 'eventBusName', false, 'EventBridgePatchConfig'),
-            region: \Svix\Utils::deserializeString($data, 'region', false, 'EventBridgePatchConfig'),
-            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'EventBridgePatchConfig')
+            detailType: \Svix\Utils::deserializeString($data, 'detailType', false, 'EventBridgePatchConfig'),
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'EventBridgePatchConfig'),
+            secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'EventBridgePatchConfig'),
+            region: \Svix\Utils::deserializeString($data, 'region', false, 'EventBridgePatchConfig')
         );
     }
 

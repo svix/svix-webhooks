@@ -14,8 +14,8 @@ class ListResponseEndpointOut implements \JsonSerializable
      */
     private function __construct(
         public readonly array $data,
-        public readonly bool $done,
         public readonly string $iterator,
+        public readonly bool $done,
         public readonly ?string $prevIterator = null,
         array $setFields = [],
     ) {
@@ -27,15 +27,15 @@ class ListResponseEndpointOut implements \JsonSerializable
      */
     public static function create(
         array $data,
-        bool $done,
         string $iterator,
+        bool $done,
     ): self {
         return new self(
             data: $data,
-            done: $done,
             iterator: $iterator,
             prevIterator: null,
-            setFields: ['data' => true, 'done' => true, 'iterator' => true]
+            done: $done,
+            setFields: ['data' => true, 'iterator' => true, 'done' => true]
         );
     }
 
@@ -46,9 +46,9 @@ class ListResponseEndpointOut implements \JsonSerializable
 
         return new self(
             data: $this->data,
-            done: $this->done,
             iterator: $this->iterator,
             prevIterator: $prevIterator,
+            done: $this->done,
             setFields: $setFields
         );
     }
@@ -73,9 +73,9 @@ class ListResponseEndpointOut implements \JsonSerializable
     {
         return new self(
             data: \Svix\Utils::deserializeObjectArray($data, 'data', true, 'ListResponseEndpointOut', [EndpointOut::class, 'fromMixed']),
-            done: \Svix\Utils::deserializeBool($data, 'done', true, 'ListResponseEndpointOut'),
             iterator: \Svix\Utils::deserializeString($data, 'iterator', true, 'ListResponseEndpointOut'),
-            prevIterator: \Svix\Utils::deserializeString($data, 'prevIterator', false, 'ListResponseEndpointOut')
+            prevIterator: \Svix\Utils::deserializeString($data, 'prevIterator', false, 'ListResponseEndpointOut'),
+            done: \Svix\Utils::deserializeBool($data, 'done', true, 'ListResponseEndpointOut')
         );
     }
 

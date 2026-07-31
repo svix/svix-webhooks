@@ -30,14 +30,9 @@ import {
   EndpointTransformationInSerializer,
 } from "../models/endpointTransformationIn";
 import {
-  type EndpointTransformationOut,
-  EndpointTransformationOutSerializer,
-} from "../models/endpointTransformationOut";
-import {
-  type EndpointTransformationPatch,
-  EndpointTransformationPatchSerializer,
-} from "../models/endpointTransformationPatch";
-import { type EndpointUpdate, EndpointUpdateSerializer } from "../models/endpointUpdate";
+  type EndpointUpsertIn,
+  EndpointUpsertInSerializer,
+} from "../models/endpointUpsertIn";
 import { type EventExampleIn, EventExampleInSerializer } from "../models/eventExampleIn";
 import {
   type ListResponseEndpointOut,
@@ -49,6 +44,7 @@ import { type RecoverIn, RecoverInSerializer } from "../models/recoverIn";
 import { type RecoverOut, RecoverOutSerializer } from "../models/recoverOut";
 import { type ReplayIn, ReplayInSerializer } from "../models/replayIn";
 import { type ReplayOut, ReplayOutSerializer } from "../models/replayOut";
+import { EndpointTransformation } from "./endpointTransformation";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export interface EndpointListOptions {
@@ -64,11 +60,7 @@ export interface EndpointCreateOptions {
   idempotencyKey?: string;
 }
 
-export interface EndpointBulkReplayOptions {
-  idempotencyKey?: string;
-}
-
-export interface EndpointRecoverOptions {
+export interface EndpointRotateSecretOptions {
   idempotencyKey?: string;
 }
 
@@ -76,11 +68,7 @@ export interface EndpointReplayMissingOptions {
   idempotencyKey?: string;
 }
 
-export interface EndpointRotateSecretOptions {
-  idempotencyKey?: string;
-}
-
-export interface EndpointSendExampleOptions {
+export interface EndpointBulkReplayOptions {
   idempotencyKey?: string;
 }
 
@@ -91,8 +79,20 @@ export interface EndpointGetStatsOptions {
   until?: Date | null;
 }
 
+export interface EndpointRecoverOptions {
+  idempotencyKey?: string;
+}
+
+export interface EndpointSendExampleOptions {
+  idempotencyKey?: string;
+}
+
 export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get transformation() {
+    return new EndpointTransformation(this.requestCtx);
+  }
 
   /** List the application's endpoints. */
   public async list(
@@ -146,11 +146,11 @@ export class Endpoint {
     return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
 
-  /** Update an endpoint. */
-  public async update(
+  /** Create or update an endpoint. */
+  public async upsert(
     appId: string,
     endpointId: string,
-    endpointUpdate: EndpointUpdate
+    endpointUpsertIn: EndpointUpsertIn
   ): Promise<EndpointOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
@@ -159,7 +159,7 @@ export class Endpoint {
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setBody(EndpointUpdateSerializer._toJsonObject(endpointUpdate));
+    request.setBody(EndpointUpsertInSerializer._toJsonObject(endpointUpsertIn));
 
     return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }
@@ -196,40 +196,50 @@ export class Endpoint {
   }
 
   /**
-   * Bulk replay messages sent to the endpoint.
+   * Get the endpoint's signing secret.
    *
-   * Only messages that were created after `since` will be sent.
-   * This will replay both successful, and failed messages
-   *
-   * A completed task will return a payload like the following:
-   * ```json
-   * {
-   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-   *   "status": "finished",
-   *   "task": "endpoint.bulk-replay",
-   *   "data": {
-   *     "messagesSent": 2
-   *   }
-   * }
-   * ```
+   * This is used to verify the authenticity of the webhook.
+   * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
    */
-  public async bulkReplay(
+  public async getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.send(
+      this.requestCtx,
+      EndpointSecretOutSerializer._fromJsonObject
+    );
+  }
+
+  /**
+   * Rotates the endpoint's signing secret.
+   *
+   * The previous secret will remain valid for the specified grace period (default 24 hours).
+   */
+  public async rotateSecret(
     appId: string,
     endpointId: string,
-    bulkReplayIn: BulkReplayIn,
-    options?: EndpointBulkReplayOptions
-  ): Promise<ReplayOut> {
+    endpointSecretRotateIn: EndpointSecretRotateIn = {},
+    options?: EndpointRotateSecretOptions
+  ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.POST,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay"
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate"
     );
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(BulkReplayInSerializer._toJsonObject(bulkReplayIn));
+    request.setBody(
+      EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
+    );
 
-    return await request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get the additional headers to be sent with the webhook. */
@@ -252,7 +262,7 @@ export class Endpoint {
   }
 
   /** Set the additional headers to be sent with the webhook. */
-  public async updateHeaders(
+  public async setHeaders(
     appId: string,
     endpointId: string,
     endpointHeadersIn: EndpointHeadersIn
@@ -267,14 +277,6 @@ export class Endpoint {
     request.setBody(EndpointHeadersInSerializer._toJsonObject(endpointHeadersIn));
 
     return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  public headersUpdate(
-    appId: string,
-    endpointId: string,
-    endpointHeadersIn: EndpointHeadersIn
-  ): Promise<void> {
-    return this.updateHeaders(appId, endpointId, endpointHeadersIn);
   }
 
   /** Partially set the additional headers to be sent with the webhook. */
@@ -295,50 +297,6 @@ export class Endpoint {
     );
 
     return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  public headersPatch(
-    appId: string,
-    endpointId: string,
-    endpointHeadersPatchIn: EndpointHeadersPatchIn
-  ): Promise<void> {
-    return this.patchHeaders(appId, endpointId, endpointHeadersPatchIn);
-  }
-
-  /**
-   * Resend all failed messages since a given time.
-   *
-   * Messages that were sent successfully, even if failed initially, are not resent.
-   *
-   * A completed task will return a payload like the following:
-   * ```json
-   * {
-   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
-   *   "status": "finished",
-   *   "task": "endpoint.recover",
-   *   "data": {
-   *     "messagesSent": 2
-   *   }
-   * }
-   * ```
-   */
-  public async recover(
-    appId: string,
-    endpointId: string,
-    recoverIn: RecoverIn,
-    options?: EndpointRecoverOptions
-  ): Promise<RecoverOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(RecoverInSerializer._toJsonObject(recoverIn));
-
-    return await request.send(this.requestCtx, RecoverOutSerializer._fromJsonObject);
   }
 
   /**
@@ -379,70 +337,40 @@ export class Endpoint {
   }
 
   /**
-   * Get the endpoint's signing secret.
+   * Bulk replay messages sent to the endpoint.
    *
-   * This is used to verify the authenticity of the webhook.
-   * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
-   */
-  public async getSecret(appId: string, endpointId: string): Promise<EndpointSecretOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-
-    return await request.send(
-      this.requestCtx,
-      EndpointSecretOutSerializer._fromJsonObject
-    );
-  }
-
-  /**
-   * Rotates the endpoint's signing secret.
+   * Only messages that were created after `since` will be sent.
+   * This will replay both successful, and failed messages
    *
-   * The previous secret will remain valid for the next 24 hours.
+   * A completed task will return a payload like the following:
+   * ```json
+   * {
+   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+   *   "status": "finished",
+   *   "task": "endpoint.bulk-replay",
+   *   "data": {
+   *     "messagesSent": 2
+   *   }
+   * }
+   * ```
    */
-  public async rotateSecret(
+  public async bulkReplay(
     appId: string,
     endpointId: string,
-    endpointSecretRotateIn: EndpointSecretRotateIn,
-    options?: EndpointRotateSecretOptions
-  ): Promise<void> {
+    bulkReplayIn: BulkReplayIn,
+    options?: EndpointBulkReplayOptions
+  ): Promise<ReplayOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate"
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/bulk-replay"
     );
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
     request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(
-      EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
-    );
+    request.setBody(BulkReplayInSerializer._toJsonObject(bulkReplayIn));
 
-    return await request.sendNoResponseBody(this.requestCtx);
-  }
-
-  /** Send an example message for an event. */
-  public async sendExample(
-    appId: string,
-    endpointId: string,
-    eventExampleIn: EventExampleIn,
-    options?: EndpointSendExampleOptions
-  ): Promise<MessageOut> {
-    const request = new SvixRequest(
-      HttpMethod.POST,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
-    request.setBody(EventExampleInSerializer._toJsonObject(eventExampleIn));
-
-    return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
+    return await request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
   }
 
   /** Get basic statistics for the endpoint. */
@@ -466,43 +394,60 @@ export class Endpoint {
     return await request.send(this.requestCtx, EndpointStatsSerializer._fromJsonObject);
   }
 
-  /** Get the transformation code associated with this endpoint. */
-  public async transformationGet(
-    appId: string,
-    endpointId: string
-  ): Promise<EndpointTransformationOut> {
-    const request = new SvixRequest(
-      HttpMethod.GET,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
-    );
-
-    request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-
-    return await request.send(
-      this.requestCtx,
-      EndpointTransformationOutSerializer._fromJsonObject
-    );
-  }
-
-  /** Set or unset the transformation code associated with this endpoint. */
-  public async patchTransformation(
+  /**
+   * Resend all failed messages since a given time.
+   *
+   * Messages that were sent successfully, even if failed initially, are not resent.
+   *
+   * A completed task will return a payload like the following:
+   * ```json
+   * {
+   *   "id": "qtask_33qen93MNuelBAq1T9G7eHLJRsF",
+   *   "status": "finished",
+   *   "task": "endpoint.recover",
+   *   "data": {
+   *     "messagesSent": 2
+   *   }
+   * }
+   * ```
+   */
+  public async recover(
     appId: string,
     endpointId: string,
-    endpointTransformationPatch: EndpointTransformationPatch
-  ): Promise<void> {
+    recoverIn: RecoverIn,
+    options?: EndpointRecoverOptions
+  ): Promise<RecoverOut> {
     const request = new SvixRequest(
-      HttpMethod.PATCH,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/transformation"
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/recover"
     );
 
     request.setPathParam("app_id", appId);
     request.setPathParam("endpoint_id", endpointId);
-    request.setBody(
-      EndpointTransformationPatchSerializer._toJsonObject(endpointTransformationPatch)
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(RecoverInSerializer._toJsonObject(recoverIn));
+
+    return await request.send(this.requestCtx, RecoverOutSerializer._fromJsonObject);
+  }
+
+  /** Send an example message for an event. */
+  public async sendExample(
+    appId: string,
+    endpointId: string,
+    eventExampleIn: EventExampleIn,
+    options?: EndpointSendExampleOptions
+  ): Promise<MessageOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/send-example"
     );
 
-    return await request.sendNoResponseBody(this.requestCtx);
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(EventExampleInSerializer._toJsonObject(eventExampleIn));
+
+    return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
   }
 
   /**
@@ -513,7 +458,7 @@ export class Endpoint {
   public async transformationPartialUpdate(
     appId: string,
     endpointId: string,
-    endpointTransformationIn: EndpointTransformationIn
+    endpointTransformationIn: EndpointTransformationIn = {}
   ): Promise<void> {
     const request = new SvixRequest(
       HttpMethod.PATCH,

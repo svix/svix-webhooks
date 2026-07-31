@@ -86,15 +86,14 @@ describe Svix::Webhook do
     expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
   end
 
-  it "valid signature is valid and returns valid json" do
+  it "valid signature is valid" do
     testPayload = TestPayload.new
     wh = Svix::Webhook.new(testPayload.secret)
 
-    json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json[:test]).to(eq(2432232314))
+    wh.verify(testPayload.payload, testPayload.headers)
   end
 
-  it "valid unbranded signature is valid and returns valid json" do
+  it "valid unbranded signature is valid" do
     testPayload = TestPayload.new
     unbrandedHeaders = {
       "webhook-id" => testPayload.headers["svix-id"],
@@ -105,8 +104,7 @@ describe Svix::Webhook do
 
     wh = Svix::Webhook.new(testPayload.secret)
 
-    json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json[:test]).to(eq(2432232314))
+    wh.verify(testPayload.payload, testPayload.headers)
   end
 
   it "old timestamp raises error" do
@@ -146,20 +144,17 @@ describe Svix::Webhook do
 
     wh = Svix::Webhook.new(testPayload.secret)
 
-    json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json[:test]).to(eq(2432232314))
+    wh.verify(testPayload.payload, testPayload.headers)
   end
 
   it "signature verification works with and without prefix" do
     testPayload = TestPayload.new
 
     wh = Svix::Webhook.new(testPayload.secret)
-    json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json[:test]).to(eq(2432232314))
+    wh.verify(testPayload.payload, testPayload.headers)
 
     wh = Svix::Webhook.new("whsec_" + testPayload.secret)
-    json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json[:test]).to(eq(2432232314))
+    wh.verify(testPayload.payload, testPayload.headers)
   end
 
   it "sign function works" do
@@ -174,12 +169,11 @@ describe Svix::Webhook do
     expect(signature).to(eq(expected))
   end
 
-  it "returns empty json when payload is empty" do
+  it "can validate an empty payload" do
     testPayload = TestPayload.new(payload: '')
 
     wh = Svix::Webhook.new(testPayload.secret)
 
-    json = wh.verify(testPayload.payload, testPayload.headers)
-    expect(json).to(eq(nil))
+    wh.verify(testPayload.payload, testPayload.headers)
   end
 end

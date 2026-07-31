@@ -17,18 +17,6 @@ namespace Svix
         }
     }
 
-    public class AuthenticationExpireAllOptions : SvixOptionsBase
-    {
-        public string? IdempotencyKey { get; set; }
-
-        public new Dictionary<string, string> HeaderParams()
-        {
-            return SerializeParams(
-                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
-            );
-        }
-    }
-
     public class AuthenticationLogoutOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
@@ -41,7 +29,7 @@ namespace Svix
         }
     }
 
-    public class AuthenticationStreamLogoutOptions : SvixOptionsBase
+    public class AuthenticationExpireAllOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -54,6 +42,18 @@ namespace Svix
     }
 
     public class AuthenticationStreamPortalAccessOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
+    public class AuthenticationStreamLogoutOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -103,6 +103,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationAppPortalAccessOptions();
+            }
             appPortalAccessIn =
                 appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
             try
@@ -111,8 +115,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app-portal-access/{app_id}",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: appPortalAccessIn,
                     cancellationToken: cancellationToken
                 );
@@ -135,6 +139,10 @@ namespace Svix
             AuthenticationAppPortalAccessOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationAppPortalAccessOptions();
+            }
             appPortalAccessIn =
                 appPortalAccessIn ?? throw new ArgumentNullException(nameof(appPortalAccessIn));
             try
@@ -143,8 +151,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app-portal-access/{app_id}",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: appPortalAccessIn
                 );
                 return response.Data;
@@ -152,6 +160,68 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(AppPortalAccess)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Logout an app token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public async Task<bool> LogoutAsync(
+            AuthenticationLogoutOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new AuthenticationLogoutOptions();
+            }
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/logout",
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(LogoutAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Logout an app token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public bool Logout(AuthenticationLogoutOptions? options = null)
+        {
+            if (options == null)
+            {
+                options = new AuthenticationLogoutOptions();
+            }
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/logout",
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Logout)} failed");
 
                 throw;
             }
@@ -167,6 +237,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationExpireAllOptions();
+            }
             applicationTokenExpireIn =
                 applicationTokenExpireIn
                 ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
@@ -176,8 +250,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app/{app_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: applicationTokenExpireIn,
                     cancellationToken: cancellationToken
                 );
@@ -200,6 +274,10 @@ namespace Svix
             AuthenticationExpireAllOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationExpireAllOptions();
+            }
             applicationTokenExpireIn =
                 applicationTokenExpireIn
                 ?? throw new ArgumentNullException(nameof(applicationTokenExpireIn));
@@ -209,8 +287,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/app/{app_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: applicationTokenExpireIn
                 );
                 return response.Data;
@@ -218,166 +296,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(ExpireAll)} failed");
-
-                throw;
-            }
-        }
-
-        [Obsolete("Please use `AppPortalAccessAsync` instead")]
-        public async Task<DashboardAccessOut> DashboardAccessAsync(
-            string appId,
-            AuthenticationDashboardAccessOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<DashboardAccessOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/dashboard-access/{app_id}",
-                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(DashboardAccessAsync)} failed");
-
-                throw;
-            }
-        }
-
-        [Obsolete("Please use `AppPortalAccess` instead")]
-        public DashboardAccessOut DashboardAccess(
-            string appId,
-            AuthenticationDashboardAccessOptions? options = null
-        )
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<DashboardAccessOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/dashboard-access/{app_id}",
-                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(DashboardAccess)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Logout an app token.
-        ///
-        /// Trying to log out other tokens will fail.
-        /// </summary>
-        public async Task<bool> LogoutAsync(
-            AuthenticationLogoutOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(LogoutAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Logout an app token.
-        ///
-        /// Trying to log out other tokens will fail.
-        /// </summary>
-        public bool Logout(AuthenticationLogoutOptions? options = null)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(Logout)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Logout a stream token.
-        ///
-        /// Trying to log out other tokens will fail.
-        /// </summary>
-        public async Task<bool> StreamLogoutAsync(
-            AuthenticationStreamLogoutOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/stream-logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(StreamLogoutAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Logout a stream token.
-        ///
-        /// Trying to log out other tokens will fail.
-        /// </summary>
-        public bool StreamLogout(AuthenticationStreamLogoutOptions? options = null)
-        {
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/stream-logout",
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams()
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(StreamLogout)} failed");
 
                 throw;
             }
@@ -393,6 +311,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamPortalAccessOptions();
+            }
             streamPortalAccessIn =
                 streamPortalAccessIn
                 ?? throw new ArgumentNullException(nameof(streamPortalAccessIn));
@@ -402,8 +324,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream-portal-access/{stream_id}",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamPortalAccessIn,
                     cancellationToken: cancellationToken
                 );
@@ -426,6 +348,10 @@ namespace Svix
             AuthenticationStreamPortalAccessOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamPortalAccessOptions();
+            }
             streamPortalAccessIn =
                 streamPortalAccessIn
                 ?? throw new ArgumentNullException(nameof(streamPortalAccessIn));
@@ -435,8 +361,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream-portal-access/{stream_id}",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamPortalAccessIn
                 );
                 return response.Data;
@@ -444,6 +370,68 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(StreamPortalAccess)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Logout a stream token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public async Task<bool> StreamLogoutAsync(
+            AuthenticationStreamLogoutOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new AuthenticationStreamLogoutOptions();
+            }
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream-logout",
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(StreamLogoutAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Logout a stream token.
+        ///
+        /// Trying to log out other tokens will fail.
+        /// </summary>
+        public bool StreamLogout(AuthenticationStreamLogoutOptions? options = null)
+        {
+            if (options == null)
+            {
+                options = new AuthenticationStreamLogoutOptions();
+            }
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream-logout",
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(StreamLogout)} failed");
 
                 throw;
             }
@@ -459,6 +447,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamExpireAllOptions();
+            }
             streamTokenExpireIn =
                 streamTokenExpireIn ?? throw new ArgumentNullException(nameof(streamTokenExpireIn));
             try
@@ -467,8 +459,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream/{stream_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamTokenExpireIn,
                     cancellationToken: cancellationToken
                 );
@@ -491,6 +483,10 @@ namespace Svix
             AuthenticationStreamExpireAllOptions? options = null
         )
         {
+            if (options == null)
+            {
+                options = new AuthenticationStreamExpireAllOptions();
+            }
             streamTokenExpireIn =
                 streamTokenExpireIn ?? throw new ArgumentNullException(nameof(streamTokenExpireIn));
             try
@@ -499,8 +495,8 @@ namespace Svix
                     method: HttpMethod.Post,
                     path: "/api/v1/auth/stream/{stream_id}/expire-all",
                     pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
                     content: streamTokenExpireIn
                 );
                 return response.Data;
@@ -508,6 +504,88 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(StreamExpireAll)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create a new auth token for the stream poller API.
+        /// </summary>
+        public async Task<ApiTokenOut> RotateStreamPollerTokenAsync(
+            string streamId,
+            string sinkId,
+            RotatePollerTokenIn rotatePollerTokenIn,
+            AuthenticationRotateStreamPollerTokenOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new AuthenticationRotateStreamPollerTokenOptions();
+            }
+            rotatePollerTokenIn =
+                rotatePollerTokenIn ?? throw new ArgumentNullException(nameof(rotatePollerTokenIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<ApiTokenOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "stream_id", streamId },
+                        { "sink_id", sinkId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    content: rotatePollerTokenIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateStreamPollerTokenAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create a new auth token for the stream poller API.
+        /// </summary>
+        public ApiTokenOut RotateStreamPollerToken(
+            string streamId,
+            string sinkId,
+            RotatePollerTokenIn rotatePollerTokenIn,
+            AuthenticationRotateStreamPollerTokenOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new AuthenticationRotateStreamPollerTokenOptions();
+            }
+            rotatePollerTokenIn =
+                rotatePollerTokenIn ?? throw new ArgumentNullException(nameof(rotatePollerTokenIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<ApiTokenOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "stream_id", streamId },
+                        { "sink_id", sinkId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    content: rotatePollerTokenIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateStreamPollerToken)} failed");
 
                 throw;
             }
@@ -565,80 +643,6 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(GetStreamPollerToken)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Create a new auth token for the stream poller API.
-        /// </summary>
-        public async Task<ApiTokenOut> RotateStreamPollerTokenAsync(
-            string streamId,
-            string sinkId,
-            RotatePollerTokenIn rotatePollerTokenIn,
-            AuthenticationRotateStreamPollerTokenOptions? options = null,
-            CancellationToken cancellationToken = default
-        )
-        {
-            rotatePollerTokenIn =
-                rotatePollerTokenIn ?? throw new ArgumentNullException(nameof(rotatePollerTokenIn));
-            try
-            {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ApiTokenOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: rotatePollerTokenIn,
-                    cancellationToken: cancellationToken
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(RotateStreamPollerTokenAsync)} failed");
-
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Create a new auth token for the stream poller API.
-        /// </summary>
-        public ApiTokenOut RotateStreamPollerToken(
-            string streamId,
-            string sinkId,
-            RotatePollerTokenIn rotatePollerTokenIn,
-            AuthenticationRotateStreamPollerTokenOptions? options = null
-        )
-        {
-            rotatePollerTokenIn =
-                rotatePollerTokenIn ?? throw new ArgumentNullException(nameof(rotatePollerTokenIn));
-            try
-            {
-                var response = _client.SvixHttpClient.SendRequest<ApiTokenOut>(
-                    method: HttpMethod.Post,
-                    path: "/api/v1/auth/stream/{stream_id}/sink/{sink_id}/poller/token/rotate",
-                    pathParams: new Dictionary<string, string>
-                    {
-                        { "stream_id", streamId },
-                        { "sink_id", sinkId },
-                    },
-                    queryParams: options?.QueryParams(),
-                    headerParams: options?.HeaderParams(),
-                    content: rotatePollerTokenIn
-                );
-                return response.Data;
-            }
-            catch (ApiException e)
-            {
-                _client.Logger?.LogError(e, $"{nameof(RotateStreamPollerToken)} failed");
 
                 throw;
             }

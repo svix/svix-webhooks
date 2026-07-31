@@ -1,7 +1,7 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct EventExampleIn {
     /// The event type's name
     #[serde(rename = "eventType")]
@@ -14,7 +14,7 @@ pub struct EventExampleIn {
     /// array of examples.
     #[serde(rename = "exampleIndex")]
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub example_index: Option<i32>,
+    pub example_index: Option<u64>,
 }
 
 impl EventExampleIn {

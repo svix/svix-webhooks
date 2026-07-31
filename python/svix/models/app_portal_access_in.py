@@ -12,6 +12,9 @@ class AppPortalAccessIn(BaseModel):
 
     If the application id or uid that is used in the path already exists, this argument is ignored."""
 
+    read_only: t.Optional[bool] = None
+    """Whether the app portal should be in read-only mode."""
+
     capabilities: t.Optional[t.List[AppPortalCapability]] = None
     """Custom capabilities attached to the token, You can combine as many capabilities as necessary.
 
@@ -31,16 +34,13 @@ class AppPortalAccessIn(BaseModel):
 
     By default, the token will get all capabilities if the capabilities are not explicitly specified."""
 
+    feature_flags: t.Optional[t.List[str]] = None
+    """The set of feature flags the created token will have access to."""
+
     expiry: t.Optional[int] = None
     """How long the token will be valid for, in seconds.
 
     Valid values are between 1 hour and 7 days. The default is 7 days."""
-
-    feature_flags: t.Optional[t.List[str]] = None
-    """The set of feature flags the created token will have access to."""
-
-    read_only: t.Optional[bool] = None
-    """Whether the app portal should be in read-only mode."""
 
     session_id: t.Optional[str] = None
     """An optional session ID to attach to the token.

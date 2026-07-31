@@ -89,8 +89,8 @@ export class StreamingEventType {
     );
   }
 
-  /** Update or create a event type for Streams. */
-  public async update(
+  /** Create or update or create a event type for Streams. */
+  public async upsert(
     name: string,
     streamEventTypeIn: StreamEventTypeIn
   ): Promise<StreamEventTypeOut> {

@@ -18,70 +18,13 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class ClickhouseConfig {
-    @JsonProperty private String database;
-    @JsonProperty private String password;
-    @JsonProperty private String tableName;
     @JsonProperty private URI url;
     @JsonProperty private String username;
+    @JsonProperty private String password;
+    @JsonProperty private String database;
+    @JsonProperty private String tableName;
 
     public ClickhouseConfig() {}
-
-    public ClickhouseConfig database(String database) {
-        this.database = database;
-        return this;
-    }
-
-    /**
-     * The Clickhouse database to connect to
-     *
-     * @return database
-     */
-    @javax.annotation.Nullable
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public ClickhouseConfig password(String password) {
-        this.password = password;
-        return this;
-    }
-
-    /**
-     * Password to access Clickhouse
-     *
-     * @return password
-     */
-    @javax.annotation.Nonnull
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public ClickhouseConfig tableName(String tableName) {
-        this.tableName = tableName;
-        return this;
-    }
-
-    /**
-     * The Clickhouse table to write to
-     *
-     * @return tableName
-     */
-    @javax.annotation.Nonnull
-    public String getTableName() {
-        return tableName;
-    }
-
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
 
     public ClickhouseConfig url(URI url) {
         this.url = url;
@@ -119,6 +62,63 @@ public class ClickhouseConfig {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public ClickhouseConfig password(String password) {
+        this.password = password;
+        return this;
+    }
+
+    /**
+     * Password to access Clickhouse
+     *
+     * @return password
+     */
+    @javax.annotation.Nonnull
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public ClickhouseConfig database(String database) {
+        this.database = database;
+        return this;
+    }
+
+    /**
+     * The Clickhouse database to connect to
+     *
+     * @return database
+     */
+    @javax.annotation.Nullable
+    public String getDatabase() {
+        return database;
+    }
+
+    public void setDatabase(String database) {
+        this.database = database;
+    }
+
+    public ClickhouseConfig tableName(String tableName) {
+        this.tableName = tableName;
+        return this;
+    }
+
+    /**
+     * The Clickhouse table to write to
+     *
+     * @return tableName
+     */
+    @javax.annotation.Nonnull
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     /**

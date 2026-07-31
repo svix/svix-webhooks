@@ -12,20 +12,9 @@ use serde_repr::{Deserialize_repr, Serialize_repr};
 /// - Canceled = 4
 #[repr(i64)]
 #[derive(
-    Clone,
-    Copy,
-    Debug,
-    Default,
-    Eq,
-    PartialEq,
-    Ord,
-    PartialOrd,
-    Hash,
-    Serialize_repr,
-    Deserialize_repr,
+    Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize_repr, Deserialize_repr,
 )]
 pub enum MessageStatus {
-    #[default]
     Success = 0,
     Pending = 1,
     Fail = 2,

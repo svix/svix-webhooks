@@ -18,50 +18,31 @@ import java.net.URI;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class SnsPatchConfig {
-    @JsonProperty private String accessKeyId;
-    @JsonProperty private URI endpointUrl;
-    @JsonProperty private String region;
-    @JsonProperty private String secretAccessKey;
     @JsonProperty private String topicArn;
+    @JsonProperty private String region;
+    @JsonProperty private String accessKeyId;
+    @JsonProperty private String secretAccessKey;
+    @JsonProperty private URI endpointUrl;
 
     public SnsPatchConfig() {}
 
-    public SnsPatchConfig accessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
+    public SnsPatchConfig topicArn(String topicArn) {
+        this.topicArn = topicArn;
         return this;
     }
 
     /**
-     * Get accessKeyId
+     * Get topicArn
      *
-     * @return accessKeyId
+     * @return topicArn
      */
     @javax.annotation.Nullable
-    public String getAccessKeyId() {
-        return accessKeyId;
+    public String getTopicArn() {
+        return topicArn;
     }
 
-    public void setAccessKeyId(String accessKeyId) {
-        this.accessKeyId = accessKeyId;
-    }
-
-    public SnsPatchConfig endpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
-        return this;
-    }
-
-    /**
-     * Get endpointUrl
-     *
-     * @return endpointUrl
-     */
-    @javax.annotation.Nullable
-    public URI getEndpointUrl() {
-        return endpointUrl;
-    }
-
-    public void setEndpointUrl(URI endpointUrl) {
-        this.endpointUrl = endpointUrl;
+    public void setTopicArn(String topicArn) {
+        this.topicArn = topicArn;
     }
 
     public SnsPatchConfig region(String region) {
@@ -83,6 +64,25 @@ public class SnsPatchConfig {
         this.region = region;
     }
 
+    public SnsPatchConfig accessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+        return this;
+    }
+
+    /**
+     * Get accessKeyId
+     *
+     * @return accessKeyId
+     */
+    @javax.annotation.Nullable
+    public String getAccessKeyId() {
+        return accessKeyId;
+    }
+
+    public void setAccessKeyId(String accessKeyId) {
+        this.accessKeyId = accessKeyId;
+    }
+
     public SnsPatchConfig secretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
         return this;
@@ -102,23 +102,23 @@ public class SnsPatchConfig {
         this.secretAccessKey = secretAccessKey;
     }
 
-    public SnsPatchConfig topicArn(String topicArn) {
-        this.topicArn = topicArn;
+    public SnsPatchConfig endpointUrl(URI endpointUrl) {
+        this.endpointUrl = endpointUrl;
         return this;
     }
 
     /**
-     * Get topicArn
+     * Get endpointUrl
      *
-     * @return topicArn
+     * @return endpointUrl
      */
     @javax.annotation.Nullable
-    public String getTopicArn() {
-        return topicArn;
+    public URI getEndpointUrl() {
+        return endpointUrl;
     }
 
-    public void setTopicArn(String topicArn) {
-        this.topicArn = topicArn;
+    public void setEndpointUrl(URI endpointUrl) {
+        this.endpointUrl = endpointUrl;
     }
 
     /**
