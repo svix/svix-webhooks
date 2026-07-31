@@ -1,4 +1,7 @@
-use std::time::{Duration, Instant};
+use std::{
+    path::PathBuf,
+    time::{Duration, Instant},
+};
 
 use anyhow::{Context, Result};
 use dialoguer::Input;
@@ -10,6 +13,24 @@ use crate::{config, config::Config};
 pub async fn prompt(_cfg: &Config) -> Result<()> {
     print!("Welcome to the Svix CLI!\n\n");
 
+    let auth_token = prompt_for_auth_token().await?;
+    let fp = save_auth_token(auth_token)?;
+
+    println!(
+        "All Set! Your config has been written to `{}`",
+        fp.display()
+    );
+    println!(
+        "Type `{} --help` to print the Svix CLI documentation!",
+        crate::BIN_NAME
+    );
+    Ok(())
+}
+
+/// Asks the user how they'd like to authenticate and returns the resulting auth token.
+///
+/// Nothing is persisted here, see [`save_auth_token`].
+pub async fn prompt_for_auth_token() -> Result<String> {
     let selections = &["Login in dashboard.svix.com", "Input token manually"];
     let selection = dialoguer::Select::new()
         .with_prompt("How would you like to authenticate?")
@@ -36,6 +57,11 @@ pub async fn prompt(_cfg: &Config) -> Result<()> {
             .to_string()
     };
 
+    Ok(auth_token)
+}
+
+/// Persists `auth_token` to the config file, returning the path it was written to.
+pub fn save_auth_token(auth_token: String) -> Result<PathBuf> {
     // Load from disk and update the prompted fields.
     // There are other fields (not prompted for) related to "relay" for the `listen` command
     // that we'd rather not wipe out if `login` is invoked.
@@ -50,15 +76,27 @@ pub async fn prompt(_cfg: &Config) -> Result<()> {
         );
     }
 
-    println!(
-        "All Set! Your config has been written to `{}`",
-        fp.display()
-    );
-    println!(
-        "Type `{} --help` to print the Svix CLI documentation!",
-        crate::BIN_NAME
-    );
-    Ok(())
+    Ok(fp)
+}
+
+/// Returns a `Config` that is guaranteed to have an auth token set, running the
+/// interactive login flow first if one isn't configured yet.
+pub async fn ensure_authenticated() -> Result<Config> {
+    if let Ok(cfg) = Config::load() {
+        if cfg
+            .auth_token
+            .as_ref()
+            .is_some_and(|t| !t.trim().is_empty())
+        {
+            return Ok(cfg);
+        }
+    }
+
+    let auth_token = prompt_for_auth_token().await?;
+    let fp = save_auth_token(auth_token)?;
+    println!("Your config has been written to `{}`\n", fp.display());
+
+    Config::load()
 }
 
 #[derive(Debug, Deserialize)]
