@@ -9,4 +9,4 @@ To set this up you can follow these steps:
 4. Optionally configure the `opentelemetry_sample_ratio` in the Svix server configuration. If not set, all traces will be sent to the external service.
 5. Ensure the OpenTelemetry Collector is running, start the Svix server, and watch the tracing information be received.
 
-Once `opentelemetry_address` is set, log events (in addition to traces and metrics) are exported to the collector alongside the existing stdout logging — stdout output is unaffected.
+Traces and metrics are exported automatically once `opentelemetry_address` is set. Log events are opt-in: set `opentelemetry_logs_enabled = true` to additionally export logs to the collector, alongside the existing stdout logging (stdout output is unaffected either way).

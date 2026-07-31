@@ -352,28 +352,32 @@ pub fn setup_tracing(
 
     let (otel_layer, otel_tracer_provider) = mapped.unzip();
 
-    let mapped_logs = cfg.opentelemetry_address.as_ref().map(|addr| {
-        // Configure the OpenTelemetry logging layer. Logs still also go to stdout via the
-        // `stdout_layer` below; this is additive, not a replacement.
-        let exporter = opentelemetry_otlp::LogExporter::builder()
-            .with_tonic()
-            .with_endpoint(addr)
-            .build()
-            .unwrap();
+    let mapped_logs = cfg
+        .opentelemetry_address
+        .as_ref()
+        .filter(|_| cfg.opentelemetry_logs_enabled)
+        .map(|addr| {
+            // Configure the OpenTelemetry logging layer. Logs still also go to stdout via the
+            // `stdout_layer` below; this is additive, not a replacement.
+            let exporter = opentelemetry_otlp::LogExporter::builder()
+                .with_tonic()
+                .with_endpoint(addr)
+                .build()
+                .unwrap();
 
-        let provider = SdkLoggerProvider::builder()
-            .with_log_processor(BatchLogProcessor::builder(exporter).build())
-            .with_resource(
-                opentelemetry_sdk::Resource::builder()
-                    .with_service_name(cfg.opentelemetry_service_name.clone())
-                    .build(),
-            )
-            .build();
+            let provider = SdkLoggerProvider::builder()
+                .with_log_processor(BatchLogProcessor::builder(exporter).build())
+                .with_resource(
+                    opentelemetry_sdk::Resource::builder()
+                        .with_service_name(cfg.opentelemetry_service_name.clone())
+                        .build(),
+                )
+                .build();
 
-        let layer = OpenTelemetryTracingBridge::new(&provider);
+            let layer = OpenTelemetryTracingBridge::new(&provider);
 
-        (layer, provider)
-    });
+            (layer, provider)
+        });
 
     let (otel_logs_layer, otel_logger_provider) = mapped_logs.unzip();
 
