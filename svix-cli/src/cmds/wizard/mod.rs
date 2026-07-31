@@ -1,3 +1,5 @@
+mod tui;
+
 use std::collections::BTreeSet;
 
 use anyhow::Context as _;
@@ -6,11 +8,11 @@ use svix::{
     api::Svix,
     models::{
         AppPortalAccessIn, ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn,
-        MessageIn,
+        MessageIn, MessageOut,
     },
 };
 
-use crate::{cmds::login, config::Config, BIN_NAME};
+use crate::{cmds::login, config::Config};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -53,19 +55,8 @@ async fn quickstart() -> anyhow::Result<()> {
 
     let client = crate::get_client(&cfg)?;
 
-    // The event type has to exist before the endpoint that filters on it is created.
-    let message = sample_message(&client).await?;
-    let qs = create_application(&client, &message).await?;
-    let language = integrate_code(&cfg, &qs, &message)?;
-    send_first_message(&client, &qs, &message).await?;
-    app_portal(&client, &cfg, &qs, language).await?;
-
-    println!("That's the quickstart done. From here you can:");
-    println!("  - Add more event types:  `{BIN_NAME} event-type create {{...}}`");
-    println!("  - Forward webhooks to a local server:  `{BIN_NAME} listen http://localhost:8000/webhook`");
-    println!("  - Read the docs:  https://docs.svix.com\n");
-
-    Ok(())
+    // Steps 3 to 6 run in a full-screen UI you can walk back and forth through.
+    tui::run(&client, &cfg).await
 }
 
 /// Step 1: make sure we have credentials to work with, reusing the `login` flow.
@@ -170,11 +161,6 @@ fn install_skill(skill: &str) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// Wraps `text` in the green used elsewhere in the CLI for values worth copying.
-fn green(text: &str) -> String {
-    format!("\x1b[32m{text}\x1b[0m")
-}
-
 /// Svix Play, the throwaway inbox the dashboard onboarding also delivers to.
 const PLAY_URL: &str = "https://play.svix.com";
 
@@ -203,6 +189,8 @@ const APP_UID_PREFIX: &str = "quickstart-";
 /// The application the quickstart works against, plus the Svix Play inbox it delivers to.
 struct Quickstart {
     app: ApplicationOut,
+    /// The example endpoint pointing at the Svix Play inbox.
+    endpoint: EndpointOut,
     /// Where the delivered message can be inspected in the browser.
     play_view_url: String,
     /// Set when the org requires every endpoint to specify a channel, in which case the
@@ -218,12 +206,6 @@ const CHANNEL: &str = "my-channel";
 /// This mirrors the dashboard onboarding: an application plus a Svix Play endpoint, so
 /// the first message has a destination without the user having to run a server.
 async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Result<Quickstart> {
-    println!("Step 3: Create a consumer application");
-    println!(
-        "A consumer application defines where your messages are sent. Usually you'll want \
-         \none application for each of your customers.\n"
-    );
-
     // Named and uid'd for you: in a real integration these come from your own user or
     // tenant record, not from a prompt.
     let application_in = ApplicationIn {
@@ -236,27 +218,14 @@ async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Resul
         .await
         .context("Failed to create the application")?;
 
-    println!("Created application \"{APP_NAME}\" ({})", green(&app.id));
-    if let Some(uid) = &app.uid {
-        println!(
-            "Its uid is {}, so you can address it by either.",
-            green(uid)
-        );
-    }
-
     // The dashboard onboarding adds this endpoint for you too, so there's something to
     // deliver to before the user has an endpoint of their own.
     let play_token = generate_play_token();
     let (endpoint, channel) = create_play_endpoint(client, &app.id, &play_token, msg).await?;
 
-    println!(
-        "Added an example endpoint ({}) pointing at a Svix Play inbox, so the message \
-         \nyou send next has somewhere to go.\n",
-        green(&endpoint.id)
-    );
-
     Ok(Quickstart {
         app,
+        endpoint,
         play_view_url: format!("{PLAY_URL}/view/{play_token}/"),
         channel,
     })
@@ -362,7 +331,6 @@ async fn sample_message(client: &Svix) -> anyhow::Result<SampleMessage> {
                     format!("Failed to create the `{DEFAULT_EVENT_TYPE}` event type")
                 })?;
 
-            println!("Created event type {}\n", green(DEFAULT_EVENT_TYPE));
             DEFAULT_EVENT_TYPE.to_owned()
         }
     };
@@ -564,82 +532,12 @@ curl -X POST "{server_url}/api/v1/auth/app-portal-access/{app_id}" \
 /// The public API URL to show in the curl snippet when the config doesn't override it.
 const DEFAULT_SERVER_URL: &str = "https://api.svix.com";
 
-/// Step 4 (manual): show where and what to change in the user's own code.
-///
-/// Returns the language the user picked, so the app portal step can show its snippet too.
-fn integrate_code(
-    cfg: &Config,
-    qs: &Quickstart,
-    msg: &SampleMessage,
-) -> anyhow::Result<&'static Language> {
-    println!("Step 4: Add Svix to your code");
-
-    let selection = dialoguer::Select::new()
-        .with_prompt("Which language is your app written in?")
-        .items(LANGUAGES.iter().map(|l| l.name).collect::<Vec<_>>())
-        .default(0)
-        .interact()?;
-    let language = &LANGUAGES[selection];
-
-    let server_url = cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
-
-    println!("\n1. Install the SDK:\n");
-    println!("   {}", green(language.install));
-    println!("\n2. Keep your API token out of source control. Export it where your app runs:\n");
-    println!("   {}", green("export SVIX_AUTH_TOKEN='<your-token>'"));
-    println!(
-        "\n   You can create environment-specific tokens in the dashboard: \
-         https://dashboard.svix.com"
-    );
-    println!(
-        "\n3. Send a message from the place in your code where the event happens — the same \
-         \n   spot you'd log it or fire an internal event:\n"
-    );
-
-    for line in (language.snippet)(&qs.app.id, msg, server_url).lines() {
-        println!("   {line}");
-    }
-
-    println!(
-        "\nIn your real integration you'd create one application per customer and use \
-         \nthat customer's application ID (or uid) here, instead of the hardcoded one above.\n"
-    );
-
-    // Not a gate on anything, just a beat so the snippet doesn't scroll past.
-    let _ = dialoguer::Confirm::new()
-        .with_prompt("Ready to continue?")
-        .default(true)
-        .interact()?;
-    println!();
-
-    Ok(language)
-}
-
-/// Step 5 (manual): send the message from the snippet and point at where it landed.
-async fn send_first_message(
+/// Step 5: send the sample message to the application's endpoints.
+async fn send_message(
     client: &Svix,
     qs: &Quickstart,
     msg: &SampleMessage,
-) -> anyhow::Result<()> {
-    println!("Step 5: Send your first message");
-    println!(
-        "This sends the exact message from the snippet above, so you can see it delivered \
-         \nbefore wiring up your own code.\n"
-    );
-
-    let confirmed = dialoguer::Confirm::new()
-        .with_prompt(format!("Send a `{}` message now?", msg.event_type))
-        .default(true)
-        .interact()?;
-
-    if !confirmed {
-        println!(
-            "Skipped. You can send one later with `{BIN_NAME} message create {}`\n",
-            qs.app.id
-        );
-        return Ok(());
-    }
-
+) -> anyhow::Result<MessageOut> {
     let message_in = MessageIn {
         // The endpoint only listens on this channel when the org requires one.
         channels: qs
@@ -648,51 +546,15 @@ async fn send_first_message(
             .map(|channel| BTreeSet::from([channel.clone()])),
         ..MessageIn::new(msg.event_type.clone(), msg.payload.clone())
     };
-    let message_out = client
+    client
         .message()
         .create(qs.app.id.clone(), message_in, None)
         .await
-        .context("Failed to send the message")?;
-
-    println!("\nSent message {}", green(&message_out.id));
-    println!("It was delivered to the example endpoint — see it in the Svix Play inbox:\n");
-    println!("{}\n", green(&qs.play_view_url));
-
-    let open_it = dialoguer::Confirm::new()
-        .with_prompt("Open the inbox in your browser?")
-        .default(true)
-        .interact()?;
-
-    if open_it {
-        if let Err(e) = open::that(&qs.play_view_url) {
-            eprintln!("Failed to open browser: {e}");
-            println!("Open the URL above manually instead.");
-        }
-    }
-
-    println!(
-        "\nEvery attempt is recorded: `{BIN_NAME} message-attempt list-by-msg {} {}`\n",
-        qs.app.id, message_out.id
-    );
-
-    Ok(())
+        .context("Failed to send the message")
 }
 
-/// Step 6 (manual): hand the user a magic link into the app portal for their new app,
-/// and show how to generate one of their own from the language they picked in step 4.
-async fn app_portal(
-    client: &Svix,
-    cfg: &Config,
-    qs: &Quickstart,
-    language: &Language,
-) -> anyhow::Result<()> {
-    println!("Step 6: Preview the app portal");
-    println!(
-        "In production, your webhook consumers add their own endpoints inside your product \
-         \nusing the pre-built, embeddable app portal. The endpoint and message from the \
-         \nprevious steps are already in there.\n"
-    );
-
+/// Step 6: mint a magic link into the app portal for the quickstart's application.
+async fn portal_url(client: &Svix, qs: &Quickstart) -> anyhow::Result<String> {
     let access = client
         .authentication()
         .app_portal_access(qs.app.id.clone(), AppPortalAccessIn::new(), None)
@@ -700,39 +562,7 @@ async fn app_portal(
         .context("Failed to generate an app portal URL")?;
 
     // `dashboardTour` turns on the guided tour, same as the dashboard onboarding link.
-    let url = with_dashboard_tour(&access.url);
-
-    println!("{}\n", green(&url));
-    println!(
-        "Generate one any time with `{BIN_NAME} authentication app-portal-access {}`\n",
-        qs.app.id
-    );
-
-    let open_it = dialoguer::Confirm::new()
-        .with_prompt("Open it in your browser?")
-        .default(true)
-        .interact()?;
-
-    if open_it {
-        if let Err(e) = open::that(&url) {
-            eprintln!("Failed to open browser: {e}");
-            println!("Open the URL above manually instead.");
-        }
-    }
-
-    println!(
-        "\nLinks like that one are short-lived, so you mint them on demand from your \
-         \nbackend and link to them from your own dashboard:\n"
-    );
-
-    let server_url = cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
-    for line in (language.portal)(&qs.app.id, server_url).lines() {
-        println!("   {line}");
-    }
-
-    println!();
-
-    Ok(())
+    Ok(with_dashboard_tour(&access.url))
 }
 
 /// Adds the `dashboardTour` query param to an app portal magic link.

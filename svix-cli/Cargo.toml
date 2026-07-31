@@ -57,6 +57,7 @@ idna_adapter = "=1.1.0"
 indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.9"
+ratatui = { version = "0.30", default-features = false, features = ["crossterm", "layout-cache", "macros", "underline-color"] }
 reqwest = { version = "0.13.2", features = ["rustls", "json", "charset", "http2"], default-features = false }
 rustls = "0.23.34"
 serde = { version = "1.0.215", features = ["derive"] }
