@@ -224,7 +224,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-fn get_client(cfg: &Config) -> Result<svix::api::Svix> {
+pub(crate) fn get_client(cfg: &Config) -> Result<svix::api::Svix> {
     let token = cfg.auth_token.clone().ok_or_else(|| {
         anyhow::anyhow!("No auth token set. Try running `{BIN_NAME} login` to get started.")
     })?;
