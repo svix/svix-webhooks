@@ -4,7 +4,10 @@ use anyhow::Context as _;
 use clap::{Args, Subcommand};
 use svix::{
     api::Svix,
-    models::{ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn, MessageIn},
+    models::{
+        AppPortalAccessIn, ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn,
+        MessageIn,
+    },
 };
 
 use crate::{cmds::login, config::Config, BIN_NAME};
@@ -53,8 +56,14 @@ async fn quickstart() -> anyhow::Result<()> {
     // The event type has to exist before the endpoint that filters on it is created.
     let message = sample_message(&client).await?;
     let qs = create_application(&client, &message).await?;
-    integrate_code(&cfg, &qs, &message)?;
+    let language = integrate_code(&cfg, &qs, &message)?;
     send_first_message(&client, &qs, &message).await?;
+    app_portal(&client, &cfg, &qs, language).await?;
+
+    println!("That's the quickstart done. From here you can:");
+    println!("  - Add more event types:  `{BIN_NAME} event-type create {{...}}`");
+    println!("  - Forward webhooks to a local server:  `{BIN_NAME} listen http://localhost:8000/webhook`");
+    println!("  - Read the docs:  https://docs.svix.com\n");
 
     Ok(())
 }
@@ -371,6 +380,9 @@ struct Language {
     install: &'static str,
     /// The snippet itself, rendered for the application and message created above.
     snippet: fn(app_id: &str, msg: &SampleMessage, server_url: &str) -> String,
+    /// How to mint an app portal magic link from your own backend, so your customers can
+    /// manage their endpoints without you building a UI.
+    portal: fn(app_id: &str, server_url: &str) -> String,
 }
 
 const LANGUAGES: &[Language] = &[
@@ -396,6 +408,17 @@ svix.message.create(
 )"#
             )
         },
+        portal: |app_id, _| {
+            format!(
+                r#"from svix.api import Svix, AppPortalAccessIn
+
+svix = Svix(os.environ["SVIX_AUTH_TOKEN"])
+
+# Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+access = svix.authentication.app_portal_access("{app_id}", AppPortalAccessIn())
+portal_url = access.url"#
+            )
+        },
     },
     Language {
         name: "JavaScript / TypeScript",
@@ -415,6 +438,17 @@ await svix.message.create("{app_id}", {{
   eventType: "{event_type}",
   payload: {payload},
 }});"#
+            )
+        },
+        portal: |app_id, _| {
+            format!(
+                r#"import {{ Svix }} from "svix";
+
+const svix = new Svix(process.env.SVIX_AUTH_TOKEN);
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+const access = await svix.authentication.appPortalAccess("{app_id}", {{}});
+const portalUrl = access.url;"#
             )
         },
     },
@@ -442,6 +476,23 @@ _, err = svixClient.Message.Create(ctx, "{app_id}", models.MessageIn{{
 }}, nil)"#
             )
         },
+        portal: |app_id, _| {
+            format!(
+                r#"svixClient, err := svix.New(os.Getenv("SVIX_AUTH_TOKEN"), nil)
+if err != nil {{
+    return err
+}}
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+access, err := svixClient.Authentication.AppPortalAccess(
+    ctx, "{app_id}", models.AppPortalAccessIn{{}}, nil,
+)
+if err != nil {{
+    return err
+}}
+portalURL := access.Url"#
+            )
+        },
     },
     Language {
         name: "Rust",
@@ -467,6 +518,18 @@ svix.message()
     .await?;"#
             )
         },
+        portal: |app_id, _| {
+            format!(
+                r#"let svix = Svix::new(std::env::var("SVIX_AUTH_TOKEN")?, None);
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+let access = svix
+    .authentication()
+    .app_portal_access("{app_id}".to_owned(), AppPortalAccessIn::new(), None)
+    .await?;
+let portal_url = access.url;"#
+            )
+        },
     },
     Language {
         name: "cURL (any language)",
@@ -486,6 +549,15 @@ svix.message()
   }}'"#
             )
         },
+        portal: |app_id, server_url| {
+            format!(
+                r#"# Serve the returned `url` from your own dashboard, e.g. behind a "Webhooks" button.
+curl -X POST "{server_url}/api/v1/auth/app-portal-access/{app_id}" \
+  -H "Authorization: Bearer $SVIX_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{{}}'"#
+            )
+        },
     },
 ];
 
@@ -493,7 +565,13 @@ svix.message()
 const DEFAULT_SERVER_URL: &str = "https://api.svix.com";
 
 /// Step 4 (manual): show where and what to change in the user's own code.
-fn integrate_code(cfg: &Config, qs: &Quickstart, msg: &SampleMessage) -> anyhow::Result<()> {
+///
+/// Returns the language the user picked, so the app portal step can show its snippet too.
+fn integrate_code(
+    cfg: &Config,
+    qs: &Quickstart,
+    msg: &SampleMessage,
+) -> anyhow::Result<&'static Language> {
     println!("Step 4: Add Svix to your code");
 
     let selection = dialoguer::Select::new()
@@ -534,7 +612,7 @@ fn integrate_code(cfg: &Config, qs: &Quickstart, msg: &SampleMessage) -> anyhow:
         .interact()?;
     println!();
 
-    Ok(())
+    Ok(language)
 }
 
 /// Step 5 (manual): send the message from the snippet and point at where it landed.
@@ -598,4 +676,99 @@ async fn send_first_message(
     );
 
     Ok(())
+}
+
+/// Step 6 (manual): hand the user a magic link into the app portal for their new app,
+/// and show how to generate one of their own from the language they picked in step 4.
+async fn app_portal(
+    client: &Svix,
+    cfg: &Config,
+    qs: &Quickstart,
+    language: &Language,
+) -> anyhow::Result<()> {
+    println!("Step 6: Preview the app portal");
+    println!(
+        "In production, your webhook consumers add their own endpoints inside your product \
+         \nusing the pre-built, embeddable app portal. The endpoint and message from the \
+         \nprevious steps are already in there.\n"
+    );
+
+    let access = client
+        .authentication()
+        .app_portal_access(qs.app.id.clone(), AppPortalAccessIn::new(), None)
+        .await
+        .context("Failed to generate an app portal URL")?;
+
+    // `dashboardTour` turns on the guided tour, same as the dashboard onboarding link.
+    let url = with_dashboard_tour(&access.url);
+
+    println!("{}\n", green(&url));
+    println!(
+        "Generate one any time with `{BIN_NAME} authentication app-portal-access {}`\n",
+        qs.app.id
+    );
+
+    let open_it = dialoguer::Confirm::new()
+        .with_prompt("Open it in your browser?")
+        .default(true)
+        .interact()?;
+
+    if open_it {
+        if let Err(e) = open::that(&url) {
+            eprintln!("Failed to open browser: {e}");
+            println!("Open the URL above manually instead.");
+        }
+    }
+
+    println!(
+        "\nLinks like that one are short-lived, so you mint them on demand from your \
+         \nbackend and link to them from your own dashboard:\n"
+    );
+
+    let server_url = cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
+    for line in (language.portal)(&qs.app.id, server_url).lines() {
+        println!("   {line}");
+    }
+
+    println!();
+
+    Ok(())
+}
+
+/// Adds the `dashboardTour` query param to an app portal magic link.
+///
+/// The one-time key lives in the URL fragment (`.../login#key=...`), so the param has to
+/// go before the `#` for the app portal to see it.
+fn with_dashboard_tour(url: &str) -> String {
+    let (base, fragment) = match url.split_once('#') {
+        Some((base, fragment)) => (base, Some(fragment)),
+        None => (url, None),
+    };
+    let separator = if base.contains('?') { '&' } else { '?' };
+
+    match fragment {
+        Some(fragment) => format!("{base}{separator}dashboardTour=true#{fragment}"),
+        None => format!("{base}{separator}dashboardTour=true"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::with_dashboard_tour;
+
+    #[test]
+    fn dashboard_tour_param_goes_before_the_fragment() {
+        assert_eq!(
+            with_dashboard_tour("https://app.svix.com/login#key=abc"),
+            "https://app.svix.com/login?dashboardTour=true#key=abc"
+        );
+        assert_eq!(
+            with_dashboard_tour("https://app.svix.com/login?foo=1#key=abc"),
+            "https://app.svix.com/login?foo=1&dashboardTour=true#key=abc"
+        );
+        assert_eq!(
+            with_dashboard_tour("https://app.svix.com/login"),
+            "https://app.svix.com/login?dashboardTour=true"
+        );
+    }
 }
