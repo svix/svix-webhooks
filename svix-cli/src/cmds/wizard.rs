@@ -4,10 +4,10 @@ use anyhow::Context as _;
 use clap::{Args, Subcommand};
 use svix::{
     api::Svix,
-    models::{ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn},
+    models::{ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn, MessageIn},
 };
 
-use crate::{cmds::login, config::Config};
+use crate::{cmds::login, config::Config, BIN_NAME};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -52,8 +52,9 @@ async fn quickstart() -> anyhow::Result<()> {
 
     // The event type has to exist before the endpoint that filters on it is created.
     let message = sample_message(&client).await?;
-    let app = create_application(&client, &message).await?;
-    integrate_code(&cfg, &app, &message)?;
+    let qs = create_application(&client, &message).await?;
+    integrate_code(&cfg, &qs, &message)?;
+    send_first_message(&client, &qs, &message).await?;
 
     Ok(())
 }
@@ -190,6 +191,16 @@ fn generate_play_token() -> String {
 const APP_NAME: &str = "My first app";
 const APP_UID_PREFIX: &str = "quickstart-";
 
+/// The application the quickstart works against, plus the Svix Play inbox it delivers to.
+struct Quickstart {
+    app: ApplicationOut,
+    /// Where the delivered message can be inspected in the browser.
+    play_view_url: String,
+    /// Set when the org requires every endpoint to specify a channel, in which case the
+    /// message has to be sent on that channel to reach the endpoint.
+    channel: Option<String>,
+}
+
 /// The channel used when the org requires one, same as the dashboard onboarding.
 const CHANNEL: &str = "my-channel";
 
@@ -197,7 +208,7 @@ const CHANNEL: &str = "my-channel";
 ///
 /// This mirrors the dashboard onboarding: an application plus a Svix Play endpoint, so
 /// the first message has a destination without the user having to run a server.
-async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Result<ApplicationOut> {
+async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Result<Quickstart> {
     println!("Step 3: Create a consumer application");
     println!(
         "A consumer application defines where your messages are sent. Usually you'll want \
@@ -235,15 +246,11 @@ async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Resul
         green(&endpoint.id)
     );
 
-    println!(
-        "Anything you send to it lands in a Svix Play inbox:\n{}\n",
-        green(&format!("{PLAY_URL}/view/{play_token}/"))
-    );
-    if let Some(channel) = &channel {
-        println!("The endpoint only listens on the `{channel}` channel.\n");
-    }
-
-    Ok(app)
+    Ok(Quickstart {
+        app,
+        play_view_url: format!("{PLAY_URL}/view/{play_token}/"),
+        channel,
+    })
 }
 
 /// Creates the Svix Play endpoint, returning it and the channel it listens on (if any).
@@ -486,7 +493,7 @@ svix.message()
 const DEFAULT_SERVER_URL: &str = "https://api.svix.com";
 
 /// Step 4 (manual): show where and what to change in the user's own code.
-fn integrate_code(cfg: &Config, app: &ApplicationOut, msg: &SampleMessage) -> anyhow::Result<()> {
+fn integrate_code(cfg: &Config, qs: &Quickstart, msg: &SampleMessage) -> anyhow::Result<()> {
     println!("Step 4: Add Svix to your code");
 
     let selection = dialoguer::Select::new()
@@ -511,7 +518,7 @@ fn integrate_code(cfg: &Config, app: &ApplicationOut, msg: &SampleMessage) -> an
          \n   spot you'd log it or fire an internal event:\n"
     );
 
-    for line in (language.snippet)(&app.id, msg, server_url).lines() {
+    for line in (language.snippet)(&qs.app.id, msg, server_url).lines() {
         println!("   {line}");
     }
 
@@ -526,6 +533,69 @@ fn integrate_code(cfg: &Config, app: &ApplicationOut, msg: &SampleMessage) -> an
         .default(true)
         .interact()?;
     println!();
+
+    Ok(())
+}
+
+/// Step 5 (manual): send the message from the snippet and point at where it landed.
+async fn send_first_message(
+    client: &Svix,
+    qs: &Quickstart,
+    msg: &SampleMessage,
+) -> anyhow::Result<()> {
+    println!("Step 5: Send your first message");
+    println!(
+        "This sends the exact message from the snippet above, so you can see it delivered \
+         \nbefore wiring up your own code.\n"
+    );
+
+    let confirmed = dialoguer::Confirm::new()
+        .with_prompt(format!("Send a `{}` message now?", msg.event_type))
+        .default(true)
+        .interact()?;
+
+    if !confirmed {
+        println!(
+            "Skipped. You can send one later with `{BIN_NAME} message create {}`\n",
+            qs.app.id
+        );
+        return Ok(());
+    }
+
+    let message_in = MessageIn {
+        // The endpoint only listens on this channel when the org requires one.
+        channels: qs
+            .channel
+            .as_ref()
+            .map(|channel| BTreeSet::from([channel.clone()])),
+        ..MessageIn::new(msg.event_type.clone(), msg.payload.clone())
+    };
+    let message_out = client
+        .message()
+        .create(qs.app.id.clone(), message_in, None)
+        .await
+        .context("Failed to send the message")?;
+
+    println!("\nSent message {}", green(&message_out.id));
+    println!("It was delivered to the example endpoint — see it in the Svix Play inbox:\n");
+    println!("{}\n", green(&qs.play_view_url));
+
+    let open_it = dialoguer::Confirm::new()
+        .with_prompt("Open the inbox in your browser?")
+        .default(true)
+        .interact()?;
+
+    if open_it {
+        if let Err(e) = open::that(&qs.play_view_url) {
+            eprintln!("Failed to open browser: {e}");
+            println!("Open the URL above manually instead.");
+        }
+    }
+
+    println!(
+        "\nEvery attempt is recorded: `{BIN_NAME} message-attempt list-by-msg {} {}`\n",
+        qs.app.id, message_out.id
+    );
 
     Ok(())
 }
