@@ -1,5 +1,11 @@
+use std::collections::BTreeSet;
+
 use anyhow::Context as _;
 use clap::{Args, Subcommand};
+use svix::{
+    api::Svix,
+    models::{ApplicationIn, ApplicationOut, EndpointIn, EndpointOut, EventTypeIn},
+};
 
 use crate::{cmds::login, config::Config};
 
@@ -30,7 +36,7 @@ impl WizardCommands {
 async fn quickstart() -> anyhow::Result<()> {
     print!("Welcome to the Svix quickstart!\n\n");
 
-    let _cfg = authenticate().await?;
+    let cfg = authenticate().await?;
 
     match choose_mode()? {
         // The agent installs the Svix skills and drives the rest of the quickstart itself,
@@ -41,6 +47,12 @@ async fn quickstart() -> anyhow::Result<()> {
         }
         QuickstartMode::Manual => {}
     }
+
+    let client = crate::get_client(&cfg)?;
+
+    // The event type has to exist before the endpoint that filters on it is created.
+    let message = sample_message(&client).await?;
+    create_application(&client, &message).await?;
 
     Ok(())
 }
@@ -145,4 +157,193 @@ fn install_skill(skill: &str) -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+/// Wraps `text` in the green used elsewhere in the CLI for values worth copying.
+fn green(text: &str) -> String {
+    format!("\x1b[32m{text}\x1b[0m")
+}
+
+/// Svix Play, the throwaway inbox the dashboard onboarding also delivers to.
+const PLAY_URL: &str = "https://play.svix.com";
+
+/// Play tokens are 27 base62 characters, same as the dashboard generates.
+const PLAY_TOKEN_LEN: usize = 27;
+const BASE62: &[u8] = b"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+fn generate_token(len: usize) -> String {
+    use rand::Rng as _;
+
+    let mut rng = rand::rng();
+    (0..len)
+        .map(|_| BASE62[rng.random_range(0..BASE62.len())] as char)
+        .collect()
+}
+
+fn generate_play_token() -> String {
+    generate_token(PLAY_TOKEN_LEN)
+}
+
+/// The application the quickstart creates. The uid gets a random suffix so repeated runs
+/// don't collide.
+const APP_NAME: &str = "My first app";
+const APP_UID_PREFIX: &str = "quickstart-";
+
+/// The channel used when the org requires one, same as the dashboard onboarding.
+const CHANNEL: &str = "my-channel";
+
+/// Step 3 (manual): create the application and give it somewhere to deliver to.
+///
+/// This mirrors the dashboard onboarding: an application plus a Svix Play endpoint, so
+/// the first message has a destination without the user having to run a server.
+async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Result<ApplicationOut> {
+    println!("Step 3: Create a consumer application");
+    println!(
+        "A consumer application defines where your messages are sent. Usually you'll want \
+         \none application for each of your customers.\n"
+    );
+
+    // Named and uid'd for you: in a real integration these come from your own user or
+    // tenant record, not from a prompt.
+    let application_in = ApplicationIn {
+        uid: Some(format!("{APP_UID_PREFIX}{}", generate_token(8))),
+        ..ApplicationIn::new(APP_NAME.to_owned())
+    };
+    let app = client
+        .application()
+        .create(application_in, None)
+        .await
+        .context("Failed to create the application")?;
+
+    println!("Created application \"{APP_NAME}\" ({})", green(&app.id));
+    if let Some(uid) = &app.uid {
+        println!(
+            "Its uid is {}, so you can address it by either.",
+            green(uid)
+        );
+    }
+
+    // The dashboard onboarding adds this endpoint for you too, so there's something to
+    // deliver to before the user has an endpoint of their own.
+    let play_token = generate_play_token();
+    let (endpoint, channel) = create_play_endpoint(client, &app.id, &play_token, msg).await?;
+
+    println!(
+        "Added an example endpoint ({}) pointing at a Svix Play inbox, so the message \
+         \nyou send next has somewhere to go.\n",
+        green(&endpoint.id)
+    );
+
+    println!(
+        "Anything you send to it lands in a Svix Play inbox:\n{}\n",
+        green(&format!("{PLAY_URL}/view/{play_token}/"))
+    );
+    if let Some(channel) = &channel {
+        println!("The endpoint only listens on the `{channel}` channel.\n");
+    }
+
+    Ok(app)
+}
+
+/// Creates the Svix Play endpoint, returning it and the channel it listens on (if any).
+///
+/// Orgs can require every endpoint to specify filter types and/or channels. Filter types
+/// are always sent (the endpoint only needs the one event type the quickstart uses); the
+/// channel is only added if the API rejects the first attempt for the lack of one, since
+/// the public API doesn't expose those org settings the way the dashboard reads them.
+async fn create_play_endpoint(
+    client: &Svix,
+    app_id: &str,
+    play_token: &str,
+    msg: &SampleMessage,
+) -> anyhow::Result<(EndpointOut, Option<String>)> {
+    let endpoint_in = EndpointIn {
+        description: Some("Svix onboarding endpoint".to_owned()),
+        // Serialized as `filterTypes`; required when the org sets `requireEndpointFilterTypes`.
+        event_types: Some(BTreeSet::from([msg.event_type.clone()])),
+        ..EndpointIn::new(format!("{PLAY_URL}/in/{play_token}/"))
+    };
+
+    match client
+        .endpoint()
+        .create(app_id.to_owned(), endpoint_in.clone(), None)
+        .await
+    {
+        Ok(endpoint) => Ok((endpoint, None)),
+        Err(e) if is_missing_field(&e, "channels") => {
+            let endpoint_in = EndpointIn {
+                channels: Some(BTreeSet::from([CHANNEL.to_owned()])),
+                ..endpoint_in
+            };
+            let endpoint = client
+                .endpoint()
+                .create(app_id.to_owned(), endpoint_in, None)
+                .await
+                .context("Failed to create the example endpoint")?;
+
+            Ok((endpoint, Some(CHANNEL.to_owned())))
+        }
+        Err(e) => Err(anyhow::Error::new(e).context("Failed to create the example endpoint")),
+    }
+}
+
+/// Whether `err` is a validation error complaining about the given request body field.
+fn is_missing_field(err: &svix::error::Error, field: &str) -> bool {
+    let svix::error::Error::Validation(content) = err else {
+        return false;
+    };
+
+    content.payload.as_ref().is_some_and(|payload| {
+        payload
+            .detail
+            .iter()
+            .any(|item| item.loc.iter().any(|loc| loc == field))
+    })
+}
+
+/// The message the quickstart sends, and that the code snippets show.
+struct SampleMessage {
+    event_type: String,
+}
+
+/// Fallback matching the dashboard onboarding when the account has no event types yet.
+const DEFAULT_EVENT_TYPE: &str = "invoice.paid";
+
+/// Picks the message to send: the account's first event type if it has one, otherwise
+/// `invoice.paid`, which is created here so the endpoint can filter on it.
+async fn sample_message(client: &Svix) -> anyhow::Result<SampleMessage> {
+    let existing = client
+        .event_type()
+        .list(None)
+        .await
+        .ok()
+        .and_then(|res| res.data.into_iter().next())
+        .map(|et| et.name);
+
+    let event_type = match existing {
+        Some(event_type) => event_type,
+        None => {
+            let event_type_in = EventTypeIn {
+                name: DEFAULT_EVENT_TYPE.to_owned(),
+                description: "An invoice was paid".to_owned(),
+                schemas: None,
+                archived: None,
+                deprecated: None,
+                feature_flags: None,
+                group_name: None,
+            };
+            client
+                .event_type()
+                .create(event_type_in, None)
+                .await
+                .with_context(|| {
+                    format!("Failed to create the `{DEFAULT_EVENT_TYPE}` event type")
+                })?;
+
+            println!("Created event type {}\n", green(DEFAULT_EVENT_TYPE));
+            DEFAULT_EVENT_TYPE.to_owned()
+        }
+    };
+
+    Ok(SampleMessage { event_type })
 }
