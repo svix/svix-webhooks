@@ -56,10 +56,10 @@ const STEPS: &[Step] = &[
 impl Step {
     fn title(self) -> &'static str {
         match self {
-            Self::Application => "3 Application",
-            Self::Code => "4 Your code",
-            Self::Send => "5 First message",
-            Self::Portal => "6 App portal",
+            Self::Application => "Application",
+            Self::Code => "Your code",
+            Self::Send => "First message",
+            Self::Portal => "App portal",
             Self::Done => "Done",
         }
     }
