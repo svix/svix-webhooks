@@ -1,8 +1,8 @@
 //! The full-screen quickstart, steps 3 to 6.
 //!
-//! Every step is a page you can walk back and forth through, so nothing is a point of no
-//! return: the only key that changes anything on your account is Enter, on the steps that
-//! say so.
+//! The steps are a checklist you work down: each one builds on the one before it, so the
+//! wizard only moves forward, ticking steps off as they're done. The only key that
+//! changes anything on your account is Enter.
 
 use std::{cell::Cell, time::Duration};
 
@@ -11,7 +11,7 @@ use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, List, ListItem, ListState, Paragraph, Tabs, Wrap},
+    widgets::{Block, List, ListItem, Paragraph, Wrap},
     DefaultTerminal, Frame,
 };
 use svix::api::Svix;
@@ -198,7 +198,9 @@ impl<'a> App<'a> {
     /// The URL `o` opens on the current step, if any.
     fn open_url(&self) -> Option<&str> {
         match self.step() {
-            Step::Send => self.quickstart.as_ref().map(|qs| qs.play_view_url.as_str()),
+            Step::Send if self.sent.is_some() => {
+                self.quickstart.as_ref().map(|qs| qs.play_view_url.as_str())
+            }
             Step::Portal => self.portal.as_deref(),
             _ => None,
         }
@@ -212,18 +214,11 @@ impl<'a> App<'a> {
             KeyCode::Char('c') if ctrl => self.quit = true,
             KeyCode::Char('q') | KeyCode::Esc => self.quit = true,
 
-            KeyCode::Left | KeyCode::Char('h' | 'a') | KeyCode::BackTab => self.go(-1),
-            KeyCode::Right | KeyCode::Char('l' | 'd') | KeyCode::Tab => self.go(1),
+            // The quickstart only moves forward, so the horizontal keys are free for
+            // picking a language on the step that shows code.
+            KeyCode::Left | KeyCode::Char('h' | 'a') | KeyCode::BackTab => self.pick_language(-1),
+            KeyCode::Right | KeyCode::Char('l' | 'd') | KeyCode::Tab => self.pick_language(1),
 
-            // On the code step the list takes the vertical keys; elsewhere they scroll.
-            KeyCode::Up | KeyCode::Char('k') if self.step() == Step::Code => {
-                self.language = self.language.saturating_sub(1);
-                self.scroll = 0;
-            }
-            KeyCode::Down | KeyCode::Char('j') if self.step() == Step::Code => {
-                self.language = (self.language + 1).min(LANGUAGES.len() - 1);
-                self.scroll = 0;
-            }
             KeyCode::Up | KeyCode::Char('k') => self.scroll = self.scroll.saturating_sub(1),
             KeyCode::Down | KeyCode::Char('j') => self.scroll_down(1),
             KeyCode::PageUp => self.scroll = self.scroll.saturating_sub(10),
@@ -243,40 +238,65 @@ impl<'a> App<'a> {
         self.scroll = self.scroll.saturating_add(lines).min(max);
     }
 
-    /// The app portal is only worth looking at once there's a delivery in it, so it stays
-    /// shut until the message has gone out.
-    fn locked(&self, step: Step) -> bool {
-        step == Step::Portal && self.sent.is_none()
-    }
-
-    fn go(&mut self, delta: isize) {
-        let next = (self.step as isize + delta).clamp(0, STEPS.len() as isize - 1) as usize;
-        if next == self.step {
+    fn pick_language(&mut self, delta: isize) {
+        if self.step() != Step::Code {
             return;
         }
-        if self.locked(STEPS[next]) {
-            self.status = Some(UNLOCK_HINT.to_owned());
-            return;
-        }
-        self.step = next;
+        let next = (self.language as isize + delta).clamp(0, LANGUAGES.len() as isize - 1);
+        self.language = next as usize;
         self.scroll = 0;
+    }
 
-        // Each step generates what it needs the first time you reach it, except the
-        // message, which only goes out when you ask for it.
-        if self.step() == Step::Portal && self.portal.is_none() && self.quickstart.is_some() {
-            self.pending = Some(Action::Portal);
+    /// Whether a step is done, which is what puts a check next to it in the list.
+    fn done(&self, index: usize) -> bool {
+        match STEPS[index] {
+            Step::Application => self.quickstart.is_some(),
+            // Nothing to do on this one but read it, so it counts once you've moved on.
+            Step::Code => index < self.step,
+            Step::Send => self.sent.is_some(),
+            Step::Portal => self.portal.is_some(),
+            Step::Done => false,
         }
     }
 
+    /// What the current step still needs before the quickstart can move on, if anything.
+    fn blocker(&self) -> Option<&'static str> {
+        match self.step() {
+            Step::Application if self.quickstart.is_none() => {
+                Some("The application is still being created.")
+            }
+            Step::Send if self.sent.is_none() => Some(UNLOCK_HINT),
+            _ => None,
+        }
+    }
+
+    /// Enter does the current step's work, or moves on once it's done. There's no way
+    /// back: each step builds on the one before it.
     fn activate(&mut self) {
         match self.step() {
-            Step::Application if self.quickstart.is_none() => self.pending = Some(Action::Prepare),
             Step::Send if self.sent.is_none() && self.quickstart.is_some() => {
                 self.pending = Some(Action::Send);
+                return;
             }
-            Step::Send | Step::Portal => self.open_in_browser(),
-            Step::Done => self.quit = true,
-            _ => self.go(1),
+            Step::Done => {
+                self.quit = true;
+                return;
+            }
+            _ => {}
+        }
+
+        if let Some(blocker) = self.blocker() {
+            self.status = Some(blocker.to_owned());
+            return;
+        }
+
+        self.step = (self.step + 1).min(STEPS.len() - 1);
+        self.scroll = 0;
+
+        // Each step generates what it needs when you reach it, except the message, which
+        // only goes out when you ask for it.
+        if self.step() == Step::Portal && self.portal.is_none() && self.quickstart.is_some() {
+            self.pending = Some(Action::Portal);
         }
     }
 
@@ -351,42 +371,41 @@ impl App<'_> {
         ])
         .areas(frame.area());
 
-        self.render_tabs(frame, tabs);
+        self.render_title(frame, tabs);
 
-        if self.step() == Step::Code {
-            let [list, snippet] =
-                Layout::horizontal([Constraint::Length(30), Constraint::Min(0)]).areas(body);
-            self.render_languages(frame, list);
-            self.render_body(frame, snippet);
-        } else {
-            self.render_body(frame, body);
-        }
+        let [steps, content] =
+            Layout::horizontal([Constraint::Length(24), Constraint::Min(0)]).areas(body);
+        self.render_steps(frame, steps);
+        self.render_body(frame, content);
 
         self.render_footer(frame, footer);
     }
 
-    fn render_tabs(&self, frame: &mut Frame, area: Rect) {
-        let tabs = Tabs::new(STEPS.iter().map(|step| step.title()))
-            .select(self.step)
-            .style(DIM)
-            .highlight_style(HEADING)
-            .divider("·");
-
-        frame.render_widget(tabs, area);
+    fn render_title(&self, frame: &mut Frame, area: Rect) {
+        frame.render_widget(Line::styled(" Svix quickstart", HEADING), area);
     }
 
-    fn render_languages(&self, frame: &mut Frame, area: Rect) {
-        let items: Vec<ListItem> = LANGUAGES
+    /// The steps as a checklist: done ones keep a check, the current one is highlighted,
+    /// and the ones still ahead are dimmed.
+    fn render_steps(&self, frame: &mut Frame, area: Rect) {
+        let items: Vec<ListItem> = STEPS
             .iter()
-            .map(|language| ListItem::new(language.name))
-            .collect();
-        let list = List::new(items)
-            .block(Block::bordered().title(" Language "))
-            .highlight_style(Style::new().fg(Color::Black).bg(Color::Cyan))
-            .highlight_symbol("› ");
+            .enumerate()
+            .map(|(index, step)| {
+                let (marker, style) = if self.done(index) {
+                    ("✓ ", VALUE)
+                } else if index == self.step {
+                    ("▸ ", HEADING)
+                } else {
+                    ("  ", DIM)
+                };
 
-        let mut state = ListState::default().with_selected(Some(self.language));
-        frame.render_stateful_widget(list, area, &mut state);
+                ListItem::new(Line::styled(format!("{marker}{}", step.title()), style))
+            })
+            .collect();
+
+        let list = List::new(items).block(Block::bordered().title(" Steps "));
+        frame.render_widget(list, area);
     }
 
     fn render_body(&self, frame: &mut Frame, area: Rect) {
@@ -426,22 +445,19 @@ impl App<'_> {
     }
 
     fn render_footer(&self, frame: &mut Frame, area: Rect) {
-        let mut keys = vec![
-            "←/a/h prev".to_owned(),
-            "→/d/l next".to_owned(),
-            if self.step() == Step::Code {
-                "↑↓/j/k language".to_owned()
-            } else {
-                "↑↓/j/k scroll".to_owned()
-            },
-        ];
+        let mut keys = match self.step() {
+            Step::Send if self.sent.is_none() => vec!["enter send".to_owned()],
+            Step::Done => vec!["enter finish".to_owned()],
+            _ => vec!["enter continue".to_owned()],
+        };
 
-        match self.step() {
-            Step::Send if self.sent.is_none() => keys.push("enter send".to_owned()),
-            Step::Send | Step::Portal => keys.push("o open".to_owned()),
-            Step::Done => keys.push("enter finish".to_owned()),
-            _ => {}
+        if self.step() == Step::Code {
+            keys.push("←→/a/d language".to_owned());
         }
+        if self.open_url().is_some() {
+            keys.push("o open".to_owned());
+        }
+        keys.push("↑↓/j/k scroll".to_owned());
         keys.push("q quit".to_owned());
 
         frame.render_widget(Line::styled(format!(" {}", keys.join("  ·  ")), DIM), area);
@@ -494,7 +510,17 @@ impl App<'_> {
         let language = self.language();
         let server_url = self.cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
 
-        let mut lines = vec![Line::styled("1. Install the SDK", HEADING), Line::from("")];
+        // The step list has the sidebar now, so the language picker lives inline.
+        let mut lines = vec![
+            Line::from(vec![
+                Span::styled("Language: ", DIM),
+                Span::styled(language.name, VALUE),
+                Span::styled("   ←/→ to change", DIM),
+            ]),
+            Line::from(""),
+            Line::styled("1. Install the SDK", HEADING),
+            Line::from(""),
+        ];
         lines.extend(highlight(Syntax::Shell, language.install));
         lines.push(Line::from(""));
         lines.push(Line::styled("2. Export your API token", HEADING));
@@ -731,9 +757,41 @@ fn wrap_text(text: &str) -> Vec<Line<'static>> {
 #[cfg(test)]
 mod tests {
     use ratatui::{backend::TestBackend, Terminal};
-    use svix::api::Svix;
+    use svix::{
+        api::Svix,
+        models::{ApplicationOut, EndpointOut},
+    };
 
     use super::*;
+
+    fn quickstart() -> Quickstart {
+        Quickstart {
+            app: ApplicationOut {
+                created_at: Default::default(),
+                id: "app_123".to_owned(),
+                metadata: Default::default(),
+                name: "My first app".to_owned(),
+                throttle_rate: None,
+                uid: Some("quickstart-abc".to_owned()),
+                updated_at: Default::default(),
+            },
+            endpoint: EndpointOut {
+                created_at: Default::default(),
+                description: String::new(),
+                disabled: None,
+                event_types: None,
+                id: "ep_123".to_owned(),
+                metadata: Default::default(),
+                throttle_rate: None,
+                uid: None,
+                updated_at: Default::default(),
+                url: "https://play.svix.com/in/token/".to_owned(),
+                channels: None,
+            },
+            play_view_url: "https://play.svix.com/view/token/".to_owned(),
+            channel: None,
+        }
+    }
 
     /// Renders every step at a small size, which is where layout and scroll bugs show up.
     #[test]
@@ -759,42 +817,50 @@ mod tests {
                 .collect();
 
             assert!(
-                rendered.contains("prev"),
-                "the footer should always show how to navigate"
+                rendered.contains("quit"),
+                "the footer should always show how to move on"
             );
         }
     }
 
     #[test]
-    fn arrows_wasd_and_vim_keys_all_move_between_steps() {
+    fn enter_walks_forward_and_nothing_walks_back() {
         let client = Svix::new("testsk_fake".to_owned(), None);
         let cfg = Config::default();
         let mut app = App::new(&client, &cfg);
         app.pending = None;
+        app.quickstart = None;
 
-        for forward in [KeyCode::Right, KeyCode::Char('d'), KeyCode::Char('l')] {
-            app.step = 0;
-            app.on_key(KeyEvent::from(forward));
-            assert_eq!(app.step, 1, "{forward:?} should move forward");
+        // The first step isn't done until the application exists.
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(
+            app.step, 0,
+            "can't move on while the application is pending"
+        );
+        assert!(
+            app.status.is_some(),
+            "and the wizard says what it's waiting for"
+        );
+
+        app.quickstart = Some(quickstart());
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.step, 1);
+
+        // None of the keys that used to go back do anything now.
+        for key in [
+            KeyCode::Left,
+            KeyCode::Char('a'),
+            KeyCode::Char('h'),
+            KeyCode::BackTab,
+        ] {
+            let step = app.step;
+            app.on_key(KeyEvent::from(key));
+            assert_eq!(app.step, step, "{key:?} shouldn't move between steps");
         }
-
-        for back in [KeyCode::Left, KeyCode::Char('a'), KeyCode::Char('h')] {
-            app.step = 1;
-            app.on_key(KeyEvent::from(back));
-            assert_eq!(app.step, 0, "{back:?} should move back");
-        }
-
-        // The ends of the wizard don't wrap around.
-        app.step = 0;
-        app.on_key(KeyEvent::from(KeyCode::Left));
-        assert_eq!(app.step, 0);
-        app.step = STEPS.len() - 1;
-        app.on_key(KeyEvent::from(KeyCode::Right));
-        assert_eq!(app.step, STEPS.len() - 1);
     }
 
     #[test]
-    fn the_app_portal_stays_locked_until_the_message_is_sent() {
+    fn the_app_portal_stays_shut_until_the_message_is_sent() {
         let client = Svix::new("testsk_fake".to_owned(), None);
         let cfg = Config::default();
         let mut app = App::new(&client, &cfg);
@@ -805,21 +871,42 @@ mod tests {
             .position(|s| *s == Step::Send)
             .expect("send step");
         app.step = send;
-        app.on_key(KeyEvent::from(KeyCode::Right));
+
+        // Enter sends rather than moving on, and only sending gets you to the portal.
+        app.on_key(KeyEvent::from(KeyCode::Enter));
         assert_eq!(app.step, send, "the portal is out of reach before sending");
-        assert!(app.status.is_some(), "and the wizard says why");
 
         app.sent = Some("msg_123".to_owned());
-        app.on_key(KeyEvent::from(KeyCode::Right));
-        assert_eq!(app.step, send + 1, "sending unlocks it");
-
-        // Going back to a locked-behind step is always fine.
-        app.on_key(KeyEvent::from(KeyCode::Left));
-        assert_eq!(app.step, send);
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.step, send + 1, "sending opens it up");
     }
 
     #[test]
-    fn vertical_keys_pick_a_language_on_the_code_step_and_scroll_elsewhere() {
+    fn steps_get_checked_off_as_they_are_done() {
+        let client = Svix::new("testsk_fake".to_owned(), None);
+        let cfg = Config::default();
+        let mut app = App::new(&client, &cfg);
+        app.pending = None;
+
+        assert!(STEPS.iter().enumerate().all(|(i, _)| !app.done(i)));
+
+        app.quickstart = Some(quickstart());
+        app.sent = Some("msg_123".to_owned());
+        app.portal = Some("https://app.svix.com/login".to_owned());
+        app.step = STEPS.len() - 1;
+
+        for (index, step) in STEPS.iter().enumerate() {
+            assert_eq!(
+                app.done(index),
+                *step != Step::Done,
+                "{} should be checked off",
+                step.title()
+            );
+        }
+    }
+
+    #[test]
+    fn the_horizontal_keys_pick_a_language_on_the_code_step_only() {
         let client = Svix::new("testsk_fake".to_owned(), None);
         let cfg = Config::default();
         let mut app = App::new(&client, &cfg);
@@ -829,19 +916,26 @@ mod tests {
             .iter()
             .position(|s| *s == Step::Code)
             .expect("code step");
-        app.on_key(KeyEvent::from(KeyCode::Char('j')));
+        app.on_key(KeyEvent::from(KeyCode::Right));
         assert_eq!(app.language, 1);
-        assert_eq!(app.scroll, 0);
+        app.on_key(KeyEvent::from(KeyCode::Left));
+        assert_eq!(app.language, 0);
+        // The list doesn't wrap around at either end.
+        app.on_key(KeyEvent::from(KeyCode::Left));
+        assert_eq!(app.language, 0);
 
         app.step = STEPS
             .iter()
             .position(|s| *s == Step::Send)
             .expect("send step");
-        app.on_key(KeyEvent::from(KeyCode::Char('j')));
+        app.on_key(KeyEvent::from(KeyCode::Right));
         assert_eq!(
-            app.language, 1,
+            app.language, 0,
             "the language shouldn't change off the code step"
         );
+
+        // Vertical keys scroll everywhere.
+        app.on_key(KeyEvent::from(KeyCode::Char('j')));
         assert_eq!(app.scroll, 1);
     }
 }
