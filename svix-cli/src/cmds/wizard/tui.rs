@@ -14,7 +14,7 @@ use ratatui::{
     layout::{Constraint, Layout, Rect},
     style::{Color, Modifier, Style},
     text::{Line, Span},
-    widgets::{Block, List, ListItem, Paragraph, Wrap},
+    widgets::{Paragraph, Wrap},
     DefaultTerminal, Frame,
 };
 use svix::api::Svix;
@@ -575,53 +575,58 @@ const TEXT: Style = Style::new();
 
 impl App {
     fn render(&self, frame: &mut Frame) {
-        let [tabs, body, footer] = Layout::vertical([
+        // The step list grows downwards as steps are reached, and the body gets the rest.
+        // Nothing sits beside the body, so a wrapped URL can be selected without picking
+        // up anything else on the row.
+        let steps_height = (self.step + 3) as u16;
+        let [title, steps, body, footer] = Layout::vertical([
             Constraint::Length(1),
+            Constraint::Length(steps_height),
             Constraint::Min(0),
             Constraint::Length(1),
         ])
         .areas(frame.area());
 
-        self.render_title(frame, tabs);
-
-        let [steps, content] =
-            Layout::horizontal([Constraint::Length(24), Constraint::Min(0)]).areas(body);
+        self.render_title(frame, title);
         self.render_steps(frame, steps);
-        self.render_body(frame, content);
-
+        self.render_body(frame, body);
         self.render_footer(frame, footer);
     }
 
     fn render_title(&self, frame: &mut Frame, area: Rect) {
-        frame.render_widget(Line::styled(" Svix quickstart", HEADING), area);
+        frame.render_widget(Line::styled("Svix quickstart", HEADING), area);
     }
 
-    /// The steps as a checklist: done ones keep a check, the current one is highlighted,
-    /// and the ones still ahead are dimmed.
+    /// The steps reached so far: done ones keep a check, the current one is highlighted.
+    /// The ones still ahead are left out until they're reached.
     fn render_steps(&self, frame: &mut Frame, area: Rect) {
-        let items: Vec<ListItem> = STEPS
+        let mut lines: Vec<Line> = STEPS
             .iter()
             .enumerate()
+            .take(self.step + 1)
             .map(|(index, step)| {
                 let (marker, style) = if self.done(index) {
-                    ("✓ ", VALUE)
+                    ("✓", VALUE)
                 } else if index == self.step {
-                    ("▸ ", HEADING)
+                    ("▸", HEADING)
                 } else {
-                    ("  ", DIM)
+                    ("·", DIM)
                 };
 
-                ListItem::new(Line::styled(format!("{marker}{}", step.title()), style))
+                Line::styled(format!("{marker} {}", step.title()), style)
             })
             .collect();
 
-        let list = List::new(items).block(Block::bordered().title(" Steps "));
-        frame.render_widget(list, area);
+        // A rule under the list, standing in for the panel border the body no longer has.
+        lines.push(Line::styled("─".repeat(area.width as usize), DIM));
+        lines.push(Line::from(""));
+
+        frame.render_widget(Paragraph::new(lines), area);
     }
 
     fn render_body(&self, frame: &mut Frame, area: Rect) {
         // The sample boxes are drawn as text, so they have to be built for this width.
-        let width = area.width.saturating_sub(2);
+        let width = area.width;
         self.width.set(width);
         let mut lines = self.step_lines(width);
 
@@ -646,9 +651,8 @@ impl App {
             lines.push(Line::styled("Press r to try again.", DIM));
         }
 
-        let title = format!(" {} ", self.step().title());
+        // No border and no padding, so selecting a wrapped URL picks up the URL alone.
         let paragraph = Paragraph::new(lines)
-            .block(Block::bordered().title(title))
             .wrap(Wrap { trim: false })
             .scroll((self.scroll, 0));
 
@@ -658,7 +662,7 @@ impl App {
     fn render_footer(&self, frame: &mut Frame, area: Rect) {
         // Typing a token swallows the usual keys, so it gets its own footer.
         if matches!((self.step(), &self.auth), (Step::Auth, Auth::Typing { .. })) {
-            let keys = " type your token  ·  enter save  ·  esc back";
+            let keys = "type your token  ·  enter save  ·  esc back";
             frame.render_widget(Line::styled(keys, DIM), area);
             return;
         }
@@ -667,7 +671,7 @@ impl App {
             (self.step(), &self.auth),
             (Step::Auth, Auth::Waiting { .. })
         ) {
-            let keys = " waiting for the browser  ·  q quit";
+            let keys = "waiting for the browser  ·  q quit";
             frame.render_widget(Line::styled(keys, DIM), area);
             return;
         }
@@ -693,7 +697,7 @@ impl App {
         }
         keys.push("q quit".to_owned());
 
-        frame.render_widget(Line::styled(format!(" {}", keys.join("  ·  ")), DIM), area);
+        frame.render_widget(Line::styled(keys.join("  ·  "), DIM), area);
     }
 
     fn step_lines(&self, width: u16) -> Vec<Line<'static>> {
@@ -1241,6 +1245,34 @@ mod tests {
         app.sent = Some("msg_123".to_owned());
         app.on_key(KeyEvent::from(KeyCode::Enter));
         assert_eq!(app.step, send + 1, "sending opens it up");
+    }
+
+    #[test]
+    fn steps_ahead_of_the_current_one_are_hidden() {
+        let mut app = app();
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).expect("terminal");
+
+        let rendered = |app: &App, terminal: &mut Terminal<TestBackend>| -> String {
+            terminal.draw(|frame| app.render(frame)).expect("draw");
+            terminal
+                .backend()
+                .buffer()
+                .content()
+                .iter()
+                .map(|cell| cell.symbol())
+                .collect()
+        };
+
+        let first = rendered(&app, &mut terminal);
+        assert!(first.contains("Authenticate"), "the current step is listed");
+        assert!(
+            !first.contains("App portal"),
+            "steps that haven't been reached yet stay out of the list"
+        );
+
+        app.step = STEPS.len() - 1;
+        let last = rendered(&app, &mut terminal);
+        assert!(last.contains("App portal"), "reaching a step lists it");
     }
 
     #[test]
