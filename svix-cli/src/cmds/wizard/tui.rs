@@ -378,6 +378,7 @@ impl App {
 
             KeyCode::Enter => self.activate(),
             KeyCode::Char('o') => self.open_in_browser(),
+            KeyCode::Char('c') => self.copy(),
             KeyCode::Char('r') => self.retry(),
             _ => {}
         }
@@ -692,12 +693,69 @@ impl App {
         if self.open_url().is_some() {
             keys.push("o open".to_owned());
         }
+        if let Some((label, _)) = self.copy_target() {
+            keys.push(format!("c copy {label}"));
+        }
         if self.choices().is_none() {
             keys.push("↑↓/j/k scroll".to_owned());
         }
         keys.push("q quit".to_owned());
 
         frame.render_widget(Line::styled(keys.join("  ·  "), DIM), area);
+    }
+
+    /// The code sample the current step shows, as its title and text.
+    fn sample_text(&self) -> Option<(&'static str, Syntax, String)> {
+        let server_url = self.cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
+        let language = self.language();
+
+        match self.step() {
+            Step::Code => {
+                let (qs, msg) = (self.quickstart.as_ref()?, self.message.as_ref()?);
+                Some((
+                    language.name,
+                    language.syntax,
+                    (language.snippet)(&qs.app.id, msg, server_url),
+                ))
+            }
+            Step::Send => {
+                let msg = self.message.as_ref()?;
+                Some((
+                    "Payload",
+                    Syntax::Json,
+                    serde_json::to_string_pretty(&msg.payload).ok()?,
+                ))
+            }
+            Step::Portal => {
+                let qs = self.quickstart.as_ref()?;
+                Some((
+                    language.name,
+                    language.syntax,
+                    (language.portal)(&qs.app.id, server_url),
+                ))
+            }
+            _ => None,
+        }
+    }
+
+    /// What `c` copies: the step's link if it has one, otherwise its code sample.
+    fn copy_target(&self) -> Option<(&'static str, String)> {
+        if let Some(url) = self.open_url() {
+            return Some(("link", url.to_owned()));
+        }
+        let (_, _, text) = self.sample_text()?;
+        Some(("sample", text))
+    }
+
+    fn copy(&mut self) {
+        let Some((label, text)) = self.copy_target() else {
+            return;
+        };
+
+        self.status = Some(match copy_to_clipboard(&text) {
+            Ok(()) => format!("Copied the {label} to your clipboard."),
+            Err(e) => format!("Couldn't copy the {label} ({e})."),
+        });
     }
 
     fn step_lines(&self, width: u16) -> Vec<Line<'static>> {
@@ -809,9 +867,8 @@ impl App {
 
     fn code_lines(&self, width: u16) -> Vec<Line<'static>> {
         let language = self.language();
-        let server_url = self.cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
 
-        // The step list has the sidebar now, so the language picker lives inline.
+        // The step list took over the sidebar, so the language picker lives inline.
         let mut lines = vec![
             Line::from(vec![
                 Span::styled("Language: ", DIM),
@@ -843,14 +900,9 @@ impl App {
         ));
         lines.push(Line::from(""));
 
-        match (&self.quickstart, &self.message) {
-            (Some(qs), Some(msg)) => {
-                lines.extend(sample(
-                    language.name,
-                    language.syntax,
-                    &(language.snippet)(&qs.app.id, msg, server_url),
-                    width,
-                ));
+        match self.sample_text() {
+            Some((title, syntax, text)) => {
+                lines.extend(sample(title, syntax, &text, width));
                 lines.push(Line::from(""));
                 lines.extend(wrap_text(
                     "In your real integration you'd create one application per customer and use \
@@ -880,12 +932,9 @@ impl App {
 
         lines.push(field("Event type", &msg.event_type));
         lines.push(Line::from(""));
-        lines.extend(sample(
-            "Payload",
-            Syntax::Json,
-            &serde_json::to_string_pretty(&msg.payload).unwrap_or_default(),
-            width,
-        ));
+        if let Some((title, syntax, text)) = self.sample_text() {
+            lines.extend(sample(title, syntax, &text, width));
+        }
         lines.push(Line::from(""));
 
         match (&self.sent, &self.quickstart) {
@@ -936,14 +985,10 @@ impl App {
         ));
         lines.push(Line::from(""));
 
+        if let Some((title, syntax, text)) = self.sample_text() {
+            lines.extend(sample(title, syntax, &text, width));
+        }
         if let Some(qs) = &self.quickstart {
-            let server_url = self.cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
-            lines.extend(sample(
-                self.language().name,
-                self.language().syntax,
-                &(self.language().portal)(&qs.app.id, server_url),
-                width,
-            ));
             lines.push(Line::from(""));
             lines.extend(wrap_text(&format!(
                 "Or from the CLI: `{BIN_NAME} authentication app-portal-access {}`",
@@ -987,36 +1032,30 @@ fn field(label: &str, value: &str) -> Line<'static> {
     ])
 }
 
-/// A highlighted code sample in a box, drawn as text so it scrolls with everything else.
+/// A highlighted code sample, drawn as text so it scrolls with everything else.
 ///
-/// Each line is fitted to the exact inner width, which keeps the right edge straight and
-/// stops the paragraph widget from reflowing the sample as if it were prose.
+/// The block is a rule above and below plus the highlighting theme's background, with no
+/// side borders: selecting the sample with the mouse then picks up the code alone.
 fn sample(title: &str, syntax: Syntax, text: &str, width: u16) -> Vec<Line<'static>> {
-    const PADDING: usize = 4; // "│ " and " │"
-    let inner = (width as usize).saturating_sub(PADDING).max(8);
-    // The box shares the highlighting theme's background, so it reads as one block.
-    let border = background().add_modifier(Modifier::DIM);
+    let width = (width as usize).max(8);
+    let rule = background().add_modifier(Modifier::DIM);
 
-    let heading = format!("┌─ {title} ");
+    let heading = format!("─ {title} ");
     let mut lines = vec![Line::styled(
         format!(
-            "{heading}{}┐",
-            "─".repeat((inner + PADDING - 1).saturating_sub(heading.chars().count()))
+            "{heading}{}",
+            "─".repeat(width.saturating_sub(heading.chars().count()))
         ),
-        border,
+        rule,
     )];
 
-    for line in highlight(syntax, text) {
-        let mut spans = vec![Span::styled("│ ", border)];
-        spans.extend(fit(line, inner).spans);
-        spans.push(Span::styled(" │", border));
-        lines.push(Line::from(spans).style(background()));
-    }
+    lines.extend(
+        highlight(syntax, text)
+            .into_iter()
+            .map(|line| fit(line, width).style(background())),
+    );
 
-    lines.push(Line::styled(
-        format!("└{}┘", "─".repeat(inner + PADDING - 2)),
-        border,
-    ));
+    lines.push(Line::styled("─".repeat(width), rule));
 
     lines
 }
@@ -1048,6 +1087,27 @@ fn fit(line: Line<'static>, width: usize) -> Line<'static> {
     }
 
     Line::from(spans)
+}
+
+/// Copies `text` through the terminal itself with OSC 52.
+///
+/// Going through the terminal is what makes this work over SSH and in a multiplexer,
+/// where a clipboard library would reach for the wrong machine's clipboard.
+fn copy_to_clipboard(text: &str) -> std::io::Result<()> {
+    use std::io::Write as _;
+
+    use base64::{engine::general_purpose::STANDARD, Engine as _};
+
+    let sequence = format!("\x1b]52;c;{}\x07", STANDARD.encode(text));
+    // tmux swallows escape sequences it isn't told to pass through.
+    let sequence = match std::env::var_os("TMUX") {
+        Some(_) => format!("\x1bPtmux;\x1b{sequence}\x1b\\"),
+        None => sequence,
+    };
+
+    let mut stdout = std::io::stdout();
+    stdout.write_all(sequence.as_bytes())?;
+    stdout.flush()
 }
 
 /// A pick-one list, rendered inline so it scrolls with the rest of the step.
@@ -1245,6 +1305,40 @@ mod tests {
         app.sent = Some("msg_123".to_owned());
         app.on_key(KeyEvent::from(KeyCode::Enter));
         assert_eq!(app.step, send + 1, "sending opens it up");
+    }
+
+    #[test]
+    fn c_copies_the_step_sample_or_its_link() {
+        let mut app = app();
+        app.mode = Some(QuickstartMode::Manual);
+        app.quickstart = Some(quickstart());
+        app.message = Some(SampleMessage {
+            event_type: "invoice.paid".to_owned(),
+            payload: serde_json::json!({ "id": "invoice_WF7WtC" }),
+        });
+
+        app.step = STEPS
+            .iter()
+            .position(|s| *s == Step::Code)
+            .expect("code step");
+        let (label, text) = app.copy_target().expect("something to copy");
+        assert_eq!(label, "sample");
+        assert!(
+            text.contains("app_123"),
+            "the sample is rendered for this app"
+        );
+        app.on_key(KeyEvent::from(KeyCode::Char('c')));
+        assert!(app.status.is_some(), "copying says what it did");
+
+        // Steps with a link copy that instead, matching what `o` opens.
+        app.step = STEPS
+            .iter()
+            .position(|s| *s == Step::Portal)
+            .expect("portal step");
+        app.portal = Some("https://app.svix.com/login#key=abc".to_owned());
+        let (label, text) = app.copy_target().expect("something to copy");
+        assert_eq!(label, "link");
+        assert_eq!(text, "https://app.svix.com/login#key=abc");
     }
 
     #[test]
