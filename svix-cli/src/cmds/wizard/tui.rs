@@ -4,7 +4,7 @@
 //! return: the only key that changes anything on your account is Enter, on the steps that
 //! say so.
 
-use std::time::Duration;
+use std::{cell::Cell, time::Duration};
 
 use ratatui::{
     crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, KeyModifiers},
@@ -17,8 +17,10 @@ use ratatui::{
 use svix::api::Svix;
 
 use super::{
-    create_application, portal_url, sample_message, send_message, Language, Quickstart,
-    SampleMessage, DEFAULT_SERVER_URL, LANGUAGES,
+    create_application,
+    highlight::{background, highlight, Syntax},
+    portal_url, sample_message, send_message, Language, Quickstart, SampleMessage,
+    DEFAULT_SERVER_URL, LANGUAGES,
 };
 use crate::{config::Config, BIN_NAME};
 
@@ -92,6 +94,8 @@ struct App<'a> {
     language: usize,
     scroll: u16,
     quit: bool,
+    /// Width of the body area at the last render, used to size the sample boxes.
+    width: Cell<u16>,
 
     message: Option<SampleMessage>,
     quickstart: Option<Quickstart>,
@@ -113,6 +117,7 @@ impl<'a> App<'a> {
             language: 0,
             scroll: 0,
             quit: false,
+            width: Cell::new(80),
             message: None,
             quickstart: None,
             sent: None,
@@ -234,7 +239,7 @@ impl<'a> App<'a> {
     /// Scrolls down, stopping at the last line so the page can't run off into blank space.
     /// Wrapping means the real height is at least this, which is close enough for a bound.
     fn scroll_down(&mut self, lines: u16) {
-        let max = self.step_lines().len().saturating_sub(1) as u16;
+        let max = self.step_lines(self.width.get()).len().saturating_sub(1) as u16;
         self.scroll = self.scroll.saturating_add(lines).min(max);
     }
 
@@ -385,7 +390,10 @@ impl App<'_> {
     }
 
     fn render_body(&self, frame: &mut Frame, area: Rect) {
-        let mut lines = self.step_lines();
+        // The sample boxes are drawn as text, so they have to be built for this width.
+        let width = area.width.saturating_sub(2);
+        self.width.set(width);
+        let mut lines = self.step_lines(width);
 
         if let Some(busy) = self.busy {
             lines.push(Line::from(""));
@@ -439,12 +447,12 @@ impl App<'_> {
         frame.render_widget(Line::styled(format!(" {}", keys.join("  ·  ")), DIM), area);
     }
 
-    fn step_lines(&self) -> Vec<Line<'static>> {
+    fn step_lines(&self, width: u16) -> Vec<Line<'static>> {
         match self.step() {
             Step::Application => self.application_lines(),
-            Step::Code => self.code_lines(),
-            Step::Send => self.send_lines(),
-            Step::Portal => self.portal_lines(),
+            Step::Code => self.code_lines(width),
+            Step::Send => self.send_lines(width),
+            Step::Portal => self.portal_lines(width),
             Step::Done => self.done_lines(),
         }
     }
@@ -482,16 +490,19 @@ impl App<'_> {
         lines
     }
 
-    fn code_lines(&self) -> Vec<Line<'static>> {
+    fn code_lines(&self, width: u16) -> Vec<Line<'static>> {
         let language = self.language();
         let server_url = self.cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
 
         let mut lines = vec![Line::styled("1. Install the SDK", HEADING), Line::from("")];
-        lines.extend(code(language.install));
+        lines.extend(highlight(Syntax::Shell, language.install));
         lines.push(Line::from(""));
         lines.push(Line::styled("2. Export your API token", HEADING));
         lines.push(Line::from(""));
-        lines.extend(code("export SVIX_AUTH_TOKEN='<your-token>'"));
+        lines.extend(highlight(
+            Syntax::Shell,
+            "export SVIX_AUTH_TOKEN='<your-token>'",
+        ));
         lines.push(Line::from(""));
         lines.extend(wrap_text(
             "Create environment-specific tokens in the dashboard: https://dashboard.svix.com",
@@ -507,7 +518,12 @@ impl App<'_> {
 
         match (&self.quickstart, &self.message) {
             (Some(qs), Some(msg)) => {
-                lines.extend(code(&(language.snippet)(&qs.app.id, msg, server_url)));
+                lines.extend(sample(
+                    language.name,
+                    language.syntax,
+                    &(language.snippet)(&qs.app.id, msg, server_url),
+                    width,
+                ));
                 lines.push(Line::from(""));
                 lines.extend(wrap_text(
                     "In your real integration you'd create one application per customer and use \
@@ -524,7 +540,7 @@ impl App<'_> {
         lines
     }
 
-    fn send_lines(&self) -> Vec<Line<'static>> {
+    fn send_lines(&self, width: u16) -> Vec<Line<'static>> {
         let mut lines = wrap_text(
             "This sends the exact message from the previous step, so you can see it delivered \
              before wiring up your own code.",
@@ -537,8 +553,11 @@ impl App<'_> {
 
         lines.push(field("Event type", &msg.event_type));
         lines.push(Line::from(""));
-        lines.extend(code(
+        lines.extend(sample(
+            "Payload",
+            Syntax::Json,
             &serde_json::to_string_pretty(&msg.payload).unwrap_or_default(),
+            width,
         ));
         lines.push(Line::from(""));
 
@@ -567,7 +586,7 @@ impl App<'_> {
         lines
     }
 
-    fn portal_lines(&self) -> Vec<Line<'static>> {
+    fn portal_lines(&self, width: u16) -> Vec<Line<'static>> {
         let mut lines = wrap_text(
             "In production, your webhook consumers add their own endpoints inside your product \
              using the pre-built, embeddable app portal. The endpoint and message from the \
@@ -592,7 +611,12 @@ impl App<'_> {
 
         if let Some(qs) = &self.quickstart {
             let server_url = self.cfg.server_url().unwrap_or(DEFAULT_SERVER_URL);
-            lines.extend(code(&(self.language().portal)(&qs.app.id, server_url)));
+            lines.extend(sample(
+                self.language().name,
+                self.language().syntax,
+                &(self.language().portal)(&qs.app.id, server_url),
+                width,
+            ));
             lines.push(Line::from(""));
             lines.extend(wrap_text(&format!(
                 "Or from the CLI: `{BIN_NAME} authentication app-portal-access {}`",
@@ -636,11 +660,67 @@ fn field(label: &str, value: &str) -> Line<'static> {
     ])
 }
 
-/// Code samples, kept on their own lines so the paragraph widget doesn't reflow them.
-fn code(text: &str) -> Vec<Line<'static>> {
-    text.lines()
-        .map(|line| Line::styled(line.to_owned(), TEXT))
-        .collect()
+/// A highlighted code sample in a box, drawn as text so it scrolls with everything else.
+///
+/// Each line is fitted to the exact inner width, which keeps the right edge straight and
+/// stops the paragraph widget from reflowing the sample as if it were prose.
+fn sample(title: &str, syntax: Syntax, text: &str, width: u16) -> Vec<Line<'static>> {
+    const PADDING: usize = 4; // "│ " and " │"
+    let inner = (width as usize).saturating_sub(PADDING).max(8);
+    // The box shares the highlighting theme's background, so it reads as one block.
+    let border = background().add_modifier(Modifier::DIM);
+
+    let heading = format!("┌─ {title} ");
+    let mut lines = vec![Line::styled(
+        format!(
+            "{heading}{}┐",
+            "─".repeat((inner + PADDING - 1).saturating_sub(heading.chars().count()))
+        ),
+        border,
+    )];
+
+    for line in highlight(syntax, text) {
+        let mut spans = vec![Span::styled("│ ", border)];
+        spans.extend(fit(line, inner).spans);
+        spans.push(Span::styled(" │", border));
+        lines.push(Line::from(spans).style(background()));
+    }
+
+    lines.push(Line::styled(
+        format!("└{}┘", "─".repeat(inner + PADDING - 2)),
+        border,
+    ));
+
+    lines
+}
+
+/// Truncates or pads a line to exactly `width` cells.
+fn fit(line: Line<'static>, width: usize) -> Line<'static> {
+    let mut spans = Vec::new();
+    let mut used = 0;
+
+    for span in line.spans {
+        if used >= width {
+            break;
+        }
+        let content = span.content.to_string();
+        let len = content.chars().count();
+
+        if used + len <= width {
+            used += len;
+            spans.push(Span::styled(content, span.style));
+        } else {
+            let kept: String = content.chars().take(width - used - 1).collect();
+            spans.push(Span::styled(format!("{kept}…"), span.style));
+            used = width;
+        }
+    }
+
+    if used < width {
+        spans.push(Span::raw(" ".repeat(width - used)));
+    }
+
+    Line::from(spans)
 }
 
 /// Prose is wrapped by the paragraph widget, so this just owns the text.

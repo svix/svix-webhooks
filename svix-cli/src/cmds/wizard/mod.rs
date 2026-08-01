@@ -1,3 +1,4 @@
+mod highlight;
 mod tui;
 
 use std::collections::BTreeSet;
@@ -12,6 +13,7 @@ use svix::{
     },
 };
 
+use self::highlight::Syntax;
 use crate::{cmds::login, config::Config};
 
 #[derive(Args)]
@@ -351,11 +353,14 @@ struct Language {
     /// How to mint an app portal magic link from your own backend, so your customers can
     /// manage their endpoints without you building a UI.
     portal: fn(app_id: &str, server_url: &str) -> String,
+    /// Which grammar the samples are highlighted with.
+    syntax: Syntax,
 }
 
 const LANGUAGES: &[Language] = &[
     Language {
         name: "Python",
+        syntax: Syntax::Python,
         install: "pip install svix",
         snippet: |app_id, msg, _| {
             let SampleMessage {
@@ -390,6 +395,7 @@ portal_url = access.url"#
     },
     Language {
         name: "JavaScript / TypeScript",
+        syntax: Syntax::JavaScript,
         install: "npm install svix",
         snippet: |app_id, msg, _| {
             let SampleMessage {
@@ -422,6 +428,7 @@ const portalUrl = access.url;"#
     },
     Language {
         name: "Go",
+        syntax: Syntax::Go,
         install: "go get github.com/svix/svix-webhooks/go",
         snippet: |app_id, msg, _| {
             let SampleMessage {
@@ -464,6 +471,7 @@ portalURL := access.Url"#
     },
     Language {
         name: "Rust",
+        syntax: Syntax::Rust,
         install: "cargo add svix",
         snippet: |app_id, msg, _| {
             let SampleMessage {
@@ -501,6 +509,7 @@ let portal_url = access.url;"#
     },
     Language {
         name: "cURL (any language)",
+        syntax: Syntax::Shell,
         install: "no SDK needed",
         snippet: |app_id, msg, server_url| {
             let SampleMessage {
