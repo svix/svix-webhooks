@@ -59,7 +59,7 @@ mod unsupported {
 
     pub fn get_allocator_stats(
         _bust_cache: bool,
-        _mibs: Arc<AllocatorStatMibs>,
+        _mibs: &Arc<AllocatorStatMibs>,
     ) -> anyhow::Result<Option<(usize, usize)>> {
         Ok(None)
     }
