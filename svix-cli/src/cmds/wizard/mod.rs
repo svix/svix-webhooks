@@ -14,7 +14,6 @@ use svix::{
 };
 
 use self::highlight::Syntax;
-use crate::{cmds::login, config::Config};
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true)]
@@ -41,34 +40,14 @@ impl WizardCommands {
 }
 
 async fn quickstart() -> anyhow::Result<()> {
-    print!("Welcome to the Svix quickstart!\n\n");
-
-    let cfg = authenticate().await?;
-
-    match choose_mode()? {
-        // The agent installs the Svix skills and drives the rest of the quickstart itself,
-        // so there's nothing left for the wizard to do.
-        QuickstartMode::Agent => {
-            agent_handoff()?;
-            return Ok(());
-        }
-        QuickstartMode::Manual => {}
+    // Every step runs in the full-screen UI, including logging in and choosing how to
+    // continue, so the whole quickstart is one screen rather than a mix of prompts.
+    match tui::run().await? {
+        // The agent installs the Svix skills and drives the rest of the quickstart
+        // itself. It needs the terminal back for `npx`, so it runs once the UI is gone.
+        QuickstartMode::Agent => agent_handoff(),
+        QuickstartMode::Manual => Ok(()),
     }
-
-    let client = crate::get_client(&cfg)?;
-
-    // Steps 3 to 6 run in a full-screen UI you can walk back and forth through.
-    tui::run(&client, &cfg).await
-}
-
-/// Step 1: make sure we have credentials to work with, reusing the `login` flow.
-async fn authenticate() -> anyhow::Result<Config> {
-    println!("Step 1: Authenticate");
-
-    let cfg = login::ensure_authenticated().await?;
-    println!("You're authenticated with Svix.\n");
-
-    Ok(cfg)
 }
 
 /// How the user wants to work through the rest of the quickstart.
@@ -78,34 +57,6 @@ enum QuickstartMode {
     Manual,
     /// A coding agent takes over from here.
     Agent,
-}
-
-/// Step 2: ask whether the user drives the rest of the quickstart or an agent does.
-fn choose_mode() -> anyhow::Result<QuickstartMode> {
-    println!("Step 2: Choose how to continue");
-
-    let selections = &[
-        "Continue manually (I'll walk through the steps myself)",
-        "Continue with an agent (let a coding agent set things up)",
-    ];
-    let selection = dialoguer::Select::new()
-        .with_prompt("How would you like to continue?")
-        .items(selections)
-        .default(0)
-        .interact()?;
-
-    let mode = if selection == 0 {
-        QuickstartMode::Manual
-    } else {
-        QuickstartMode::Agent
-    };
-
-    match mode {
-        QuickstartMode::Manual => println!("Continuing manually.\n"),
-        QuickstartMode::Agent => println!("An agent will take it from here.\n"),
-    }
-
-    Ok(mode)
 }
 
 /// The skills published at <https://github.com/svix/ai>, installed via the `skills` CLI.
