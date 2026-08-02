@@ -14,22 +14,37 @@ repos:
       - id: check-yaml
       - id: check-json
         exclude: "(kotlin/lib/src/test/resources/__files/ExpectedMsgCreateBodyWithHeaders.json)|(tsconfig.json)"
+
   - repo: https://github.com/google/yamlfmt
     rev: v0.17.2
     hooks:
       - id: yamlfmt
+
   - repo: https://github.com/crate-ci/typos
     rev: v1.48.0
     hooks:
       - id: typos
+
   - repo: https://github.com/scop/pre-commit-shfmt
     rev: v3.13.1-1
     hooks:
       - id: shfmt
         exclude: gradlew
         args: ["--write", "-i", "4", "-ci"]
+
   - repo: https://github.com/koalaman/shellcheck-precommit
     rev: v0.11.0
     hooks:
       - id: shellcheck
         exclude: gradlew
+
+  - repo: https://github.com/hyland/github-actions-ensure-sha-pinned-actions
+    rev: 22ca7a8cf33e873ba1d6fbcd2b71fa0ec5006b17 # v1.1.0
+    hooks:
+      - id: gha-sha-convert
+        args: ["--allowlist", "actions/*"]
+
+  - repo: https://github.com/python-jsonschema/check-jsonschema
+    rev: f805888065fdb6162e1f800e50bb9460cbd223d6 # v0.37.2
+    hooks:
+      - id: check-dependabot
