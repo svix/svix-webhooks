@@ -19,36 +19,25 @@ module Svix
       end
     end
 
+    # Validates the payload against the svix signature headers using the
+    # webhook's signing secret.
+    #
+    # Raises a WebhookVerificationError if the headers are missing/unreadable
+    # or if the signature doesn't match.
     def verify(payload, headers)
-      msgId = headers["svix-id"]
-      msgSignature = headers["svix-signature"]
-      msgTimestamp = headers["svix-timestamp"]
-      if !msgSignature || !msgId || !msgTimestamp
-        msgId = headers["webhook-id"]
-        msgSignature = headers["webhook-signature"]
-        msgTimestamp = headers["webhook-timestamp"]
-        if !msgSignature || !msgId || !msgTimestamp
-          raise WebhookVerificationError, "Missing required headers"
-        end
-      end
+      verify_internal(payload, headers, true)
+    end
 
-      verify_timestamp(msgTimestamp)
-
-      _, signature = sign(msgId, msgTimestamp, payload).split(",", 2)
-
-      passedSignatures = msgSignature.split(" ")
-      passedSignatures.each do |versionedSignature|
-        version, expectedSignature = versionedSignature.split(",", 2)
-        if version != "v1"
-          next
-        end
-
-        if ::Svix::secure_compare(signature, expectedSignature)
-          return nil
-        end
-      end
-
-      raise WebhookVerificationError, "No matching signature found"
+    # Validates the payload against the svix signature headers using the
+    # webhook's signing secret.
+    #
+    # Raises a WebhookVerificationError if the headers are missing/unreadable
+    # or if the signature doesn't match.
+    #
+    # WARNING: This method does not check the signature's timestamp.
+    # We recommend using the `verify` method instead.
+    def verify_ignoring_timestamp(payload, headers)
+      verify_internal(payload, headers, false)
     end
 
     def sign(msgId, timestamp, payload)
@@ -67,13 +56,49 @@ module Svix
     SECRET_PREFIX = "whsec_"
     TOLERANCE = 5 * 60
 
-    def verify_timestamp(timestampHeader)
+    def verify_internal(payload, headers, enforce_tolerance)
+      msgId = headers["svix-id"]
+      msgSignature = headers["svix-signature"]
+      msgTimestamp = headers["svix-timestamp"]
+      if !msgSignature || !msgId || !msgTimestamp
+        msgId = headers["webhook-id"]
+        msgSignature = headers["webhook-signature"]
+        msgTimestamp = headers["webhook-timestamp"]
+        if !msgSignature || !msgId || !msgTimestamp
+          raise WebhookVerificationError, "Missing required headers"
+        end
+      end
+
+      timestamp = parse_timestamp_header(msgTimestamp)
+      verify_timestamp(timestamp) if enforce_tolerance
+
+      _, signature = sign(msgId, msgTimestamp, payload).split(",", 2)
+
+      passedSignatures = msgSignature.split(" ")
+      passedSignatures.each do |versionedSignature|
+        version, expectedSignature = versionedSignature.split(",", 2)
+        if version != "v1"
+          next
+        end
+
+        if ::Svix::secure_compare(signature, expectedSignature)
+          return nil
+        end
+      end
+
+      raise WebhookVerificationError, "No matching signature found"
+    end
+
+    def parse_timestamp_header(timestampHeader)
       begin
-        now = Integer(Time.now)
-        timestamp = Integer(timestampHeader)
+        Integer(timestampHeader)
       rescue
         raise WebhookVerificationError, "Invalid Signature Headers"
       end
+    end
+
+    def verify_timestamp(timestamp)
+      now = Time.now.to_i
 
       if timestamp < (now - TOLERANCE)
         raise WebhookVerificationError, "Message timestamp too old"

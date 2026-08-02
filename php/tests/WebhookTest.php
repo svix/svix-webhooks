@@ -122,6 +122,111 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $wh->verify($testPayload->payload, $testPayload->header);
     }
 
+    public function testOldTimestampIsValidWhenIgnoringTimestamp()
+    {
+        $testPayload = new TestPayload(time() - self::TOLERANCE - 1);
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $json = $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
+    public function testNewTimestampIsValidWhenIgnoringTimestamp()
+    {
+        $testPayload = new TestPayload(time() + self::TOLERANCE + 1);
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $json = $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
+    public function testCurrentTimestampIsValidWhenIgnoringTimestamp()
+    {
+        $testPayload = new TestPayload(time());
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $json = $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
+    public function testInvalidSignatureThrowsExceptionWhenIgnoringTimestamp()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header['svix-signature'] = 'v1,dawfeoifkpqwoekfpqoekf';
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+    }
+
+    public function testTamperedTimestampThrowsExceptionWhenIgnoringTimestamp()
+    {
+        // The signature covers the timestamp, so changing it after signing must
+        // still fail even though the tolerance isn't enforced.
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header['svix-timestamp'] = strval(intval($testPayload->timestamp) - 1000);
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+    }
+
+    public function testMissingHeadersThrowExceptionWhenIgnoringTimestamp()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Missing required headers");
+
+        $testPayload = new TestPayload(time());
+        unset($testPayload->header['svix-id']);
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+    }
+
+    public function testNonNumericTimestampThrowsExceptionWhenIgnoringTimestamp()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Invalid Signature Headers");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header['svix-timestamp'] = 'not-a-number';
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+    }
+
+    public function testNegativeTimestampThrowsExceptionWhenIgnoringTimestamp()
+    {
+        // sign() only accepts positive timestamps, so the ignoring path treats a
+        // non-positive value as malformed input rather than signing with it.
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Invalid Signature Headers");
+
+        $testPayload = new TestPayload(-1234);
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verifyIgnoringTimestamp($testPayload->payload, $testPayload->header);
+    }
+
     public function testMultiSigPayloadIsValid()
     {
         // We're checking that `verify()` doesn't throw an exception.

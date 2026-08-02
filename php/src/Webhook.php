@@ -24,10 +24,37 @@ class Webhook
     }
 
     /**
+     * Validates the payload against the svix signature headers using the
+     * webhook's signing secret.
+     *
      * @throws Exception\WebhookVerificationException
      * @throws Exception\WebhookSigningException
      */
     public function verify($payload, $headers)
+    {
+        return $this->verifyInternal($payload, $headers, true);
+    }
+
+    /**
+     * Validates the payload against the svix signature headers using the
+     * webhook's signing secret.
+     *
+     * WARNING: This method does not check the signature's timestamp.
+     * We recommend using the `verify` method instead.
+     *
+     * @throws Exception\WebhookVerificationException
+     * @throws Exception\WebhookSigningException
+     */
+    public function verifyIgnoringTimestamp($payload, $headers)
+    {
+        return $this->verifyInternal($payload, $headers, false);
+    }
+
+    /**
+     * @throws Exception\WebhookVerificationException
+     * @throws Exception\WebhookSigningException
+     */
+    private function verifyInternal($payload, $headers, $enforceTolerance)
     {
         if (
             isset($headers['svix-id'])
@@ -50,7 +77,14 @@ class Webhook
         }
 
 
-        $timestamp = $this->verifyTimestamp($msgTimestamp);
+        $timestamp = $this->parseTimestampHeader($msgTimestamp);
+        if ($enforceTolerance) {
+            $this->verifyTimestamp($timestamp);
+        } elseif ($timestamp <= 0) {
+            // sign() refuses non-positive timestamps with a WebhookSigningException;
+            // surface malformed header input as a verification error instead.
+            throw new Exception\WebhookVerificationException("Invalid Signature Headers");
+        }
 
         $signature = $this->sign($msgId, $timestamp, $payload);
         $expectedSignature = explode(',', $signature, 2)[1];
@@ -91,17 +125,17 @@ class Webhook
         return "v1,{$signature}";
     }
 
+    private function parseTimestampHeader($timestampHeader)
+    {
+        return intval($timestampHeader, 10);
+    }
+
     /**
      * @throws Exception\WebhookVerificationException
      */
-    private function verifyTimestamp($timestampHeader)
+    private function verifyTimestamp($timestamp)
     {
         $now = time();
-        try {
-            $timestamp = intval($timestampHeader, 10);
-        } catch (\Exception $e) {
-            throw new Exception\WebhookVerificationException("Invalid Signature Headers");
-        }
 
         if ($timestamp < ($now - Webhook::TOLERANCE)) {
             throw new Exception\WebhookVerificationException("Message timestamp too old");

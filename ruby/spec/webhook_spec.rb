@@ -169,6 +169,82 @@ describe Svix::Webhook do
     expect(signature).to(eq(expected))
   end
 
+  it "old timestamp is valid when ignoring the timestamp" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i - TOLERANCE - 1)
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers)
+  end
+
+  it "new timestamp is valid when ignoring the timestamp" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i + TOLERANCE + 1)
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers)
+  end
+
+  it "current timestamp is valid when ignoring the timestamp" do
+    testPayload = TestPayload.new
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers)
+  end
+
+  it "invalid signature raises error when ignoring the timestamp" do
+    testPayload = TestPayload.new
+    testPayload.headers["svix-signature"] = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd"
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    expect { wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "tampered timestamp raises error when ignoring the timestamp" do
+    # The signature covers the timestamp, so changing it after signing must
+    # still fail even though the tolerance isn't enforced.
+    testPayload = TestPayload.new
+    testPayload.headers["svix-timestamp"] = testPayload.timestamp - 1000
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    expect { wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "missing headers raise error when ignoring the timestamp" do
+    testPayload = TestPayload.new
+    testPayload.headers.delete("svix-id")
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    expect { wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "non-numeric timestamp raises error when ignoring the timestamp" do
+    testPayload = TestPayload.new
+    testPayload.headers["svix-timestamp"] = "not-a-number"
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    expect { wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "negative timestamp is valid when ignoring the timestamp" do
+    # Matches Go and Rust, which accept any integer timestamp once the
+    # tolerance check is skipped.
+    testPayload = TestPayload.new(timestamp: -1234)
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify_ignoring_timestamp(testPayload.payload, testPayload.headers)
+  end
+
   it "can validate an empty payload" do
     testPayload = TestPayload.new(payload: '')
 
