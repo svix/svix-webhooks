@@ -202,6 +202,12 @@ mod tests {
 
     #[test]
     fn test_default_server_url() {
+        let svix = Svix::new("token".to_owned(), None);
+        assert_eq!(svix.cfg.base_path, "https://api.svix.com");
+    }
+
+    #[test]
+    fn test_regional_server_url() {
         let svix = Svix::new("token.eu".to_owned(), None);
         assert_eq!(svix.cfg.base_path, "https://api.eu.svix.com");
     }
