@@ -57,7 +57,7 @@ jobs:
       matrix:
         rust: ["1.91.1", stable, beta]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: dtolnay/rust-toolchain@master
         with:
@@ -88,6 +88,15 @@ jobs:
             libssl-dev=* \
             pkg-config=1.8.* \
             zlib1g-dev=1:*
+
+      - name: Build (no features)
+        run: cargo build --no-default-features
+
+      - name: Build (all features)
+        run: cargo build --all-features
+
+      - name: Build (default features)
+        run: cargo build
 
       - name: Start required services
         run: docker compose -f "testing-docker-compose.yml" up -d
