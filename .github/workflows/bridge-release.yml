@@ -13,39 +13,6 @@ permissions:
   packages: write
 
 jobs:
-  release:
-    name: release x86_64-unknown-linux-gnu
-    runs-on: ubuntu-24.04
-    environment: release
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - target: x86_64-unknown-linux-gnu
-            os: ubuntu-24.04
-            extension: ""
-
-          - target: aarch64-apple-darwin
-            os: macos-latest
-            extension: ""
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Compile bridge
-        run: cargo build --release --manifest-path bridge/svix-bridge/Cargo.toml
-
-      - name: Release
-        uses: actions/upload-artifact@v7
-        with:
-          name: svix-bridge-${{ matrix.target }}
-          path: bridge/target/release/svix-bridge
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   get-version:
     runs-on: ubuntu-24.04
     permissions:
@@ -81,9 +48,9 @@ jobs:
       meta-flavor: |
         latest=true
       meta-tags: |
-        type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
-        type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
-        type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+        type=semver,pattern={{version}},prefix=v,value=${{ needs.get-version.outputs.version }}
+        type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{ needs.get-version.outputs.version }}
+        type=semver,pattern={{major}},prefix=v,value=${{ needs.get-version.outputs.version }}
       set-meta-labels: true
       labels: |
         org.opencontainers.image.version=${{ needs.get-version.outputs.version }}
@@ -124,9 +91,9 @@ jobs:
           flavor: |
             latest=true
           tags: |
-            type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
-            type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
-            type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+            type=semver,pattern={{version}},prefix=v,value=${{ needs.get-version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{ needs.get-version.outputs.version }}
+            type=semver,pattern={{major}},prefix=v,value=${{ needs.get-version.outputs.version }}
       - name: "Copy images"
         run: |
           for source in ${{ steps.meta.outputs.tags }}; do
