@@ -482,6 +482,187 @@ let portal_url = access.url;"#
         },
     },
     Language {
+        name: "Java",
+        syntax: Syntax::Java,
+        install: "# add \"com.svix:svix\" to your Gradle or Maven dependencies",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"import com.svix.Svix;
+import com.svix.models.MessageIn;
+
+Svix svix = new Svix(System.getenv("SVIX_AUTH_TOKEN"));
+
+// Call this wherever the event actually happens in your code.
+svix.getMessage().create(
+    "{app_id}",
+    new MessageIn()
+        .eventType("{event_type}")
+        .payload("""
+            {payload}"""));"#
+            )
+        },
+        portal: |app_id, _| {
+            format!(
+                r#"import com.svix.Svix;
+import com.svix.models.AppPortalAccessIn;
+
+Svix svix = new Svix(System.getenv("SVIX_AUTH_TOKEN"));
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+var access = svix.getAuthentication()
+    .appPortalAccess("{app_id}", new AppPortalAccessIn());
+var portalUrl = access.getUrl();"#
+            )
+        },
+    },
+    Language {
+        name: "Kotlin",
+        syntax: Syntax::Kotlin,
+        install: "# add \"com.svix.kotlin:svix-kotlin\" to your Gradle dependencies",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"import com.svix.kotlin.Svix
+import com.svix.kotlin.models.MessageIn
+
+val svix = Svix(System.getenv("SVIX_AUTH_TOKEN"))
+
+// Call this wherever the event actually happens in your code.
+svix.message.create(
+    "{app_id}",
+    MessageIn(eventType = "{event_type}", payload = """{payload}"""),
+)"#
+            )
+        },
+        portal: |app_id, _| {
+            format!(
+                r#"import com.svix.kotlin.Svix
+import com.svix.kotlin.models.AppPortalAccessIn
+
+val svix = Svix(System.getenv("SVIX_AUTH_TOKEN"))
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+val access = svix.authentication.appPortalAccess("{app_id}", AppPortalAccessIn())
+val portalUrl = access.url"#
+            )
+        },
+    },
+    Language {
+        name: "C#",
+        syntax: Syntax::CSharp,
+        install: "dotnet add package Svix",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"using Newtonsoft.Json.Linq;
+using Svix;
+using Svix.Models;
+
+var svix = new SvixClient(Environment.GetEnvironmentVariable("SVIX_AUTH_TOKEN")!);
+
+// Call this wherever the event actually happens in your code.
+await svix.Message.CreateAsync(
+    "{app_id}",
+    new MessageIn
+    {{
+        EventType = "{event_type}",
+        Payload = JObject.Parse("""{payload}"""),
+    }}
+);"#
+            )
+        },
+        portal: |app_id, _| {
+            format!(
+                r#"using Svix;
+using Svix.Models;
+
+var svix = new SvixClient(Environment.GetEnvironmentVariable("SVIX_AUTH_TOKEN")!);
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+var access = await svix.Authentication.AppPortalAccessAsync(
+    "{app_id}", new AppPortalAccessIn());
+var portalUrl = access.Url;"#
+            )
+        },
+    },
+    Language {
+        name: "Ruby",
+        syntax: Syntax::Ruby,
+        install: "gem install svix",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"require "svix"
+
+svix = Svix::Client.new(ENV["SVIX_AUTH_TOKEN"])
+
+# Call this wherever the event actually happens in your code.
+svix.message.create(
+  "{app_id}",
+  Svix::MessageIn.new(event_type: "{event_type}", payload: {payload})
+)"#
+            )
+        },
+        portal: |app_id, _| {
+            format!(
+                r#"require "svix"
+
+svix = Svix::Client.new(ENV["SVIX_AUTH_TOKEN"])
+
+# Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+access = svix.authentication.app_portal_access("{app_id}", Svix::AppPortalAccessIn.new)
+portal_url = access.url"#
+            )
+        },
+    },
+    Language {
+        name: "PHP",
+        syntax: Syntax::Php,
+        install: "composer require svix/svix",
+        snippet: |app_id, msg, _| {
+            let SampleMessage {
+                event_type,
+                payload,
+            } = msg;
+            format!(
+                r#"<?php
+$svix = new \Svix\Svix(getenv("SVIX_AUTH_TOKEN"));
+
+// Call this wherever the event actually happens in your code.
+$svix->message->create(
+    "{app_id}",
+    \Svix\Models\MessageIn::create("{event_type}", json_decode('{payload}', true))
+);"#
+            )
+        },
+        portal: |app_id, _| {
+            format!(
+                r#"<?php
+$svix = new \Svix\Svix(getenv("SVIX_AUTH_TOKEN"));
+
+// Serve this URL from your own dashboard, e.g. behind a "Webhooks" button.
+$access = $svix->authentication->appPortalAccess(
+    "{app_id}",
+    \Svix\Models\AppPortalAccessIn::create()
+);
+$portalUrl = $access->url;"#
+            )
+        },
+    },
+    Language {
         name: "cURL (any language)",
         syntax: Syntax::Shell,
         install: "no SDK needed",
@@ -567,7 +748,33 @@ fn with_dashboard_tour(url: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::with_dashboard_tour;
+    use super::*;
+
+    #[test]
+    fn every_language_renders_its_samples_for_the_app() {
+        let msg = SampleMessage {
+            event_type: "invoice.paid".to_owned(),
+            payload: serde_json::json!({ "id": "invoice_WF7WtC" }),
+        };
+
+        for language in LANGUAGES {
+            let snippet = (language.snippet)("app_123", &msg, DEFAULT_SERVER_URL);
+            assert!(snippet.contains("app_123"), "{}: {snippet}", language.name);
+            assert!(
+                snippet.contains("invoice.paid"),
+                "{}: {snippet}",
+                language.name
+            );
+            assert!(
+                snippet.contains("invoice_WF7WtC"),
+                "{}: {snippet}",
+                language.name
+            );
+
+            let portal = (language.portal)("app_123", DEFAULT_SERVER_URL);
+            assert!(portal.contains("app_123"), "{}: {portal}", language.name);
+        }
+    }
 
     #[test]
     fn dashboard_tour_param_goes_before_the_fragment() {

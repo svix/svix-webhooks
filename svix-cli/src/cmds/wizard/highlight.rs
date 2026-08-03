@@ -16,6 +16,11 @@ pub(super) enum Syntax {
     JavaScript,
     Go,
     Rust,
+    Java,
+    Kotlin,
+    CSharp,
+    Ruby,
+    Php,
     Shell,
     Json,
 }
@@ -28,6 +33,12 @@ impl Syntax {
             Self::JavaScript => "js",
             Self::Go => "go",
             Self::Rust => "rs",
+            Self::Java => "java",
+            // syntect ships no Kotlin grammar; Java's is close enough.
+            Self::Kotlin => "java",
+            Self::CSharp => "cs",
+            Self::Ruby => "rb",
+            Self::Php => "php",
             Self::Shell => "sh",
             Self::Json => "json",
         }
@@ -126,6 +137,11 @@ mod tests {
             Syntax::JavaScript,
             Syntax::Go,
             Syntax::Rust,
+            Syntax::Java,
+            Syntax::Kotlin,
+            Syntax::CSharp,
+            Syntax::Ruby,
+            Syntax::Php,
             Syntax::Shell,
             Syntax::Json,
         ] {
