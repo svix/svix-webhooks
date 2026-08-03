@@ -81,9 +81,9 @@ jobs:
       meta-flavor: |
         latest=true
       meta-tags: |
-        type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
-        type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
-        type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+        type=semver,pattern={{version}},prefix=v,value=${{ needs.get-version.outputs.version }}
+        type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{ needs.get-version.outputs.version }}
+        type=semver,pattern={{major}},prefix=v,value=${{ needs.get-version.outputs.version }}
       set-meta-labels: true
       labels: |
         org.opencontainers.image.version=${{ needs.get-version.outputs.version }}
@@ -124,9 +124,9 @@ jobs:
           flavor: |
             latest=true
           tags: |
-            type=semver,pattern={{version}},prefix=v,value=${{needs.get-version.outputs.version}}
-            type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{needs.get-version.outputs.version}}
-            type=semver,pattern={{major}},prefix=v,value=${{needs.get-version.outputs.version}}
+            type=semver,pattern={{version}},prefix=v,value=${{ needs.get-version.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},prefix=v,value=${{ needs.get-version.outputs.version }}
+            type=semver,pattern={{major}},prefix=v,value=${{ needs.get-version.outputs.version }}
       - name: "Copy images"
         run: |
           for source in ${{ steps.meta.outputs.tags }}; do
