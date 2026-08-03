@@ -42,7 +42,9 @@ def request_url(httpx_mock, server_url: str) -> str:
         },
     )
     svx.application.list()
-    return str(httpx_mock.get_request().url)
+    # `get_requests`, not `get_request`: the latter asserts at most one request
+    # was made, so it would break the moment a test calls this helper twice.
+    return str(httpx_mock.get_requests()[-1].url)
 
 
 def test_request_url_has_no_double_slash(httpx_mock) -> None:
