@@ -339,3 +339,39 @@ func TestServerUrlTrailingSlashIsStripped(t *testing.T) {
 		t.Errorf("Expected path `/api/v1/app` got `%s`", requestedPath)
 	}
 }
+
+func TestDefaultAndRegionalServerUrlsAreUsedAsIs(t *testing.T) {
+	tests := []struct {
+		name     string
+		token    string
+		expected string
+	}{
+		{name: "default", token: "randomToken", expected: "https://api.svix.com/api/v1/app"},
+		{name: "regional", token: "testsk.eu", expected: "https://api.eu.svix.com/api/v1/app"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svx, err := svix.New(tt.token, &svix.SvixOptions{HTTPClient: http.DefaultClient})
+			if err != nil {
+				t.Fatalf("failed to construct client: %v", err)
+			}
+
+			httpmock.Activate()
+			defer httpmock.DeactivateAndReset()
+
+			var requestedURL string
+			httpmock.RegisterNoResponder(func(r *http.Request) (*http.Response, error) {
+				requestedURL = r.URL.String()
+				return httpmock.NewStringResponse(200, appListOut), nil
+			})
+
+			if _, err := svx.Application().List(context.Background(), nil); err != nil {
+				t.Fatalf("request failed: %v", err)
+			}
+			if requestedURL != tt.expected {
+				t.Errorf("Expected %q got %q", tt.expected, requestedURL)
+			}
+		})
+	}
+}
