@@ -22,8 +22,8 @@ use svix::api::Svix;
 use super::{
     create_application,
     highlight::{background, highlight, Syntax},
-    portal_url, sample_message, send_message, Language, Quickstart, QuickstartMode, SampleMessage,
-    DEFAULT_SERVER_URL, LANGUAGES,
+    install_skill, portal_url, sample_message, send_message, Language, Quickstart, QuickstartMode,
+    SampleMessage, SkillScope, DEFAULT_SERVER_URL, LANGUAGES, SKILL_NAMES,
 };
 use crate::{
     cmds::login::{self, DashboardLogin},
@@ -33,8 +33,9 @@ use crate::{
 
 /// Runs the quickstart UI, then prints what the user will want to keep.
 ///
-/// Returns how the user chose to continue: an agent handoff is finished by the caller,
-/// once the terminal is back.
+/// Returns how the user chose to continue. The agent path only counts as taken once its
+/// skills are installed, so quitting part way through doesn't hand over to an agent that
+/// has nothing to work with.
 pub(super) async fn run() -> anyhow::Result<QuickstartMode> {
     let mut terminal = ratatui::try_init()?;
     let result = App::new().run(&mut terminal).await;
@@ -44,15 +45,18 @@ pub(super) async fn run() -> anyhow::Result<QuickstartMode> {
     // The alternate screen is gone by now, so anything worth keeping has to be reprinted.
     app.print_summary();
 
-    Ok(app.mode.unwrap_or(QuickstartMode::Manual))
+    Ok(match app.mode {
+        Some(QuickstartMode::Agent) if app.skills_installed => QuickstartMode::Agent,
+        _ => QuickstartMode::Manual,
+    })
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 enum Step {
     Auth,
     Mode,
+    Language,
     Application,
-    Code,
     Send,
     Portal,
     Done,
@@ -61,8 +65,8 @@ enum Step {
 const STEPS: &[Step] = &[
     Step::Auth,
     Step::Mode,
+    Step::Language,
     Step::Application,
-    Step::Code,
     Step::Send,
     Step::Portal,
     Step::Done,
@@ -73,8 +77,8 @@ impl Step {
         match self {
             Self::Auth => "Authenticate",
             Self::Mode => "How to continue",
+            Self::Language => "Language",
             Self::Application => "Application",
-            Self::Code => "Your code",
             Self::Send => "First message",
             Self::Portal => "App portal",
             Self::Done => "Done",
@@ -93,6 +97,7 @@ enum Action {
     Prepare,
     Send,
     Portal,
+    InstallSkills,
 }
 
 impl Action {
@@ -103,6 +108,7 @@ impl Action {
             Self::Prepare => "Creating the application and its example endpoint...",
             Self::Send => "Sending the message...",
             Self::Portal => "Generating an app portal link...",
+            Self::InstallSkills => "Running the install...",
         }
     }
 }
@@ -128,6 +134,10 @@ const MODE_CHOICES: &[&str] = &[
     "Continue manually (I'll walk through the steps myself)",
     "Continue with an agent (let a coding agent set things up)",
 ];
+const SCOPE_CHOICES: &[&str] = &[
+    "This project only (./.agents/skills)",
+    "Globally, for every project (~/.agents/skills)",
+];
 
 struct App {
     cfg: Config,
@@ -143,6 +153,13 @@ struct App {
     auth: Auth,
     mode: Option<QuickstartMode>,
     mode_selected: usize,
+    /// Set on the agent path, once the user has picked where the skills go.
+    scope: Option<SkillScope>,
+    scope_selected: usize,
+    skills_installed: bool,
+    /// How many of `SKILL_NAMES` are installed, which is also the index of the command
+    /// currently running while the install is in flight.
+    skills_done: usize,
 
     message: Option<SampleMessage>,
     quickstart: Option<Quickstart>,
@@ -181,6 +198,10 @@ impl App {
             },
             mode: None,
             mode_selected: 0,
+            scope: None,
+            scope_selected: 0,
+            skills_installed: false,
+            skills_done: 0,
             message: None,
             quickstart: None,
             sent: None,
@@ -200,7 +221,7 @@ impl App {
                 self.busy = Some(action.label());
                 terminal.draw(|frame| self.render(frame))?;
 
-                let outcome = self.perform(action).await;
+                let outcome = self.perform(action, terminal).await;
                 self.busy = None;
                 if let Err(e) = outcome {
                     self.error = Some(format!("{e:#}"));
@@ -226,13 +247,18 @@ impl App {
         Ok(self)
     }
 
-    async fn perform(&mut self, action: Action) -> anyhow::Result<()> {
+    /// The terminal comes along so a multi-command action can repaint between them.
+    async fn perform(
+        &mut self,
+        action: Action,
+        terminal: &mut DefaultTerminal,
+    ) -> anyhow::Result<()> {
         match action {
             Action::StartLogin => {
                 let session = login::DashboardLogin::start().await?;
                 let opened = open::that(&session.url).is_ok();
                 if !opened {
-                    self.status = Some("Couldn't open a browser — copy the URL above.".to_owned());
+                    self.status = Some("Couldn't open a browser. Copy the URL above.".to_owned());
                 }
                 let now = Instant::now();
                 self.auth = Auth::Waiting {
@@ -271,6 +297,26 @@ impl App {
                     return Ok(());
                 };
                 self.portal = Some(portal_url(&client, qs).await?);
+            }
+            Action::InstallSkills => {
+                let Some(scope) = self.scope else {
+                    return Ok(());
+                };
+
+                self.skills_done = 0;
+                for skill in SKILL_NAMES {
+                    // Each command is marked as running before it starts, so the screen
+                    // shows which one the wizard is sitting on.
+                    terminal.draw(|frame| self.render(frame))?;
+                    // `npx` is slow enough to be worth getting off the UI thread, and the
+                    // wizard has nothing else to do until it's finished.
+                    tokio::task::spawn_blocking(move || install_skill(skill, scope)).await??;
+                    self.skills_done += 1;
+                }
+
+                self.skills_installed = true;
+                // The agent takes it from here, so there's nothing left to show.
+                self.quit = true;
             }
         }
 
@@ -363,10 +409,12 @@ impl App {
             KeyCode::Char('c') if ctrl => self.quit = true,
             KeyCode::Char('q') | KeyCode::Esc => self.quit = true,
 
-            // The quickstart only moves forward, so the horizontal keys are free for
-            // picking a language on the step that shows code.
-            KeyCode::Left | KeyCode::Char('h' | 'a') | KeyCode::BackTab => self.pick_language(-1),
-            KeyCode::Right | KeyCode::Char('l' | 'd') | KeyCode::Tab => self.pick_language(1),
+            // The quickstart only moves forward, so the horizontal keys do nothing.
+            KeyCode::Left
+            | KeyCode::Right
+            | KeyCode::Char('h' | 'l')
+            | KeyCode::Tab
+            | KeyCode::BackTab => {}
 
             // Steps that offer a choice put the vertical keys on it; the rest scroll.
             KeyCode::Up | KeyCode::Char('k') if self.choices().is_some() => self.select(-1),
@@ -392,10 +440,20 @@ impl App {
     }
 
     /// The options the current step is asking the user to pick from, if it is.
-    fn choices(&self) -> Option<(&'static [&'static str], usize)> {
+    fn choices(&self) -> Option<(Vec<&'static str>, usize)> {
         match (self.step(), &self.auth) {
-            (Step::Auth, Auth::Choosing { selected }) => Some((AUTH_CHOICES, *selected)),
-            (Step::Mode, _) if self.mode.is_none() => Some((MODE_CHOICES, self.mode_selected)),
+            (Step::Auth, Auth::Choosing { selected }) => Some((AUTH_CHOICES.to_vec(), *selected)),
+            (Step::Mode, _) if self.mode.is_none() => {
+                Some((MODE_CHOICES.to_vec(), self.mode_selected))
+            }
+            // The agent path stays on this step to ask where the skills should go.
+            (Step::Mode, _) if self.mode == Some(QuickstartMode::Agent) && self.scope.is_none() => {
+                Some((SCOPE_CHOICES.to_vec(), self.scope_selected))
+            }
+            (Step::Language, _) => Some((
+                LANGUAGES.iter().map(|language| language.name).collect(),
+                self.language,
+            )),
             _ => None,
         }
     }
@@ -406,19 +464,12 @@ impl App {
         };
         let next = (selected as isize + delta).clamp(0, options.len() as isize - 1) as usize;
 
-        match (self.step(), &mut self.auth) {
-            (Step::Auth, auth) => *auth = Auth::Choosing { selected: next },
+        match self.step() {
+            Step::Auth => self.auth = Auth::Choosing { selected: next },
+            Step::Language => self.language = next,
+            Step::Mode if self.mode.is_some() => self.scope_selected = next,
             _ => self.mode_selected = next,
         }
-    }
-
-    fn pick_language(&mut self, delta: isize) {
-        if self.step() != Step::Code {
-            return;
-        }
-        let next = (self.language as isize + delta).clamp(0, LANGUAGES.len() as isize - 1);
-        self.language = next as usize;
-        self.scroll = 0;
     }
 
     /// Whether a step is done, which is what puts a check next to it in the list.
@@ -426,9 +477,9 @@ impl App {
         match STEPS[index] {
             Step::Auth => matches!(self.auth, Auth::Done),
             Step::Mode => self.mode.is_some(),
+            // The language is picked by moving on from the step, so it counts once you have.
+            Step::Language => index < self.step,
             Step::Application => self.quickstart.is_some(),
-            // Nothing to do on this one but read it, so it counts once you've moved on.
-            Step::Code => index < self.step,
             Step::Send => self.sent.is_some(),
             Step::Portal => self.portal.is_some(),
             Step::Done => false,
@@ -474,11 +525,25 @@ impl App {
                 };
                 self.mode = Some(mode);
 
-                // The agent takes it from here, so there's nothing left to show.
+                // The agent path stays here to ask where the skills should go.
                 if mode == QuickstartMode::Agent {
-                    self.quit = true;
                     return;
                 }
+            }
+            // The rest of the agent path: pick where the skills go, then install them.
+            // A failed install stays here rather than falling through to the manual steps,
+            // so Enter is another go at it.
+            Step::Mode if self.mode == Some(QuickstartMode::Agent) => {
+                if self.scope.is_none() {
+                    self.scope = Some(if self.scope_selected == 0 {
+                        SkillScope::Project
+                    } else {
+                        SkillScope::Global
+                    });
+                }
+                self.error = None;
+                self.pending = Some(Action::InstallSkills);
+                return;
             }
             Step::Send if self.sent.is_none() && self.quickstart.is_some() => {
                 self.pending = Some(Action::Send);
@@ -517,6 +582,10 @@ impl App {
         self.error = None;
         match self.step() {
             Step::Application if self.quickstart.is_none() => self.pending = Some(Action::Prepare),
+            // A failed install leaves the scope picked, so retrying goes straight to `npx`.
+            Step::Mode if self.scope.is_some() && !self.skills_installed => {
+                self.pending = Some(Action::InstallSkills);
+            }
             Step::Portal => {
                 self.portal = None;
                 self.pending = Some(Action::Portal);
@@ -687,9 +756,6 @@ impl App {
         if self.choices().is_some() {
             keys.push("↑↓/j/k choose".to_owned());
         }
-        if self.step() == Step::Code {
-            keys.push("←→/a/d language".to_owned());
-        }
         if self.open_url().is_some() {
             keys.push("o open".to_owned());
         }
@@ -710,7 +776,7 @@ impl App {
         let language = self.language();
 
         match self.step() {
-            Step::Code => {
+            Step::Application => {
                 let (qs, msg) = (self.quickstart.as_ref()?, self.message.as_ref()?);
                 Some((
                     language.name,
@@ -762,8 +828,8 @@ impl App {
         match self.step() {
             Step::Auth => self.auth_lines(),
             Step::Mode => self.mode_lines(),
-            Step::Application => self.application_lines(),
-            Step::Code => self.code_lines(width),
+            Step::Language => self.language_lines(),
+            Step::Application => self.application_lines(width),
             Step::Send => self.send_lines(width),
             Step::Portal => self.portal_lines(width),
             Step::Done => self.done_lines(),
@@ -806,6 +872,8 @@ impl App {
                     lines.push(Line::from(""));
                     lines.push(field("Server", url));
                 }
+                lines.push(Line::from(""));
+                lines.push(Line::styled("Press enter to continue.", HEADING));
             }
         }
 
@@ -815,7 +883,7 @@ impl App {
     fn mode_lines(&self) -> Vec<Line<'static>> {
         let mut lines = wrap_text(
             "You can walk through the rest of the quickstart yourself, or hand it to a coding \
-             agent: picking the agent installs the Svix skills and leaves this wizard.",
+             agent: picking the agent installs the Svix skills and hands over to them.",
         );
         lines.push(Line::from(""));
 
@@ -825,6 +893,8 @@ impl App {
             }
             Some(QuickstartMode::Agent) => {
                 lines.push(Line::styled("An agent will take it from here.", VALUE));
+                lines.push(Line::from(""));
+                lines.extend(self.skills_lines());
             }
             None => lines.extend(choices(MODE_CHOICES, self.mode_selected)),
         }
@@ -832,7 +902,71 @@ impl App {
         lines
     }
 
-    fn application_lines(&self) -> Vec<Line<'static>> {
+    /// The tail of the agent path: the skills being installed, where they'll go, and how
+    /// far through the run is.
+    fn skills_lines(&self) -> Vec<Line<'static>> {
+        let mut lines =
+            wrap_text("The skills are installed for every coding agent found on this machine:");
+        lines.push(Line::from(""));
+        lines.extend(self.install_lines());
+        lines.push(Line::from(""));
+
+        // Once the scope is picked there's nothing left to ask: either a run is in flight,
+        // or one of them failed and the error below says so. A finished run doesn't get
+        // here at all, since the wizard quits to hand over to the agent.
+        if self.scope.is_some() {
+            return lines;
+        }
+
+        lines.extend(wrap_text("Where should they go?"));
+        lines.push(Line::from(""));
+        lines.extend(choices(SCOPE_CHOICES, self.scope_selected));
+
+        lines
+    }
+
+    /// One line per skill, marked with how far the run has got.
+    ///
+    /// Nothing is running until the scope is picked, so until then every skill is listed
+    /// as queued rather than the first one looking like it's already going.
+    fn install_lines(&self) -> Vec<Line<'static>> {
+        SKILL_NAMES
+            .iter()
+            .enumerate()
+            .map(|(index, skill)| {
+                let running =
+                    self.scope.is_some() && self.busy.is_some() && index == self.skills_done;
+                let (marker, style) = if index < self.skills_done {
+                    ("✓", VALUE)
+                } else if running {
+                    ("▸", HEADING)
+                } else {
+                    ("·", DIM)
+                };
+
+                Line::styled(format!("{marker} Installing {skill} using npx"), style)
+            })
+            .collect()
+    }
+
+    fn language_lines(&self) -> Vec<Line<'static>> {
+        let mut lines = wrap_text(
+            "Pick the language you'll be integrating in. The code samples in the rest of the \
+             quickstart are shown in it.",
+        );
+        lines.push(Line::from(""));
+        lines.extend(choices(
+            &LANGUAGES
+                .iter()
+                .map(|language| language.name)
+                .collect::<Vec<_>>(),
+            self.language,
+        ));
+
+        lines
+    }
+
+    fn application_lines(&self, width: u16) -> Vec<Line<'static>> {
         let mut lines = wrap_text(
             "A consumer application defines where your messages are sent. Usually you'll want \
              one application for each of your customers.",
@@ -849,8 +983,8 @@ impl App {
         }
         lines.push(Line::from(""));
         lines.extend(wrap_text(
-            "It also got an example endpoint pointing at a Svix Play inbox, so the message you \
-             send in step 5 has somewhere to go — your customers add their own endpoints in the \
+            "It also got an example endpoint pointing at a Svix Play inbox, so you can preview \
+             the message sent here. Your customers add their own endpoints in the \
              app portal.",
         ));
         lines.push(Line::from(""));
@@ -862,21 +996,19 @@ impl App {
             lines.push(field("Channel", channel));
         }
 
+        lines.extend(self.code_lines(width));
+
         lines
     }
 
+    /// How to send a message to the application from your own code, in the language picked
+    /// on the previous step.
     fn code_lines(&self, width: u16) -> Vec<Line<'static>> {
         let language = self.language();
 
-        // The step list took over the sidebar, so the language picker lives inline.
         let mut lines = vec![
-            Line::from(vec![
-                Span::styled("Language: ", DIM),
-                Span::styled(language.name, VALUE),
-                Span::styled("   ←/→ to change", DIM),
-            ]),
             Line::from(""),
-            Line::styled("1. Install the SDK", HEADING),
+            Line::styled(format!("1. Install the SDK ({})", language.name), HEADING),
             Line::from(""),
         ];
         lines.extend(highlight(Syntax::Shell, language.install));
@@ -895,7 +1027,7 @@ impl App {
         lines.push(Line::styled("3. Send a message from your code", HEADING));
         lines.push(Line::from(""));
         lines.extend(wrap_text(
-            "Put this where the event actually happens — the same spot you'd log it or fire an \
+            "Put this where the event actually happens. The same spot you'd log it or fire an \
              internal event.",
         ));
         lines.push(Line::from(""));
@@ -975,7 +1107,7 @@ impl App {
                 lines.extend(wrap_text("Press o to open this one-time link:"));
                 lines.push(Line::styled(url.clone(), VALUE));
             }
-            None => lines.push(Line::styled("No link yet — press r to generate one.", DIM)),
+            None => lines.push(Line::styled("No link yet. Press r to generate one.", DIM)),
         }
 
         lines.push(Line::from(""));
@@ -1017,7 +1149,7 @@ impl App {
         ]);
         lines.push(Line::from(""));
         lines.extend(wrap_text(
-            "Press q to leave — the ids and links from these steps get printed on the way out.",
+            "Press q to leave. The ids and links from these steps get printed on the way out.",
         ));
 
         lines
@@ -1188,25 +1320,68 @@ mod tests {
         // Nothing has run yet, so this is also the "still loading" state of each step.
         let mut app = app();
 
-        let mut terminal = Terminal::new(TestBackend::new(80, 24)).expect("terminal");
-
         for step in 0..STEPS.len() {
             app.step = step;
-            terminal.draw(|frame| app.render(frame)).expect("draw");
-
-            let rendered: String = terminal
-                .backend()
-                .buffer()
-                .content()
-                .iter()
-                .map(|cell| cell.symbol())
-                .collect();
-
             assert!(
-                rendered.contains("quit"),
+                screen(&app).contains("quit"),
                 "the footer should always show how to move on"
             );
         }
+    }
+
+    /// The whole screen as text, for asserting on what a step actually shows.
+    fn screen(app: &App) -> String {
+        let mut terminal = Terminal::new(TestBackend::new(80, 24)).expect("terminal");
+        terminal.draw(|frame| app.render(frame)).expect("draw");
+
+        terminal
+            .backend()
+            .buffer()
+            .content()
+            .iter()
+            .map(|cell| cell.symbol())
+            .collect()
+    }
+
+    #[test]
+    fn the_agent_path_installs_the_skills_without_leaving_the_wizard() {
+        let mut app = app();
+        app.step = 1;
+
+        // Picking the agent stays on the step rather than dropping out to a shell prompt.
+        app.on_key(KeyEvent::from(KeyCode::Down));
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.mode, Some(QuickstartMode::Agent));
+        assert_eq!(app.step, 1, "the agent path doesn't walk the manual steps");
+        assert!(!app.quit, "and the wizard keeps the screen to ask where");
+
+        // What it asks for is the scope, which enter turns into the install.
+        let (options, _) = app.choices().expect("a scope to pick");
+        assert_eq!(options, SCOPE_CHOICES);
+
+        // Every skill is named on screen before any of them is installed.
+        let rendered = screen(&app);
+        assert!(rendered.contains("Where should they go?"));
+        for skill in SKILL_NAMES {
+            let line = format!("Installing {skill} using npx");
+            assert!(
+                rendered.contains(&line),
+                "{line:?} should be shown, got:\n{rendered}"
+            );
+        }
+        app.on_key(KeyEvent::from(KeyCode::Down));
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert!(matches!(app.scope, Some(SkillScope::Global)));
+        assert!(matches!(app.pending, Some(Action::InstallSkills)));
+        assert_eq!(app.step, 1);
+
+        // A failed install stays put, so enter is another go rather than the manual steps.
+        app.pending = None;
+        app.error = Some("npx blew up".to_owned());
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.step, 1);
+        assert!(matches!(app.pending, Some(Action::InstallSkills)));
+        assert!(app.error.is_none(), "and the old error is cleared");
     }
 
     #[test]
@@ -1222,10 +1397,15 @@ mod tests {
         assert_eq!(app.mode, Some(QuickstartMode::Manual));
         assert_eq!(app.step, 2);
 
+        // Then the language, which is just a list to pick from.
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.step, 3);
+        app.pending = None;
+
         // The application step waits until the application exists.
         app.on_key(KeyEvent::from(KeyCode::Enter));
         assert_eq!(
-            app.step, 2,
+            app.step, 3,
             "can't move on while the application is pending"
         );
         assert!(
@@ -1235,12 +1415,11 @@ mod tests {
 
         app.quickstart = Some(quickstart());
         app.on_key(KeyEvent::from(KeyCode::Enter));
-        assert_eq!(app.step, 3);
+        assert_eq!(app.step, 4);
 
         // None of the keys that used to go back do anything now.
         for key in [
             KeyCode::Left,
-            KeyCode::Char('a'),
             KeyCode::Char('h'),
             KeyCode::BackTab,
         ] {
@@ -1319,8 +1498,8 @@ mod tests {
 
         app.step = STEPS
             .iter()
-            .position(|s| *s == Step::Code)
-            .expect("code step");
+            .position(|s| *s == Step::Application)
+            .expect("application step");
         let (label, text) = app.copy_target().expect("something to copy");
         assert_eq!(label, "sample");
         assert!(
@@ -1396,33 +1575,29 @@ mod tests {
     }
 
     #[test]
-    fn the_horizontal_keys_pick_a_language_on_the_code_step_only() {
+    fn the_language_step_is_a_list_you_pick_from() {
         let mut app = app();
 
         app.step = STEPS
             .iter()
-            .position(|s| *s == Step::Code)
-            .expect("code step");
-        app.on_key(KeyEvent::from(KeyCode::Right));
+            .position(|s| *s == Step::Language)
+            .expect("language step");
+        app.on_key(KeyEvent::from(KeyCode::Down));
         assert_eq!(app.language, 1);
-        app.on_key(KeyEvent::from(KeyCode::Left));
+        app.on_key(KeyEvent::from(KeyCode::Up));
         assert_eq!(app.language, 0);
         // The list doesn't wrap around at either end.
-        app.on_key(KeyEvent::from(KeyCode::Left));
+        app.on_key(KeyEvent::from(KeyCode::Up));
         assert_eq!(app.language, 0);
+        assert_eq!(app.scroll, 0, "the vertical keys choose here, not scroll");
 
+        // Off the language step they scroll instead, and nothing changes the language.
         app.step = STEPS
             .iter()
             .position(|s| *s == Step::Send)
             .expect("send step");
-        app.on_key(KeyEvent::from(KeyCode::Right));
-        assert_eq!(
-            app.language, 0,
-            "the language shouldn't change off the code step"
-        );
-
-        // Vertical keys scroll everywhere.
         app.on_key(KeyEvent::from(KeyCode::Char('j')));
         assert_eq!(app.scroll, 1);
+        assert_eq!(app.language, 0);
     }
 }

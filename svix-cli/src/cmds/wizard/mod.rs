@@ -40,14 +40,16 @@ impl WizardCommands {
 }
 
 async fn quickstart() -> anyhow::Result<()> {
-    // Every step runs in the full-screen UI, including logging in and choosing how to
-    // continue, so the whole quickstart is one screen rather than a mix of prompts.
-    match tui::run().await? {
-        // The agent installs the Svix skills and drives the rest of the quickstart
-        // itself. It needs the terminal back for `npx`, so it runs once the UI is gone.
-        QuickstartMode::Agent => agent_handoff(),
-        QuickstartMode::Manual => Ok(()),
+    // Every step runs in the full-screen UI, including logging in, choosing how to
+    // continue, and installing the skills, so the whole quickstart is one screen rather
+    // than a mix of prompts.
+    if tui::run().await? == QuickstartMode::Agent {
+        // The skills are installed by then; all that's left is the prompt to hand over,
+        // which is printed once the alternate screen is gone so it can be copied.
+        print_agent_prompt();
     }
+
+    Ok(())
 }
 
 /// How the user wants to work through the rest of the quickstart.
@@ -66,52 +68,91 @@ const SKILLS_PACKAGE: &str = "svix/ai";
 /// skill at a time, so these are installed with one command each.
 const SKILL_NAMES: &[&str] = &["svix-sending-webhooks", "receiving-webhooks"];
 
-/// What the user asks their agent once the skills are installed.
-const AGENT_PROMPT: &str = "Use the Svix skills to set up my Svix integration.";
+/// An example of what to ask an agent once the skills are installed. The skills pick
+/// themselves up from anything Svix-shaped, so this is a starting point rather than an
+/// incantation that has to be typed exactly.
+const AGENT_PROMPT: &str = "Use Svix to start sending webhooks";
 
-/// Agent path: install the Svix agent skills and hand the rest of the quickstart to them.
-fn agent_handoff() -> anyhow::Result<()> {
-    for skill in SKILL_NAMES {
-        install_skill(skill)?;
+/// Where the skills get installed: alongside the current project, or user-wide.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SkillScope {
+    Project,
+    Global,
+}
+
+impl SkillScope {
+    /// The `skills` CLI flag selecting this scope.
+    fn flag(self) -> &'static str {
+        match self {
+            Self::Project => "--project",
+            Self::Global => "--global",
+        }
     }
+}
 
-    println!("\nSvix agent skills installed. Ask your coding agent:\n");
+/// Prints the prompt to hand to the agent, once the wizard's UI is out of the way.
+fn print_agent_prompt() {
+    println!("\nSvix agent skills installed. Ask your coding agent something like:\n");
     // Green, matching the verification code in the login flow.
     println!("\x1b[32m{AGENT_PROMPT}\x1b[0m\n");
     println!("The skills take it from there.");
+}
 
-    Ok(())
+/// The command that installs one skill, as the argv it's run with.
+///
+/// The wizard shows this verbatim before running it, so what's on screen is exactly what
+/// gets executed, and can be rerun by hand if it fails.
+///
+/// `-y` skips the `skills` CLI prompts, so the skill to install and where it goes both
+/// have to be named explicitly.
+fn install_command(skill: &'static str, scope: SkillScope) -> Vec<&'static str> {
+    vec![
+        "npx",
+        "--yes",
+        "skills",
+        "add",
+        SKILLS_PACKAGE,
+        "-y",
+        scope.flag(),
+        "--skill",
+        skill,
+    ]
 }
 
 /// Installs a single skill from the `svix/ai` package.
-fn install_skill(skill: &str) -> anyhow::Result<()> {
-    println!("Installing `{skill}` (`npx skills add {SKILLS_PACKAGE} -y --skill {skill}`)...\n");
+///
+/// The `skills` CLI draws an interactive-looking installer, so its output is captured
+/// rather than inherited: this runs while the wizard still owns the screen.
+fn install_skill(skill: &'static str, scope: SkillScope) -> anyhow::Result<()> {
+    let command = install_command(skill, scope);
 
-    // `-y` skips the `skills` CLI prompts, so the skill to install has to be named explicitly.
-    let status = std::process::Command::new("npx")
-        .args([
-            "--yes",
-            "skills",
-            "add",
-            SKILLS_PACKAGE,
-            "-y",
-            "--skill",
-            skill,
-        ])
-        .status()
+    let output = std::process::Command::new(command[0])
+        .args(&command[1..])
+        .output()
         .context(
             "Failed to run `npx`. Install Node.js and try again, or install the skills \
              yourself with `npx skills add svix/ai`.",
         )?;
 
-    if !status.success() {
+    if !output.status.success() {
         anyhow::bail!(
-            "`npx skills add {SKILLS_PACKAGE} -y --skill {skill}` failed. Try running it \
-             yourself to see what went wrong."
+            "`{}` failed:\n{}",
+            command.join(" "),
+            last_lines(&output.stderr, 5)
         );
     }
 
     Ok(())
+}
+
+/// The tail of a captured stream, for putting a failure's reason in front of the user
+/// without spilling the whole installer log into the UI.
+fn last_lines(stream: &[u8], count: usize) -> String {
+    let text = String::from_utf8_lossy(stream);
+    let lines: Vec<_> = text.lines().filter(|line| !line.trim().is_empty()).collect();
+    let start = lines.len().saturating_sub(count);
+
+    lines[start..].join("\n")
 }
 
 /// Svix Play, the throwaway inbox the dashboard onboarding also delivers to.
@@ -154,7 +195,7 @@ struct Quickstart {
 /// The channel used when the org requires one, same as the dashboard onboarding.
 const CHANNEL: &str = "my-channel";
 
-/// Step 3 (manual): create the application and give it somewhere to deliver to.
+/// Step 4 (manual): create the application and give it somewhere to deliver to.
 ///
 /// This mirrors the dashboard onboarding: an application plus a Svix Play endpoint, so
 /// the first message has a destination without the user having to run a server.
