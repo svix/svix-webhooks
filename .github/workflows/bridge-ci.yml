@@ -90,13 +90,13 @@ jobs:
             zlib1g-dev=1:*
 
       - name: Build (no features)
-        run: cargo build --no-default-features
+        run: cargo check --no-default-features
 
       - name: Build (all features)
-        run: cargo build --all-features
+        run: cargo check --all-features
 
       - name: Build (default features)
-        run: cargo build
+        run: cargo check
 
       - name: Start required services
         run: docker compose -f "testing-docker-compose.yml" up -d
