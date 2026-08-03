@@ -49,8 +49,8 @@ jobs:
       ruby-lint: ${{ steps.filter.outputs.ruby-lint }}
       openapi-compatibility-check: ${{ steps.filter.outputs.openapi-compatibility-check }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@d1c1ffe0248fe513906c8e24db8ea791d46f8590 # v3.0.3
         id: filter
         with:
           filters: |
