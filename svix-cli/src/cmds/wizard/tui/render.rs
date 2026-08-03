@@ -13,7 +13,8 @@ use ratatui::{
 
 use super::{
     widgets::{choices, field, prose, sample, DIM, HEADING, VALUE},
-    App, Auth, Step, AUTH_CHOICES, LANGUAGE_NAMES, MODE_CHOICES, SCOPE_CHOICES, STEPS, UNLOCK_HINT,
+    App, Auth, Step, AUTH_CHOICES, INSTALL_CHOICES, LANGUAGE_NAMES, MODE_CHOICES, SCOPE_CHOICES,
+    STEPS, UNLOCK_HINT,
 };
 use crate::{
     cmds::wizard::{
@@ -237,24 +238,26 @@ impl App {
         lines.extend(self.install_lines());
         lines.push(Line::from(""));
 
-        // Once the scope is picked there's nothing left to ask: either a run is in flight,
-        // or one of them failed and the error below says so. A finished run doesn't get
-        // here at all, since the wizard quits to hand over to the agent.
-        if self.scope.is_some() {
-            return lines;
+        if self.scope.is_none() {
+            lines.push(prose("Where should they go?"));
+            lines.push(Line::from(""));
+            lines.extend(choices(SCOPE_CHOICES, self.scope_selected));
+        } else if self.auto_install.is_none() {
+            lines.push(prose("How do you want them installed?"));
+            lines.push(Line::from(""));
+            lines.extend(choices(INSTALL_CHOICES, self.install_selected));
         }
-
-        lines.push(prose("Where should they go?"));
-        lines.push(Line::from(""));
-        lines.extend(choices(SCOPE_CHOICES, self.scope_selected));
+        // Otherwise a run is in flight, or one failed and the error below says so. A
+        // finished run doesn't get here at all: the wizard quits to hand over to the
+        // agent, and so does declining the install, to print the commands instead.
 
         lines
     }
 
     /// One line per skill, marked with how far the run has got.
     ///
-    /// Nothing is running until the scope is picked, so until then every skill is listed
-    /// as queued rather than the first one looking like it's already going.
+    /// Nothing is running until the wizard is asked to install, so until then every skill
+    /// is listed as queued rather than the first one looking like it's already going.
     fn install_lines(&self) -> Vec<Line<'static>> {
         SKILL_NAMES
             .iter()

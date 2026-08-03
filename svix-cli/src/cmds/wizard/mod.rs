@@ -42,11 +42,22 @@ impl WizardCommands {
 async fn quickstart() -> anyhow::Result<()> {
     // Every step runs in the full-screen UI, including logging in, choosing how to
     // continue, and installing the skills, so the whole quickstart is one screen rather
-    // than a mix of prompts.
-    if tui::run().await? == QuickstartMode::Agent {
-        // The skills are installed by then; all that's left is the prompt to hand over,
-        // which is printed once the alternate screen is gone so it can be copied.
-        print_agent_prompt();
+    // than a mix of prompts. Anything the user will want to run or copy is printed once
+    // the alternate screen is gone.
+    match tui::run().await? {
+        Outcome::Manual => {}
+        Outcome::SkillsInstalled => {
+            println!("\nSvix agent skills installed.");
+            print_agent_prompt();
+        }
+        Outcome::InstallByHand(scope) => {
+            println!("\nInstall the Svix skills by running:\n");
+            for skill in SKILL_NAMES {
+                // Green, matching the verification code in the login flow.
+                println!("\x1b[32m{}\x1b[0m", install_command(skill, scope).join(" "));
+            }
+            print_agent_prompt();
+        }
     }
 
     Ok(())
@@ -59,6 +70,17 @@ enum QuickstartMode {
     Manual,
     /// A coding agent takes over from here.
     Agent,
+}
+
+/// What the wizard's run amounted to, and so what still has to be printed on the way out.
+#[derive(Clone, Copy)]
+enum Outcome {
+    /// The manual path, or quitting part way: the summary says everything there is.
+    Manual,
+    /// The agent path, with the skills installed by the wizard.
+    SkillsInstalled,
+    /// The agent path, with the user preferring to run the installs themselves.
+    InstallByHand(SkillScope),
 }
 
 /// The skills published at <https://github.com/svix/ai>, installed via the `skills` CLI.
@@ -92,7 +114,7 @@ impl SkillScope {
 
 /// Prints the prompt to hand to the agent, once the wizard's UI is out of the way.
 fn print_agent_prompt() {
-    println!("\nSvix agent skills installed. Ask your coding agent something like:\n");
+    println!("\nThen ask your coding agent something like:\n");
     // Green, matching the verification code in the login flow.
     println!("\x1b[32m{AGENT_PROMPT}\x1b[0m\n");
     println!("The skills take it from there.");

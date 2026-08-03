@@ -25,8 +25,8 @@ use svix::api::Svix;
 use self::widgets::copy_to_clipboard;
 use super::{
     create_application, highlight::Syntax, install_skill, portal_url, sample_message, send_message,
-    Language, Quickstart, QuickstartMode, SampleMessage, SkillScope, DEFAULT_SERVER_URL, LANGUAGES,
-    SKILL_NAMES,
+    Language, Outcome, Quickstart, QuickstartMode, SampleMessage, SkillScope, DEFAULT_SERVER_URL,
+    LANGUAGES, SKILL_NAMES,
 };
 use crate::{
     cmds::login::{self, DashboardLogin},
@@ -36,10 +36,10 @@ use crate::{
 
 /// Runs the quickstart UI, then prints what the user will want to keep.
 ///
-/// Returns how the user chose to continue. The agent path only counts as taken once its
-/// skills are installed, so quitting part way through doesn't hand over to an agent that
-/// has nothing to work with.
-pub(super) async fn run() -> anyhow::Result<QuickstartMode> {
+/// The agent path only counts as taken once its questions are all answered, so quitting
+/// part way through falls back to the manual outcome rather than handing over to an
+/// agent that has nothing to work with.
+pub(super) async fn run() -> anyhow::Result<Outcome> {
     let mut terminal = ratatui::try_init()?;
     let result = App::new().run(&mut terminal).await;
     ratatui::restore();
@@ -48,10 +48,7 @@ pub(super) async fn run() -> anyhow::Result<QuickstartMode> {
     // The alternate screen is gone by now, so anything worth keeping has to be reprinted.
     app.print_summary();
 
-    Ok(match app.mode {
-        Some(QuickstartMode::Agent) if app.skills_installed => QuickstartMode::Agent,
-        _ => QuickstartMode::Manual,
-    })
+    Ok(app.outcome())
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -147,6 +144,10 @@ const SCOPE_CHOICES: &[&str] = &[
     "This project only (./.agents/skills)",
     "Globally, for every project (~/.agents/skills)",
 ];
+const INSTALL_CHOICES: &[&str] = &[
+    "Install them for me (runs npx here)",
+    "I'll install them myself (print the commands on exit)",
+];
 
 /// The names in `LANGUAGES`, in a shape the choice lists can borrow.
 static LANGUAGE_NAMES: LazyLock<Vec<&'static str>> =
@@ -170,6 +171,10 @@ struct App {
     /// Set on the agent path, once the user has picked where the skills go.
     scope: Option<SkillScope>,
     scope_selected: usize,
+    /// Set on the agent path, once the user has said whether the wizard should run the
+    /// installs itself (`true`) or print the commands on the way out (`false`).
+    auto_install: Option<bool>,
+    install_selected: usize,
     skills_installed: bool,
     /// How many of `SKILL_NAMES` are installed, which is also the index of the command
     /// currently running while the install is in flight.
@@ -441,9 +446,15 @@ impl App {
         match (self.step(), &self.auth) {
             (Step::Auth, Auth::Choosing { selected }) => Some((AUTH_CHOICES, *selected)),
             (Step::Mode, _) if self.mode.is_none() => Some((MODE_CHOICES, self.mode_selected)),
-            // The agent path stays on this step to ask where the skills should go.
+            // The agent path stays on this step to ask where the skills should go, and
+            // then whether the wizard should install them or leave that to the user.
             (Step::Mode, _) if self.mode == Some(QuickstartMode::Agent) && self.scope.is_none() => {
                 Some((SCOPE_CHOICES, self.scope_selected))
+            }
+            (Step::Mode, _)
+                if self.mode == Some(QuickstartMode::Agent) && self.auto_install.is_none() =>
+            {
+                Some((INSTALL_CHOICES, self.install_selected))
             }
             (Step::Language, _) => Some((LANGUAGE_NAMES.as_slice(), self.language)),
             _ => None,
@@ -459,8 +470,9 @@ impl App {
         match self.step() {
             Step::Auth => self.auth = Auth::Choosing { selected: next },
             Step::Language => self.language = next,
-            Step::Mode if self.mode.is_some() => self.scope_selected = next,
-            Step::Mode => self.mode_selected = next,
+            Step::Mode if self.mode.is_none() => self.mode_selected = next,
+            Step::Mode if self.scope.is_none() => self.scope_selected = next,
+            Step::Mode => self.install_selected = next,
             _ => {}
         }
     }
@@ -523,9 +535,10 @@ impl App {
                     return;
                 }
             }
-            // The rest of the agent path: pick where the skills go, then install them.
-            // A failed install stays here rather than falling through to the manual steps,
-            // so Enter is another go at it.
+            // The rest of the agent path: pick where the skills go, whether to install
+            // them here, and then do so or quit to print the commands. A failed install
+            // stays here rather than falling through to the manual steps, so Enter is
+            // another go at it.
             Step::Mode if self.mode == Some(QuickstartMode::Agent) => {
                 if self.scope.is_none() {
                     self.scope = Some(if self.scope_selected == 0 {
@@ -533,9 +546,19 @@ impl App {
                     } else {
                         SkillScope::Global
                     });
+                    return;
                 }
-                self.error = None;
-                self.pending = Some(Action::InstallSkills);
+                if self.auto_install.is_none() {
+                    self.auto_install = Some(self.install_selected == 0);
+                }
+
+                if self.auto_install == Some(true) {
+                    self.error = None;
+                    self.pending = Some(Action::InstallSkills);
+                } else {
+                    // Nothing runs here: the commands are printed on the way out.
+                    self.quit = true;
+                }
                 return;
             }
             Step::Send if self.sent.is_none() && self.quickstart.is_some() => {
@@ -575,8 +598,8 @@ impl App {
         self.error = None;
         match self.step() {
             Step::Application if self.quickstart.is_none() => self.pending = Some(Action::Prepare),
-            // A failed install leaves the scope picked, so retrying goes straight to `npx`.
-            Step::Mode if self.scope.is_some() && !self.skills_installed => {
+            // A failed install leaves its choices picked, so retrying goes straight to `npx`.
+            Step::Mode if self.auto_install == Some(true) && !self.skills_installed => {
                 self.pending = Some(Action::InstallSkills);
             }
             Step::Portal => {
@@ -650,6 +673,19 @@ impl App {
             Ok(()) => format!("Copied the {label} to your clipboard."),
             Err(e) => format!("Couldn't copy the {label} ({e})."),
         });
+    }
+
+    /// What this run amounted to, for the caller to finish up once the screen is gone.
+    fn outcome(&self) -> Outcome {
+        match (self.mode, self.scope, self.auto_install) {
+            (Some(QuickstartMode::Agent), _, _) if self.skills_installed => {
+                Outcome::SkillsInstalled
+            }
+            (Some(QuickstartMode::Agent), Some(scope), Some(false)) => {
+                Outcome::InstallByHand(scope)
+            }
+            _ => Outcome::Manual,
+        }
     }
 
     /// Reprints the ids and URLs once the alternate screen is gone.
@@ -792,6 +828,16 @@ mod tests {
         app.on_key(KeyEvent::from(KeyCode::Down));
         app.on_key(KeyEvent::from(KeyCode::Enter));
         assert!(matches!(app.scope, Some(SkillScope::Global)));
+        assert!(
+            app.pending.is_none(),
+            "nothing runs before the how question"
+        );
+
+        // Then whether the wizard should install them, which enter turns into the run.
+        let (options, _) = app.choices().expect("an install method to pick");
+        assert_eq!(options, INSTALL_CHOICES);
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.auto_install, Some(true));
         assert!(matches!(app.pending, Some(Action::InstallSkills)));
         assert_eq!(app.step, 1);
 
@@ -802,6 +848,33 @@ mod tests {
         assert_eq!(app.step, 1);
         assert!(matches!(app.pending, Some(Action::InstallSkills)));
         assert!(app.error.is_none(), "and the old error is cleared");
+    }
+
+    #[test]
+    fn declining_the_install_quits_with_the_commands_as_the_outcome() {
+        let mut app = app();
+        app.step = 1;
+
+        // Agent mode, into this project.
+        app.on_key(KeyEvent::from(KeyCode::Down));
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert!(matches!(app.scope, Some(SkillScope::Project)));
+
+        // Declining the install runs nothing and leaves the printing to the caller.
+        app.on_key(KeyEvent::from(KeyCode::Down));
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.auto_install, Some(false));
+        assert!(app.pending.is_none(), "nothing was run");
+        assert!(app.quit, "the wizard is done");
+        assert!(matches!(
+            app.outcome(),
+            Outcome::InstallByHand(SkillScope::Project)
+        ));
+
+        // Quitting earlier, before answering, prints nothing agent-flavoured at all.
+        app.auto_install = None;
+        assert!(matches!(app.outcome(), Outcome::Manual));
     }
 
     #[test]
