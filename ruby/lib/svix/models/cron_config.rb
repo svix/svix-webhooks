@@ -40,9 +40,9 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["schedule"] = Svix::serialize_primitive(@schedule) if @schedule
-      out["payload"] = Svix::serialize_primitive(@payload) if @payload
-      out["contentType"] = Svix::serialize_primitive(@content_type) if @content_type
+      out["schedule"] = Svix::serialize_primitive(@schedule) unless @schedule.nil?
+      out["payload"] = Svix::serialize_primitive(@payload) unless @payload.nil?
+      out["contentType"] = Svix::serialize_primitive(@content_type) unless @content_type.nil?
       out
     end
 

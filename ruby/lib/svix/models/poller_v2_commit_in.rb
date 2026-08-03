@@ -33,7 +33,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["offset"] = Svix::serialize_primitive(@offset) if @offset
+      out["offset"] = Svix::serialize_primitive(@offset) unless @offset.nil?
       out
     end
 

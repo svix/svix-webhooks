@@ -33,7 +33,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["secret"] = Svix::serialize_primitive(@secret) if @secret
+      out["secret"] = Svix::serialize_primitive(@secret) unless @secret.nil?
       out
     end
 

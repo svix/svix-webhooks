@@ -42,8 +42,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["bucket"] = Svix::serialize_primitive(@bucket) if @bucket
-      out["credentials"] = Svix::serialize_primitive(@credentials) if @credentials
+      out["bucket"] = Svix::serialize_primitive(@bucket) unless @bucket.nil?
+      out["credentials"] = Svix::serialize_primitive(@credentials) unless @credentials.nil?
       out
     end
 

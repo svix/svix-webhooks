@@ -41,8 +41,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["oldTokenExpiry"] = Svix::serialize_primitive(@old_token_expiry) if @old_token_expiry
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["oldTokenExpiry"] = Svix::serialize_primitive(@old_token_expiry) unless @old_token_expiry.nil?
       out
     end
 
