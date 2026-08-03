@@ -13,7 +13,7 @@ pub(super) const HEADING: Style = Style::new().fg(Color::Cyan).add_modifier(Modi
 pub(super) const VALUE: Style = Style::new().fg(Color::Green);
 pub(super) const DIM: Style = Style::new().add_modifier(Modifier::DIM);
 
-/// A paragraph of prose in the terminal's own colours; the widget does the wrapping.
+/// Prose in the terminal's own colours; the paragraph widget wraps it.
 pub(super) fn prose(text: &str) -> Line<'static> {
     Line::raw(text.to_owned())
 }
@@ -44,10 +44,8 @@ pub(super) fn choices(options: &[&'static str], selected: usize) -> Vec<Line<'st
         .collect()
 }
 
-/// A highlighted code sample, drawn as text so it scrolls with everything else.
-///
-/// The block is a rule above and below plus the highlighting theme's background, with no
-/// side borders: selecting the sample with the mouse then picks up the code alone.
+/// A highlighted code sample, drawn as text so it scrolls with everything else. No side
+/// borders: selecting the sample with the mouse then picks up the code alone.
 pub(super) fn sample(title: &str, syntax: Syntax, text: &str, width: u16) -> Vec<Line<'static>> {
     let width = (width as usize).max(8);
     let rule = background().add_modifier(Modifier::DIM);
@@ -101,9 +99,7 @@ fn fit(line: Line<'static>, width: usize) -> Line<'static> {
     Line::from(spans)
 }
 
-/// Copies `text` through the terminal itself with OSC 52.
-///
-/// Going through the terminal is what makes this work over SSH and in a multiplexer,
+/// Copies `text` through the terminal itself with OSC 52, which keeps working over SSH,
 /// where a clipboard library would reach for the wrong machine's clipboard.
 pub(super) fn copy_to_clipboard(text: &str) -> std::io::Result<()> {
     use std::io::Write as _;

@@ -1,7 +1,4 @@
-//! Drawing the quickstart: the frame's chrome and each step's body.
-//!
-//! Everything here reads the [`App`] state and produces lines; nothing in this file
-//! mutates it. What each key does lives with the state, in the parent module.
+//! Drawing the quickstart. Everything here reads the [`App`] state; nothing mutates it.
 
 use ratatui::{
     layout::{Constraint, Layout, Rect},
@@ -26,9 +23,8 @@ use crate::{
 
 impl App {
     pub(super) fn render(&self, frame: &mut Frame) {
-        // The step list grows downwards as steps are reached, and the body gets the rest.
-        // Nothing sits beside the body, so a wrapped URL can be selected without picking
-        // up anything else on the row.
+        // The step list grows downwards as steps are reached; the body gets the rest.
+        // Nothing sits beside the body, so a wrapped URL can be selected cleanly.
         let steps_height = (self.step + 3) as u16;
         let [title, steps, body, footer] = Layout::vertical([
             Constraint::Length(1),
@@ -48,8 +44,7 @@ impl App {
         frame.render_widget(Line::styled("Svix quickstart", HEADING), area);
     }
 
-    /// The steps reached so far: done ones keep a check, the current one is highlighted.
-    /// The ones still ahead are left out until they're reached.
+    /// The steps reached so far; the ones still ahead are left out until they're reached.
     fn render_steps(&self, frame: &mut Frame, area: Rect) {
         let mut lines: Vec<Line> = STEPS
             .iter()
@@ -68,7 +63,7 @@ impl App {
             })
             .collect();
 
-        // A rule under the list, standing in for the panel border the body no longer has.
+        // A rule standing in for the panel border the body no longer has.
         lines.push(Line::styled("─".repeat(area.width as usize), DIM));
         lines.push(Line::from(""));
 
@@ -76,7 +71,7 @@ impl App {
     }
 
     fn render_body(&self, frame: &mut Frame, area: Rect) {
-        // The sample boxes are drawn as text, so they have to be built for this width.
+        // The sample boxes are drawn as text, so they're built for this width.
         let width = area.width;
         self.width.set(width);
         let mut lines = self.step_lines(width);
@@ -111,8 +106,7 @@ impl App {
     }
 
     fn render_footer(&self, frame: &mut Frame, area: Rect) {
-        // Typing a token or waiting on the browser changes what the keys do, so those
-        // states name their own.
+        // Typing a token or waiting on the browser changes what the keys do.
         let special = match (self.step(), &self.auth) {
             (Step::Auth, Auth::Typing { .. }) => {
                 Some("type your token  ·  enter save  ·  esc back")
@@ -228,8 +222,7 @@ impl App {
         lines
     }
 
-    /// The tail of the agent path: the skills being installed, where they'll go, and how
-    /// far through the run is.
+    /// The agent path's tail: the skills, its two questions, and the install's progress.
     fn skills_lines(&self) -> Vec<Line<'static>> {
         let mut lines = vec![prose(
             "The skills are installed for every coding agent found on this machine:",
@@ -247,17 +240,13 @@ impl App {
             lines.push(Line::from(""));
             lines.extend(choices(INSTALL_CHOICES, self.install_selected));
         }
-        // Otherwise a run is in flight, or one failed and the error below says so. A
-        // finished run doesn't get here at all: the wizard quits to hand over to the
-        // agent, and so does declining the install, to print the commands instead.
+        // Otherwise a run is in flight or failed; anything further quits the wizard.
 
         lines
     }
 
-    /// One line per skill, marked with how far the run has got.
-    ///
-    /// Nothing is running until the wizard is asked to install, so until then every skill
-    /// is listed as queued rather than the first one looking like it's already going.
+    /// One line per skill. All are listed as queued until an install actually runs, so
+    /// the first one doesn't look like it's already going.
     fn install_lines(&self) -> Vec<Line<'static>> {
         SKILL_NAMES
             .iter()
@@ -324,8 +313,7 @@ impl App {
         lines
     }
 
-    /// How to send a message to the application from your own code, in the language picked
-    /// on the previous step.
+    /// How to send a message from your own code, in the language picked earlier.
     fn code_lines(&self, width: u16) -> Vec<Line<'static>> {
         let language = self.language();
 

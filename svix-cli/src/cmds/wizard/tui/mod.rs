@@ -1,8 +1,5 @@
-//! The full-screen quickstart.
-//!
-//! The steps are a checklist you work down: each one builds on the one before it, so the
-//! wizard only moves forward, ticking steps off as they're done. The only key that
-//! changes anything on your account is Enter.
+//! The full-screen quickstart: a forward-only checklist of steps, where the only key
+//! that changes anything on your account is Enter.
 //!
 //! This file owns the state and what the keys do to it; [`render`] draws it, and
 //! [`widgets`] holds the drawing helpers the steps share.
@@ -34,18 +31,14 @@ use crate::{
     BIN_NAME,
 };
 
-/// Runs the quickstart UI, then prints what the user will want to keep.
-///
-/// The agent path only counts as taken once its questions are all answered, so quitting
-/// part way through falls back to the manual outcome rather than handing over to an
-/// agent that has nothing to work with.
+/// Runs the quickstart UI. The agent path only counts once its questions are answered:
+/// quitting part way through falls back to the manual outcome.
 pub(super) async fn run() -> anyhow::Result<Outcome> {
     let mut terminal = ratatui::try_init()?;
     let result = App::new().run(&mut terminal).await;
     ratatui::restore();
 
     let app = result?;
-    // The alternate screen is gone by now, so anything worth keeping has to be reprinted.
     app.print_summary();
 
     Ok(app.outcome())
@@ -86,7 +79,6 @@ impl Step {
     }
 }
 
-/// Shown on the message step, and when the next step is reached for before it's ready.
 const UNLOCK_HINT: &str = "The next step will be unlocked after you send the message.";
 
 /// Work that talks to the API, run between frames so the UI can show it's busy.
@@ -116,16 +108,18 @@ impl Action {
 /// How far along the login step is.
 enum Auth {
     /// Picking between logging in through the dashboard and pasting a token.
-    Choosing { selected: usize },
-    /// Typing a token in by hand.
-    Typing { token: String },
+    Choosing {
+        selected: usize,
+    },
+    Typing {
+        token: String,
+    },
     /// Waiting for the login to be approved in the browser.
     Waiting {
         session: Box<DashboardLogin>,
         started: Instant,
         last_poll: Instant,
     },
-    /// There's a usable token in the config.
     Done,
 }
 
@@ -149,7 +143,6 @@ const INSTALL_CHOICES: &[&str] = &[
     "I'll install them myself (print the commands on exit)",
 ];
 
-/// The names in `LANGUAGES`, in a shape the choice lists can borrow.
 static LANGUAGE_NAMES: LazyLock<Vec<&'static str>> =
     LazyLock::new(|| LANGUAGES.iter().map(|language| language.name).collect());
 
@@ -168,16 +161,14 @@ struct App {
     auth: Auth,
     mode: Option<QuickstartMode>,
     mode_selected: usize,
-    /// Set on the agent path, once the user has picked where the skills go.
     scope: Option<SkillScope>,
     scope_selected: usize,
-    /// Set on the agent path, once the user has said whether the wizard should run the
-    /// installs itself (`true`) or print the commands on the way out (`false`).
+    /// Whether the wizard runs the installs itself (`true`) or prints the commands on
+    /// the way out (`false`).
     auto_install: Option<bool>,
     install_selected: usize,
     skills_installed: bool,
-    /// How many of `SKILL_NAMES` are installed, which is also the index of the command
-    /// currently running while the install is in flight.
+    /// Skills installed so far; also the index of the command currently running.
     skills_done: usize,
 
     message: Option<SampleMessage>,
@@ -193,7 +184,7 @@ struct App {
 
 impl App {
     fn new() -> Self {
-        // A token in the config (or the environment) means the login step is already done.
+        // A token in the config or environment skips the login step.
         let cfg = Config::load().unwrap_or_default();
         let authenticated = cfg
             .auth_token
@@ -307,17 +298,15 @@ impl App {
 
                 self.skills_done = 0;
                 for skill in SKILL_NAMES {
-                    // Each command is marked as running before it starts, so the screen
-                    // shows which one the wizard is sitting on.
+                    // Repaint first, so the screen shows which command is running.
                     terminal.draw(|frame| self.render(frame))?;
-                    // `npx` is slow enough to be worth getting off the UI thread, and the
-                    // wizard has nothing else to do until it's finished.
+                    // `npx` is slow; keep it off the UI thread.
                     tokio::task::spawn_blocking(move || install_skill(skill, scope)).await??;
                     self.skills_done += 1;
                 }
 
                 self.skills_installed = true;
-                // The agent takes it from here, so there's nothing left to show.
+                // The agent takes it from here.
                 self.quit = true;
             }
         }
@@ -325,8 +314,7 @@ impl App {
         Ok(())
     }
 
-    /// Makes one login polling attempt per interval, so the UI keeps drawing while the
-    /// user is off approving the login in their browser.
+    /// One login polling attempt per interval, so the UI keeps drawing in between.
     async fn poll_login(&mut self) -> anyhow::Result<()> {
         let Auth::Waiting {
             session,
@@ -353,7 +341,6 @@ impl App {
         Ok(())
     }
 
-    /// Saves the token, builds the client from it, and ticks the login step off.
     fn finish_login(&mut self, token: String) -> anyhow::Result<()> {
         if token.is_empty() {
             self.status = Some("That token was empty.".to_owned());
@@ -434,8 +421,8 @@ impl App {
         }
     }
 
-    /// Scrolls down, stopping at the last line so the page can't run off into blank space.
-    /// Wrapping means the real height is at least this, which is close enough for a bound.
+    /// Scrolls down, stopping at the last line. Wrapping makes the real height at least
+    /// this, close enough for a bound.
     fn scroll_down(&mut self, lines: u16) {
         let max = self.step_lines(self.width.get()).len().saturating_sub(1) as u16;
         self.scroll = self.scroll.saturating_add(lines).min(max);
@@ -446,8 +433,7 @@ impl App {
         match (self.step(), &self.auth) {
             (Step::Auth, Auth::Choosing { selected }) => Some((AUTH_CHOICES, *selected)),
             (Step::Mode, _) if self.mode.is_none() => Some((MODE_CHOICES, self.mode_selected)),
-            // The agent path stays on this step to ask where the skills should go, and
-            // then whether the wizard should install them or leave that to the user.
+            // The agent path stays on this step for the scope and install questions.
             (Step::Mode, _) if self.mode == Some(QuickstartMode::Agent) && self.scope.is_none() => {
                 Some((SCOPE_CHOICES, self.scope_selected))
             }
@@ -477,12 +463,12 @@ impl App {
         }
     }
 
-    /// Whether a step is done, which is what puts a check next to it in the list.
+    /// Whether a step gets a check next to it in the list.
     fn done(&self, index: usize) -> bool {
         match STEPS[index] {
             Step::Auth => matches!(self.auth, Auth::Done),
             Step::Mode => self.mode.is_some(),
-            // The language is picked by moving on from the step, so it counts once you have.
+            // The language is picked by moving on from the step.
             Step::Language => index < self.step,
             Step::Application => self.quickstart.is_some(),
             Step::Send => self.sent.is_some(),
@@ -491,7 +477,7 @@ impl App {
         }
     }
 
-    /// What the current step still needs before the quickstart can move on, if anything.
+    /// What the current step still needs before moving on, if anything.
     fn blocker(&self) -> Option<&'static str> {
         match self.step() {
             Step::Auth if !matches!(self.auth, Auth::Done) => Some("Log in before continuing."),
@@ -507,7 +493,6 @@ impl App {
     /// back: each step builds on the one before it.
     fn activate(&mut self) {
         match self.step() {
-            // The login step's Enter starts whichever way of logging in was picked.
             Step::Auth => match &self.auth {
                 Auth::Choosing { selected: 0 } => {
                     self.pending = Some(Action::StartLogin);
@@ -530,15 +515,13 @@ impl App {
                 };
                 self.mode = Some(mode);
 
-                // The agent path stays here to ask where the skills should go.
+                // The agent path stays here for its questions.
                 if mode == QuickstartMode::Agent {
                     return;
                 }
             }
-            // The rest of the agent path: pick where the skills go, whether to install
-            // them here, and then do so or quit to print the commands. A failed install
-            // stays here rather than falling through to the manual steps, so Enter is
-            // another go at it.
+            // The agent path: scope, then install method, then run it or quit to print
+            // the commands. A failed install stays here, so Enter is another go at it.
             Step::Mode if self.mode == Some(QuickstartMode::Agent) => {
                 if self.scope.is_none() {
                     self.scope = Some(if self.scope_selected == 0 {
@@ -556,7 +539,7 @@ impl App {
                     self.error = None;
                     self.pending = Some(Action::InstallSkills);
                 } else {
-                    // Nothing runs here: the commands are printed on the way out.
+                    // The commands are printed on the way out.
                     self.quit = true;
                 }
                 return;
@@ -580,8 +563,7 @@ impl App {
         self.step = (self.step + 1).min(STEPS.len() - 1);
         self.scroll = 0;
 
-        // Each step generates what it needs when you reach it, except the message, which
-        // only goes out when you ask for it.
+        // Each step generates what it needs when reached; the message only on request.
         match self.step() {
             Step::Application if self.quickstart.is_none() && self.client.is_some() => {
                 self.pending = Some(Action::Prepare);
@@ -598,7 +580,6 @@ impl App {
         self.error = None;
         match self.step() {
             Step::Application if self.quickstart.is_none() => self.pending = Some(Action::Prepare),
-            // A failed install leaves its choices picked, so retrying goes straight to `npx`.
             Step::Mode if self.auto_install == Some(true) && !self.skills_installed => {
                 self.pending = Some(Action::InstallSkills);
             }
@@ -675,7 +656,6 @@ impl App {
         });
     }
 
-    /// What this run amounted to, for the caller to finish up once the screen is gone.
     fn outcome(&self) -> Outcome {
         match (self.mode, self.scope, self.auto_install) {
             (Some(QuickstartMode::Agent), _, _) if self.skills_installed => {
@@ -688,7 +668,7 @@ impl App {
         }
     }
 
-    /// Reprints the ids and URLs once the alternate screen is gone.
+    /// Reprints the ids and URLs, since the alternate screen took them with it.
     fn print_summary(&self) {
         let Some(qs) = &self.quickstart else {
             return;

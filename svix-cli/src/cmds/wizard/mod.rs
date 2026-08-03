@@ -40,10 +40,8 @@ impl WizardCommands {
 }
 
 async fn quickstart() -> anyhow::Result<()> {
-    // Every step runs in the full-screen UI, including logging in, choosing how to
-    // continue, and installing the skills, so the whole quickstart is one screen rather
-    // than a mix of prompts. Anything the user will want to run or copy is printed once
-    // the alternate screen is gone.
+    // Anything the user will want to run or copy is printed after the UI's alternate
+    // screen is gone.
     match tui::run().await? {
         Outcome::Manual => {}
         Outcome::SkillsInstalled => {
@@ -53,7 +51,6 @@ async fn quickstart() -> anyhow::Result<()> {
         Outcome::InstallByHand(scope) => {
             println!("\nInstall the Svix skills by running:\n");
             for skill in SKILL_NAMES {
-                // Green, matching the verification code in the login flow.
                 println!("\x1b[32m{}\x1b[0m", install_command(skill, scope).join(" "));
             }
             print_agent_prompt();
@@ -66,33 +63,26 @@ async fn quickstart() -> anyhow::Result<()> {
 /// How the user wants to work through the rest of the quickstart.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum QuickstartMode {
-    /// The user walks through the remaining steps themselves.
     Manual,
-    /// A coding agent takes over from here.
     Agent,
 }
 
-/// What the wizard's run amounted to, and so what still has to be printed on the way out.
+/// What the wizard's run amounted to, and so what still gets printed on the way out.
 #[derive(Clone, Copy)]
 enum Outcome {
-    /// The manual path, or quitting part way: the summary says everything there is.
+    /// The manual path, or quitting part way through the agent one.
     Manual,
-    /// The agent path, with the skills installed by the wizard.
     SkillsInstalled,
-    /// The agent path, with the user preferring to run the installs themselves.
     InstallByHand(SkillScope),
 }
 
 /// The skills published at <https://github.com/svix/ai>, installed via the `skills` CLI.
 const SKILLS_PACKAGE: &str = "svix/ai";
 
-/// The skills that drive the rest of the quickstart. The `skills` CLI only takes one
-/// skill at a time, so these are installed with one command each.
+/// Installed with one command each: the `skills` CLI takes one skill at a time.
 const SKILL_NAMES: &[&str] = &["svix-sending-webhooks", "receiving-webhooks"];
 
-/// An example of what to ask an agent once the skills are installed. The skills pick
-/// themselves up from anything Svix-shaped, so this is a starting point rather than an
-/// incantation that has to be typed exactly.
+/// A starting point, not an incantation: the skills trigger on anything Svix-shaped.
 const AGENT_PROMPT: &str = "Use Svix to start sending webhooks";
 
 /// Where the skills get installed: alongside the current project, or user-wide.
@@ -103,7 +93,6 @@ enum SkillScope {
 }
 
 impl SkillScope {
-    /// The `skills` CLI flag selecting this scope.
     fn flag(self) -> &'static str {
         match self {
             Self::Project => "--project",
@@ -112,21 +101,15 @@ impl SkillScope {
     }
 }
 
-/// Prints the prompt to hand to the agent, once the wizard's UI is out of the way.
 fn print_agent_prompt() {
     println!("\nThen ask your coding agent something like:\n");
-    // Green, matching the verification code in the login flow.
+    // Green, like the login flow's verification code.
     println!("\x1b[32m{AGENT_PROMPT}\x1b[0m\n");
     println!("The skills take it from there.");
 }
 
-/// The command that installs one skill, as the argv it's run with.
-///
-/// The wizard shows this verbatim before running it, so what's on screen is exactly what
-/// gets executed, and can be rerun by hand if it fails.
-///
-/// `-y` skips the `skills` CLI prompts, so the skill to install and where it goes both
-/// have to be named explicitly.
+/// The argv that installs one skill. Shown to the user verbatim, so it has to be
+/// runnable by hand; `-y` skips the `skills` CLI prompts.
 fn install_command(skill: &'static str, scope: SkillScope) -> Vec<&'static str> {
     vec![
         "npx",
@@ -141,10 +124,8 @@ fn install_command(skill: &'static str, scope: SkillScope) -> Vec<&'static str> 
     ]
 }
 
-/// Installs a single skill from the `svix/ai` package.
-///
-/// The `skills` CLI draws an interactive-looking installer, so its output is captured
-/// rather than inherited: this runs while the wizard still owns the screen.
+/// Installs a single skill. Output is captured, not inherited: the wizard still owns
+/// the screen, and the `skills` CLI draws an installer of its own.
 fn install_skill(skill: &'static str, scope: SkillScope) -> anyhow::Result<()> {
     let command = install_command(skill, scope);
 
@@ -167,8 +148,7 @@ fn install_skill(skill: &'static str, scope: SkillScope) -> anyhow::Result<()> {
     Ok(())
 }
 
-/// The tail of a captured stream, for putting a failure's reason in front of the user
-/// without spilling the whole installer log into the UI.
+/// The last non-empty lines of a stream: the failure's reason without the whole log.
 fn last_lines(stream: &[u8], count: usize) -> String {
     let text = String::from_utf8_lossy(stream);
     let lines: Vec<_> = text
@@ -196,9 +176,8 @@ fn generate_token(len: usize) -> String {
         .collect()
 }
 
-/// The application the quickstart creates. The uid gets a random suffix so repeated runs
-/// don't collide.
 const APP_NAME: &str = "My first app";
+/// Gets a random suffix so repeated runs don't collide.
 const APP_UID_PREFIX: &str = "quickstart-";
 
 /// The application the quickstart works against, plus the Svix Play inbox it delivers to.
@@ -208,21 +187,17 @@ struct Quickstart {
     endpoint: EndpointOut,
     /// Where the delivered message can be inspected in the browser.
     play_view_url: String,
-    /// Set when the org requires every endpoint to specify a channel, in which case the
-    /// message has to be sent on that channel to reach the endpoint.
+    /// Set when the org requires endpoints to specify channels; the message has to be
+    /// sent on it to reach the endpoint.
     channel: Option<String>,
 }
 
 /// The channel used when the org requires one, same as the dashboard onboarding.
 const CHANNEL: &str = "my-channel";
 
-/// Step 4 (manual): create the application and give it somewhere to deliver to.
-///
-/// This mirrors the dashboard onboarding: an application plus a Svix Play endpoint, so
-/// the first message has a destination without the user having to run a server.
+/// Creates the application plus a Svix Play endpoint, mirroring the dashboard
+/// onboarding: the first message gets a destination without the user running a server.
 async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Result<Quickstart> {
-    // Named and uid'd for you: in a real integration these come from your own user or
-    // tenant record, not from a prompt.
     let application_in = ApplicationIn {
         uid: Some(format!("{APP_UID_PREFIX}{}", generate_token(8))),
         ..ApplicationIn::new(APP_NAME.to_owned())
@@ -233,8 +208,6 @@ async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Resul
         .await
         .context("Failed to create the application")?;
 
-    // The dashboard onboarding adds this endpoint for you too, so there's something to
-    // deliver to before the user has an endpoint of their own.
     let play_token = generate_token(PLAY_TOKEN_LEN);
     let (endpoint, channel) = create_play_endpoint(client, &app.id, &play_token, msg).await?;
 
@@ -248,10 +221,9 @@ async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Resul
 
 /// Creates the Svix Play endpoint, returning it and the channel it listens on (if any).
 ///
-/// Orgs can require every endpoint to specify filter types and/or channels. Filter types
-/// are always sent (the endpoint only needs the one event type the quickstart uses); the
-/// channel is only added if the API rejects the first attempt for the lack of one, since
-/// the public API doesn't expose those org settings the way the dashboard reads them.
+/// Orgs can require endpoints to specify filter types and/or channels. Filter types are
+/// always sent; the channel only after the API rejects the first attempt for lacking
+/// one, since those org settings aren't exposed through the public API.
 async fn create_play_endpoint(
     client: &Svix,
     app_id: &str,
@@ -260,7 +232,7 @@ async fn create_play_endpoint(
 ) -> anyhow::Result<(EndpointOut, Option<String>)> {
     let endpoint_in = EndpointIn {
         description: Some("Svix onboarding endpoint".to_owned()),
-        // Serialized as `filterTypes`; required when the org sets `requireEndpointFilterTypes`.
+        // Serialized as `filterTypes`.
         event_types: Some(BTreeSet::from([msg.event_type.clone()])),
         ..EndpointIn::new(format!("{PLAY_URL}/in/{play_token}/"))
     };
@@ -347,17 +319,15 @@ async fn sample_message(client: &Svix) -> anyhow::Result<SampleMessage> {
     })
 }
 
-/// A language the quickstart can show a "send a message" snippet for.
+/// A language the quickstart can show its code samples in.
 struct Language {
     name: &'static str,
     /// How to add the Svix SDK to a project.
     install: &'static str,
-    /// The snippet itself, rendered for the application and message created above.
+    /// Sends the sample message.
     snippet: fn(app_id: &str, msg: &SampleMessage, server_url: &str) -> String,
-    /// How to mint an app portal magic link from your own backend, so your customers can
-    /// manage their endpoints without you building a UI.
+    /// Mints an app portal magic link from the user's own backend.
     portal: fn(app_id: &str, server_url: &str) -> String,
-    /// Which grammar the samples are highlighted with.
     syntax: Syntax,
 }
 
@@ -542,10 +512,10 @@ curl -X POST "{server_url}/api/v1/auth/app-portal-access/{app_id}" \
     },
 ];
 
-/// The public API URL to show in the curl snippet when the config doesn't override it.
+/// Shown in the curl snippet when the config doesn't override it.
 const DEFAULT_SERVER_URL: &str = "https://api.svix.com";
 
-/// Step 5: send the sample message to the application's endpoints.
+/// Sends the sample message to the application's endpoints.
 async fn send_message(
     client: &Svix,
     qs: &Quickstart,
@@ -566,7 +536,7 @@ async fn send_message(
         .context("Failed to send the message")
 }
 
-/// Step 6: mint a magic link into the app portal for the quickstart's application.
+/// Mints a magic link into the app portal for the quickstart's application.
 async fn portal_url(client: &Svix, qs: &Quickstart) -> anyhow::Result<String> {
     let access = client
         .authentication()
@@ -574,7 +544,7 @@ async fn portal_url(client: &Svix, qs: &Quickstart) -> anyhow::Result<String> {
         .await
         .context("Failed to generate an app portal URL")?;
 
-    // `dashboardTour` turns on the guided tour, same as the dashboard onboarding link.
+    // `dashboardTour` turns on the guided tour, like the dashboard onboarding link.
     Ok(with_dashboard_tour(&access.url))
 }
 

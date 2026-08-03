@@ -1,7 +1,5 @@
-//! Syntax highlighting for the quickstart's code samples, via `tui-syntax-highlight`.
-//!
-//! The samples are rendered on the highlighting theme's own background rather than the
-//! terminal's, so a sample reads the same whether the terminal is light or dark.
+//! Syntax highlighting for the code samples, drawn on the theme's own background so
+//! they read the same whether the terminal is light or dark.
 
 use std::sync::OnceLock;
 
@@ -23,7 +21,7 @@ pub(super) enum Syntax {
 }
 
 impl Syntax {
-    /// Syntaxes are looked up by extension, which is stabler than their display names.
+    /// Looked up by extension, which is stabler than syntect's display names.
     fn extension(self) -> &'static str {
         match self {
             Self::Python => "py",
@@ -36,15 +34,14 @@ impl Syntax {
     }
 }
 
-/// Loading the syntax and theme dumps isn't free, so it's done once on first use.
+/// The syntax and theme dumps are slow to load, so this is built once on first use.
 struct Engine {
     syntaxes: SyntaxSet,
     highlighter: Highlighter,
     background: Option<Color>,
 }
 
-/// A dark theme, on its own background: readable on any terminal, and close to what the
-/// samples look like in the docs.
+/// A dark theme on its own background: readable on any terminal, close to the docs.
 const THEME: &str = "base16-ocean.dark";
 
 fn engine() -> &'static Engine {
