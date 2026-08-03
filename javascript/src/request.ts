@@ -85,7 +85,8 @@ export function createSvixRequestContext(
   options: SvixRequestContextOptions = {}
 ): SvixRequestContext {
   const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
-  const baseUrl: string = options.serverUrl ?? regionalUrl ?? "https://api.svix.com";
+  const baseUrl: string =
+    options.serverUrl?.replace(/\/+$/, "") ?? regionalUrl ?? "https://api.svix.com";
 
   if (options.retryScheduleInMs) {
     return {
