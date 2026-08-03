@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::sync::Arc;
+
 use chrono::{Duration, Utc};
 use rand::distr::{Alphanumeric, SampleString};
 use reqwest::StatusCode;
@@ -8,6 +10,10 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, sea_query::Expr};
 use serde::de::IgnoredAny;
 use serde_json::json;
 use svix_server::{
+    core::{
+        cryptography::Encryption,
+        types::{BaseId, OrganizationId},
+    },
     db::models::messagecontent,
     expired_message_cleaner,
     v1::{
@@ -26,7 +32,8 @@ fn rand_str(len: usize) -> String {
 use crate::utils::{
     TestReceiver,
     common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
-    run_with_retries, start_svix_server,
+    get_default_test_config, run_with_retries, start_svix_server, start_svix_server_with_cfg,
+    start_svix_server_with_cfg_and_org_id,
 };
 
 #[tokio::test]
@@ -716,4 +723,172 @@ async fn test_create_message_with_application() {
         )
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn test_message_payload_encryption() {
+    let mut cfg = get_default_test_config();
+    cfg.encryption = Encryption::new([1; 32]);
+    cfg.payload_encryption_enabled = true;
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
+
+    let db = svix_server::db::init_db(&Arc::new(cfg)).await;
+
+    let app_id = create_test_app(&client, "msgPayloadEncryption")
+        .await
+        .unwrap()
+        .id;
+
+    let mut receiver = TestReceiver::start(axum::http::StatusCode::OK);
+    let endp_id = create_test_endpoint(&client, &app_id, &receiver.endpoint)
+        .await
+        .unwrap()
+        .id;
+
+    let msg_payload = json!({ "test": "value" });
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in("test.event", msg_payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    // Create response and reads carry the plaintext payload
+    assert_eq!(msg.payload.0.get(), msg_payload.to_string());
+
+    let read: MessageOut = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{}/", msg.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(read.payload.0.get(), msg_payload.to_string());
+
+    let list: ListResponse<MessageOut> = client
+        .get(&format!("api/v1/app/{app_id}/msg/"), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(list.data.len(), 1);
+    assert_eq!(list.data[0].payload.0.get(), msg_payload.to_string());
+
+    // The worker decrypts the payload before dispatching
+    let rec_body = receiver.data_recv.recv().await;
+    assert_eq!(rec_body.unwrap().to_string(), msg_payload.to_string());
+
+    // Resend reads (and validates) the encrypted payload
+    let _: IgnoredAny = client
+        .post(
+            &format!(
+                "api/v1/app/{app_id}/msg/{}/endpoint/{endp_id}/resend/",
+                msg.id
+            ),
+            json!({}),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+    let rec_body = receiver.data_recv.recv().await;
+    assert_eq!(rec_body.unwrap().to_string(), msg_payload.to_string());
+
+    // The payload is encrypted at rest
+    let stored = messagecontent::Entity::find_by_id(msg.id.clone())
+        .one(&db)
+        .await
+        .unwrap()
+        .unwrap()
+        .payload;
+    let clear = msg_payload.to_string().into_bytes();
+    assert!(!stored.starts_with(b"{"));
+    assert_eq!(
+        Encryption::new([1; 32]).decrypt_payload(&stored).unwrap(),
+        clear
+    );
+    assert!(Encryption::new([2; 32]).decrypt_payload(&stored).is_err());
+    assert!(Encryption::new_noop().decrypt_payload(&stored).is_err());
+}
+
+#[tokio::test]
+async fn test_message_payload_encryption_disabled_by_default() {
+    // main_secret set, flag off: payloads must be stored as plaintext
+    let mut cfg = get_default_test_config();
+    cfg.encryption = Encryption::new([1; 32]);
+    let (client, _jh) = start_svix_server_with_cfg(&cfg).await;
+
+    let db = svix_server::db::init_db(&Arc::new(cfg)).await;
+
+    let app_id = create_test_app(&client, "msgPayloadEncDisabled")
+        .await
+        .unwrap()
+        .id;
+
+    let msg_payload = json!({ "test": "value" });
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in("test.event", msg_payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+
+    let stored = messagecontent::Entity::find_by_id(msg.id.clone())
+        .one(&db)
+        .await
+        .unwrap()
+        .unwrap()
+        .payload;
+    assert_eq!(stored, msg_payload.to_string().into_bytes());
+}
+
+#[tokio::test]
+async fn test_message_payload_encryption_plaintext_backward_compat() {
+    let org_id = OrganizationId::new(None, None);
+
+    // Write a message with encryption disabled, so it's stored as plaintext
+    let cfg = get_default_test_config();
+    let (client, jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
+
+    let app_id = create_test_app(&client, "msgPayloadBackwardCompat")
+        .await
+        .unwrap()
+        .id;
+    create_test_endpoint(&client, &app_id, "http://localhost:2/bad/url/")
+        .await
+        .unwrap();
+
+    let msg_payload = json!({ "test": "value" });
+    let msg: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in("test.event", msg_payload.clone()).unwrap(),
+            StatusCode::ACCEPTED,
+        )
+        .await
+        .unwrap();
+    jh.abort();
+
+    // Enable encryption; the plaintext payload must still be readable
+    let mut cfg = get_default_test_config();
+    cfg.encryption = Encryption::new([1; 32]);
+    cfg.payload_encryption_enabled = true;
+    let (client, _jh) = start_svix_server_with_cfg_and_org_id(&cfg, org_id.clone()).await;
+
+    let read: MessageOut = client
+        .get(
+            &format!("api/v1/app/{app_id}/msg/{}/", msg.id),
+            StatusCode::OK,
+        )
+        .await
+        .unwrap();
+    assert_eq!(read.payload.0.get(), msg_payload.to_string());
+
+    let list: ListResponse<MessageOut> = client
+        .get(&format!("api/v1/app/{app_id}/msg/"), StatusCode::OK)
+        .await
+        .unwrap();
+    assert_eq!(list.data.len(), 1);
+    assert_eq!(list.data[0].payload.0.get(), msg_payload.to_string());
 }
