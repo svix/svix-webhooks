@@ -206,14 +206,15 @@ impl<'de> Deserialize<'de> for SenderInputOpts {
             })?;
 
         match type_val {
-            #[cfg(feature = "kafka")]
-            "kafka" => serde_yaml::from_value(value)
-                .map(SenderInputOpts::Kafka)
-                .map_err(serde::de::Error::custom),
-            #[cfg(not(feature = "kafka"))]
-            "kafka" => Err(serde::de::Error::custom(
-                "'kafka' input type requires svix-bridge to be built with the 'kafka' feature enabled",
-            )),
+            "kafka" => cfg_select! {
+                feature = "kafka" => serde_yaml::from_value(value)
+                    .map(SenderInputOpts::Kafka)
+                    .map_err(serde::de::Error::custom),
+                _ => Err(serde::de::Error::custom(
+                    "'kafka' input type requires svix-bridge to be \
+                         built with the 'kafka' feature enabled",
+                )),
+            },
             "rabbitmq" | "redis" | "sqs" | "gcp-pubsub" => serde_yaml::from_value(value)
                 .map(SenderInputOpts::Queue)
                 .map_err(serde::de::Error::custom),
@@ -302,14 +303,15 @@ impl<'de> Deserialize<'de> for ReceiverOutputOpts {
             "http" => serde_yaml::from_value(value)
                 .map(ReceiverOutputOpts::Http)
                 .map_err(serde::de::Error::custom),
-            #[cfg(feature = "kafka")]
-            "kafka" => serde_yaml::from_value(value)
-                .map(ReceiverOutputOpts::Kafka)
-                .map_err(serde::de::Error::custom),
-            #[cfg(not(feature = "kafka"))]
-            "kafka" => Err(serde::de::Error::custom(
-                "'kafka' output type requires svix-bridge to be built with the 'kafka' feature enabled",
-            )),
+            "kafka" => cfg_select! {
+                feature = "kafka" => serde_yaml::from_value(value)
+                    .map(ReceiverOutputOpts::Kafka)
+                    .map_err(serde::de::Error::custom),
+                _ => Err(serde::de::Error::custom(
+                    "'kafka' output type requires svix-bridge to be \
+                        built with the 'kafka' feature enabled",
+                )),
+            },
             "rabbitmq" | "redis" | "sqs" | "gcp-pubsub" => serde_yaml::from_value(value)
                 .map(ReceiverOutputOpts::Queue)
                 .map_err(serde::de::Error::custom),
