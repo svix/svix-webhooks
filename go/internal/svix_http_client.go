@@ -47,6 +47,15 @@ func DefaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 	}
 }
 
+// requestURL joins the client's base URL with a request path.
+//
+// Trailing slashes are stripped from the base URL, so a server URL of
+// `https://api.svix.com/` behaves the same as `https://api.svix.com`. The
+// request path always starts with a slash and is left alone.
+func requestURL(client *SvixHttpClient, path string, pathParams map[string]string) string {
+	return strings.TrimRight(client.BaseURL, "/") + replacePathKeys(path, pathParams)
+}
+
 func ExecuteRequest[ReqBody any, ResBody any](
 	ctx context.Context,
 	client *SvixHttpClient,
@@ -59,7 +68,7 @@ func ExecuteRequest[ReqBody any, ResBody any](
 
 ) (*ResBody, error) {
 
-	urlWithPath := client.BaseURL + replacePathKeys(path, pathParams)
+	urlWithPath := requestURL(client, path, pathParams)
 	urlStr, err := addQueryParams(urlWithPath, queryParams)
 	if err != nil {
 		return nil, err

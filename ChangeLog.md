@@ -10,8 +10,9 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
   * The access token can still be accessed using `svix.token()`, if you were using any of the other fields let us know!
 * Libs/Rust **(Breaking)**: Upgrade public dependency `js_option` to 0.2.0
 * Libs/Kotlin: Add missing APIs background-task, connector, environment, and health
-* Libs/Rust, Libs/JavaScript: Strip trailing slashes from a user-provided server URL, so
-  `https://api.svix.com/` and `https://api.svix.com` behave the same
+* Libs/Rust, Libs/JavaScript, Libs/Python, Libs/Go: Strip trailing slashes from a
+  user-provided server URL, so `https://api.svix.com/` and `https://api.svix.com`
+  behave the same
 
 ## Version 2.0.0-rc.2
 * Libs/JS: Fix a publishing issue

@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"io"
 	"log"
@@ -171,5 +172,93 @@ func Test_executeRequestWithRetries(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func Test_requestURL(t *testing.T) {
+	tests := []struct {
+		name       string
+		baseURL    string
+		path       string
+		pathParams map[string]string
+		expected   string
+	}{
+		{
+			name:     "trailing slash is stripped",
+			baseURL:  "https://api.example.com/",
+			path:     "/api/v1/app",
+			expected: "https://api.example.com/api/v1/app",
+		},
+		{
+			name:     "multiple trailing slashes are stripped",
+			baseURL:  "https://api.example.com///",
+			path:     "/api/v1/app",
+			expected: "https://api.example.com/api/v1/app",
+		},
+		{
+			name:     "a path prefix is kept",
+			baseURL:  "https://api.example.com/prefix/",
+			path:     "/api/v1/app",
+			expected: "https://api.example.com/prefix/api/v1/app",
+		},
+		{
+			name:     "a base URL without a trailing slash is unchanged",
+			baseURL:  "https://api.example.com",
+			path:     "/api/v1/app",
+			expected: "https://api.example.com/api/v1/app",
+		},
+		{
+			name:       "path params are still substituted",
+			baseURL:    "https://api.example.com/",
+			path:       "/api/v1/app/{app_id}/msg",
+			pathParams: map[string]string{"app_id": "app_123"},
+			expected:   "https://api.example.com/api/v1/app/app_123/msg",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			client := &SvixHttpClient{BaseURL: tt.baseURL}
+			got := requestURL(client, tt.path, tt.pathParams)
+			if got != tt.expected {
+				t.Errorf("expected %q, got %q", tt.expected, got)
+			}
+		})
+	}
+}
+
+func Test_executeRequestStripsTrailingSlashFromBaseURL(t *testing.T) {
+	// Given ... a test server that records the path it was asked for
+	var requestedPath string
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestedPath = r.URL.Path
+		w.Header().Set("Content-Type", "application/json")
+		err := json.NewEncoder(w).Encode(models.MessageOut{Id: "msg_123"})
+		if err != nil {
+			t.Errorf("failed to encode json - error: %v", err)
+		}
+	}))
+	defer server.Close()
+
+	// And ... a client whose base URL ends in a slash
+	client := &SvixHttpClient{
+		HTTPClient:     &http.Client{},
+		BaseURL:        server.URL + "/",
+		DefaultHeaders: map[string]string{},
+	}
+
+	// When ... we execute a request
+	_, err := ExecuteRequest[any, models.MessageOut](
+		context.Background(), client, "GET", "/api/v1/app/{app_id}/msg",
+		map[string]string{"app_id": "app_123"}, nil, nil, nil,
+	)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+
+	// Then ... the server sees a single slash between the base URL and the path
+	expected := "/api/v1/app/app_123/msg"
+	if requestedPath != expected {
+		t.Errorf("expected path %q, got %q", expected, requestedPath)
 	}
 }
