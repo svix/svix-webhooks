@@ -32,7 +32,7 @@ use hyper_util::{
     },
     rt::{TokioExecutor, TokioIo},
 };
-use ipnet::IpNet;
+use ipnet::{IpNet, Ipv4Net, Ipv6Net};
 use openssl::ssl::{SslConnector, SslConnectorBuilder, SslMethod, SslVerifyMode};
 use serde::Serialize;
 use thiserror::Error;
@@ -690,58 +690,111 @@ async fn new_resolver() -> Result<TokioResolver, NetError> {
     .unwrap_or_else(|e| std::panic::resume_unwind(e.into_panic()))
 }
 
-fn is_allowed(addr: IpAddr) -> bool {
+pub fn is_allowed(addr: IpAddr) -> bool {
     match addr.to_canonical() {
         IpAddr::V4(addr) => {
-            !addr.is_private()
-                && !addr.is_loopback()
-                && !addr.is_link_local()
-                && !addr.is_broadcast()
-                && !addr.is_documentation()
-                && !is_shared(addr)
-                && !is_reserved(addr)
-                && !is_benchmarking(addr)
-                && !starts_with_zero(addr)
+            !(addr.is_private()
+                || addr.is_loopback()
+                || addr.is_link_local()
+                || addr.is_broadcast()
+                || addr.is_multicast()
+                || addr.is_documentation()
+                || is_shared(addr)
+                || is_reserved(addr)
+                || is_benchmarking(addr)
+                || starts_with_zero(addr))
         }
         IpAddr::V6(addr) => {
-            !addr.is_multicast()
-                && !addr.is_loopback()
-                && !is_unicast_link_local(addr)
-                && !is_unique_local(addr)
-                && !addr.is_unspecified()
-                && !is_documentation_v6(addr)
+            !(addr.is_multicast()
+                || addr.is_loopback()
+                || addr.is_unspecified()
+                || is_unicast_link_local(addr)
+                || is_unique_local(addr)
+                || is_documentation_v6(addr)
+                || is_discard_v6(addr)
+                || is_6to4_or_nat64_v6(addr)
+                || is_srv6(addr))
         }
     }
 }
 
-/// Util functions copied from the unstable standard library near identically
+#[inline(always)]
 fn is_shared(addr: Ipv4Addr) -> bool {
-    addr.octets()[0] == 100 && (addr.octets()[1] & 0b1100_0000 == 0b0100_0000)
+    static CGNAT: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(100, 64, 0, 0), 10);
+
+    CGNAT.contains(&addr)
 }
 
+#[inline(always)]
 fn is_reserved(addr: Ipv4Addr) -> bool {
-    (addr.octets()[0] == 192 && addr.octets()[1] == 0 && addr.octets()[2] == 0)
-        || (addr.octets()[0] & 240 == 240 && !addr.is_broadcast())
+    static IETF_RESERVED_1: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(192, 0, 0, 0), 24);
+    static IETF_RESERVED_2: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(192, 88, 99, 0), 24);
+    static CLASS_E: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(240, 0, 0, 0), 4);
+
+    // note: revisit allowing class E addresses in the future when ipocalypse gets more dire
+
+    IETF_RESERVED_1.contains(&addr) || IETF_RESERVED_2.contains(&addr) || CLASS_E.contains(&addr)
 }
 
+#[inline(always)]
 fn is_benchmarking(addr: Ipv4Addr) -> bool {
-    addr.octets()[0] == 198 && (addr.octets()[1] & 0xfe) == 18
+    static BENCHMARKING: Ipv4Net = Ipv4Net::new_assert(Ipv4Addr::new(198, 18, 0, 0), 15);
+
+    BENCHMARKING.contains(&addr)
 }
 
+#[inline(always)]
 fn starts_with_zero(addr: Ipv4Addr) -> bool {
     addr.octets()[0] == 0
 }
 
+#[inline(always)]
 fn is_unicast_link_local(addr: Ipv6Addr) -> bool {
-    (addr.segments()[0] & 0xffc0) == 0xfe80
+    // technically only fe80::/64 are link-local, but fe80::/10 are all reserved for it
+    static V6_LL: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfe80, 0, 0, 0, 0, 0, 0, 0), 10);
+
+    V6_LL.contains(&addr)
 }
 
+#[inline(always)]
 fn is_unique_local(addr: Ipv6Addr) -> bool {
-    (addr.segments()[0] & 0xfe00) == 0xfc00
+    static ULA: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0xfc00, 0, 0, 0, 0, 0, 0, 0), 7);
+
+    ULA.contains(&addr)
 }
 
+#[inline(always)]
 fn is_documentation_v6(addr: Ipv6Addr) -> bool {
-    (addr.segments()[0] == 0x2001) && (addr.segments()[1] == 0xdb8)
+    static V6_DOCUMENTATION_1: Ipv6Net =
+        Ipv6Net::new_assert(Ipv6Addr::new(0x2001, 0xdb8, 0, 0, 0, 0, 0, 0), 32);
+    static V6_DOCUMENTATION_2: Ipv6Net =
+        Ipv6Net::new_assert(Ipv6Addr::new(0x3fff, 0, 0, 0, 0, 0, 0, 0), 20);
+
+    V6_DOCUMENTATION_1.contains(&addr) || V6_DOCUMENTATION_2.contains(&addr)
+}
+
+#[inline(always)]
+fn is_discard_v6(addr: Ipv6Addr) -> bool {
+    static V6_DISCARD: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x100, 0, 0, 0, 0, 0, 0, 0), 64);
+
+    V6_DISCARD.contains(&addr)
+}
+
+#[inline(always)]
+fn is_6to4_or_nat64_v6(addr: Ipv6Addr) -> bool {
+    static IP6TO4: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x2002, 0, 0, 0, 0, 0, 0, 0), 16);
+    static NAT64: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x64, 0xff9b, 0, 0, 0, 0, 0, 0), 96);
+    static LOCAL_NAT64: Ipv6Net =
+        Ipv6Net::new_assert(Ipv6Addr::new(0x64, 0xff9b, 0x1, 0, 0, 0, 0, 0), 48);
+
+    IP6TO4.contains(&addr) || NAT64.contains(&addr) || LOCAL_NAT64.contains(&addr)
+}
+
+#[inline(always)]
+fn is_srv6(addr: Ipv6Addr) -> bool {
+    static SRV6: Ipv6Net = Ipv6Net::new_assert(Ipv6Addr::new(0x5f00, 0, 0, 0, 0, 0, 0, 0), 16);
+
+    SRV6.contains(&addr)
 }
 
 #[cfg(test)]
@@ -762,35 +815,92 @@ mod tests {
 
     #[test]
     fn is_allowed_test() {
-        // Copied shamelessly from the standard library `is_global` docs
+        // RFC 1918
         assert!(!is_allowed(IpAddr::from([10, 254, 0, 0])));
         assert!(!is_allowed(IpAddr::from([192, 168, 10, 65])));
         assert!(!is_allowed(IpAddr::from([172, 16, 10, 65])));
+        // 0-prefix (mostly unused except for unspec)
         assert!(!is_allowed(IpAddr::from([0, 1, 2, 3])));
+        // unspec
         assert!(!is_allowed(IpAddr::from([0, 0, 0, 0])));
+        // the many faces of loopback
         assert!(!is_allowed(IpAddr::from([127, 0, 0, 1])));
+        assert!(!is_allowed(IpAddr::from([127, 0, 0, 254])));
+        assert!(!is_allowed(IpAddr::from([127, 254, 254, 254])));
+        // link-local
         assert!(!is_allowed(IpAddr::from([169, 254, 45, 1])));
+        // broadcast
         assert!(!is_allowed(IpAddr::from([255, 255, 255, 255])));
-        assert!(!is_allowed(IpAddr::from([192, 0, 2, 255])));
-        assert!(!is_allowed(IpAddr::from([198, 51, 100, 65])));
-        assert!(!is_allowed(IpAddr::from([203, 0, 113, 6])));
-        assert!(!is_allowed(IpAddr::from([100, 100, 0, 0])));
+        // multicast
+        assert!(!is_allowed(IpAddr::from([224, 1, 2, 3])));
+        assert!(!is_allowed(IpAddr::from([233, 252, 0, 16])));
+        // protocol-reserved
         assert!(!is_allowed(IpAddr::from([192, 0, 0, 0])));
         assert!(!is_allowed(IpAddr::from([192, 0, 0, 255])));
-        assert!(!is_allowed(IpAddr::from([250, 10, 20, 30])));
+        // TEST-NET-1
+        assert!(!is_allowed(IpAddr::from([192, 0, 2, 255])));
+        // TEST-NET-2
+        assert!(!is_allowed(IpAddr::from([198, 51, 100, 65])));
+        // TEST-NET-3
+        assert!(!is_allowed(IpAddr::from([203, 0, 113, 6])));
+        // CGNAT
+        assert!(!is_allowed(IpAddr::from([100, 100, 0, 0])));
+        // ipv6-ipv4 relay
+        assert!(!is_allowed(IpAddr::from([192, 88, 99, 3])));
+        // benchmarking
         assert!(!is_allowed(IpAddr::from([198, 18, 0, 0])));
+        // class E
+        assert!(!is_allowed(IpAddr::from([240, 240, 240, 240])));
 
         assert!(is_allowed(IpAddr::from([1, 1, 1, 1])));
+        assert!(is_allowed(IpAddr::from([8, 8, 8, 8])));
 
-        assert!(!is_allowed(IpAddr::from([0, 0, 0, 0, 0, 0, 0, 0x1])));
-
-        assert!(is_allowed(IpAddr::from([0, 0, 0, 0xffff, 0, 0, 0, 0x1])));
+        assert!(!is_allowed("::0".parse::<IpAddr>().unwrap()));
+        assert!(!is_allowed("::1".parse::<IpAddr>().unwrap()));
         assert!(is_allowed(
             "2001:4860:4860::8888".parse::<IpAddr>().unwrap()
         ));
         assert!(is_allowed("::ffff:8.8.8.8".parse::<IpAddr>().unwrap()));
         assert!(!is_allowed("::ffff:127.0.0.1".parse::<IpAddr>().unwrap()));
         assert!(!is_allowed("::ffff:0.0.0.1".parse::<IpAddr>().unwrap()));
+        // documentatiion
+        assert!(!is_allowed("2001:db8::1".parse::<IpAddr>().unwrap()));
+        // documentation
+        assert!(!is_allowed("3fff::dead:beef".parse::<IpAddr>().unwrap()));
+        // link-local
+        assert!(!is_allowed("fe80::dead:beef".parse::<IpAddr>().unwrap()));
+        // from fe80::/10, but not in the link-local space of fe80::/64
+        assert!(!is_allowed(
+            "febf:ffff::dead:beef".parse::<IpAddr>().unwrap()
+        ));
+        // ula
+        assert!(!is_allowed(
+            "fdee:3A45:9057::0001".parse::<IpAddr>().unwrap()
+        ));
+        // tailscale's ULA allocation
+        assert!(!is_allowed("fd7a:115c:a1e0::1".parse::<IpAddr>().unwrap()));
+        // 6to4 encoding of a legitimate IPv4 public address
+        assert!(!is_allowed(
+            "2002:c000:0204::dead:beef".parse::<IpAddr>().unwrap()
+        ));
+        // 6to4 encoding of a IPv4 private address
+        assert!(!is_allowed(
+            "2002:c0a8:0001::dead:beef".parse::<IpAddr>().unwrap()
+        ));
+        // NAT64 encoding of a private address
+        assert!(!is_allowed("64:ff9b::c0a8:0".parse::<IpAddr>().unwrap()));
+        // NAT64 encoding of a public address
+        assert!(!is_allowed("64:ff9b::808:808".parse::<IpAddr>().unwrap()));
+        // NAT64 encoding of a private address
+        assert!(!is_allowed("64:ff9b::c0a8:0000".parse::<IpAddr>().unwrap()));
+        // SRv6
+        assert!(!is_allowed("5f00::dead:beef".parse::<IpAddr>().unwrap()));
+        // local NAT
+        assert!(!is_allowed(
+            "64:ff9b:1::dead:beef".parse::<IpAddr>().unwrap()
+        ));
+        // discard address
+        assert!(!is_allowed("100::1:2:3:4".parse::<IpAddr>().unwrap()));
     }
 
     #[test]
