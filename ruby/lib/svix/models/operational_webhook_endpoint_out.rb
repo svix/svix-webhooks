@@ -70,16 +70,16 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) unless @throttle_rate.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["disabled"] = Svix::serialize_primitive(@disabled) unless @disabled.nil?
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out
     end
 

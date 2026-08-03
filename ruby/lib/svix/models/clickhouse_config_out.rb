@@ -39,10 +39,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["username"] = Svix::serialize_primitive(@username) if @username
-      out["database"] = Svix::serialize_primitive(@database) if @database
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["username"] = Svix::serialize_primitive(@username) unless @username.nil?
+      out["database"] = Svix::serialize_primitive(@database) unless @database.nil?
+      out["tableName"] = Svix::serialize_primitive(@table_name) unless @table_name.nil?
       out
     end
 

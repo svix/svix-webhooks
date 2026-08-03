@@ -36,7 +36,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["bucket"] = Svix::serialize_primitive(@bucket) if @bucket
+      out["bucket"] = Svix::serialize_primitive(@bucket) unless @bucket.nil?
       out
     end
 

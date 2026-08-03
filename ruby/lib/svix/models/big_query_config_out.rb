@@ -37,9 +37,9 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["projectId"] = Svix::serialize_primitive(@project_id) if @project_id
-      out["datasetId"] = Svix::serialize_primitive(@dataset_id) if @dataset_id
-      out["tableId"] = Svix::serialize_primitive(@table_id) if @table_id
+      out["projectId"] = Svix::serialize_primitive(@project_id) unless @project_id.nil?
+      out["datasetId"] = Svix::serialize_primitive(@dataset_id) unless @dataset_id.nil?
+      out["tableId"] = Svix::serialize_primitive(@table_id) unless @table_id.nil?
       out
     end
 

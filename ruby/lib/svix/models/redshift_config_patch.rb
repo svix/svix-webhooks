@@ -52,12 +52,12 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
+      out["dbName"] = Svix::serialize_primitive(@db_name) unless @db_name.nil?
       out["schemaName"] = Svix::serialize_primitive(@schema_name) if @__schema_name_is_defined
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
+      out["tableName"] = Svix::serialize_primitive(@table_name) unless @table_name.nil?
       out
     end
 

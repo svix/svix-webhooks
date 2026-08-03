@@ -72,18 +72,18 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["response"] = Svix::serialize_primitive(@response) if @response
-      out["responseStatusCode"] = Svix::serialize_primitive(@response_status_code) if @response_status_code
-      out["responseDurationMs"] = Svix::serialize_primitive(@response_duration_ms) if @response_duration_ms
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
-      out["triggerType"] = Svix::serialize_schema_ref(@trigger_type) if @trigger_type
-      out["msgId"] = Svix::serialize_primitive(@msg_id) if @msg_id
-      out["endpointId"] = Svix::serialize_primitive(@endpoint_id) if @endpoint_id
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
-      out["msg"] = Svix::serialize_schema_ref(@msg) if @msg
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["response"] = Svix::serialize_primitive(@response) unless @response.nil?
+      out["responseStatusCode"] = Svix::serialize_primitive(@response_status_code) unless @response_status_code.nil?
+      out["responseDurationMs"] = Svix::serialize_primitive(@response_duration_ms) unless @response_duration_ms.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["statusText"] = Svix::serialize_schema_ref(@status_text) unless @status_text.nil?
+      out["triggerType"] = Svix::serialize_schema_ref(@trigger_type) unless @trigger_type.nil?
+      out["msgId"] = Svix::serialize_primitive(@msg_id) unless @msg_id.nil?
+      out["endpointId"] = Svix::serialize_primitive(@endpoint_id) unless @endpoint_id.nil?
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["timestamp"] = Svix::serialize_primitive(@timestamp) unless @timestamp.nil?
+      out["msg"] = Svix::serialize_schema_ref(@msg) unless @msg.nil?
       out
     end
 

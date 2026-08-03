@@ -58,13 +58,13 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["bucket"] = Svix::serialize_primitive(@bucket) if @bucket
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
-      out["roleArn"] = Svix::serialize_primitive(@role_arn) if @role_arn
-      out["externalId"] = Svix::serialize_primitive(@external_id) if @external_id
+      out["bucket"] = Svix::serialize_primitive(@bucket) unless @bucket.nil?
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
+      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) unless @endpoint_url.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
       out
     end
 

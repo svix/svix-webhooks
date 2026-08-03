@@ -45,8 +45,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["key"] = Svix::serialize_primitive(@key) if @key
-      out["gracePeriodSeconds"] = Svix::serialize_primitive(@grace_period_seconds) if @grace_period_seconds
+      out["key"] = Svix::serialize_primitive(@key) unless @key.nil?
+      out["gracePeriodSeconds"] = Svix::serialize_primitive(@grace_period_seconds) unless @grace_period_seconds.nil?
       out
     end
 

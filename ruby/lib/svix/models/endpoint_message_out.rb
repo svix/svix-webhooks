@@ -70,17 +70,17 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
-      out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
-      out["eventId"] = Svix::serialize_primitive(@event_id) if @event_id
-      out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
-      out["payload"] = Svix::serialize_primitive(@payload) if @payload
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["timestamp"] = Svix::serialize_primitive(@timestamp) if @timestamp
-      out["tags"] = Svix::serialize_primitive(@tags) if @tags
-      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) if @deliver_at
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["statusText"] = Svix::serialize_schema_ref(@status_text) unless @status_text.nil?
+      out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) unless @next_attempt.nil?
+      out["eventId"] = Svix::serialize_primitive(@event_id) unless @event_id.nil?
+      out["eventType"] = Svix::serialize_primitive(@event_type) unless @event_type.nil?
+      out["payload"] = Svix::serialize_primitive(@payload) unless @payload.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["timestamp"] = Svix::serialize_primitive(@timestamp) unless @timestamp.nil?
+      out["tags"] = Svix::serialize_primitive(@tags) unless @tags.nil?
+      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) unless @deliver_at.nil?
       out
     end
 

@@ -65,16 +65,16 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["archived"] = Svix::serialize_primitive(@archived) if @archived
-      out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
-      out["schemas"] = Svix::serialize_primitive(@schemas) if @schemas
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      out["groupName"] = Svix::serialize_primitive(@group_name) if @group_name
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["featureFlag"] = Svix::serialize_primitive(@feature_flag) if @feature_flag
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
+      out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
+      out["schemas"] = Svix::serialize_primitive(@schemas) unless @schemas.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["groupName"] = Svix::serialize_primitive(@group_name) unless @group_name.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["featureFlag"] = Svix::serialize_primitive(@feature_flag) unless @feature_flag.nil?
       out
     end
 

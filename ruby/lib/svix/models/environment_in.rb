@@ -43,9 +43,9 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["eventTypes"] = @event_types.map { |v| v.serialize } if @event_types
-      out["settings"] = Svix::serialize_primitive(@settings) if @settings
-      out["connectors"] = @connectors.map { |v| v.serialize } if @connectors
+      out["eventTypes"] = @event_types.map { |v| v.serialize } unless @event_types.nil?
+      out["settings"] = Svix::serialize_primitive(@settings) unless @settings.nil?
+      out["connectors"] = @connectors.map { |v| v.serialize } unless @connectors.nil?
       out
     end
 

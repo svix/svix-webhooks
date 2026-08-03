@@ -200,19 +200,19 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["currentIterator"] = Svix::serialize_primitive(@current_iterator) if @current_iterator
-      out["failureReason"] = Svix::serialize_primitive(@failure_reason) if @failure_reason
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
-      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) if @next_retry_at
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["currentIterator"] = Svix::serialize_primitive(@current_iterator) unless @current_iterator.nil?
+      out["failureReason"] = Svix::serialize_primitive(@failure_reason) unless @failure_reason.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["batchSize"] = Svix::serialize_primitive(@batch_size) unless @batch_size.nil?
+      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) unless @max_wait_secs.nil?
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) unless @next_retry_at.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

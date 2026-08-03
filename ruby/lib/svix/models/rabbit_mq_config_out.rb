@@ -33,7 +33,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["routingKey"] = Svix::serialize_primitive(@routing_key) if @routing_key
+      out["routingKey"] = Svix::serialize_primitive(@routing_key) unless @routing_key.nil?
       out
     end
 

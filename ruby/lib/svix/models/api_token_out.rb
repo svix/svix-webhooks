@@ -43,12 +43,12 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["token"] = Svix::serialize_primitive(@token) if @token
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["expiresAt"] = Svix::serialize_primitive(@expires_at) if @expires_at
-      out["scopes"] = Svix::serialize_primitive(@scopes) if @scopes
+      out["token"] = Svix::serialize_primitive(@token) unless @token.nil?
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["expiresAt"] = Svix::serialize_primitive(@expires_at) unless @expires_at.nil?
+      out["scopes"] = Svix::serialize_primitive(@scopes) unless @scopes.nil?
       out
     end
 

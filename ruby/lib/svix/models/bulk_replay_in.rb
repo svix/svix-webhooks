@@ -48,13 +48,13 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["since"] = Svix::serialize_primitive(@since) if @since
-      out["until"] = Svix::serialize_primitive(@until) if @until
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["channel"] = Svix::serialize_primitive(@channel) if @channel
-      out["tag"] = Svix::serialize_primitive(@tag) if @tag
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["statusCodeClass"] = Svix::serialize_schema_ref(@status_code_class) if @status_code_class
+      out["since"] = Svix::serialize_primitive(@since) unless @since.nil?
+      out["until"] = Svix::serialize_primitive(@until) unless @until.nil?
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["channel"] = Svix::serialize_primitive(@channel) unless @channel.nil?
+      out["tag"] = Svix::serialize_primitive(@tag) unless @tag.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["statusCodeClass"] = Svix::serialize_schema_ref(@status_code_class) unless @status_code_class.nil?
       out
     end
 

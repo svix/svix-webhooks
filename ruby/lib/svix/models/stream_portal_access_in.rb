@@ -44,9 +44,9 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["sessionId"] = Svix::serialize_primitive(@session_id) if @session_id
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["sessionId"] = Svix::serialize_primitive(@session_id) unless @session_id.nil?
       out
     end
 

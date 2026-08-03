@@ -42,10 +42,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["data"] = @data.map { |v| v.serialize } if @data
-      out["iterator"] = Svix::serialize_primitive(@iterator) if @iterator
-      out["prevIterator"] = Svix::serialize_primitive(@prev_iterator) if @prev_iterator
-      out["done"] = Svix::serialize_primitive(@done) if @done
+      out["data"] = @data.map { |v| v.serialize } unless @data.nil?
+      out["iterator"] = Svix::serialize_primitive(@iterator) unless @iterator.nil?
+      out["prevIterator"] = Svix::serialize_primitive(@prev_iterator) unless @prev_iterator.nil?
+      out["done"] = Svix::serialize_primitive(@done) unless @done.nil?
       out
     end
 

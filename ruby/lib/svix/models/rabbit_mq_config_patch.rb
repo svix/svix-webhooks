@@ -35,8 +35,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["routingKey"] = Svix::serialize_primitive(@routing_key) if @routing_key
-      out["uri"] = Svix::serialize_primitive(@uri) if @uri
+      out["routingKey"] = Svix::serialize_primitive(@routing_key) unless @routing_key.nil?
+      out["uri"] = Svix::serialize_primitive(@uri) unless @uri.nil?
       out
     end
 

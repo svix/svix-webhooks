@@ -184,13 +184,13 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
-      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["batchSize"] = Svix::serialize_primitive(@batch_size) unless @batch_size.nil?
+      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) unless @max_wait_secs.nil?
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out
