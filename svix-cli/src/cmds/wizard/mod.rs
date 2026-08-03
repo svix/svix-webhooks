@@ -149,7 +149,10 @@ fn install_skill(skill: &'static str, scope: SkillScope) -> anyhow::Result<()> {
 /// without spilling the whole installer log into the UI.
 fn last_lines(stream: &[u8], count: usize) -> String {
     let text = String::from_utf8_lossy(stream);
-    let lines: Vec<_> = text.lines().filter(|line| !line.trim().is_empty()).collect();
+    let lines: Vec<_> = text
+        .lines()
+        .filter(|line| !line.trim().is_empty())
+        .collect();
     let start = lines.len().saturating_sub(count);
 
     lines[start..].join("\n")
@@ -169,10 +172,6 @@ fn generate_token(len: usize) -> String {
     (0..len)
         .map(|_| BASE62[rng.random_range(0..BASE62.len())] as char)
         .collect()
-}
-
-fn generate_play_token() -> String {
-    generate_token(PLAY_TOKEN_LEN)
 }
 
 /// The application the quickstart creates. The uid gets a random suffix so repeated runs
@@ -214,7 +213,7 @@ async fn create_application(client: &Svix, msg: &SampleMessage) -> anyhow::Resul
 
     // The dashboard onboarding adds this endpoint for you too, so there's something to
     // deliver to before the user has an endpoint of their own.
-    let play_token = generate_play_token();
+    let play_token = generate_token(PLAY_TOKEN_LEN);
     let (endpoint, channel) = create_play_endpoint(client, &app.id, &play_token, msg).await?;
 
     Ok(Quickstart {
@@ -287,12 +286,8 @@ struct SampleMessage {
     payload: serde_json::Value,
 }
 
-/// Fallbacks matching the dashboard onboarding when the account has no event types yet.
+/// Fallback matching the dashboard onboarding when the account has no event types yet.
 const DEFAULT_EVENT_TYPE: &str = "invoice.paid";
-
-fn default_payload() -> serde_json::Value {
-    serde_json::json!({ "id": "invoice_WF7WtC", "status": "paid", "attempt": 1 })
-}
 
 /// Picks the message to send: the account's first event type if it has one, otherwise
 /// `invoice.paid`, which is created here so the endpoint can filter on it.
@@ -308,15 +303,10 @@ async fn sample_message(client: &Svix) -> anyhow::Result<SampleMessage> {
     let event_type = match existing {
         Some(event_type) => event_type,
         None => {
-            let event_type_in = EventTypeIn {
-                name: DEFAULT_EVENT_TYPE.to_owned(),
-                description: "An invoice was paid".to_owned(),
-                schemas: None,
-                archived: None,
-                deprecated: None,
-                feature_flags: None,
-                group_name: None,
-            };
+            let event_type_in = EventTypeIn::new(
+                DEFAULT_EVENT_TYPE.to_owned(),
+                "An invoice was paid".to_owned(),
+            );
             client
                 .event_type()
                 .create(event_type_in, None)
@@ -331,7 +321,7 @@ async fn sample_message(client: &Svix) -> anyhow::Result<SampleMessage> {
 
     Ok(SampleMessage {
         event_type,
-        payload: default_payload(),
+        payload: serde_json::json!({ "id": "invoice_WF7WtC", "status": "paid", "attempt": 1 }),
     })
 }
 
