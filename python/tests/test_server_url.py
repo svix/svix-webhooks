@@ -30,8 +30,9 @@ def test_async_client_normalizes_server_url() -> None:
     assert svx._client.base_url == "https://api.example.com"
 
 
-def test_request_url_has_no_double_slash(httpx_mock) -> None:
-    svx = Svix("token", SvixOptions(server_url="https://api.example.test/"))
+def request_url(httpx_mock, server_url: str) -> str:
+    """Send a request through a client built with `server_url`, return the URL hit."""
+    svx = Svix("token", SvixOptions(server_url=server_url))
     httpx_mock.add_response(
         json={
             "data": [],
@@ -41,4 +42,18 @@ def test_request_url_has_no_double_slash(httpx_mock) -> None:
         },
     )
     svx.application.list()
-    assert str(httpx_mock.get_request().url) == "https://api.example.test/api/v1/app"
+    return str(httpx_mock.get_request().url)
+
+
+def test_request_url_has_no_double_slash(httpx_mock) -> None:
+    assert (
+        request_url(httpx_mock, "https://api.example.test/")
+        == "https://api.example.test/api/v1/app"
+    )
+
+
+def test_request_url_keeps_path_prefix(httpx_mock) -> None:
+    assert (
+        request_url(httpx_mock, "https://api.example.test/prefix/")
+        == "https://api.example.test/prefix/api/v1/app"
+    )
