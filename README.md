@@ -360,8 +360,8 @@ curl -X 'POST' \
   -d '{
         "url": "https://operational-webhook-destination.com/webhook/",
         "filterTypes": [
-          “endpoint.updated”,
-          “endpoint.deleted”
+          "endpoint.updated",
+          "endpoint.deleted"
         ],
     }'
 ```
