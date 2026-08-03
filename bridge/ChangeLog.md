@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.100.0
 * Add an opt-in Kafka record envelope for JSON transformations
 * Allow configuring Kafka consumer `auto.offset.reset`
 * Add an optional Kafka idempotency namespace for independent sources
