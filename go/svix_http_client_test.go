@@ -303,3 +303,75 @@ func TestClientProvidedIdempotencyKeyIsNotOverridden(t *testing.T) {
 		t.Errorf("Expected 1 request, got %v", httpmock.GetTotalCallCount())
 	}
 }
+
+func TestServerUrlTrailingSlashIsStripped(t *testing.T) {
+	serverUrl, err := url.Parse("http://testapi.test/")
+	if err != nil {
+		t.Fatalf("failed to parse url: %v", err)
+	}
+	svx, err := svix.New("randomToken", &svix.SvixOptions{
+		ServerUrl:  serverUrl,
+		HTTPClient: http.DefaultClient,
+	})
+	if err != nil {
+		t.Fatalf("failed to construct client: %v", err)
+	}
+
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	var requestedPath string
+
+	// Matches both the correct path and the double-slash one, so a regression
+	// fails on the assertion below rather than on a missing responder.
+	httpmock.RegisterResponder("GET", `=~^http://testapi\.test/+api/v1/app$`,
+		func(r *http.Request) (*http.Response, error) {
+			requestedPath = r.URL.Path
+			return httpmock.NewStringResponse(200, appListOut), nil
+		},
+	)
+
+	_, err = svx.Application().List(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+
+	if requestedPath != "/api/v1/app" {
+		t.Errorf("Expected path `/api/v1/app` got `%s`", requestedPath)
+	}
+}
+
+func TestDefaultAndRegionalServerUrlsAreUsedAsIs(t *testing.T) {
+	tests := []struct {
+		name     string
+		token    string
+		expected string
+	}{
+		{name: "default", token: "randomToken", expected: "https://api.svix.com/api/v1/app"},
+		{name: "regional", token: "testsk.eu", expected: "https://api.eu.svix.com/api/v1/app"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			svx, err := svix.New(tt.token, &svix.SvixOptions{HTTPClient: http.DefaultClient})
+			if err != nil {
+				t.Fatalf("failed to construct client: %v", err)
+			}
+
+			httpmock.Activate()
+			defer httpmock.DeactivateAndReset()
+
+			var requestedURL string
+			httpmock.RegisterNoResponder(func(r *http.Request) (*http.Response, error) {
+				requestedURL = r.URL.String()
+				return httpmock.NewStringResponse(200, appListOut), nil
+			})
+
+			if _, err := svx.Application().List(context.Background(), nil); err != nil {
+				t.Fatalf("request failed: %v", err)
+			}
+			if requestedURL != tt.expected {
+				t.Errorf("Expected %q got %q", tt.expected, requestedURL)
+			}
+		})
+	}
+}
