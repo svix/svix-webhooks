@@ -14,6 +14,7 @@ RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,
         shadow~4 \
         git~2
 EOF
+
 RUN cargo install --locked cargo-sbom@0.10.0
 
 RUN <<EOF
@@ -29,9 +30,11 @@ WORKDIR /app/svix-cli
 COPY rust /app/rust
 COPY svix-cli /app/svix-cli
 
-RUN cargo build --release
-RUN cargo sbom > /app/svix-cli.spdx
-RUN strip target/release/svix
+RUN <<EOF
+    cargo build --release
+    cargo sbom > /app/svix-cli.spdx
+    strip target/release/svix
+EOF
 
 # ensure that the check-deps.sh script never ends up in the real image
 FROM alpine:3.24 AS checker
@@ -50,8 +53,8 @@ EOF
 
 RUN <<EOF
     mkdir -p /app
-    addgroup -S appgroup
-    adduser -G appgroup -S appuser
+    addgroup -S -g 1000 appgroup
+    adduser -G appgroup -S -u 1000 appuser
     chown -R appuser:appgroup /app
     mkdir -p /home/appuser
     chown -R appuser:appgroup /home/appuser
@@ -73,6 +76,6 @@ LABEL org.opencontainers.image.authors="support@svix.com" \
       org.opencontainers.image.base.name="cgr.dev/chainguard/wolfi-base" \
       org.opencontainers.image.source=""
 
-USER appuser:appgroup
+USER 1000:1000
 
 CMD ["/usr/local/bin/svix"]
