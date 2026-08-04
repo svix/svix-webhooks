@@ -137,31 +137,6 @@ fn fit(line: Line<'static>, width: usize) -> Line<'static> {
     Line::from(spans)
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn long_code_lines_wrap_inside_the_box_instead_of_truncating() {
-        let code = "https://api.svix.com/api/v1/auth/app-portal-access/app_2abc123def456ghi789";
-        let lines = sample("cURL", Syntax::Shell, code, 40);
-
-        let rendered: String = lines
-            .iter()
-            .flat_map(|line| line.spans.iter().map(|span| span.content.as_ref()))
-            .collect();
-        assert!(!rendered.contains('…'), "nothing is cut off:\n{rendered}");
-        assert!(
-            rendered.replace(' ', "").contains("app_2abc123def456ghi789"),
-            "the end of the long line is still there:\n{rendered}"
-        );
-        assert!(
-            lines.len() > 3,
-            "the long line takes more than one row: {lines:#?}"
-        );
-    }
-}
-
 /// Copies `text` through the terminal itself with OSC 52, which keeps working over SSH,
 /// where a clipboard library would reach for the wrong machine's clipboard.
 pub(super) fn copy_to_clipboard(text: &str) -> std::io::Result<()> {
@@ -179,4 +154,31 @@ pub(super) fn copy_to_clipboard(text: &str) -> std::io::Result<()> {
     let mut stdout = std::io::stdout();
     stdout.write_all(sequence.as_bytes())?;
     stdout.flush()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn long_code_lines_wrap_inside_the_box_instead_of_truncating() {
+        let code = "https://api.svix.com/api/v1/auth/app-portal-access/app_2abc123def456ghi789";
+        let lines = sample("cURL", Syntax::Shell, code, 40);
+
+        let rendered: String = lines
+            .iter()
+            .flat_map(|line| line.spans.iter().map(|span| span.content.as_ref()))
+            .collect();
+        assert!(!rendered.contains('…'), "nothing is cut off:\n{rendered}");
+        assert!(
+            rendered
+                .replace(' ', "")
+                .contains("app_2abc123def456ghi789"),
+            "the end of the long line is still there:\n{rendered}"
+        );
+        assert!(
+            lines.len() > 3,
+            "the long line takes more than one row: {lines:#?}"
+        );
+    }
 }

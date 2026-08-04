@@ -598,7 +598,7 @@ impl App {
         };
 
         self.status = Some(match open::that(&url) {
-            Ok(()) => format!("Opened"),
+            Ok(()) => "Opened".to_owned(),
             Err(e) => format!("Couldn't open a browser ({e}). Copy the URL above instead."),
         });
     }

@@ -11,7 +11,7 @@ use ratatui::{
 use super::{
     widgets::{choices, field, prose, sample, DIM, HEADING, VALUE},
     App, Auth, Step, AUTH_CHOICES, INSTALL_CHOICES, LANGUAGE_NAMES, MODE_CHOICES, SCOPE_CHOICES,
-    STEPS
+    STEPS,
 };
 use crate::cmds::wizard::{highlight::Syntax, QuickstartMode, SKILL_NAMES};
 
@@ -289,7 +289,10 @@ impl App {
             lines.push(Line::from(""));
             let language = self.language();
             if language.syntax != Syntax::Shell {
-                lines.push(Line::from(format!("Install the Svix library first: {}", language.install)));
+                lines.push(Line::from(format!(
+                    "Install the Svix library first: {}",
+                    language.install
+                )));
                 lines.push(Line::from(""));
             }
             if let Some((title, syntax, text)) = self.sample_text() {
