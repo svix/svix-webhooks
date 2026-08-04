@@ -28,7 +28,6 @@ use super::{
 use crate::{
     cmds::login::{self, DashboardLogin},
     config::Config,
-    BIN_NAME,
 };
 
 /// Runs the quickstart UI. The agent path only counts once its questions are answered:
@@ -39,7 +38,6 @@ pub(super) async fn run() -> anyhow::Result<Outcome> {
     ratatui::restore();
 
     let app = result?;
-    app.print_summary();
 
     Ok(app.outcome())
 }
@@ -97,7 +95,7 @@ impl Action {
         match self {
             Self::StartLogin => "Starting the login...",
             Self::SaveToken => "Saving your token...",
-            Self::Prepare => "Creating the application and its example endpoint...",
+            Self::Prepare => "Creating the application...",
             Self::Send => "Sending the message...",
             Self::Portal => "Generating an app portal link...",
             Self::InstallSkills => "Running the install...",
@@ -274,6 +272,9 @@ impl App {
                 let message = sample_message(&client).await?;
                 self.quickstart = Some(create_application(&client, &message).await?);
                 self.message = Some(message);
+                // Straight on to the send step, which shows the code for the new app.
+                self.step = (self.step + 1).min(STEPS.len() - 1);
+                self.scroll = 0;
             }
             Action::Send => {
                 let (Some(client), Some(qs), Some(msg)) =
@@ -282,8 +283,11 @@ impl App {
                     return Ok(());
                 };
                 let sent = send_message(&client, qs, msg).await?;
-                self.status = Some(format!("Sent message {}", sent.id));
+                self.status = None;
                 self.sent = Some(sent.id);
+                // Straight on to the portal step.
+                self.step = (self.step + 1).min(STEPS.len() - 1);
+                self.scroll = 0;
             }
             Action::Portal => {
                 let (Some(client), Some(qs)) = (self.client.clone(), &self.quickstart) else {
@@ -482,7 +486,7 @@ impl App {
         match self.step() {
             Step::Auth if !matches!(self.auth, Auth::Done) => Some("Log in before continuing."),
             Step::Application if self.quickstart.is_none() => {
-                Some("The application is still being created.")
+                Some("The application hasn't been created yet.")
             }
             Step::Send if self.sent.is_none() => Some(UNLOCK_HINT),
             _ => None,
@@ -544,8 +548,16 @@ impl App {
                 }
                 return;
             }
+            Step::Application if self.quickstart.is_none() && self.client.is_some() => {
+                self.pending = Some(Action::Prepare);
+                return;
+            }
             Step::Send if self.sent.is_none() && self.quickstart.is_some() => {
                 self.pending = Some(Action::Send);
+                return;
+            }
+            Step::Portal if self.portal.is_none() && self.quickstart.is_some() => {
+                self.pending = Some(Action::Portal);
                 return;
             }
             Step::Done => {
@@ -562,17 +574,6 @@ impl App {
 
         self.step = (self.step + 1).min(STEPS.len() - 1);
         self.scroll = 0;
-
-        // Each step generates what it needs when reached; the message only on request.
-        match self.step() {
-            Step::Application if self.quickstart.is_none() && self.client.is_some() => {
-                self.pending = Some(Action::Prepare);
-            }
-            Step::Portal if self.portal.is_none() && self.quickstart.is_some() => {
-                self.pending = Some(Action::Portal);
-            }
-            _ => {}
-        }
     }
 
     /// Re-runs whatever the current step needs, for when a call failed.
@@ -597,7 +598,7 @@ impl App {
         };
 
         self.status = Some(match open::that(&url) {
-            Ok(()) => format!("Opened {url}"),
+            Ok(()) => format!("Opened"),
             Err(e) => format!("Couldn't open a browser ({e}). Copy the URL above instead."),
         });
     }
@@ -608,20 +609,25 @@ impl App {
         let language = self.language();
 
         match self.step() {
-            Step::Application => {
+            Step::Application => match (self.quickstart.as_ref(), self.message.as_ref()) {
+                (Some(qs), Some(msg)) => Some((
+                    language.name,
+                    language.syntax,
+                    (language.snippet)(&qs.app.id, msg, server_url),
+                )),
+                // Before the application exists, show the code that would create it.
+                _ => Some((
+                    language.name,
+                    language.syntax,
+                    (language.create_app)(server_url),
+                )),
+            },
+            Step::Send => {
                 let (qs, msg) = (self.quickstart.as_ref()?, self.message.as_ref()?);
                 Some((
                     language.name,
                     language.syntax,
                     (language.snippet)(&qs.app.id, msg, server_url),
-                ))
-            }
-            Step::Send => {
-                let msg = self.message.as_ref()?;
-                Some((
-                    "Payload",
-                    Syntax::Json,
-                    serde_json::to_string_pretty(&msg.payload).ok()?,
                 ))
             }
             Step::Portal => {
@@ -666,34 +672,6 @@ impl App {
             }
             _ => Outcome::Manual,
         }
-    }
-
-    /// Reprints the ids and URLs, since the alternate screen took them with it.
-    fn print_summary(&self) {
-        let Some(qs) = &self.quickstart else {
-            return;
-        };
-
-        println!("Quickstart summary:");
-        println!("  Application:  {} ({})", qs.app.name, qs.app.id);
-        if let Some(uid) = &qs.app.uid {
-            println!("  Uid:          {uid}");
-        }
-        println!("  Endpoint:     {} -> {}", qs.endpoint.id, qs.endpoint.url);
-        println!("  Play inbox:   {}", qs.play_view_url);
-        if let Some(id) = &self.sent {
-            println!("  Message sent: {id}");
-        }
-        if let Some(url) = &self.portal {
-            println!("  App portal:   {url}");
-        }
-
-        println!("\nFrom here you can:");
-        println!("  - Add more event types:  `{BIN_NAME} event-type create {{...}}`");
-        println!(
-            "  - Forward webhooks to a local server:  `{BIN_NAME} listen http://localhost:8000/webhook`"
-        );
-        println!("  - Read the docs:  https://docs.svix.com\n");
     }
 }
 
@@ -873,19 +851,17 @@ mod tests {
         // Then the language, which is just a list to pick from.
         app.on_key(KeyEvent::from(KeyCode::Enter));
         assert_eq!(app.step, 3);
-        app.pending = None;
-
-        // The application step waits until the application exists.
-        app.on_key(KeyEvent::from(KeyCode::Enter));
-        assert_eq!(
-            app.step, 3,
-            "can't move on while the application is pending"
-        );
         assert!(
-            app.status.is_some(),
-            "and the wizard says what it's waiting for"
+            app.pending.is_none(),
+            "reaching the application step creates nothing by itself"
         );
 
+        // Enter creates the application rather than moving on.
+        app.on_key(KeyEvent::from(KeyCode::Enter));
+        assert_eq!(app.step, 3, "can't move on before the application exists");
+        assert!(matches!(app.pending, Some(Action::Prepare)));
+
+        app.pending = None;
         app.quickstart = Some(quickstart());
         app.on_key(KeyEvent::from(KeyCode::Enter));
         assert_eq!(app.step, 4);

@@ -44,10 +44,14 @@ pub(super) fn choices(options: &[&'static str], selected: usize) -> Vec<Line<'st
         .collect()
 }
 
+/// Spaces between the box edges and the code.
+const PADDING: usize = 2;
+
 /// A highlighted code sample, drawn as text so it scrolls with everything else. No side
 /// borders: selecting the sample with the mouse then picks up the code alone.
 pub(super) fn sample(title: &str, syntax: Syntax, text: &str, width: u16) -> Vec<Line<'static>> {
     let width = (width as usize).max(8);
+    let inner = width - 2 * PADDING;
     let rule = background().add_modifier(Modifier::DIM);
 
     let heading = format!("─ {title} ");
@@ -62,10 +66,44 @@ pub(super) fn sample(title: &str, syntax: Syntax, text: &str, width: u16) -> Vec
     lines.extend(
         highlight(syntax, text)
             .into_iter()
-            .map(|line| fit(line, width).style(background())),
+            .flat_map(|line| wrap(line, inner))
+            .map(|line| {
+                let mut spans = vec![Span::raw(" ".repeat(PADDING))];
+                spans.extend(fit(line, inner).spans);
+                spans.push(Span::raw(" ".repeat(PADDING)));
+                Line::from(spans).style(background())
+            }),
     );
 
     lines.push(Line::styled("─".repeat(width), rule));
+
+    lines
+}
+
+/// Breaks a styled line into chunks at most `width` cells wide, keeping the spans'
+/// styles, so long code lines wrap inside the box instead of being cut off.
+fn wrap(line: Line<'static>, width: usize) -> Vec<Line<'static>> {
+    let mut lines = Vec::new();
+    let mut current: Vec<Span> = Vec::new();
+    let mut used = 0;
+
+    for span in line.spans {
+        let mut content = span.content.to_string();
+        while !content.is_empty() {
+            let taken: String = content.chars().take(width - used).collect();
+            content = content.chars().skip(taken.chars().count()).collect();
+            used += taken.chars().count();
+            current.push(Span::styled(taken, span.style));
+
+            if used == width {
+                lines.push(Line::from(std::mem::take(&mut current)));
+                used = 0;
+            }
+        }
+    }
+    if !current.is_empty() || lines.is_empty() {
+        lines.push(Line::from(current));
+    }
 
     lines
 }
@@ -97,6 +135,31 @@ fn fit(line: Line<'static>, width: usize) -> Line<'static> {
     }
 
     Line::from(spans)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn long_code_lines_wrap_inside_the_box_instead_of_truncating() {
+        let code = "https://api.svix.com/api/v1/auth/app-portal-access/app_2abc123def456ghi789";
+        let lines = sample("cURL", Syntax::Shell, code, 40);
+
+        let rendered: String = lines
+            .iter()
+            .flat_map(|line| line.spans.iter().map(|span| span.content.as_ref()))
+            .collect();
+        assert!(!rendered.contains('…'), "nothing is cut off:\n{rendered}");
+        assert!(
+            rendered.replace(' ', "").contains("app_2abc123def456ghi789"),
+            "the end of the long line is still there:\n{rendered}"
+        );
+        assert!(
+            lines.len() > 3,
+            "the long line takes more than one row: {lines:#?}"
+        );
+    }
 }
 
 /// Copies `text` through the terminal itself with OSC 52, which keeps working over SSH,

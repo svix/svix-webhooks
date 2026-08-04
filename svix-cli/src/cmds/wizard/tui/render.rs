@@ -11,15 +11,9 @@ use ratatui::{
 use super::{
     widgets::{choices, field, prose, sample, DIM, HEADING, VALUE},
     App, Auth, Step, AUTH_CHOICES, INSTALL_CHOICES, LANGUAGE_NAMES, MODE_CHOICES, SCOPE_CHOICES,
-    STEPS, UNLOCK_HINT,
+    STEPS
 };
-use crate::{
-    cmds::wizard::{
-        highlight::{highlight, Syntax},
-        QuickstartMode, SKILL_NAMES,
-    },
-    BIN_NAME,
-};
+use crate::cmds::wizard::{highlight::Syntax, QuickstartMode, SKILL_NAMES};
 
 impl App {
     pub(super) fn render(&self, frame: &mut Frame) {
@@ -120,7 +114,13 @@ impl App {
         }
 
         let mut keys = match self.step() {
+            Step::Application if self.quickstart.is_none() => {
+                vec!["enter create the app".to_owned()]
+            }
             Step::Send if self.sent.is_none() => vec!["enter send".to_owned()],
+            Step::Portal if self.portal.is_none() => {
+                vec!["enter generate the link".to_owned()]
+            }
             Step::Done => vec!["enter finish".to_owned()],
             _ if self.choices().is_some() => vec!["enter select".to_owned()],
             _ => vec!["enter continue".to_owned()],
@@ -269,8 +269,7 @@ impl App {
 
     fn language_lines(&self) -> Vec<Line<'static>> {
         let mut lines = vec![prose(
-            "Pick the language you'll be integrating in. The code samples in the rest of the \
-             quickstart are shown in it.",
+            "Pick the language you'll be integrating in; the code samples are shown in it.",
         )];
         lines.push(Line::from(""));
         lines.extend(choices(&LANGUAGE_NAMES, self.language));
@@ -283,23 +282,31 @@ impl App {
             "A consumer application defines where your messages are sent. Usually you'll want \
              one application for each of your customers.",
         )];
+        lines.push(Line::from(""));
 
         let Some(qs) = &self.quickstart else {
+            lines.push(prose("This is how you'd create one from your code:"));
+            lines.push(Line::from(""));
+            let language = self.language();
+            if language.syntax != Syntax::Shell {
+                lines.push(Line::from(format!("Install the Svix library first: {}", language.install)));
+                lines.push(Line::from(""));
+            }
+            if let Some((title, syntax, text)) = self.sample_text() {
+                lines.extend(sample(title, syntax, &text, width));
+            }
+            lines.push(Line::from(""));
+            lines.push(Line::styled(
+                "Press enter to create the sample application.",
+                HEADING,
+            ));
             return lines;
         };
 
-        lines.push(Line::from(""));
         lines.extend([field("Application", &qs.app.name), field("Id", &qs.app.id)]);
         if let Some(uid) = &qs.app.uid {
             lines.push(field("Uid", uid));
         }
-        lines.push(Line::from(""));
-        lines.push(prose(
-            "It also got an example endpoint pointing at a Svix Play inbox, so you can preview \
-             the message sent here. Your customers add their own endpoints in the \
-             app portal.",
-        ));
-        lines.push(Line::from(""));
         lines.extend([
             field("Endpoint", &qs.endpoint.id),
             field("Delivers to", &qs.endpoint.url),
@@ -308,98 +315,28 @@ impl App {
             lines.push(field("Channel", channel));
         }
 
-        lines.extend(self.code_lines(width));
-
         lines
     }
 
     /// How to send a message from your own code, in the language picked earlier.
-    fn code_lines(&self, width: u16) -> Vec<Line<'static>> {
-        let language = self.language();
-
-        let mut lines = vec![
-            Line::from(""),
-            Line::styled(format!("1. Install the SDK ({})", language.name), HEADING),
-            Line::from(""),
-        ];
-        lines.extend(highlight(Syntax::Shell, language.install));
-        lines.push(Line::from(""));
-        lines.push(Line::styled("2. Export your API token", HEADING));
-        lines.push(Line::from(""));
-        lines.extend(highlight(
-            Syntax::Shell,
-            "export SVIX_AUTH_TOKEN='<your-token>'",
-        ));
-        lines.push(Line::from(""));
-        lines.push(prose(
-            "Create environment-specific tokens in the dashboard: https://dashboard.svix.com",
-        ));
-        lines.push(Line::from(""));
-        lines.push(Line::styled("3. Send a message from your code", HEADING));
-        lines.push(Line::from(""));
-        lines.push(prose(
-            "Put this where the event actually happens. The same spot you'd log it or fire an \
-             internal event.",
-        ));
-        lines.push(Line::from(""));
-
-        match self.sample_text() {
-            Some((title, syntax, text)) => {
-                lines.extend(sample(title, syntax, &text, width));
-                lines.push(Line::from(""));
-                lines.push(prose(
-                    "In your real integration you'd create one application per customer and use \
-                     that customer's application id (or uid) here, instead of the hardcoded one \
-                     above.",
-                ));
-            }
-            _ => lines.push(Line::styled(
-                "Waiting for the application to be created...",
-                DIM,
-            )),
-        }
-
-        lines
-    }
-
     fn send_lines(&self, width: u16) -> Vec<Line<'static>> {
         let mut lines = vec![prose(
-            "This sends the exact message from the previous step, so you can see it delivered \
-             before wiring up your own code.",
+            "Now that you have an application, let's try sending a message. This uses the same \
+             application id from the previous step, and the message has an event type and a \
+             payload.",
         )];
         lines.push(Line::from(""));
 
-        let Some(msg) = &self.message else {
-            return lines;
-        };
-
-        lines.push(field("Event type", &msg.event_type));
-        lines.push(Line::from(""));
         if let Some((title, syntax, text)) = self.sample_text() {
             lines.extend(sample(title, syntax, &text, width));
         }
-        lines.push(Line::from(""));
 
-        match (&self.sent, &self.quickstart) {
-            (Some(id), Some(qs)) => {
-                lines.push(field("Sent", id));
-                lines.push(Line::from(""));
-                lines.push(prose(
-                    "It was delivered to the example endpoint. Press o to open the Svix Play \
-                     inbox and see the request Svix made:",
-                ));
-                lines.push(Line::styled(qs.play_view_url.clone(), VALUE));
-                lines.push(Line::from(""));
-                lines.push(prose(&format!(
-                    "Every attempt is recorded: `{BIN_NAME} message-attempt list-by-msg {} {id}`",
-                    qs.app.id
-                )));
-            }
-            (None, Some(_)) => {
-                lines.push(Line::styled("Press enter to send it.", HEADING));
-                lines.push(Line::styled(UNLOCK_HINT, DIM));
-            }
-            _ => {}
+        if self.sent.is_none() {
+            lines.push(Line::from(""));
+            lines.push(Line::styled(
+                "Press enter to send this message and see it delivered.",
+                HEADING,
+            ));
         }
 
         lines
@@ -407,23 +344,12 @@ impl App {
 
     fn portal_lines(&self, width: u16) -> Vec<Line<'static>> {
         let mut lines = vec![prose(
-            "In production, your webhook consumers add their own endpoints inside your product \
-             using the pre-built, embeddable app portal. The endpoint and message from the \
-             previous steps are already in there.",
+            "Your webhook consumers manage their own endpoints in the pre-built app portal. \
+             The endpoint and message from the previous steps are already in there.",
         )];
         lines.push(Line::from(""));
-
-        match &self.portal {
-            Some(url) => {
-                lines.push(prose("Press o to open this one-time link:"));
-                lines.push(Line::styled(url.clone(), VALUE));
-            }
-            None => lines.push(Line::styled("No link yet. Press r to generate one.", DIM)),
-        }
-
-        lines.push(Line::from(""));
         lines.push(prose(
-            "Links like that are short-lived, so you mint them on demand from your backend and \
+            "Access links are short-lived, so you mint them on demand from your backend and \
              link to them from your own dashboard:",
         ));
         lines.push(Line::from(""));
@@ -431,38 +357,32 @@ impl App {
         if let Some((title, syntax, text)) = self.sample_text() {
             lines.extend(sample(title, syntax, &text, width));
         }
-        if let Some(qs) = &self.quickstart {
-            lines.push(Line::from(""));
-            lines.push(prose(&format!(
-                "Or from the CLI: `{BIN_NAME} authentication app-portal-access {}`",
-                qs.app.id
-            )));
+        lines.push(Line::from(""));
+
+        match &self.portal {
+            Some(url) => {
+                lines.push(prose("Press o to open this one-time link:"));
+                lines.push(Line::styled(url.clone(), VALUE));
+            }
+            None => lines.push(Line::styled(
+                "Press enter to generate a link for this application.",
+                HEADING,
+            )),
         }
 
         lines
     }
 
     fn done_lines(&self) -> Vec<Line<'static>> {
-        let mut lines = vec![prose("That's the quickstart. From here you can:")];
-        lines.push(Line::from(""));
-        lines.extend([
-            Line::styled(
-                format!("  Add more event types:  {BIN_NAME} event-type create {{...}}"),
-                VALUE,
+        vec![
+            prose(
+                "That's the quickstart. Check out the application you created in the dashboard: \
+                 https://dashboard.svix.com",
             ),
-            Line::styled(
-                format!(
-                    "  Forward webhooks locally:  {BIN_NAME} listen http://localhost:8000/webhook"
-                ),
-                VALUE,
-            ),
-            Line::styled("  Read the docs:  https://docs.svix.com", VALUE),
-        ]);
-        lines.push(Line::from(""));
-        lines.push(prose(
-            "Press q to leave. The ids and links from these steps get printed on the way out.",
-        ));
-
-        lines
+            Line::from(""),
+            prose("The docs at https://docs.svix.com go deeper."),
+            Line::from(""),
+            prose("Press q to leave."),
+        ]
     }
 }

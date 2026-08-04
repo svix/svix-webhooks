@@ -22,7 +22,6 @@ pub(super) enum Syntax {
     Ruby,
     Php,
     Shell,
-    Json,
 }
 
 impl Syntax {
@@ -40,7 +39,6 @@ impl Syntax {
             Self::Ruby => "rb",
             Self::Php => "php",
             Self::Shell => "sh",
-            Self::Json => "json",
         }
     }
 }
@@ -143,7 +141,6 @@ mod tests {
             Syntax::Ruby,
             Syntax::Php,
             Syntax::Shell,
-            Syntax::Json,
         ] {
             assert!(
                 engine()

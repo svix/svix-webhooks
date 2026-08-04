@@ -324,6 +324,8 @@ struct Language {
     name: &'static str,
     /// How to add the Svix SDK to a project.
     install: &'static str,
+    /// Creates the application, shown before the wizard creates it for real.
+    create_app: fn(server_url: &str) -> String,
     /// Sends the sample message.
     snippet: fn(app_id: &str, msg: &SampleMessage, server_url: &str) -> String,
     /// Mints an app portal magic link from the user's own backend.
@@ -336,6 +338,18 @@ const LANGUAGES: &[Language] = &[
         name: "Python",
         syntax: Syntax::Python,
         install: "pip install svix",
+        create_app: |_| {
+            format!(
+                r#"import os
+
+from svix.api import Svix, ApplicationIn
+
+svix = Svix(os.environ["SVIX_AUTH_TOKEN"])
+
+# One application per customer of yours.
+app = svix.application.create(ApplicationIn(name="{APP_NAME}"))"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -371,6 +385,16 @@ portal_url = access.url"#
         name: "JavaScript / TypeScript",
         syntax: Syntax::JavaScript,
         install: "npm install svix",
+        create_app: |_| {
+            format!(
+                r#"import {{ Svix }} from "svix";
+
+const svix = new Svix(process.env.SVIX_AUTH_TOKEN);
+
+// One application per customer of yours.
+const app = await svix.application.create({{ name: "{APP_NAME}" }});"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -404,6 +428,19 @@ const portalUrl = access.url;"#
         name: "Go",
         syntax: Syntax::Go,
         install: "go get github.com/svix/svix-webhooks/go",
+        create_app: |_| {
+            format!(
+                r#"svixClient, err := svix.New(os.Getenv("SVIX_AUTH_TOKEN"), nil)
+if err != nil {{
+    return err
+}}
+
+// One application per customer of yours.
+app, err := svixClient.Application.Create(ctx, models.ApplicationIn{{
+    Name: "{APP_NAME}",
+}}, nil)"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -447,6 +484,17 @@ portalURL := access.Url"#
         name: "Rust",
         syntax: Syntax::Rust,
         install: "cargo add svix",
+        create_app: |_| {
+            format!(
+                r#"let svix = Svix::new(std::env::var("SVIX_AUTH_TOKEN")?, None);
+
+// One application per customer of yours.
+let app = svix
+    .application()
+    .create(ApplicationIn::new("{APP_NAME}".to_owned()), None)
+    .await?;"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -484,7 +532,18 @@ let portal_url = access.url;"#
     Language {
         name: "Java",
         syntax: Syntax::Java,
-        install: "# add \"com.svix:svix\" to your Gradle or Maven dependencies",
+        install: "add \"com.svix:svix\" to your Gradle or Maven dependencies",
+        create_app: |_| {
+            format!(
+                r#"import com.svix.Svix;
+import com.svix.models.ApplicationIn;
+
+Svix svix = new Svix(System.getenv("SVIX_AUTH_TOKEN"));
+
+// One application per customer of yours.
+var app = svix.getApplication().create(new ApplicationIn().name("{APP_NAME}"));"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -522,7 +581,18 @@ var portalUrl = access.getUrl();"#
     Language {
         name: "Kotlin",
         syntax: Syntax::Kotlin,
-        install: "# add \"com.svix.kotlin:svix-kotlin\" to your Gradle dependencies",
+        install: "add \"com.svix.kotlin:svix-kotlin\" to your Gradle dependencies",
+        create_app: |_| {
+            format!(
+                r#"import com.svix.kotlin.Svix
+import com.svix.kotlin.models.ApplicationIn
+
+val svix = Svix(System.getenv("SVIX_AUTH_TOKEN"))
+
+// One application per customer of yours.
+val app = svix.application.create(ApplicationIn(name = "{APP_NAME}"))"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -558,6 +628,17 @@ val portalUrl = access.url"#
         name: "C#",
         syntax: Syntax::CSharp,
         install: "dotnet add package Svix",
+        create_app: |_| {
+            format!(
+                r#"using Svix;
+using Svix.Models;
+
+var svix = new SvixClient(Environment.GetEnvironmentVariable("SVIX_AUTH_TOKEN")!);
+
+// One application per customer of yours.
+var app = await svix.Application.CreateAsync(new ApplicationIn {{ Name = "{APP_NAME}" }});"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -599,6 +680,16 @@ var portalUrl = access.Url;"#
         name: "Ruby",
         syntax: Syntax::Ruby,
         install: "gem install svix",
+        create_app: |_| {
+            format!(
+                r#"require "svix"
+
+svix = Svix::Client.new(ENV["SVIX_AUTH_TOKEN"])
+
+# One application per customer of yours.
+app = svix.application.create(Svix::ApplicationIn.new(name: "{APP_NAME}"))"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -632,6 +723,15 @@ portal_url = access.url"#
         name: "PHP",
         syntax: Syntax::Php,
         install: "composer require svix/svix",
+        create_app: |_| {
+            format!(
+                r#"<?php
+$svix = new \Svix\Svix(getenv("SVIX_AUTH_TOKEN"));
+
+// One application per customer of yours.
+$app = $svix->application->create(\Svix\Models\ApplicationIn::create("{APP_NAME}"));"#
+            )
+        },
         snippet: |app_id, msg, _| {
             let SampleMessage {
                 event_type,
@@ -666,6 +766,15 @@ $portalUrl = $access->url;"#
         name: "cURL (any language)",
         syntax: Syntax::Shell,
         install: "no SDK needed",
+        create_app: |server_url| {
+            format!(
+                r#"# One application per customer of yours.
+curl -X POST "{server_url}/api/v1/app" \
+  -H "Authorization: Bearer $SVIX_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{{"name": "{APP_NAME}"}}'"#
+            )
+        },
         snippet: |app_id, msg, server_url| {
             let SampleMessage {
                 event_type,
@@ -773,6 +882,13 @@ mod tests {
 
             let portal = (language.portal)("app_123", DEFAULT_SERVER_URL);
             assert!(portal.contains("app_123"), "{}: {portal}", language.name);
+
+            let create_app = (language.create_app)(DEFAULT_SERVER_URL);
+            assert!(
+                create_app.contains(APP_NAME),
+                "{}: {create_app}",
+                language.name
+            );
         }
     }
 
