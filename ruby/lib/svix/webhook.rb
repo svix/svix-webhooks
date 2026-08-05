@@ -3,11 +3,13 @@
 module Svix
   class Webhook
 
-    def self.new_using_raw_bytes(secret)
-      self.new(secret.pack("C*").force_encoding("UTF-8"))
+    def self.new_using_raw_bytes(secret, tolerance: TOLERANCE)
+      self.new(secret.pack("C*").force_encoding("UTF-8"), tolerance: tolerance)
     end
 
-    def initialize(secret)
+    # `tolerance` is the maximum difference allowed, in seconds, between the
+    # webhook's timestamp and the current time. Defaults to 5 minutes.
+    def initialize(secret, tolerance: TOLERANCE)
       if secret.start_with?(SECRET_PREFIX)
         secret = secret[SECRET_PREFIX.length..-1]
       end
@@ -17,46 +19,14 @@ module Svix
       if @secret.empty?
         raise EmptyWebhookSecretError, "Webhook secret must not be blank"
       end
-    end
 
-    # Validates the payload against the svix signature headers using the
-    # webhook's signing secret.
-    #
-    # Raises a WebhookVerificationError if the headers are missing/unreadable
-    # or if the signature doesn't match.
-    def verify(payload, headers)
-      verify_internal(payload, headers, true)
-    end
-
-    # Validates the payload against the svix signature headers using the
-    # webhook's signing secret.
-    #
-    # Raises a WebhookVerificationError if the headers are missing/unreadable
-    # or if the signature doesn't match.
-    #
-    # WARNING: This method does not check the signature's timestamp.
-    # We recommend using the `verify` method instead.
-    def verify_ignoring_timestamp(payload, headers)
-      verify_internal(payload, headers, false)
-    end
-
-    def sign(msgId, timestamp, payload)
-      begin
-        now = Integer(timestamp)
-      rescue
-        raise WebhookSigningError, "Invalid timestamp"
+      if !tolerance.is_a?(Integer) || tolerance < 0
+        raise ArgumentError, "tolerance must be a non-negative integer"
       end
-
-      toSign = "#{msgId}.#{timestamp}.#{payload}"
-      signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), @secret, toSign)).strip
-      return "v1,#{signature}"
+      @tolerance = tolerance
     end
 
-    private
-    SECRET_PREFIX = "whsec_"
-    TOLERANCE = 5 * 60
-
-    def verify_internal(payload, headers, enforce_tolerance)
+    def verify(payload, headers)
       msgId = headers["svix-id"]
       msgSignature = headers["svix-signature"]
       msgTimestamp = headers["svix-timestamp"]
@@ -69,8 +39,7 @@ module Svix
         end
       end
 
-      timestamp = parse_timestamp_header(msgTimestamp)
-      verify_timestamp(timestamp) if enforce_tolerance
+      verify_timestamp(msgTimestamp)
 
       _, signature = sign(msgId, msgTimestamp, payload).split(",", 2)
 
@@ -89,23 +58,42 @@ module Svix
       raise WebhookVerificationError, "No matching signature found"
     end
 
-    def parse_timestamp_header(timestampHeader)
+    def sign(msgId, timestamp, payload)
       begin
-        Integer(timestampHeader)
+        now = Integer(timestamp)
+      rescue
+        raise WebhookSigningError, "Invalid timestamp"
+      end
+
+      toSign = "#{msgId}.#{timestamp}.#{payload}"
+      signature = Base64.encode64(OpenSSL::HMAC.digest(OpenSSL::Digest.new("sha256"), @secret, toSign)).strip
+      return "v1,#{signature}"
+    end
+
+    private
+    SECRET_PREFIX = "whsec_"
+    TOLERANCE = 5 * 60
+
+    def verify_timestamp(timestampHeader)
+      begin
+        now = Integer(Time.now)
+        timestamp = Integer(timestampHeader)
       rescue
         raise WebhookVerificationError, "Invalid Signature Headers"
       end
-    end
 
-    def verify_timestamp(timestamp)
-      now = Time.now.to_i
-
-      if timestamp < (now - TOLERANCE)
+      if timestamp < (now - @tolerance)
         raise WebhookVerificationError, "Message timestamp too old"
       end
 
-      if timestamp > (now + TOLERANCE)
+      if timestamp > (now + @tolerance)
         raise WebhookVerificationError, "Message timestamp too new"
+      end
+
+      if timestamp <= 0
+        # Like the Rust SDK, timestamps before 1970 are not honored even when
+        # the tolerance window would allow them.
+        raise WebhookVerificationError, "Invalid Signature Headers"
       end
     end
   end
