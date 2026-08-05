@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
         with:
           toolchain: nightly
           components: rustfmt
@@ -32,7 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: taiki-e/install-action@6a1bd70eaac3c8bdf093356838d7ee09fda951cf # v2.85.5
+      - uses: taiki-e/install-action@67729d5c413db75907f0ad1e39bb04b9c868ff60 # v2.85.7
         with:
           tool: cargo-machete
 
@@ -46,7 +46,7 @@ jobs:
         name: Checkout
 
       - name: Install cargo sort
-        uses: taiki-e/install-action@6a1bd70eaac3c8bdf093356838d7ee09fda951cf # v2.85.5
+        uses: taiki-e/install-action@67729d5c413db75907f0ad1e39bb04b9c868ff60 # v2.85.7
         with:
           tool: cargo-sort
 
@@ -63,7 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: dtolnay/rust-toolchain@2c7215f132e9ebf062739d9130488b56d53c060c # master
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
         with:
           toolchain: ${{ matrix.rust }}
           components: clippy
@@ -78,7 +78,7 @@ jobs:
           prefix-key: "server-${{ matrix.rust }}"
 
       - name: Install nextest
-        uses: taiki-e/install-action@6a1bd70eaac3c8bdf093356838d7ee09fda951cf # v2.85.5
+        uses: taiki-e/install-action@67729d5c413db75907f0ad1e39bb04b9c868ff60 # v2.85.7
         with:
           tool: nextest
 
