@@ -58,7 +58,7 @@ EOF
 
 COPY bridge /app/bridge
 # touching the lib.rs/main.rs ensures cargo rebuilds them instead of considering them already built.
-RUN touch */src/lib.rs && touch */src/main.rs
+RUN touch ./*/src/lib.rs && touch ./*/src/main.rs
 RUN cargo build --release --frozen
 
 # Production
@@ -67,7 +67,8 @@ FROM docker.io/debian:trixie-20260713-slim AS prod
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
     mkdir -p /app
-    useradd appuser
+    groupadd -g 1001 appgroup
+    useradd -u 1001 -g appgroup appuser
     chown -R appuser: /app
     mkdir -p /home/appuser
     chown -R appuser: /home/appuser
@@ -80,7 +81,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/
     update-ca-certificates
 EOF
 
-USER appuser
+USER 1001
 
 COPY --from=build /app/bridge/target/release/svix-bridge /usr/local/bin/svix-bridge
 COPY bridge/scripts/check-deps.sh /usr/local/bin/check-deps.sh

@@ -54,7 +54,8 @@ FROM docker.io/debian:trixie-20260713-slim AS prod
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
     mkdir -p /app
-    useradd appuser
+    groupadd -g 1001 appgroup
+    useradd -u 1001 -g appgroup appuser
     chown -R appuser: /app
     mkdir -p /home/appuser
     chown -R appuser: /home/appuser
@@ -69,7 +70,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/
     update-ca-certificates
 EOF
 
-USER appuser
+USER 1001
 EXPOSE 8071
 
 COPY --chown=root:root --chmod=755 --from=build /app/target/release/svix-server /usr/local/bin/svix-server
