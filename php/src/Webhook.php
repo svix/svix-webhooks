@@ -5,16 +5,16 @@ namespace Svix;
 class Webhook
 {
     public const SECRET_PREFIX = "whsec_";
-    public const TOLERANCE = 5 * 60;
+    private const DEFAULT_TOLERANCE = 5 * 60;
     private $secret;
-    private $tolerance = self::TOLERANCE;
+    private $tolerance = self::DEFAULT_TOLERANCE;
 
     /**
      * @param string $secret    the endpoint's signing secret
      * @param int    $tolerance maximum difference allowed, in seconds, between the
      *                          webhook's timestamp and the current time; defaults to 5 minutes
      */
-    public function __construct($secret, $tolerance = self::TOLERANCE)
+    public function __construct($secret, $tolerance = self::DEFAULT_TOLERANCE)
     {
         if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
             $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));

@@ -3,13 +3,13 @@
 module Svix
   class Webhook
 
-    def self.new_using_raw_bytes(secret, tolerance: TOLERANCE)
+    def self.new_using_raw_bytes(secret, tolerance: DEFAULT_TOLERANCE)
       self.new(secret.pack("C*").force_encoding("UTF-8"), tolerance: tolerance)
     end
 
     # `tolerance` is the maximum difference allowed, in seconds, between the
     # webhook's timestamp and the current time. Defaults to 5 minutes.
-    def initialize(secret, tolerance: TOLERANCE)
+    def initialize(secret, tolerance: DEFAULT_TOLERANCE)
       if secret.start_with?(SECRET_PREFIX)
         secret = secret[SECRET_PREFIX.length..-1]
       end
@@ -72,7 +72,7 @@ module Svix
 
     private
     SECRET_PREFIX = "whsec_"
-    TOLERANCE = 5 * 60
+    DEFAULT_TOLERANCE = 5 * 60
 
     def verify_timestamp(timestampHeader)
       begin
