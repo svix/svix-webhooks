@@ -5,15 +5,26 @@ namespace Svix;
 class Webhook
 {
     public const SECRET_PREFIX = "whsec_";
-    public const TOLERANCE = 5 * 60;
+    private const DEFAULT_TOLERANCE = 5 * 60;
     private $secret;
+    private $tolerance = self::DEFAULT_TOLERANCE;
 
-    public function __construct($secret)
+    /**
+     * @param string $secret    the endpoint's signing secret
+     * @param int    $tolerance maximum difference allowed, in seconds, between the
+     *                          webhook's timestamp and the current time; defaults to 5 minutes
+     */
+    public function __construct($secret, $tolerance = self::DEFAULT_TOLERANCE)
     {
         if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
             $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));
         }
         $this->secret = base64_decode($secret);
+
+        if (!is_int($tolerance) || $tolerance < 0) {
+            throw new \InvalidArgumentException("tolerance must be a non-negative integer");
+        }
+        $this->tolerance = $tolerance;
     }
 
     public static function fromRaw($secret)
@@ -97,18 +108,21 @@ class Webhook
     private function verifyTimestamp($timestampHeader)
     {
         $now = time();
-        try {
-            $timestamp = intval($timestampHeader, 10);
-        } catch (\Exception $e) {
+        $timestamp = intval($timestampHeader, 10);
+
+        if ($timestamp < ($now - $this->tolerance)) {
+            throw new Exception\WebhookVerificationException("Message timestamp too old");
+        }
+        if ($timestamp > ($now + $this->tolerance)) {
+            throw new Exception\WebhookVerificationException("Message timestamp too new");
+        }
+        if ($timestamp <= 0) {
+            // Like the Rust SDK, timestamps before 1970 are not honored even when
+            // the tolerance window would allow them. sign() also refuses them, so
+            // reject the malformed header as a verification failure here.
             throw new Exception\WebhookVerificationException("Invalid Signature Headers");
         }
 
-        if ($timestamp < ($now - Webhook::TOLERANCE)) {
-            throw new Exception\WebhookVerificationException("Message timestamp too old");
-        }
-        if ($timestamp > ($now + Webhook::TOLERANCE)) {
-            throw new Exception\WebhookVerificationException("Message timestamp too new");
-        }
         return $timestamp;
     }
 

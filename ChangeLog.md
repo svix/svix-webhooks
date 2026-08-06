@@ -13,6 +13,9 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/Rust, Libs/JavaScript, Libs/Python, Libs/Go: Strip trailing slashes from a
   user-provided server URL, so `https://api.svix.com/` and `https://api.svix.com`
   behave the same
+* Libs/Ruby, Libs/PHP: The timestamp tolerance used by webhook verification can
+  now be customized through a `tolerance` constructor argument (in seconds;
+  defaults to the previously hardcoded value of five minutes)
 
 ## Version 2.0.0-rc.2
 * Libs/JS: Fix a publishing issue

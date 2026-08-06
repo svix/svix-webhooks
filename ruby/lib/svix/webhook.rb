@@ -3,11 +3,13 @@
 module Svix
   class Webhook
 
-    def self.new_using_raw_bytes(secret)
-      self.new(secret.pack("C*").force_encoding("UTF-8"))
+    def self.new_using_raw_bytes(secret, tolerance: DEFAULT_TOLERANCE)
+      self.new(secret.pack("C*").force_encoding("UTF-8"), tolerance: tolerance)
     end
 
-    def initialize(secret)
+    # `tolerance` is the maximum difference allowed, in seconds, between the
+    # webhook's timestamp and the current time. Defaults to 5 minutes.
+    def initialize(secret, tolerance: DEFAULT_TOLERANCE)
       if secret.start_with?(SECRET_PREFIX)
         secret = secret[SECRET_PREFIX.length..-1]
       end
@@ -17,6 +19,11 @@ module Svix
       if @secret.empty?
         raise EmptyWebhookSecretError, "Webhook secret must not be blank"
       end
+
+      if !tolerance.is_a?(Integer) || tolerance < 0
+        raise ArgumentError, "tolerance must be a non-negative integer"
+      end
+      @tolerance = tolerance
     end
 
     def verify(payload, headers)
@@ -65,7 +72,7 @@ module Svix
 
     private
     SECRET_PREFIX = "whsec_"
-    TOLERANCE = 5 * 60
+    DEFAULT_TOLERANCE = 5 * 60
 
     def verify_timestamp(timestampHeader)
       begin
@@ -75,12 +82,18 @@ module Svix
         raise WebhookVerificationError, "Invalid Signature Headers"
       end
 
-      if timestamp < (now - TOLERANCE)
+      if timestamp < (now - @tolerance)
         raise WebhookVerificationError, "Message timestamp too old"
       end
 
-      if timestamp > (now + TOLERANCE)
+      if timestamp > (now + @tolerance)
         raise WebhookVerificationError, "Message timestamp too new"
+      end
+
+      if timestamp <= 0
+        # Like the Rust SDK, timestamps before 1970 are not honored even when
+        # the tolerance window would allow them.
+        raise WebhookVerificationError, "Invalid Signature Headers"
       end
     end
   end
