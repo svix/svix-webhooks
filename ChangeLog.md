@@ -15,7 +15,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
   behave the same
 * Libs/Ruby, Libs/PHP: The timestamp tolerance used by webhook verification can
   now be customized through a `tolerance` constructor argument (in seconds;
-  default five minutes)
+  defaults to the previously hardcoded value of five minutes)
 
 ## Version 2.0.0-rc.2
 * Libs/JS: Fix a publishing issue
