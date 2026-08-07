@@ -169,6 +169,87 @@ describe Svix::Webhook do
     expect(signature).to(eq(expected))
   end
 
+  it "custom tolerance accepts an old timestamp the default would reject" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i - (2 * TOLERANCE))
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 3 * TOLERANCE)
+
+    wh.verify(testPayload.payload, testPayload.headers)
+  end
+
+  it "custom tolerance rejects an old timestamp the default would accept" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i - 120)
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 60)
+
+    expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "custom tolerance accepts a future timestamp the default would reject" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i + (2 * TOLERANCE))
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 3 * TOLERANCE)
+
+    wh.verify(testPayload.payload, testPayload.headers)
+  end
+
+  it "custom tolerance rejects a future timestamp the default would accept" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i + 120)
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 60)
+
+    expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "invalid signature still raises with a custom tolerance" do
+    testPayload = TestPayload.new
+    testPayload.headers["svix-signature"] = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd"
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 3 * TOLERANCE)
+
+    expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
+  end
+
+  it "tampered timestamp still raises with a custom tolerance" do
+    # The signature covers the timestamp, so a value changed after signing
+    # must fail even when it is inside the tolerance window.
+    testPayload = TestPayload.new
+    testPayload.headers["svix-timestamp"] = testPayload.timestamp - 600
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 3 * TOLERANCE)
+
+    expect { wh.verify(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError, /No matching signature found/))
+  end
+
+  it "a tolerance spanning the epoch still rejects a non-positive timestamp" do
+    # Like the Rust SDK, timestamps before 1970 are not honored even when the
+    # tolerance window would allow them.
+    testPayload = TestPayload.new(timestamp: -1234)
+
+    wh = Svix::Webhook.new(testPayload.secret, tolerance: 10**10)
+
+    expect { wh.verify(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError, /Invalid Signature Headers/))
+  end
+
+  it "negative tolerance raises error" do
+    expect { Svix::Webhook.new(DEFAULT_SECRET, tolerance: -1) }.to(raise_error(ArgumentError))
+  end
+
+  it "non-integer tolerance raises error" do
+    expect { Svix::Webhook.new(DEFAULT_SECRET, tolerance: Float::NAN) }.to(raise_error(ArgumentError))
+    expect { Svix::Webhook.new(DEFAULT_SECRET, tolerance: nil) }.to(raise_error(ArgumentError))
+  end
+
+  it "new_using_raw_bytes accepts a custom tolerance" do
+    testPayload = TestPayload.new(timestamp: Time.now.to_i - (2 * TOLERANCE))
+
+    wh = Svix::Webhook.new_using_raw_bytes(testPayload.secret.bytes, tolerance: 3 * TOLERANCE)
+
+    wh.verify(testPayload.payload, testPayload.headers)
+  end
+
   it "can validate an empty payload" do
     testPayload = TestPayload.new(payload: '')
 

@@ -7,10 +7,7 @@ on:
     paths:
       - 'server/Dockerfile'
       - '.github/workflows/server-docker-image.yml'
-  pull_request:
-    paths:
-      - 'server/Dockerfile'
-      - '.github/workflows/server-docker-image.yml'
+  workflow_call:
 
 defaults:
   run:
@@ -22,7 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Build server image
         run: docker compose build
@@ -40,3 +37,13 @@ jobs:
       - name: Terminate docker compose created containers
         if: always()
         run: docker compose down -v
+
+  hadolint:
+    name: Server docker image hadolint
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hadolint/hadolint-action@2a66e89f53d0771bb131a7fa31f3136336094aa6 # v3.4.0
+        with:
+          dockerfile: server/Dockerfile

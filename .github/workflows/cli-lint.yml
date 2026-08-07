@@ -15,10 +15,11 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
         with:
+          toolchain: nightly
           components: rustfmt
 
       - name: rustfmt
@@ -32,12 +33,21 @@ jobs:
         name: Checkout
 
       - name: Install cargo sort
-        uses: taiki-e/install-action@7a79fe8c3a13344501c80d99cae481c1c9085912 # v2.81.10
+        uses: taiki-e/install-action@67729d5c413db75907f0ad1e39bb04b9c868ff60 # v2.85.7
         with:
           tool: cargo-sort
 
       - name: Run cargo sort
         run: cargo sort --workspace --check --check-format
+
+  hadolint:
+    name: Run Hadolint
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hadolint/hadolint-action@2a66e89f53d0771bb131a7fa31f3136336094aa6 # v3.4.0
+        with:
+          dockerfile: svix-cli/Dockerfile
 
   test-versions:
     name: CLI Lint
@@ -47,14 +57,14 @@ jobs:
         # keep this in sync with svix-cli/Cargo.toml MSRV
         rust: ["1.88.0", stable, beta]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
         with:
           toolchain: ${{ matrix.rust }}
           components: clippy
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
         with:
           workspaces: "svix-cli -> target"
           # only save the cache on the main branch
@@ -63,7 +73,9 @@ jobs:
           # include relevant information in the cache name
           prefix-key: "cli-${{ matrix.rust }}"
 
-      - uses: taiki-e/install-action@nextest
+      - uses: taiki-e/install-action@67729d5c413db75907f0ad1e39bb04b9c868ff60 # v2.85.7
+        with:
+          tool: nextest
 
       - name: Clippy
         run: cargo clippy --locked --all-targets --all-features -- -D warnings

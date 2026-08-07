@@ -45,12 +45,13 @@ jobs:
       python-lint: ${{ steps.filter.outputs.python-lint }}
       python-tests: ${{ steps.filter.outputs.python-tests }}
       server-ci: ${{ steps.filter.outputs.server-ci }}
+      server-docker-image: ${{ steps.filter.outputs.server-docker-image }}
       rust-lint: ${{ steps.filter.outputs.rust-lint }}
       ruby-lint: ${{ steps.filter.outputs.ruby-lint }}
       openapi-compatibility-check: ${{ steps.filter.outputs.openapi-compatibility-check }}
     steps:
-      - uses: actions/checkout@v6
-      - uses: dorny/paths-filter@v3
+      - uses: actions/checkout@v7
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4.0.2
         id: filter
         with:
           filters: |
@@ -108,6 +109,9 @@ jobs:
             server-ci:
               - 'server/**'
               - '.github/workflows/server-ci.yml'
+            server-docker-image:
+              - 'server/Dockerfile'
+              - '.github/workflows/server-docker-image.yml'
             rust-lint:
               - 'rust/**'
               - 'codegen/lib-openapi.json'
@@ -194,6 +198,12 @@ jobs:
     uses: ./.github/workflows/server-ci.yml
     secrets: inherit
 
+  server-docker-image:
+    needs: filter
+    if: needs.filter.outputs.server-docker-image == 'true'
+    uses: ./.github/workflows/server-docker-image.yml
+    secrets: inherit
+
   rust-lint:
     needs: filter
     if: needs.filter.outputs.rust-lint == 'true'
@@ -235,6 +245,7 @@ jobs:
       - python-lint
       - python-tests
       - server-ci
+      - server-docker-image
       - rust-lint
       - ruby-lint
       - openapi-compatibility-check

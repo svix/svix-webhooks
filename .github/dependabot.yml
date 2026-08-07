@@ -1,0 +1,44 @@
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "server"
+    # don't actually post regular version upgrade PRs, only security updates
+    open-pull-requests-limit: 0
+    # shouldn't actually matter because security update PRs happen immediately
+    # as advisories are reported, but is a required key
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "docker-compose"
+    directory: "server"
+    # don't actually post regular version upgrade PRs, only security updates
+    open-pull-requests-limit: 0
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    # allow doing version updates for github-actions dependabot bumps
+    open-pull-requests-limit: 2
+    cooldown:
+      default-days: 3
+    groups:
+      workflows:
+        applies-to: version-updates
+        patterns:
+          - '*'
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+  - package-ecosystem: "uv"
+    directory: "/python"
+    open-pull-requests-limit: 2
+    cooldown:
+      default-days: 3
+    groups:
+      development:
+        applies-to: version-updates
+        dependency-type: development
+        patterns:
+          - '*'
+    schedule:
+      interval: "weekly"
+      day: "wednesday"

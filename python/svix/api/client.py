@@ -4,12 +4,18 @@ from typing import Dict, List, Union, Optional
 import attr
 
 
+def _strip_trailing_slashes(base_url: str) -> str:
+    return base_url.rstrip("/")
+
+
 @attr.s(auto_attribs=True)
 class Client:
     """A class for keeping track of data related to the API
 
     Attributes:
-        base_url: The base URL for the API, all requests are made to a relative path to this URL
+        base_url: The base URL for the API, all requests are made to a relative path to this URL.
+            Trailing slashes are stripped, so `https://api.svix.com/` and `https://api.svix.com`
+            are equivalent.
         cookies: A dictionary of cookies to be sent with every request
         headers: A dictionary of headers to be sent with every request
         timeout: The maximum amount of a time in seconds a request can take. API functions will raise
@@ -21,7 +27,7 @@ class Client:
         follow_redirects: Whether or not to follow redirects. Default value is False.
     """
 
-    base_url: str
+    base_url: str = attr.ib(converter=_strip_trailing_slashes)
     retry_schedule: List[float]
     cookies: Dict[str, str] = attr.ib(factory=dict, kw_only=True)
     headers: Dict[str, str] = attr.ib(factory=dict, kw_only=True)

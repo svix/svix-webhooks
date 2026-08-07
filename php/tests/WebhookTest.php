@@ -122,6 +122,116 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $wh->verify($testPayload->payload, $testPayload->header);
     }
 
+    public function testCustomToleranceAcceptsOldTimestamp()
+    {
+        $testPayload = new TestPayload(time() - (2 * self::TOLERANCE));
+
+        $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
+        $json = $wh->verify($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
+    public function testCustomToleranceRejectsOldTimestampInsideDefault()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Message timestamp too old");
+
+        $testPayload = new TestPayload(time() - 120);
+
+        $wh = new \Svix\Webhook($testPayload->secret, 60);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testCustomToleranceAcceptsNewTimestamp()
+    {
+        $testPayload = new TestPayload(time() + (2 * self::TOLERANCE));
+
+        $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
+        $json = $wh->verify($testPayload->payload, $testPayload->header);
+
+        $this->assertEquals(
+            $json['test'],
+            2432232315,
+            "did not return expected json"
+        );
+    }
+
+    public function testCustomToleranceRejectsNewTimestampInsideDefault()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Message timestamp too new");
+
+        $testPayload = new TestPayload(time() + 120);
+
+        $wh = new \Svix\Webhook($testPayload->secret, 60);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testInvalidSignatureThrowsWithCustomTolerance()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header['svix-signature'] = 'v1,dawfeoifkpqwoekfpqoekf';
+
+        $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testTamperedTimestampThrowsWithCustomTolerance()
+    {
+        // Changing the timestamp value after signing must fail the signature
+        // check even when the altered value is inside the tolerance window.
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header['svix-timestamp'] = strval(intval($testPayload->timestamp) - 600);
+
+        $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testEpochSpanningToleranceRejectsNonPositiveTimestamp()
+    {
+        // sign() only accepts positive timestamps, so verify() reports a
+        // non-positive value as a verification failure, not a signing one.
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Invalid Signature Headers");
+
+        $testPayload = new TestPayload(-1234);
+
+        $wh = new \Svix\Webhook($testPayload->secret, PHP_INT_MAX);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testNegativeToleranceThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw", -1);
+    }
+
+    public function testNonIntegerToleranceThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw", NAN);
+    }
+
+    public function testNullToleranceThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw", null);
+    }
+
     public function testMultiSigPayloadIsValid()
     {
         // We're checking that `verify()` doesn't throw an exception.
