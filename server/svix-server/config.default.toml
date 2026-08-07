@@ -15,6 +15,10 @@ listen_address = "0.0.0.0:8071"
 # IMPORTANT: Once set, it can't be changed.
 # main_secret = "kPafCtH7KC351nWXQb2pEGa6IRW3OsYpzQJldB8X"
 
+# Whether to encrypt message payloads at rest using main_secret (default false).
+# If set without main_secret, an error is logged and payloads are not encrypted.
+# payload_encryption_enabled = false
+
 # The JWT secret for authentication - should be secret and securely generated
 # jwt_secret = "8KjzRXrKkd9YFcNyqLSIY8JwiaCeRc6WK4UkMnSW"
 

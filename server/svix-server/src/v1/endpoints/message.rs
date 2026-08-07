@@ -23,6 +23,7 @@ use crate::{
     AppState,
     core::{
         cache::Cache,
+        cryptography::Encryption,
         message_app::CreateMessageApp,
         permissions,
         types::{
@@ -214,9 +215,12 @@ impl MessageOut {
         model: message::Model,
         content: Option<Vec<u8>>,
         with_content: bool,
-    ) -> Self {
+        encryption: &Encryption,
+    ) -> Result<Self> {
         let payload = if with_content {
             let payload = content
+                .map(|p| encryption.decrypt_payload(&p))
+                .transpose()?
                 .and_then(|p| match serde_json::from_slice(&p) {
                     Ok(v) => Some(v),
                     Err(e) => {
@@ -234,14 +238,14 @@ impl MessageOut {
             RawPayload::from_string("{}".to_string()).expect("Can never fail")
         };
 
-        Self {
+        Ok(Self {
             uid: model.uid,
             event_type: model.event_type,
             payload,
             channels: model.channels,
             id: model.id,
             created_at: model.created_at.into(),
-        }
+        })
     }
 }
 
@@ -274,7 +278,9 @@ pub struct ListMessagesQueryParams {
 /// `before` and `after` cannot be used simultaneously.
 #[aide_annotate(op_id = "v1.message.list")]
 async fn list_messages(
-    State(AppState { ref db, .. }): State<AppState>,
+    State(AppState {
+        ref db, ref cfg, ..
+    }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListMessagesQueryParams {
         channel,
@@ -310,11 +316,19 @@ async fn list_messages(
     let msgs_and_content: Vec<(message::Model, Option<messagecontent::Model>)> =
         query.all(db).await?.into_iter().collect();
     let into = |(msg, content): (message::Model, Option<messagecontent::Model>)| {
-        MessageOut::from_msg_and_payload(msg, content.map(|c| c.payload), with_content)
+        MessageOut::from_msg_and_payload(
+            msg,
+            content.map(|c| c.payload),
+            with_content,
+            &cfg.encryption,
+        )
     };
 
     Ok(Json(MessageOut::list_response(
-        msgs_and_content.into_iter().map(into).collect(),
+        msgs_and_content
+            .into_iter()
+            .map(into)
+            .collect::<Result<Vec<_>>>()?,
         limit as usize,
         iter_direction,
     )))
@@ -342,6 +356,7 @@ async fn create_message(
         ref db,
         queue_tx,
         cache,
+        ref cfg,
         ..
     }): State<AppState>,
     ValidatedQuery(CreateMessageQueryParams { with_content }): ValidatedQuery<
@@ -356,6 +371,7 @@ async fn create_message(
             db,
             queue_tx,
             cache,
+            &cfg.payload_encryption(),
             with_content,
             None,
             data,
@@ -371,6 +387,7 @@ pub(crate) async fn create_message_inner(
     db: &DatabaseConnection,
     queue_tx: TaskQueueProducer,
     cache: Cache,
+    encryption: &Encryption,
     with_content: bool,
     force_endpoint: Option<EndpointId>,
     data: MessageIn,
@@ -417,7 +434,7 @@ pub(crate) async fn create_message_inner(
     // Should never happen since you're giving it an existing Application, but just in case
     .ok_or_else(|| Error::generic(format_args!("Application doesn't exist: {}", app.id)))?;
 
-    let payload = data.payload();
+    let payload = encryption.encrypt_payload(&data.payload())?;
     let msg = message::ActiveModel {
         app_id: Set(app.id.clone()),
         org_id: Set(app.org_id),
@@ -455,7 +472,8 @@ pub(crate) async fn create_message_inner(
             .await?;
     }
 
-    let msg_out = MessageOut::from_msg_and_payload(msg, Some(msg_content.payload), with_content);
+    let msg_out =
+        MessageOut::from_msg_and_payload(msg, Some(msg_content.payload), with_content, encryption)?;
 
     Ok(msg_out)
 }
@@ -504,7 +522,9 @@ pub struct GetMessageQueryParams {
 /// Get a message by its ID or eventID.
 #[aide_annotate(op_id = "v1.message.get")]
 async fn get_message(
-    State(AppState { ref db, .. }): State<AppState>,
+    State(AppState {
+        ref db, ref cfg, ..
+    }): State<AppState>,
     Path(ApplicationMsgPath { msg_id, .. }): Path<ApplicationMsgPath>,
     ValidatedQuery(GetMessageQueryParams { with_content }): ValidatedQuery<GetMessageQueryParams>,
     permissions::Application { app }: permissions::Application,
@@ -514,8 +534,12 @@ async fn get_message(
         .one(db)
         .await?
         .ok_or_else(|| HttpError::not_found(None, None))?;
-    let msg_out =
-        MessageOut::from_msg_and_payload(msg, msg_content.map(|c| c.payload), with_content);
+    let msg_out = MessageOut::from_msg_and_payload(
+        msg,
+        msg_content.map(|c| c.payload),
+        with_content,
+        &cfg.encryption,
+    )?;
     Ok(Json(msg_out))
 }
 

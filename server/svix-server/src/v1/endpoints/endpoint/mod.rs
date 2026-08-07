@@ -835,6 +835,7 @@ async fn send_example(
         ref db,
         queue_tx,
         cache,
+        ref cfg,
         ..
     }) = state;
 
@@ -879,6 +880,7 @@ async fn send_example(
         db,
         queue_tx,
         cache,
+        &cfg.payload_encryption(),
         false,
         Some(endpoint.id),
         msg_in,
