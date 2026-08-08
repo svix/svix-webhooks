@@ -39,8 +39,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["sessionIds"] = Svix::serialize_primitive(@session_ids) if @session_ids
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["sessionIds"] = Svix::serialize_primitive(@session_ids) unless @session_ids.nil?
       out
     end
 

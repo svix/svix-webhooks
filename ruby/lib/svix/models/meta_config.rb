@@ -35,8 +35,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["secret"] = Svix::serialize_primitive(@secret) if @secret
-      out["verifyToken"] = Svix::serialize_primitive(@verify_token) if @verify_token
+      out["secret"] = Svix::serialize_primitive(@secret) unless @secret.nil?
+      out["verifyToken"] = Svix::serialize_primitive(@verify_token) unless @verify_token.nil?
       out
     end
 

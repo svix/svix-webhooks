@@ -43,11 +43,11 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
       out
     end
 

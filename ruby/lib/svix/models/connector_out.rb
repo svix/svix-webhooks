@@ -80,24 +80,24 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["orgId"] = Svix::serialize_primitive(@org_id) if @org_id
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["logo"] = Svix::serialize_primitive(@logo) if @logo
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
-      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @allowed_event_types
-      out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      if @transformation_updated_at
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["orgId"] = Svix::serialize_primitive(@org_id) unless @org_id.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["kind"] = Svix::serialize_schema_ref(@kind) unless @kind.nil?
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["logo"] = Svix::serialize_primitive(@logo) unless @logo.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["instructions"] = Svix::serialize_primitive(@instructions) unless @instructions.nil?
+      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) unless @allowed_event_types.nil?
+      out["transformation"] = Svix::serialize_primitive(@transformation) unless @transformation.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      unless @transformation_updated_at.nil?
         out["transformationUpdatedAt"] = Svix::serialize_primitive(@transformation_updated_at)
       end
 
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["productType"] = Svix::serialize_schema_ref(@product_type) unless @product_type.nil?
       out
     end
 

@@ -49,10 +49,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["dryRun"] = Svix::serialize_primitive(@dry_run) if @dry_run
-      out["replaceAll"] = Svix::serialize_primitive(@replace_all) if @replace_all
-      out["spec"] = Svix::serialize_primitive(@spec) if @spec
-      out["specRaw"] = Svix::serialize_primitive(@spec_raw) if @spec_raw
+      out["dryRun"] = Svix::serialize_primitive(@dry_run) unless @dry_run.nil?
+      out["replaceAll"] = Svix::serialize_primitive(@replace_all) unless @replace_all.nil?
+      out["spec"] = Svix::serialize_primitive(@spec) unless @spec.nil?
+      out["specRaw"] = Svix::serialize_primitive(@spec_raw) unless @spec_raw.nil?
       out
     end
 

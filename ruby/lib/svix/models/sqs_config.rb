@@ -42,11 +42,11 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["queueUrl"] = Svix::serialize_primitive(@queue_url) if @queue_url
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
-      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
+      out["queueUrl"] = Svix::serialize_primitive(@queue_url) unless @queue_url.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) unless @endpoint_url.nil?
       out
     end
 

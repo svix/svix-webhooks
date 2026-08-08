@@ -36,8 +36,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
       out
     end
 

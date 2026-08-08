@@ -169,8 +169,8 @@ module Svix
       out["status"] = Svix::serialize_schema_ref(@status) if @__status_is_defined
       out["batchSize"] = Svix::serialize_primitive(@batch_size) if @__batch_size_is_defined
       out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @__max_wait_secs_is_defined
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out

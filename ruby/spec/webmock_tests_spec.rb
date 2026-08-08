@@ -317,6 +317,13 @@ describe "API Client" do
       .to(eq({"archived" => false, "deprecated" => false}))
   end
 
+  it "serializes false values in non-patch models" do
+    expect(Svix::EndpointIn.new(url: "http://example.com", disabled: false).serialize)
+      .to(eq({"url" => "http://example.com", "disabled" => false}))
+    expect(Svix::EventTypeIn.new(name: "event.type", archived: false).serialize)
+      .to(eq({"name" => "event.type", "archived" => false}))
+  end
+
   it "arbitrary json object body" do
     stub_request(:post, "#{host}/api/v1/app/app_id/msg")
       .with(query: hash_including({}))

@@ -39,9 +39,9 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out
     end
 

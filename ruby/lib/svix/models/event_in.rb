@@ -36,8 +36,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
-      out["payload"] = Svix::serialize_primitive(@payload) if @payload
+      out["eventType"] = Svix::serialize_primitive(@event_type) unless @event_type.nil?
+      out["payload"] = Svix::serialize_primitive(@payload) unless @payload.nil?
       out
     end
 

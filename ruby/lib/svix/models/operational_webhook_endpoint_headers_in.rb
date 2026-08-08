@@ -36,7 +36,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["headers"] = Svix::serialize_primitive(@headers) if @headers
+      out["headers"] = Svix::serialize_primitive(@headers) unless @headers.nil?
       out
     end
 
