@@ -9,8 +9,10 @@ use std::{borrow::Cow, sync::LazyLock, time::Duration};
 use aide::axum::ApiRouter;
 use cfg::ConfigurationInner;
 use opentelemetry::{InstrumentationScope, trace::TracerProvider as _};
+use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
 use opentelemetry_otlp::WithExportConfig as _;
 use opentelemetry_sdk::{
+    logs::{BatchLogProcessor, SdkLoggerProvider},
     metrics::{SdkMeterProvider, periodic_reader_with_async_runtime::PeriodicReader},
     runtime,
     trace::{SdkTracerProvider, span_processor_with_async_runtime::BatchSpanProcessor},
@@ -289,6 +291,7 @@ pub fn setup_tracing(
     tracing::Dispatch,
     sentry::ClientInitGuard,
     Option<SdkTracerProvider>,
+    Option<SdkLoggerProvider>,
 ) {
     let filter_directives = std::env::var("RUST_LOG").unwrap_or_else(|e| {
         if let std::env::VarError::NotUnicode(_) = e {
@@ -349,6 +352,35 @@ pub fn setup_tracing(
 
     let (otel_layer, otel_tracer_provider) = mapped.unzip();
 
+    let mapped_logs = cfg
+        .opentelemetry_address
+        .as_ref()
+        .filter(|_| cfg.opentelemetry_logs_enabled)
+        .map(|addr| {
+            // Configure the OpenTelemetry logging layer. Logs still also go to stdout via the
+            // `stdout_layer` below; this is additive, not a replacement.
+            let exporter = opentelemetry_otlp::LogExporter::builder()
+                .with_tonic()
+                .with_endpoint(addr)
+                .build()
+                .unwrap();
+
+            let provider = SdkLoggerProvider::builder()
+                .with_log_processor(BatchLogProcessor::builder(exporter).build())
+                .with_resource(
+                    opentelemetry_sdk::Resource::builder()
+                        .with_service_name(cfg.opentelemetry_service_name.clone())
+                        .build(),
+                )
+                .build();
+
+            let layer = OpenTelemetryTracingBridge::new(&provider);
+
+            (layer, provider)
+        });
+
+    let (otel_logs_layer, otel_logger_provider) = mapped_logs.unzip();
+
     let sentry_guard = sentry::init(sentry::ClientOptions {
         dsn: cfg.sentry_dsn.clone(),
         environment: Some(Cow::Owned(cfg.environment.to_string())),
@@ -383,12 +415,18 @@ pub fn setup_tracing(
 
     let dispatch = tracing_subscriber::Registry::default()
         .with(otel_layer)
+        .with(otel_logs_layer)
         .with(sentry_layer)
         .with(stdout_layer)
         .with(tracing_subscriber::EnvFilter::new(filter_directives))
         .into();
 
-    (dispatch, sentry_guard, otel_tracer_provider)
+    (
+        dispatch,
+        sentry_guard,
+        otel_tracer_provider,
+        otel_logger_provider,
+    )
 }
 
 pub fn setup_metrics(cfg: &ConfigurationInner) {

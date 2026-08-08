@@ -64,8 +64,9 @@ num_enum = "0.7.2"
 omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "acb40983ed65f6cbebb19c05d590249306674a33", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
 openssl = "0.10.72"
 opentelemetry = { version = "0.32.0", features = ["metrics"] }
+opentelemetry-appender-tracing = "0.32.0"
 opentelemetry-http = "0.32.0"
-opentelemetry-otlp = { version = "0.32.0", default-features = false, features = ["grpc-tonic", "internal-logs", "metrics", "trace"] }
+opentelemetry-otlp = { version = "0.32.0", default-features = false, features = ["grpc-tonic", "internal-logs", "logs", "metrics", "trace"] }
 opentelemetry-semantic-conventions = "0.32.0"
 opentelemetry_sdk = { version = "0.32.0", features = ["rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
 rand = "0.10"
