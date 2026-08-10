@@ -57,16 +57,19 @@ idna_adapter = "=1.1.0"
 indoc = "2.0.5"
 open = "5.3.1"
 rand = "0.9"
+ratatui = { version = "0.30", default-features = false, features = ["crossterm", "layout-cache", "macros", "underline-color"] }
 reqwest = { version = "0.13.2", features = ["rustls", "json", "charset", "http2"], default-features = false }
 rustls = "0.23.34"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 svix = { path = "../rust" }
+syntect = { version = "5", default-features = false, features = ["default-syntaxes", "default-themes", "regex-fancy"] }
 tokio = { version = "1.42.0", features = ["macros", "time", "rt-multi-thread"] }
 tokio-tungstenite = { version = "0.29.0", features = ["rustls-tls-native-roots"] }
 toml = "0.8.19"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "ansi", "fmt", "registry", "local-time"] }
+tui-syntax-highlight = { version = "0.2", default-features = false, features = ["regex-fancy"] }
 url = "2.5.4"
 
 [build-dependencies]

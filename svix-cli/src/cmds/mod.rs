@@ -5,3 +5,4 @@ pub mod login;
 pub mod open;
 pub mod seed;
 pub mod signature;
+pub mod wizard;
