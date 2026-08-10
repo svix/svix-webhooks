@@ -270,7 +270,7 @@ impl {{ resource_type_name }}Commands {
                     {% if has_params %}options,{% endif -%}
                 } => {
                     {% if op.deprecated -%}
-                        #[allow(deprecated)]
+                        #[expect(deprecated)]
                     {% endif -%}
                     {% if op.response_body_schema_name is defined -%}
                         let resp =
