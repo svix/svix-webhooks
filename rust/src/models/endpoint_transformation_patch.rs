@@ -1,4 +1,5 @@
 // this file is @generated
+#[allow(unused_imports)]
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 

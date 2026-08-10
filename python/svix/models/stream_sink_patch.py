@@ -4,22 +4,22 @@ import typing as t
 from pydantic import ModelWrapValidatorHandler, model_validator
 from typing_extensions import Self
 
-from .amazon_s3_patch_config import AmazonS3PatchConfig
-from .azure_blob_storage_patch_config import AzureBlobStoragePatchConfig
-from .big_query_patch_config import BigQueryPatchConfig
-from .clickhouse_patch_config import ClickhousePatchConfig
+from .amazon_s3_config_patch import AmazonS3ConfigPatch
+from .azure_blob_storage_config_patch import AzureBlobStorageConfigPatch
+from .big_query_config_patch import BigQueryConfigPatch
+from .clickhouse_config_patch import ClickhouseConfigPatch
 from .common import BaseModel
-from .event_bridge_patch_config import EventBridgePatchConfig
-from .google_cloud_pub_sub_patch_config import GoogleCloudPubSubPatchConfig
-from .google_cloud_storage_patch_config import GoogleCloudStoragePatchConfig
-from .http_patch_config import HttpPatchConfig
-from .otel_tracing_patch_config import OtelTracingPatchConfig
-from .rabbit_mq_patch_config import RabbitMqPatchConfig
-from .redshift_patch_config import RedshiftPatchConfig
+from .event_bridge_config_patch import EventBridgeConfigPatch
+from .google_cloud_pub_sub_config_patch import GoogleCloudPubSubConfigPatch
+from .google_cloud_storage_config_patch import GoogleCloudStorageConfigPatch
+from .http_config_patch import HttpConfigPatch
+from .otel_tracing_config_patch import OtelTracingConfigPatch
+from .rabbit_mq_config_patch import RabbitMqConfigPatch
+from .redshift_config_patch import RedshiftConfigPatch
 from .sink_status_in import SinkStatusIn
-from .snowflake_patch_config import SnowflakePatchConfig
-from .sns_patch_config import SnsPatchConfig
-from .sqs_patch_config import SqsPatchConfig
+from .snowflake_config_patch import SnowflakeConfigPatch
+from .sns_config_patch import SnsConfigPatch
+from .sqs_config_patch import SqsConfigPatch
 
 
 class StreamSinkPatch(BaseModel):
@@ -55,20 +55,20 @@ class StreamSinkPatch(BaseModel):
     ]
     config: t.Union[
         t.Dict[str, t.Any],
-        AzureBlobStoragePatchConfig,
-        OtelTracingPatchConfig,
-        HttpPatchConfig,
-        AmazonS3PatchConfig,
-        GoogleCloudStoragePatchConfig,
-        GoogleCloudPubSubPatchConfig,
-        SqsPatchConfig,
-        SnsPatchConfig,
-        BigQueryPatchConfig,
-        ClickhousePatchConfig,
-        EventBridgePatchConfig,
-        SnowflakePatchConfig,
-        RabbitMqPatchConfig,
-        RedshiftPatchConfig,
+        AzureBlobStorageConfigPatch,
+        OtelTracingConfigPatch,
+        HttpConfigPatch,
+        AmazonS3ConfigPatch,
+        GoogleCloudStorageConfigPatch,
+        GoogleCloudPubSubConfigPatch,
+        SqsConfigPatch,
+        SnsConfigPatch,
+        BigQueryConfigPatch,
+        ClickhouseConfigPatch,
+        EventBridgeConfigPatch,
+        SnowflakeConfigPatch,
+        RabbitMqConfigPatch,
+        RedshiftConfigPatch,
     ]
 
     @model_validator(mode="wrap")
@@ -84,43 +84,43 @@ class StreamSinkPatch(BaseModel):
         if output.type == "poller":
             output.config = data.get("config", {})
         elif output.type == "azureBlobStorage":
-            output.config = AzureBlobStoragePatchConfig.model_validate(
+            output.config = AzureBlobStorageConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "otelTracing":
-            output.config = OtelTracingPatchConfig.model_validate(
+            output.config = OtelTracingConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "http":
-            output.config = HttpPatchConfig.model_validate(data.get("config", {}))
+            output.config = HttpConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "amazonS3":
-            output.config = AmazonS3PatchConfig.model_validate(data.get("config", {}))
+            output.config = AmazonS3ConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "googleCloudStorage":
-            output.config = GoogleCloudStoragePatchConfig.model_validate(
+            output.config = GoogleCloudStorageConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "googleCloudPubSub":
-            output.config = GoogleCloudPubSubPatchConfig.model_validate(
+            output.config = GoogleCloudPubSubConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "sqs":
-            output.config = SqsPatchConfig.model_validate(data.get("config", {}))
+            output.config = SqsConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "sns":
-            output.config = SnsPatchConfig.model_validate(data.get("config", {}))
+            output.config = SnsConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "bigQuery":
-            output.config = BigQueryPatchConfig.model_validate(data.get("config", {}))
+            output.config = BigQueryConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "clickhouse":
-            output.config = ClickhousePatchConfig.model_validate(data.get("config", {}))
+            output.config = ClickhouseConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "eventBridge":
-            output.config = EventBridgePatchConfig.model_validate(
+            output.config = EventBridgeConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "snowflake":
-            output.config = SnowflakePatchConfig.model_validate(data.get("config", {}))
+            output.config = SnowflakeConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "rabbitMq":
-            output.config = RabbitMqPatchConfig.model_validate(data.get("config", {}))
+            output.config = RabbitMqConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "redshift":
-            output.config = RedshiftPatchConfig.model_validate(data.get("config", {}))
+            output.config = RedshiftConfigPatch.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

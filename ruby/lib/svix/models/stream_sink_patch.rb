@@ -2,21 +2,21 @@
 # This file is @generated
 require "json"
 
-require_relative "./amazon_s3_patch_config"
-require_relative "./azure_blob_storage_patch_config"
-require_relative "./big_query_patch_config"
-require_relative "./clickhouse_patch_config"
-require_relative "./event_bridge_patch_config"
-require_relative "./google_cloud_pub_sub_patch_config"
-require_relative "./google_cloud_storage_patch_config"
-require_relative "./http_patch_config"
-require_relative "./otel_tracing_patch_config"
-require_relative "./rabbit_mq_patch_config"
-require_relative "./redshift_patch_config"
+require_relative "./amazon_s3_config_patch"
+require_relative "./azure_blob_storage_config_patch"
+require_relative "./big_query_config_patch"
+require_relative "./clickhouse_config_patch"
+require_relative "./event_bridge_config_patch"
+require_relative "./google_cloud_pub_sub_config_patch"
+require_relative "./google_cloud_storage_config_patch"
+require_relative "./http_config_patch"
+require_relative "./otel_tracing_config_patch"
+require_relative "./rabbit_mq_config_patch"
+require_relative "./redshift_config_patch"
 require_relative "./sink_status_in"
-require_relative "./snowflake_patch_config"
-require_relative "./sns_patch_config"
-require_relative "./sqs_patch_config"
+require_relative "./snowflake_config_patch"
+require_relative "./sns_config_patch"
+require_relative "./sqs_config_patch"
 
 module Svix
   class StreamSinkPatchConfig
@@ -36,46 +36,46 @@ module Svix
       end
     end
 
-    class AzureBlobStorage < AzureBlobStoragePatchConfig
+    class AzureBlobStorage < AzureBlobStorageConfigPatch
     end
 
-    class OtelTracing < OtelTracingPatchConfig
+    class OtelTracing < OtelTracingConfigPatch
     end
 
-    class Http < HttpPatchConfig
+    class Http < HttpConfigPatch
     end
 
-    class AmazonS3 < AmazonS3PatchConfig
+    class AmazonS3 < AmazonS3ConfigPatch
     end
 
-    class GoogleCloudStorage < GoogleCloudStoragePatchConfig
+    class GoogleCloudStorage < GoogleCloudStorageConfigPatch
     end
 
-    class GoogleCloudPubSub < GoogleCloudPubSubPatchConfig
+    class GoogleCloudPubSub < GoogleCloudPubSubConfigPatch
     end
 
-    class Sqs < SqsPatchConfig
+    class Sqs < SqsConfigPatch
     end
 
-    class Sns < SnsPatchConfig
+    class Sns < SnsConfigPatch
     end
 
-    class BigQuery < BigQueryPatchConfig
+    class BigQuery < BigQueryConfigPatch
     end
 
-    class Clickhouse < ClickhousePatchConfig
+    class Clickhouse < ClickhouseConfigPatch
     end
 
-    class EventBridge < EventBridgePatchConfig
+    class EventBridge < EventBridgeConfigPatch
     end
 
-    class Snowflake < SnowflakePatchConfig
+    class Snowflake < SnowflakeConfigPatch
     end
 
-    class RabbitMq < RabbitMqPatchConfig
+    class RabbitMq < RabbitMqConfigPatch
     end
 
-    class Redshift < RedshiftPatchConfig
+    class Redshift < RedshiftConfigPatch
     end
   end
 

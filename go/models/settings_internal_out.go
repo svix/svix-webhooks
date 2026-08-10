@@ -23,6 +23,7 @@ type SettingsInternalOut struct {
 	EnforceHttps                  *bool                   `json:"enforceHttps,omitempty"`
 	EnableChannels                *bool                   `json:"enableChannels,omitempty"`
 	EnableMessageStream           *bool                   `json:"enableMessageStream,omitempty"`
+	AdvancedEndpointTypes         []AdvancedEndpointType  `json:"advancedEndpointTypes,omitempty"`
 	ReadOnly                      *bool                   `json:"readOnly,omitempty"`
 	EnableIntegrationManagement   *bool                   `json:"enableIntegrationManagement,omitempty"`
 	EnableTransformations         *bool                   `json:"enableTransformations,omitempty"`
@@ -39,5 +40,6 @@ type SettingsInternalOut struct {
 	ApplicationAlertsLogoUrl      *string                 `json:"applicationAlertsLogoUrl,omitempty"`
 	ShowFeatureTooltips           *bool                   `json:"showFeatureTooltips,omitempty"`
 	WebhooksAutoConfig            *bool                   `json:"webhooksAutoConfig,omitempty"`
+	EndpointsPerAppLimit          *uint32                 `json:"endpointsPerAppLimit,omitempty"`
 	McpToken                      *bool                   `json:"mcpToken,omitempty"`
 }

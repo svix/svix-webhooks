@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 {% if type.name is endingwith "Patch" -%}
+    #[allow(unused_imports)]
     use js_option::JsOption;
 {% endif %}
 

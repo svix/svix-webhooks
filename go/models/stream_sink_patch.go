@@ -10,20 +10,20 @@ import (
 
 // When creating an StreamSinkPatch, use the appropriate config structure based on the Type:
 //   - "poller": No config needed (nil or just ignore the config field)
-//   - "amazonS3": Use AmazonS3PatchConfig
-//   - "azureBlobStorage": Use AzureBlobStoragePatchConfig
-//   - "bigQuery": Use BigQueryPatchConfig
-//   - "clickhouse": Use ClickhousePatchConfig
-//   - "eventBridge": Use EventBridgePatchConfig
-//   - "googleCloudPubSub": Use GoogleCloudPubSubPatchConfig
-//   - "googleCloudStorage": Use GoogleCloudStoragePatchConfig
-//   - "http": Use HttpPatchConfig
-//   - "otelTracing": Use OtelTracingPatchConfig
-//   - "rabbitMq": Use RabbitMqPatchConfig
-//   - "redshift": Use RedshiftPatchConfig
-//   - "snowflake": Use SnowflakePatchConfig
-//   - "sns": Use SnsPatchConfig
-//   - "sqs": Use SqsPatchConfig
+//   - "amazonS3": Use AmazonS3ConfigPatch
+//   - "azureBlobStorage": Use AzureBlobStorageConfigPatch
+//   - "bigQuery": Use BigQueryConfigPatch
+//   - "clickhouse": Use ClickhouseConfigPatch
+//   - "eventBridge": Use EventBridgeConfigPatch
+//   - "googleCloudPubSub": Use GoogleCloudPubSubConfigPatch
+//   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
+//   - "http": Use HttpConfigPatch
+//   - "otelTracing": Use OtelTracingConfigPatch
+//   - "rabbitMq": Use RabbitMqConfigPatch
+//   - "redshift": Use RedshiftConfigPatch
+//   - "snowflake": Use SnowflakeConfigPatch
+//   - "sns": Use SnsConfigPatch
+//   - "sqs": Use SqsConfigPatch
 type StreamSinkPatch struct {
 	Uid         utils.Nullable[string]       `json:"uid"` // The StreamSink's UID.
 	Status      utils.Nullable[SinkStatusIn] `json:"status"`
@@ -60,20 +60,20 @@ type StreamSinkPatchConfig interface {
 }
 
 func (emptyMap) isStreamSinkPatchConfig()                      {}
-func (AzureBlobStoragePatchConfig) isStreamSinkPatchConfig()   {}
-func (OtelTracingPatchConfig) isStreamSinkPatchConfig()        {}
-func (HttpPatchConfig) isStreamSinkPatchConfig()               {}
-func (AmazonS3PatchConfig) isStreamSinkPatchConfig()           {}
-func (GoogleCloudStoragePatchConfig) isStreamSinkPatchConfig() {}
-func (GoogleCloudPubSubPatchConfig) isStreamSinkPatchConfig()  {}
-func (SqsPatchConfig) isStreamSinkPatchConfig()                {}
-func (SnsPatchConfig) isStreamSinkPatchConfig()                {}
-func (BigQueryPatchConfig) isStreamSinkPatchConfig()           {}
-func (ClickhousePatchConfig) isStreamSinkPatchConfig()         {}
-func (EventBridgePatchConfig) isStreamSinkPatchConfig()        {}
-func (SnowflakePatchConfig) isStreamSinkPatchConfig()          {}
-func (RabbitMqPatchConfig) isStreamSinkPatchConfig()           {}
-func (RedshiftPatchConfig) isStreamSinkPatchConfig()           {}
+func (AzureBlobStorageConfigPatch) isStreamSinkPatchConfig()   {}
+func (OtelTracingConfigPatch) isStreamSinkPatchConfig()        {}
+func (HttpConfigPatch) isStreamSinkPatchConfig()               {}
+func (AmazonS3ConfigPatch) isStreamSinkPatchConfig()           {}
+func (GoogleCloudStorageConfigPatch) isStreamSinkPatchConfig() {}
+func (GoogleCloudPubSubConfigPatch) isStreamSinkPatchConfig()  {}
+func (SqsConfigPatch) isStreamSinkPatchConfig()                {}
+func (SnsConfigPatch) isStreamSinkPatchConfig()                {}
+func (BigQueryConfigPatch) isStreamSinkPatchConfig()           {}
+func (ClickhouseConfigPatch) isStreamSinkPatchConfig()         {}
+func (EventBridgeConfigPatch) isStreamSinkPatchConfig()        {}
+func (SnowflakeConfigPatch) isStreamSinkPatchConfig()          {}
+func (RabbitMqConfigPatch) isStreamSinkPatchConfig()           {}
+func (RedshiftConfigPatch) isStreamSinkPatchConfig()           {}
 
 func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkPatch
@@ -90,59 +90,59 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	switch i.Type {
 	case "poller":
 	case "amazonS3":
-		var c AmazonS3PatchConfig
+		var c AmazonS3ConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "azureBlobStorage":
-		var c AzureBlobStoragePatchConfig
+		var c AzureBlobStorageConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "bigQuery":
-		var c BigQueryPatchConfig
+		var c BigQueryConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "clickhouse":
-		var c ClickhousePatchConfig
+		var c ClickhouseConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
-		var c EventBridgePatchConfig
+		var c EventBridgeConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "googleCloudPubSub":
-		var c GoogleCloudPubSubPatchConfig
+		var c GoogleCloudPubSubConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "googleCloudStorage":
-		var c GoogleCloudStoragePatchConfig
+		var c GoogleCloudStorageConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "http":
-		var c HttpPatchConfig
+		var c HttpConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "otelTracing":
-		var c OtelTracingPatchConfig
+		var c OtelTracingConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
-		var c RabbitMqPatchConfig
+		var c RabbitMqConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "redshift":
-		var c RedshiftPatchConfig
+		var c RedshiftConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "snowflake":
-		var c SnowflakePatchConfig
+		var c SnowflakeConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "sns":
-		var c SnsPatchConfig
+		var c SnsConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "sqs":
-		var c SqsPatchConfig
+		var c SqsConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	default:

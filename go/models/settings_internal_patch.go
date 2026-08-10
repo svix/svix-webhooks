@@ -22,6 +22,7 @@ type SettingsInternalPatch struct {
 	EnableEndpointOauthConfig     *bool                                 `json:"enableEndpointOauthConfig,omitempty"`
 	EnableIntegrationManagement   *bool                                 `json:"enableIntegrationManagement,omitempty"`
 	EnableMessageStream           *bool                                 `json:"enableMessageStream,omitempty"`
+	AdvancedEndpointTypes         []AdvancedEndpointType                `json:"advancedEndpointTypes,omitempty"`
 	EnableMsgAtmptLog             *bool                                 `json:"enableMsgAtmptLog,omitempty"`
 	EnableOtlp                    *bool                                 `json:"enableOtlp,omitempty"`
 	EnableTransformations         *bool                                 `json:"enableTransformations,omitempty"`
@@ -89,6 +90,9 @@ func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.EnableMessageStream != nil {
 		toSerialize["enableMessageStream"] = o.EnableMessageStream
+	}
+	if o.AdvancedEndpointTypes != nil {
+		toSerialize["advancedEndpointTypes"] = o.AdvancedEndpointTypes
 	}
 	if o.EnableMsgAtmptLog != nil {
 		toSerialize["enableMsgAtmptLog"] = o.EnableMsgAtmptLog
