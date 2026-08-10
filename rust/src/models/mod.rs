@@ -5,7 +5,6 @@ mod adobe_sign_config_out;
 mod aggregate_event_types_out;
 mod airwallex_config;
 mod airwallex_config_out;
-mod amazon_s3_config_patch;
 mod api_token_out;
 mod app_portal_access_in;
 mod app_portal_access_out;
@@ -18,17 +17,20 @@ mod application_patch;
 mod application_token_expire_in;
 mod authentication_source;
 mod auto_config_sink_type;
-mod azure_blob_storage_config;
+mod azure_blob_storage_config_in;
+mod azure_blob_storage_config_out;
 mod azure_blob_storage_config_patch;
 mod background_task_out;
 mod background_task_status;
 mod background_task_type;
-mod big_query_config;
+mod big_query_config_in;
+mod big_query_config_out;
 mod big_query_config_patch;
 mod bulk_replay_in;
 mod checkbook_config;
 mod checkbook_config_out;
-mod clickhouse_config;
+mod clickhouse_config_in;
+mod clickhouse_config_out;
 mod clickhouse_config_patch;
 mod connector_in;
 mod connector_kind;
@@ -60,7 +62,8 @@ mod endpoint_transformation_patch;
 mod endpoint_upsert_in;
 mod environment_in;
 mod environment_out;
-mod event_bridge_config;
+mod event_bridge_config_in;
+mod event_bridge_config_out;
 mod event_bridge_config_patch;
 mod event_example_in;
 mod event_in;
@@ -77,11 +80,12 @@ mod event_type_upsert_in;
 mod expunge_all_contents_out;
 mod github_config;
 mod github_config_out;
-mod google_cloud_pub_sub_config;
+mod google_cloud_pub_sub_config_in;
+mod google_cloud_pub_sub_config_out;
 mod google_cloud_pub_sub_config_patch;
-mod google_cloud_storage_config;
+mod google_cloud_storage_config_in;
+mod google_cloud_storage_config_out;
 mod google_cloud_storage_config_patch;
-mod http_config_patch;
 mod http_sink_headers_patch_in;
 mod hubspot_config;
 mod hubspot_config_out;
@@ -142,7 +146,6 @@ mod operational_webhook_endpoint_upsert_in;
 mod ordering;
 mod orum_io_config;
 mod orum_io_config_out;
-mod otel_tracing_config_patch;
 mod panda_doc_config;
 mod panda_doc_config_out;
 mod poller_v2_commit_in;
@@ -154,11 +157,13 @@ mod polling_endpoint_message_out;
 mod polling_endpoint_out;
 mod port_io_config;
 mod port_io_config_out;
-mod rabbit_mq_config;
+mod rabbit_mq_config_in;
+mod rabbit_mq_config_out;
 mod rabbit_mq_config_patch;
 mod recover_in;
 mod recover_out;
-mod redshift_config;
+mod redshift_config_in;
+mod redshift_config_out;
 mod redshift_config_patch;
 mod replay_in;
 mod replay_out;
@@ -166,14 +171,20 @@ mod rotate_poller_token_in;
 mod rotate_token_out;
 mod rutter_config;
 mod rutter_config_out;
-mod s3_config;
+mod s3_config_in;
+mod s3_config_out;
+mod s3_config_patch;
 mod segment_config;
 mod segment_config_out;
 mod shopify_config;
 mod shopify_config_out;
-mod sink_http_config;
+mod sink_http_config_in;
+mod sink_http_config_out;
+mod sink_http_config_patch;
 mod sink_in_common;
-mod sink_otel_v1_config;
+mod sink_otel_tracing_config_in;
+mod sink_otel_tracing_config_out;
+mod sink_otel_tracing_config_patch;
 mod sink_secret_out;
 mod sink_status;
 mod sink_status_in;
@@ -181,11 +192,14 @@ mod sink_transform_in;
 mod sink_transformation_out;
 mod slack_config;
 mod slack_config_out;
-mod snowflake_config;
+mod snowflake_config_in;
+mod snowflake_config_out;
 mod snowflake_config_patch;
-mod sns_config;
+mod sns_config_in;
+mod sns_config_out;
 mod sns_config_patch;
-mod sqs_config;
+mod sqs_config_in;
+mod sqs_config_out;
 mod sqs_config_patch;
 mod starting_position;
 mod status_code_class;
@@ -231,7 +245,6 @@ pub use self::{
     aggregate_event_types_out::AggregateEventTypesOut,
     airwallex_config::AirwallexConfig,
     airwallex_config_out::AirwallexConfigOut,
-    amazon_s3_config_patch::AmazonS3ConfigPatch,
     api_token_out::ApiTokenOut,
     app_portal_access_in::AppPortalAccessIn,
     app_portal_access_out::AppPortalAccessOut,
@@ -244,17 +257,20 @@ pub use self::{
     application_token_expire_in::ApplicationTokenExpireIn,
     authentication_source::AuthenticationSource,
     auto_config_sink_type::AutoConfigSinkType,
-    azure_blob_storage_config::AzureBlobStorageConfig,
+    azure_blob_storage_config_in::AzureBlobStorageConfigIn,
+    azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     azure_blob_storage_config_patch::AzureBlobStorageConfigPatch,
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
-    big_query_config::BigQueryConfig,
+    big_query_config_in::BigQueryConfigIn,
+    big_query_config_out::BigQueryConfigOut,
     big_query_config_patch::BigQueryConfigPatch,
     bulk_replay_in::BulkReplayIn,
     checkbook_config::CheckbookConfig,
     checkbook_config_out::CheckbookConfigOut,
-    clickhouse_config::ClickhouseConfig,
+    clickhouse_config_in::ClickhouseConfigIn,
+    clickhouse_config_out::ClickhouseConfigOut,
     clickhouse_config_patch::ClickhouseConfigPatch,
     connector_in::ConnectorIn,
     connector_kind::ConnectorKind,
@@ -286,7 +302,8 @@ pub use self::{
     endpoint_upsert_in::EndpointUpsertIn,
     environment_in::EnvironmentIn,
     environment_out::EnvironmentOut,
-    event_bridge_config::EventBridgeConfig,
+    event_bridge_config_in::EventBridgeConfigIn,
+    event_bridge_config_out::EventBridgeConfigOut,
     event_bridge_config_patch::EventBridgeConfigPatch,
     event_example_in::EventExampleIn,
     event_in::EventIn,
@@ -303,11 +320,12 @@ pub use self::{
     expunge_all_contents_out::ExpungeAllContentsOut,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
-    google_cloud_pub_sub_config::GoogleCloudPubSubConfig,
+    google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
+    google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_pub_sub_config_patch::GoogleCloudPubSubConfigPatch,
-    google_cloud_storage_config::GoogleCloudStorageConfig,
+    google_cloud_storage_config_in::GoogleCloudStorageConfigIn,
+    google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
     google_cloud_storage_config_patch::GoogleCloudStorageConfigPatch,
-    http_config_patch::HttpConfigPatch,
     http_sink_headers_patch_in::HttpSinkHeadersPatchIn,
     hubspot_config::HubspotConfig,
     hubspot_config_out::HubspotConfigOut,
@@ -368,7 +386,6 @@ pub use self::{
     ordering::Ordering,
     orum_io_config::OrumIoConfig,
     orum_io_config_out::OrumIoConfigOut,
-    otel_tracing_config_patch::OtelTracingConfigPatch,
     panda_doc_config::PandaDocConfig,
     panda_doc_config_out::PandaDocConfigOut,
     poller_v2_commit_in::PollerV2CommitIn,
@@ -380,11 +397,13 @@ pub use self::{
     polling_endpoint_out::PollingEndpointOut,
     port_io_config::PortIoConfig,
     port_io_config_out::PortIoConfigOut,
-    rabbit_mq_config::RabbitMqConfig,
+    rabbit_mq_config_in::RabbitMqConfigIn,
+    rabbit_mq_config_out::RabbitMqConfigOut,
     rabbit_mq_config_patch::RabbitMqConfigPatch,
     recover_in::RecoverIn,
     recover_out::RecoverOut,
-    redshift_config::RedshiftConfig,
+    redshift_config_in::RedshiftConfigIn,
+    redshift_config_out::RedshiftConfigOut,
     redshift_config_patch::RedshiftConfigPatch,
     replay_in::ReplayIn,
     replay_out::ReplayOut,
@@ -392,14 +411,20 @@ pub use self::{
     rotate_token_out::RotateTokenOut,
     rutter_config::RutterConfig,
     rutter_config_out::RutterConfigOut,
-    s3_config::S3Config,
+    s3_config_in::S3ConfigIn,
+    s3_config_out::S3ConfigOut,
+    s3_config_patch::S3ConfigPatch,
     segment_config::SegmentConfig,
     segment_config_out::SegmentConfigOut,
     shopify_config::ShopifyConfig,
     shopify_config_out::ShopifyConfigOut,
-    sink_http_config::SinkHttpConfig,
+    sink_http_config_in::SinkHttpConfigIn,
+    sink_http_config_out::SinkHttpConfigOut,
+    sink_http_config_patch::SinkHttpConfigPatch,
     sink_in_common::SinkInCommon,
-    sink_otel_v1_config::SinkOtelV1Config,
+    sink_otel_tracing_config_in::SinkOtelTracingConfigIn,
+    sink_otel_tracing_config_out::SinkOtelTracingConfigOut,
+    sink_otel_tracing_config_patch::SinkOtelTracingConfigPatch,
     sink_secret_out::SinkSecretOut,
     sink_status::SinkStatus,
     sink_status_in::SinkStatusIn,
@@ -407,11 +432,14 @@ pub use self::{
     sink_transformation_out::SinkTransformationOut,
     slack_config::SlackConfig,
     slack_config_out::SlackConfigOut,
-    snowflake_config::SnowflakeConfig,
+    snowflake_config_in::SnowflakeConfigIn,
+    snowflake_config_out::SnowflakeConfigOut,
     snowflake_config_patch::SnowflakeConfigPatch,
-    sns_config::SnsConfig,
+    sns_config_in::SnsConfigIn,
+    sns_config_out::SnsConfigOut,
     sns_config_patch::SnsConfigPatch,
-    sqs_config::SqsConfig,
+    sqs_config_in::SqsConfigIn,
+    sqs_config_out::SqsConfigOut,
     sqs_config_patch::SqsConfigPatch,
     starting_position::StartingPosition,
     status_code_class::StatusCodeClass,

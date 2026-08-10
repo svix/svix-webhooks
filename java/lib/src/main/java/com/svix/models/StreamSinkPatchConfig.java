@@ -54,7 +54,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("otelTracing")
     public static class OtelTracing extends StreamSinkPatchConfig {
-        private final OtelTracingConfigPatch otelTracing;
+        private final SinkOtelTracingConfigPatch otelTracing;
 
         @Override
         public JsonNode toJsonNode() {
@@ -69,7 +69,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("http")
     public static class Http extends StreamSinkPatchConfig {
-        private final HttpConfigPatch http;
+        private final SinkHttpConfigPatch http;
 
         @Override
         public JsonNode toJsonNode() {
@@ -84,7 +84,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("amazonS3")
     public static class AmazonS3 extends StreamSinkPatchConfig {
-        private final AmazonS3ConfigPatch amazonS3;
+        private final S3ConfigPatch amazonS3;
 
         @Override
         public JsonNode toJsonNode() {
@@ -257,9 +257,9 @@ public abstract class StreamSinkPatchConfig {
                 c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfigPatch.class)));
         TY_M.put(
                 "otelTracing",
-                c -> new OtelTracing(m.convertValue(c, OtelTracingConfigPatch.class)));
-        TY_M.put("http", c -> new Http(m.convertValue(c, HttpConfigPatch.class)));
-        TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, AmazonS3ConfigPatch.class)));
+                c -> new OtelTracing(m.convertValue(c, SinkOtelTracingConfigPatch.class)));
+        TY_M.put("http", c -> new Http(m.convertValue(c, SinkHttpConfigPatch.class)));
+        TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, S3ConfigPatch.class)));
         TY_M.put(
                 "googleCloudStorage",
                 c ->

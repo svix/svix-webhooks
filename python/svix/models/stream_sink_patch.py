@@ -4,7 +4,6 @@ import typing as t
 from pydantic import ModelWrapValidatorHandler, model_validator
 from typing_extensions import Self
 
-from .amazon_s3_config_patch import AmazonS3ConfigPatch
 from .azure_blob_storage_config_patch import AzureBlobStorageConfigPatch
 from .big_query_config_patch import BigQueryConfigPatch
 from .clickhouse_config_patch import ClickhouseConfigPatch
@@ -12,10 +11,11 @@ from .common import BaseModel
 from .event_bridge_config_patch import EventBridgeConfigPatch
 from .google_cloud_pub_sub_config_patch import GoogleCloudPubSubConfigPatch
 from .google_cloud_storage_config_patch import GoogleCloudStorageConfigPatch
-from .http_config_patch import HttpConfigPatch
-from .otel_tracing_config_patch import OtelTracingConfigPatch
 from .rabbit_mq_config_patch import RabbitMqConfigPatch
 from .redshift_config_patch import RedshiftConfigPatch
+from .s3_config_patch import S3ConfigPatch
+from .sink_http_config_patch import SinkHttpConfigPatch
+from .sink_otel_tracing_config_patch import SinkOtelTracingConfigPatch
 from .sink_status_in import SinkStatusIn
 from .snowflake_config_patch import SnowflakeConfigPatch
 from .sns_config_patch import SnsConfigPatch
@@ -56,9 +56,9 @@ class StreamSinkPatch(BaseModel):
     config: t.Union[
         t.Dict[str, t.Any],
         AzureBlobStorageConfigPatch,
-        OtelTracingConfigPatch,
-        HttpConfigPatch,
-        AmazonS3ConfigPatch,
+        SinkOtelTracingConfigPatch,
+        SinkHttpConfigPatch,
+        S3ConfigPatch,
         GoogleCloudStorageConfigPatch,
         GoogleCloudPubSubConfigPatch,
         SqsConfigPatch,
@@ -88,13 +88,13 @@ class StreamSinkPatch(BaseModel):
                 data.get("config", {})
             )
         elif output.type == "otelTracing":
-            output.config = OtelTracingConfigPatch.model_validate(
+            output.config = SinkOtelTracingConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "http":
-            output.config = HttpConfigPatch.model_validate(data.get("config", {}))
+            output.config = SinkHttpConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "amazonS3":
-            output.config = AmazonS3ConfigPatch.model_validate(data.get("config", {}))
+            output.config = S3ConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "googleCloudStorage":
             output.config = GoogleCloudStorageConfigPatch.model_validate(
                 data.get("config", {})

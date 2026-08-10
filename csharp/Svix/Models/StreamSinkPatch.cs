@@ -108,14 +108,14 @@ namespace Svix.Models
         ) => new(azureBlobStorageConfigPatch, ConfigType.AzureBlobStorage);
 
         public static StreamSinkPatchConfig OtelTracing(
-            OtelTracingConfigPatch otelTracingConfigPatch
-        ) => new(otelTracingConfigPatch, ConfigType.OtelTracing);
+            SinkOtelTracingConfigPatch sinkOtelTracingConfigPatch
+        ) => new(sinkOtelTracingConfigPatch, ConfigType.OtelTracing);
 
-        public static StreamSinkPatchConfig Http(HttpConfigPatch httpConfigPatch) =>
-            new(httpConfigPatch, ConfigType.Http);
+        public static StreamSinkPatchConfig Http(SinkHttpConfigPatch sinkHttpConfigPatch) =>
+            new(sinkHttpConfigPatch, ConfigType.Http);
 
-        public static StreamSinkPatchConfig AmazonS3(AmazonS3ConfigPatch amazonS3ConfigPatch) =>
-            new(amazonS3ConfigPatch, ConfigType.AmazonS3);
+        public static StreamSinkPatchConfig AmazonS3(S3ConfigPatch s3ConfigPatch) =>
+            new(s3ConfigPatch, ConfigType.AmazonS3);
 
         public static StreamSinkPatchConfig GoogleCloudStorage(
             GoogleCloudStorageConfigPatch googleCloudStorageConfigPatch
@@ -202,9 +202,9 @@ namespace Svix.Models
         public TResult Match<TResult>(
             Func<TResult> onPoller,
             Func<AzureBlobStorageConfigPatch, TResult> onAzureBlobStorage,
-            Func<OtelTracingConfigPatch, TResult> onOtelTracing,
-            Func<HttpConfigPatch, TResult> onHttp,
-            Func<AmazonS3ConfigPatch, TResult> onAmazonS3,
+            Func<SinkOtelTracingConfigPatch, TResult> onOtelTracing,
+            Func<SinkHttpConfigPatch, TResult> onHttp,
+            Func<S3ConfigPatch, TResult> onAmazonS3,
             Func<GoogleCloudStorageConfigPatch, TResult> onGoogleCloudStorage,
             Func<GoogleCloudPubSubConfigPatch, TResult> onGoogleCloudPubSub,
             Func<SqsConfigPatch, TResult> onSqs,
@@ -223,9 +223,9 @@ namespace Svix.Models
                 ConfigType.AzureBlobStorage => onAzureBlobStorage(
                     (AzureBlobStorageConfigPatch)_value
                 ),
-                ConfigType.OtelTracing => onOtelTracing((OtelTracingConfigPatch)_value),
-                ConfigType.Http => onHttp((HttpConfigPatch)_value),
-                ConfigType.AmazonS3 => onAmazonS3((AmazonS3ConfigPatch)_value),
+                ConfigType.OtelTracing => onOtelTracing((SinkOtelTracingConfigPatch)_value),
+                ConfigType.Http => onHttp((SinkHttpConfigPatch)_value),
+                ConfigType.AmazonS3 => onAmazonS3((S3ConfigPatch)_value),
                 ConfigType.GoogleCloudStorage => onGoogleCloudStorage(
                     (GoogleCloudStorageConfigPatch)_value
                 ),
@@ -248,9 +248,9 @@ namespace Svix.Models
         public void Switch(
             Action onPoller,
             Action<AzureBlobStorageConfigPatch> onAzureBlobStorage,
-            Action<OtelTracingConfigPatch> onOtelTracing,
-            Action<HttpConfigPatch> onHttp,
-            Action<AmazonS3ConfigPatch> onAmazonS3,
+            Action<SinkOtelTracingConfigPatch> onOtelTracing,
+            Action<SinkHttpConfigPatch> onHttp,
+            Action<S3ConfigPatch> onAmazonS3,
             Action<GoogleCloudStorageConfigPatch> onGoogleCloudStorage,
             Action<GoogleCloudPubSubConfigPatch> onGoogleCloudPubSub,
             Action<SqsConfigPatch> onSqs,
@@ -272,13 +272,13 @@ namespace Svix.Models
                     onAzureBlobStorage((AzureBlobStorageConfigPatch)_value);
                     break;
                 case ConfigType.OtelTracing:
-                    onOtelTracing((OtelTracingConfigPatch)_value);
+                    onOtelTracing((SinkOtelTracingConfigPatch)_value);
                     break;
                 case ConfigType.Http:
-                    onHttp((HttpConfigPatch)_value);
+                    onHttp((SinkHttpConfigPatch)_value);
                     break;
                 case ConfigType.AmazonS3:
-                    onAmazonS3((AmazonS3ConfigPatch)_value);
+                    onAmazonS3((S3ConfigPatch)_value);
                     break;
                 case ConfigType.GoogleCloudStorage:
                     onGoogleCloudStorage((GoogleCloudStorageConfigPatch)_value);
@@ -431,9 +431,9 @@ namespace Svix.Models
             ["azureBlobStorage"] = c =>
                 StreamSinkPatchConfig.AzureBlobStorage(ToObj<AzureBlobStorageConfigPatch>(c)),
             ["otelTracing"] = c =>
-                StreamSinkPatchConfig.OtelTracing(ToObj<OtelTracingConfigPatch>(c)),
-            ["http"] = c => StreamSinkPatchConfig.Http(ToObj<HttpConfigPatch>(c)),
-            ["amazonS3"] = c => StreamSinkPatchConfig.AmazonS3(ToObj<AmazonS3ConfigPatch>(c)),
+                StreamSinkPatchConfig.OtelTracing(ToObj<SinkOtelTracingConfigPatch>(c)),
+            ["http"] = c => StreamSinkPatchConfig.Http(ToObj<SinkHttpConfigPatch>(c)),
+            ["amazonS3"] = c => StreamSinkPatchConfig.AmazonS3(ToObj<S3ConfigPatch>(c)),
             ["googleCloudStorage"] = c =>
                 StreamSinkPatchConfig.GoogleCloudStorage(ToObj<GoogleCloudStorageConfigPatch>(c)),
             ["googleCloudPubSub"] = c =>

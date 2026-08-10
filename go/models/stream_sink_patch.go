@@ -10,17 +10,17 @@ import (
 
 // When creating an StreamSinkPatch, use the appropriate config structure based on the Type:
 //   - "poller": No config needed (nil or just ignore the config field)
-//   - "amazonS3": Use AmazonS3ConfigPatch
 //   - "azureBlobStorage": Use AzureBlobStorageConfigPatch
 //   - "bigQuery": Use BigQueryConfigPatch
 //   - "clickhouse": Use ClickhouseConfigPatch
 //   - "eventBridge": Use EventBridgeConfigPatch
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigPatch
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
-//   - "http": Use HttpConfigPatch
-//   - "otelTracing": Use OtelTracingConfigPatch
 //   - "rabbitMq": Use RabbitMqConfigPatch
 //   - "redshift": Use RedshiftConfigPatch
+//   - "amazonS3": Use S3ConfigPatch
+//   - "http": Use SinkHttpConfigPatch
+//   - "otelTracing": Use SinkOtelTracingConfigPatch
 //   - "snowflake": Use SnowflakeConfigPatch
 //   - "sns": Use SnsConfigPatch
 //   - "sqs": Use SqsConfigPatch
@@ -61,9 +61,9 @@ type StreamSinkPatchConfig interface {
 
 func (emptyMap) isStreamSinkPatchConfig()                      {}
 func (AzureBlobStorageConfigPatch) isStreamSinkPatchConfig()   {}
-func (OtelTracingConfigPatch) isStreamSinkPatchConfig()        {}
-func (HttpConfigPatch) isStreamSinkPatchConfig()               {}
-func (AmazonS3ConfigPatch) isStreamSinkPatchConfig()           {}
+func (SinkOtelTracingConfigPatch) isStreamSinkPatchConfig()    {}
+func (SinkHttpConfigPatch) isStreamSinkPatchConfig()           {}
+func (S3ConfigPatch) isStreamSinkPatchConfig()                 {}
 func (GoogleCloudStorageConfigPatch) isStreamSinkPatchConfig() {}
 func (GoogleCloudPubSubConfigPatch) isStreamSinkPatchConfig()  {}
 func (SqsConfigPatch) isStreamSinkPatchConfig()                {}
@@ -89,10 +89,6 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	var err error
 	switch i.Type {
 	case "poller":
-	case "amazonS3":
-		var c AmazonS3ConfigPatch
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
 	case "azureBlobStorage":
 		var c AzureBlobStorageConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
@@ -117,20 +113,24 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		var c GoogleCloudStorageConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
-	case "http":
-		var c HttpConfigPatch
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "otelTracing":
-		var c OtelTracingConfigPatch
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
 	case "rabbitMq":
 		var c RabbitMqConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "redshift":
 		var c RedshiftConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "amazonS3":
+		var c S3ConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "http":
+		var c SinkHttpConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "otelTracing":
+		var c SinkOtelTracingConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "snowflake":
