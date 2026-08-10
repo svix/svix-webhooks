@@ -35,8 +35,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["since"] = Svix::serialize_primitive(@since) if @since
-      out["until"] = Svix::serialize_primitive(@until) if @until
+      out["since"] = Svix::serialize_primitive(@since) unless @since.nil?
+      out["until"] = Svix::serialize_primitive(@until) unless @until.nil?
       out
     end
 

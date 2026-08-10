@@ -33,7 +33,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["ingestUrl"] = Svix::serialize_primitive(@ingest_url) if @ingest_url
+      out["ingestUrl"] = Svix::serialize_primitive(@ingest_url) unless @ingest_url.nil?
       out
     end
 

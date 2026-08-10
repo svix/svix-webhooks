@@ -41,11 +41,11 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["version"] = Svix::serialize_primitive(@version) if @version
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["eventTypes"] = @event_types.map { |v| v.serialize } if @event_types
-      out["settings"] = Svix::serialize_primitive(@settings) if @settings
-      out["connectors"] = @connectors.map { |v| v.serialize } if @connectors
+      out["version"] = Svix::serialize_primitive(@version) unless @version.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["eventTypes"] = @event_types.map { |v| v.serialize } unless @event_types.nil?
+      out["settings"] = Svix::serialize_primitive(@settings) unless @settings.nil?
+      out["connectors"] = @connectors.map { |v| v.serialize } unless @connectors.nil?
       out
     end
 

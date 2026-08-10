@@ -56,13 +56,13 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
       out["logo"] = Svix::serialize_primitive(@logo) if @__logo_is_defined
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
-      out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["kind"] = Svix::serialize_schema_ref(@kind) unless @kind.nil?
+      out["instructions"] = Svix::serialize_primitive(@instructions) unless @instructions.nil?
       out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @__allowed_event_types_is_defined
-      out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
+      out["transformation"] = Svix::serialize_primitive(@transformation) unless @transformation.nil?
       out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @__feature_flags_is_defined
       out
     end

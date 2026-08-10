@@ -44,7 +44,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["description"] = Svix::serialize_primitive(@description) if @description
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
       out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
       out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
       out["schemas"] = Svix::serialize_primitive(@schemas) if @__schemas_is_defined
