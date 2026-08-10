@@ -6,6 +6,9 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/All **(Breaking)**: Fix stream sink API patch types
+  * All the `PatchConfig`-suffixed types are now `ConfigPatch`-suffixed
+  * For some libraries, this changes types and may also fix serialization issues
 * Libs/Rust **(Breaking)**: Remove `Configuration` from the public API
   * The access token can still be accessed using `svix.token()`, if you were using any of the other fields let us know!
 * Libs/Rust **(Breaking)**: Upgrade public dependency `js_option` to 0.2.0

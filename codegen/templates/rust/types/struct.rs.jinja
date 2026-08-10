@@ -1,5 +1,6 @@
 {% from "types/macros.rs.jinja" import field_name -%}
 {% if type.name is endingwith "Patch" -%}
+    #[allow(unused_imports)]
     use js_option::JsOption;
 {% endif -%}
 use serde::{Deserialize, Serialize};

@@ -104,52 +104,52 @@ namespace Svix.Models
             new(new Dictionary<string, string>(), ConfigType.Poller);
 
         public static StreamSinkPatchConfig AzureBlobStorage(
-            AzureBlobStoragePatchConfig azureBlobStoragePatchConfig
-        ) => new(azureBlobStoragePatchConfig, ConfigType.AzureBlobStorage);
+            AzureBlobStorageConfigPatch azureBlobStorageConfigPatch
+        ) => new(azureBlobStorageConfigPatch, ConfigType.AzureBlobStorage);
 
         public static StreamSinkPatchConfig OtelTracing(
-            OtelTracingPatchConfig otelTracingPatchConfig
-        ) => new(otelTracingPatchConfig, ConfigType.OtelTracing);
+            OtelTracingConfigPatch otelTracingConfigPatch
+        ) => new(otelTracingConfigPatch, ConfigType.OtelTracing);
 
-        public static StreamSinkPatchConfig Http(HttpPatchConfig httpPatchConfig) =>
-            new(httpPatchConfig, ConfigType.Http);
+        public static StreamSinkPatchConfig Http(HttpConfigPatch httpConfigPatch) =>
+            new(httpConfigPatch, ConfigType.Http);
 
-        public static StreamSinkPatchConfig AmazonS3(AmazonS3PatchConfig amazonS3PatchConfig) =>
-            new(amazonS3PatchConfig, ConfigType.AmazonS3);
+        public static StreamSinkPatchConfig AmazonS3(AmazonS3ConfigPatch amazonS3ConfigPatch) =>
+            new(amazonS3ConfigPatch, ConfigType.AmazonS3);
 
         public static StreamSinkPatchConfig GoogleCloudStorage(
-            GoogleCloudStoragePatchConfig googleCloudStoragePatchConfig
-        ) => new(googleCloudStoragePatchConfig, ConfigType.GoogleCloudStorage);
+            GoogleCloudStorageConfigPatch googleCloudStorageConfigPatch
+        ) => new(googleCloudStorageConfigPatch, ConfigType.GoogleCloudStorage);
 
         public static StreamSinkPatchConfig GoogleCloudPubSub(
-            GoogleCloudPubSubPatchConfig googleCloudPubSubPatchConfig
-        ) => new(googleCloudPubSubPatchConfig, ConfigType.GoogleCloudPubSub);
+            GoogleCloudPubSubConfigPatch googleCloudPubSubConfigPatch
+        ) => new(googleCloudPubSubConfigPatch, ConfigType.GoogleCloudPubSub);
 
-        public static StreamSinkPatchConfig Sqs(SqsPatchConfig sqsPatchConfig) =>
-            new(sqsPatchConfig, ConfigType.Sqs);
+        public static StreamSinkPatchConfig Sqs(SqsConfigPatch sqsConfigPatch) =>
+            new(sqsConfigPatch, ConfigType.Sqs);
 
-        public static StreamSinkPatchConfig Sns(SnsPatchConfig snsPatchConfig) =>
-            new(snsPatchConfig, ConfigType.Sns);
+        public static StreamSinkPatchConfig Sns(SnsConfigPatch snsConfigPatch) =>
+            new(snsConfigPatch, ConfigType.Sns);
 
-        public static StreamSinkPatchConfig BigQuery(BigQueryPatchConfig bigQueryPatchConfig) =>
-            new(bigQueryPatchConfig, ConfigType.BigQuery);
+        public static StreamSinkPatchConfig BigQuery(BigQueryConfigPatch bigQueryConfigPatch) =>
+            new(bigQueryConfigPatch, ConfigType.BigQuery);
 
         public static StreamSinkPatchConfig Clickhouse(
-            ClickhousePatchConfig clickhousePatchConfig
-        ) => new(clickhousePatchConfig, ConfigType.Clickhouse);
+            ClickhouseConfigPatch clickhouseConfigPatch
+        ) => new(clickhouseConfigPatch, ConfigType.Clickhouse);
 
         public static StreamSinkPatchConfig EventBridge(
-            EventBridgePatchConfig eventBridgePatchConfig
-        ) => new(eventBridgePatchConfig, ConfigType.EventBridge);
+            EventBridgeConfigPatch eventBridgeConfigPatch
+        ) => new(eventBridgeConfigPatch, ConfigType.EventBridge);
 
-        public static StreamSinkPatchConfig Snowflake(SnowflakePatchConfig snowflakePatchConfig) =>
-            new(snowflakePatchConfig, ConfigType.Snowflake);
+        public static StreamSinkPatchConfig Snowflake(SnowflakeConfigPatch snowflakeConfigPatch) =>
+            new(snowflakeConfigPatch, ConfigType.Snowflake);
 
-        public static StreamSinkPatchConfig RabbitMq(RabbitMqPatchConfig rabbitMqPatchConfig) =>
-            new(rabbitMqPatchConfig, ConfigType.RabbitMq);
+        public static StreamSinkPatchConfig RabbitMq(RabbitMqConfigPatch rabbitMqConfigPatch) =>
+            new(rabbitMqConfigPatch, ConfigType.RabbitMq);
 
-        public static StreamSinkPatchConfig Redshift(RedshiftPatchConfig redshiftPatchConfig) =>
-            new(redshiftPatchConfig, ConfigType.Redshift);
+        public static StreamSinkPatchConfig Redshift(RedshiftConfigPatch redshiftConfigPatch) =>
+            new(redshiftConfigPatch, ConfigType.Redshift);
 
         private enum ConfigType
         {
@@ -201,45 +201,45 @@ namespace Svix.Models
 
         public TResult Match<TResult>(
             Func<TResult> onPoller,
-            Func<AzureBlobStoragePatchConfig, TResult> onAzureBlobStorage,
-            Func<OtelTracingPatchConfig, TResult> onOtelTracing,
-            Func<HttpPatchConfig, TResult> onHttp,
-            Func<AmazonS3PatchConfig, TResult> onAmazonS3,
-            Func<GoogleCloudStoragePatchConfig, TResult> onGoogleCloudStorage,
-            Func<GoogleCloudPubSubPatchConfig, TResult> onGoogleCloudPubSub,
-            Func<SqsPatchConfig, TResult> onSqs,
-            Func<SnsPatchConfig, TResult> onSns,
-            Func<BigQueryPatchConfig, TResult> onBigQuery,
-            Func<ClickhousePatchConfig, TResult> onClickhouse,
-            Func<EventBridgePatchConfig, TResult> onEventBridge,
-            Func<SnowflakePatchConfig, TResult> onSnowflake,
-            Func<RabbitMqPatchConfig, TResult> onRabbitMq,
-            Func<RedshiftPatchConfig, TResult> onRedshift
+            Func<AzureBlobStorageConfigPatch, TResult> onAzureBlobStorage,
+            Func<OtelTracingConfigPatch, TResult> onOtelTracing,
+            Func<HttpConfigPatch, TResult> onHttp,
+            Func<AmazonS3ConfigPatch, TResult> onAmazonS3,
+            Func<GoogleCloudStorageConfigPatch, TResult> onGoogleCloudStorage,
+            Func<GoogleCloudPubSubConfigPatch, TResult> onGoogleCloudPubSub,
+            Func<SqsConfigPatch, TResult> onSqs,
+            Func<SnsConfigPatch, TResult> onSns,
+            Func<BigQueryConfigPatch, TResult> onBigQuery,
+            Func<ClickhouseConfigPatch, TResult> onClickhouse,
+            Func<EventBridgeConfigPatch, TResult> onEventBridge,
+            Func<SnowflakeConfigPatch, TResult> onSnowflake,
+            Func<RabbitMqConfigPatch, TResult> onRabbitMq,
+            Func<RedshiftConfigPatch, TResult> onRedshift
         )
         {
             return _type switch
             {
                 ConfigType.Poller => onPoller(),
                 ConfigType.AzureBlobStorage => onAzureBlobStorage(
-                    (AzureBlobStoragePatchConfig)_value
+                    (AzureBlobStorageConfigPatch)_value
                 ),
-                ConfigType.OtelTracing => onOtelTracing((OtelTracingPatchConfig)_value),
-                ConfigType.Http => onHttp((HttpPatchConfig)_value),
-                ConfigType.AmazonS3 => onAmazonS3((AmazonS3PatchConfig)_value),
+                ConfigType.OtelTracing => onOtelTracing((OtelTracingConfigPatch)_value),
+                ConfigType.Http => onHttp((HttpConfigPatch)_value),
+                ConfigType.AmazonS3 => onAmazonS3((AmazonS3ConfigPatch)_value),
                 ConfigType.GoogleCloudStorage => onGoogleCloudStorage(
-                    (GoogleCloudStoragePatchConfig)_value
+                    (GoogleCloudStorageConfigPatch)_value
                 ),
                 ConfigType.GoogleCloudPubSub => onGoogleCloudPubSub(
-                    (GoogleCloudPubSubPatchConfig)_value
+                    (GoogleCloudPubSubConfigPatch)_value
                 ),
-                ConfigType.Sqs => onSqs((SqsPatchConfig)_value),
-                ConfigType.Sns => onSns((SnsPatchConfig)_value),
-                ConfigType.BigQuery => onBigQuery((BigQueryPatchConfig)_value),
-                ConfigType.Clickhouse => onClickhouse((ClickhousePatchConfig)_value),
-                ConfigType.EventBridge => onEventBridge((EventBridgePatchConfig)_value),
-                ConfigType.Snowflake => onSnowflake((SnowflakePatchConfig)_value),
-                ConfigType.RabbitMq => onRabbitMq((RabbitMqPatchConfig)_value),
-                ConfigType.Redshift => onRedshift((RedshiftPatchConfig)_value),
+                ConfigType.Sqs => onSqs((SqsConfigPatch)_value),
+                ConfigType.Sns => onSns((SnsConfigPatch)_value),
+                ConfigType.BigQuery => onBigQuery((BigQueryConfigPatch)_value),
+                ConfigType.Clickhouse => onClickhouse((ClickhouseConfigPatch)_value),
+                ConfigType.EventBridge => onEventBridge((EventBridgeConfigPatch)_value),
+                ConfigType.Snowflake => onSnowflake((SnowflakeConfigPatch)_value),
+                ConfigType.RabbitMq => onRabbitMq((RabbitMqConfigPatch)_value),
+                ConfigType.Redshift => onRedshift((RedshiftConfigPatch)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -247,20 +247,20 @@ namespace Svix.Models
 
         public void Switch(
             Action onPoller,
-            Action<AzureBlobStoragePatchConfig> onAzureBlobStorage,
-            Action<OtelTracingPatchConfig> onOtelTracing,
-            Action<HttpPatchConfig> onHttp,
-            Action<AmazonS3PatchConfig> onAmazonS3,
-            Action<GoogleCloudStoragePatchConfig> onGoogleCloudStorage,
-            Action<GoogleCloudPubSubPatchConfig> onGoogleCloudPubSub,
-            Action<SqsPatchConfig> onSqs,
-            Action<SnsPatchConfig> onSns,
-            Action<BigQueryPatchConfig> onBigQuery,
-            Action<ClickhousePatchConfig> onClickhouse,
-            Action<EventBridgePatchConfig> onEventBridge,
-            Action<SnowflakePatchConfig> onSnowflake,
-            Action<RabbitMqPatchConfig> onRabbitMq,
-            Action<RedshiftPatchConfig> onRedshift
+            Action<AzureBlobStorageConfigPatch> onAzureBlobStorage,
+            Action<OtelTracingConfigPatch> onOtelTracing,
+            Action<HttpConfigPatch> onHttp,
+            Action<AmazonS3ConfigPatch> onAmazonS3,
+            Action<GoogleCloudStorageConfigPatch> onGoogleCloudStorage,
+            Action<GoogleCloudPubSubConfigPatch> onGoogleCloudPubSub,
+            Action<SqsConfigPatch> onSqs,
+            Action<SnsConfigPatch> onSns,
+            Action<BigQueryConfigPatch> onBigQuery,
+            Action<ClickhouseConfigPatch> onClickhouse,
+            Action<EventBridgeConfigPatch> onEventBridge,
+            Action<SnowflakeConfigPatch> onSnowflake,
+            Action<RabbitMqConfigPatch> onRabbitMq,
+            Action<RedshiftConfigPatch> onRedshift
         )
         {
             switch (_type)
@@ -269,46 +269,46 @@ namespace Svix.Models
                     onPoller();
                     break;
                 case ConfigType.AzureBlobStorage:
-                    onAzureBlobStorage((AzureBlobStoragePatchConfig)_value);
+                    onAzureBlobStorage((AzureBlobStorageConfigPatch)_value);
                     break;
                 case ConfigType.OtelTracing:
-                    onOtelTracing((OtelTracingPatchConfig)_value);
+                    onOtelTracing((OtelTracingConfigPatch)_value);
                     break;
                 case ConfigType.Http:
-                    onHttp((HttpPatchConfig)_value);
+                    onHttp((HttpConfigPatch)_value);
                     break;
                 case ConfigType.AmazonS3:
-                    onAmazonS3((AmazonS3PatchConfig)_value);
+                    onAmazonS3((AmazonS3ConfigPatch)_value);
                     break;
                 case ConfigType.GoogleCloudStorage:
-                    onGoogleCloudStorage((GoogleCloudStoragePatchConfig)_value);
+                    onGoogleCloudStorage((GoogleCloudStorageConfigPatch)_value);
                     break;
                 case ConfigType.GoogleCloudPubSub:
-                    onGoogleCloudPubSub((GoogleCloudPubSubPatchConfig)_value);
+                    onGoogleCloudPubSub((GoogleCloudPubSubConfigPatch)_value);
                     break;
                 case ConfigType.Sqs:
-                    onSqs((SqsPatchConfig)_value);
+                    onSqs((SqsConfigPatch)_value);
                     break;
                 case ConfigType.Sns:
-                    onSns((SnsPatchConfig)_value);
+                    onSns((SnsConfigPatch)_value);
                     break;
                 case ConfigType.BigQuery:
-                    onBigQuery((BigQueryPatchConfig)_value);
+                    onBigQuery((BigQueryConfigPatch)_value);
                     break;
                 case ConfigType.Clickhouse:
-                    onClickhouse((ClickhousePatchConfig)_value);
+                    onClickhouse((ClickhouseConfigPatch)_value);
                     break;
                 case ConfigType.EventBridge:
-                    onEventBridge((EventBridgePatchConfig)_value);
+                    onEventBridge((EventBridgeConfigPatch)_value);
                     break;
                 case ConfigType.Snowflake:
-                    onSnowflake((SnowflakePatchConfig)_value);
+                    onSnowflake((SnowflakeConfigPatch)_value);
                     break;
                 case ConfigType.RabbitMq:
-                    onRabbitMq((RabbitMqPatchConfig)_value);
+                    onRabbitMq((RabbitMqConfigPatch)_value);
                     break;
                 case ConfigType.Redshift:
-                    onRedshift((RedshiftPatchConfig)_value);
+                    onRedshift((RedshiftConfigPatch)_value);
                     break;
                 default:
                     // unreachable
@@ -429,24 +429,24 @@ namespace Svix.Models
         {
             ["poller"] = c => StreamSinkPatchConfig.Poller(),
             ["azureBlobStorage"] = c =>
-                StreamSinkPatchConfig.AzureBlobStorage(ToObj<AzureBlobStoragePatchConfig>(c)),
+                StreamSinkPatchConfig.AzureBlobStorage(ToObj<AzureBlobStorageConfigPatch>(c)),
             ["otelTracing"] = c =>
-                StreamSinkPatchConfig.OtelTracing(ToObj<OtelTracingPatchConfig>(c)),
-            ["http"] = c => StreamSinkPatchConfig.Http(ToObj<HttpPatchConfig>(c)),
-            ["amazonS3"] = c => StreamSinkPatchConfig.AmazonS3(ToObj<AmazonS3PatchConfig>(c)),
+                StreamSinkPatchConfig.OtelTracing(ToObj<OtelTracingConfigPatch>(c)),
+            ["http"] = c => StreamSinkPatchConfig.Http(ToObj<HttpConfigPatch>(c)),
+            ["amazonS3"] = c => StreamSinkPatchConfig.AmazonS3(ToObj<AmazonS3ConfigPatch>(c)),
             ["googleCloudStorage"] = c =>
-                StreamSinkPatchConfig.GoogleCloudStorage(ToObj<GoogleCloudStoragePatchConfig>(c)),
+                StreamSinkPatchConfig.GoogleCloudStorage(ToObj<GoogleCloudStorageConfigPatch>(c)),
             ["googleCloudPubSub"] = c =>
-                StreamSinkPatchConfig.GoogleCloudPubSub(ToObj<GoogleCloudPubSubPatchConfig>(c)),
-            ["sqs"] = c => StreamSinkPatchConfig.Sqs(ToObj<SqsPatchConfig>(c)),
-            ["sns"] = c => StreamSinkPatchConfig.Sns(ToObj<SnsPatchConfig>(c)),
-            ["bigQuery"] = c => StreamSinkPatchConfig.BigQuery(ToObj<BigQueryPatchConfig>(c)),
-            ["clickhouse"] = c => StreamSinkPatchConfig.Clickhouse(ToObj<ClickhousePatchConfig>(c)),
+                StreamSinkPatchConfig.GoogleCloudPubSub(ToObj<GoogleCloudPubSubConfigPatch>(c)),
+            ["sqs"] = c => StreamSinkPatchConfig.Sqs(ToObj<SqsConfigPatch>(c)),
+            ["sns"] = c => StreamSinkPatchConfig.Sns(ToObj<SnsConfigPatch>(c)),
+            ["bigQuery"] = c => StreamSinkPatchConfig.BigQuery(ToObj<BigQueryConfigPatch>(c)),
+            ["clickhouse"] = c => StreamSinkPatchConfig.Clickhouse(ToObj<ClickhouseConfigPatch>(c)),
             ["eventBridge"] = c =>
-                StreamSinkPatchConfig.EventBridge(ToObj<EventBridgePatchConfig>(c)),
-            ["snowflake"] = c => StreamSinkPatchConfig.Snowflake(ToObj<SnowflakePatchConfig>(c)),
-            ["rabbitMq"] = c => StreamSinkPatchConfig.RabbitMq(ToObj<RabbitMqPatchConfig>(c)),
-            ["redshift"] = c => StreamSinkPatchConfig.Redshift(ToObj<RedshiftPatchConfig>(c)),
+                StreamSinkPatchConfig.EventBridge(ToObj<EventBridgeConfigPatch>(c)),
+            ["snowflake"] = c => StreamSinkPatchConfig.Snowflake(ToObj<SnowflakeConfigPatch>(c)),
+            ["rabbitMq"] = c => StreamSinkPatchConfig.RabbitMq(ToObj<RabbitMqConfigPatch>(c)),
+            ["redshift"] = c => StreamSinkPatchConfig.Redshift(ToObj<RedshiftConfigPatch>(c)),
         };
     }
 }

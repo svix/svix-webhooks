@@ -39,7 +39,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("azureBlobStorage")
     public static class AzureBlobStorage extends StreamSinkPatchConfig {
-        private final AzureBlobStoragePatchConfig azureBlobStorage;
+        private final AzureBlobStorageConfigPatch azureBlobStorage;
 
         @Override
         public JsonNode toJsonNode() {
@@ -54,7 +54,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("otelTracing")
     public static class OtelTracing extends StreamSinkPatchConfig {
-        private final OtelTracingPatchConfig otelTracing;
+        private final OtelTracingConfigPatch otelTracing;
 
         @Override
         public JsonNode toJsonNode() {
@@ -69,7 +69,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("http")
     public static class Http extends StreamSinkPatchConfig {
-        private final HttpPatchConfig http;
+        private final HttpConfigPatch http;
 
         @Override
         public JsonNode toJsonNode() {
@@ -84,7 +84,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("amazonS3")
     public static class AmazonS3 extends StreamSinkPatchConfig {
-        private final AmazonS3PatchConfig amazonS3;
+        private final AmazonS3ConfigPatch amazonS3;
 
         @Override
         public JsonNode toJsonNode() {
@@ -99,7 +99,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("googleCloudStorage")
     public static class GoogleCloudStorage extends StreamSinkPatchConfig {
-        private final GoogleCloudStoragePatchConfig googleCloudStorage;
+        private final GoogleCloudStorageConfigPatch googleCloudStorage;
 
         @Override
         public JsonNode toJsonNode() {
@@ -114,7 +114,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("googleCloudPubSub")
     public static class GoogleCloudPubSub extends StreamSinkPatchConfig {
-        private final GoogleCloudPubSubPatchConfig googleCloudPubSub;
+        private final GoogleCloudPubSubConfigPatch googleCloudPubSub;
 
         @Override
         public JsonNode toJsonNode() {
@@ -129,7 +129,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("sqs")
     public static class Sqs extends StreamSinkPatchConfig {
-        private final SqsPatchConfig sqs;
+        private final SqsConfigPatch sqs;
 
         @Override
         public JsonNode toJsonNode() {
@@ -144,7 +144,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("sns")
     public static class Sns extends StreamSinkPatchConfig {
-        private final SnsPatchConfig sns;
+        private final SnsConfigPatch sns;
 
         @Override
         public JsonNode toJsonNode() {
@@ -159,7 +159,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("bigQuery")
     public static class BigQuery extends StreamSinkPatchConfig {
-        private final BigQueryPatchConfig bigQuery;
+        private final BigQueryConfigPatch bigQuery;
 
         @Override
         public JsonNode toJsonNode() {
@@ -174,7 +174,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("clickhouse")
     public static class Clickhouse extends StreamSinkPatchConfig {
-        private final ClickhousePatchConfig clickhouse;
+        private final ClickhouseConfigPatch clickhouse;
 
         @Override
         public JsonNode toJsonNode() {
@@ -189,7 +189,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("eventBridge")
     public static class EventBridge extends StreamSinkPatchConfig {
-        private final EventBridgePatchConfig eventBridge;
+        private final EventBridgeConfigPatch eventBridge;
 
         @Override
         public JsonNode toJsonNode() {
@@ -204,7 +204,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("snowflake")
     public static class Snowflake extends StreamSinkPatchConfig {
-        private final SnowflakePatchConfig snowflake;
+        private final SnowflakeConfigPatch snowflake;
 
         @Override
         public JsonNode toJsonNode() {
@@ -219,7 +219,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("rabbitMq")
     public static class RabbitMq extends StreamSinkPatchConfig {
-        private final RabbitMqPatchConfig rabbitMq;
+        private final RabbitMqConfigPatch rabbitMq;
 
         @Override
         public JsonNode toJsonNode() {
@@ -234,7 +234,7 @@ public abstract class StreamSinkPatchConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("redshift")
     public static class Redshift extends StreamSinkPatchConfig {
-        private final RedshiftPatchConfig redshift;
+        private final RedshiftConfigPatch redshift;
 
         @Override
         public JsonNode toJsonNode() {
@@ -254,30 +254,30 @@ public abstract class StreamSinkPatchConfig {
         TY_M.put("poller", c -> new Poller());
         TY_M.put(
                 "azureBlobStorage",
-                c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStoragePatchConfig.class)));
+                c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfigPatch.class)));
         TY_M.put(
                 "otelTracing",
-                c -> new OtelTracing(m.convertValue(c, OtelTracingPatchConfig.class)));
-        TY_M.put("http", c -> new Http(m.convertValue(c, HttpPatchConfig.class)));
-        TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, AmazonS3PatchConfig.class)));
+                c -> new OtelTracing(m.convertValue(c, OtelTracingConfigPatch.class)));
+        TY_M.put("http", c -> new Http(m.convertValue(c, HttpConfigPatch.class)));
+        TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, AmazonS3ConfigPatch.class)));
         TY_M.put(
                 "googleCloudStorage",
                 c ->
                         new GoogleCloudStorage(
-                                m.convertValue(c, GoogleCloudStoragePatchConfig.class)));
+                                m.convertValue(c, GoogleCloudStorageConfigPatch.class)));
         TY_M.put(
                 "googleCloudPubSub",
-                c -> new GoogleCloudPubSub(m.convertValue(c, GoogleCloudPubSubPatchConfig.class)));
-        TY_M.put("sqs", c -> new Sqs(m.convertValue(c, SqsPatchConfig.class)));
-        TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsPatchConfig.class)));
-        TY_M.put("bigQuery", c -> new BigQuery(m.convertValue(c, BigQueryPatchConfig.class)));
-        TY_M.put("clickhouse", c -> new Clickhouse(m.convertValue(c, ClickhousePatchConfig.class)));
+                c -> new GoogleCloudPubSub(m.convertValue(c, GoogleCloudPubSubConfigPatch.class)));
+        TY_M.put("sqs", c -> new Sqs(m.convertValue(c, SqsConfigPatch.class)));
+        TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsConfigPatch.class)));
+        TY_M.put("bigQuery", c -> new BigQuery(m.convertValue(c, BigQueryConfigPatch.class)));
+        TY_M.put("clickhouse", c -> new Clickhouse(m.convertValue(c, ClickhouseConfigPatch.class)));
         TY_M.put(
                 "eventBridge",
-                c -> new EventBridge(m.convertValue(c, EventBridgePatchConfig.class)));
-        TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakePatchConfig.class)));
-        TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqPatchConfig.class)));
-        TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftPatchConfig.class)));
+                c -> new EventBridge(m.convertValue(c, EventBridgeConfigPatch.class)));
+        TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakeConfigPatch.class)));
+        TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfigPatch.class)));
+        TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfigPatch.class)));
     }
 
     public static StreamSinkPatchConfig fromTypeAndConfig(String type, JsonNode config) {
