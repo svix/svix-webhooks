@@ -1,5 +1,4 @@
 // this file is @generated
-#![allow(clippy::too_many_arguments)]
 
 {% for _, type in api.types | items -%}
     mod {{ type.name | to_snake_case }};

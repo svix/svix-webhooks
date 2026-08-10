@@ -67,7 +67,7 @@ pub struct AppPortalAccessIn {
 
 impl AppPortalAccessIn {
     pub fn new() -> Self {
-        #[allow(deprecated)]
+        #[expect(deprecated)]
         Self {
             application: None,
             read_only: None,

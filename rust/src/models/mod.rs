@@ -1,5 +1,4 @@
 // this file is @generated
-#![allow(clippy::too_many_arguments)]
 
 mod adobe_sign_config;
 mod adobe_sign_config_out;
