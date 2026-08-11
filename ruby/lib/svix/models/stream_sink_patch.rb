@@ -2,17 +2,17 @@
 # This file is @generated
 require "json"
 
-require_relative "./amazon_s3_config_patch"
 require_relative "./azure_blob_storage_config_patch"
 require_relative "./big_query_config_patch"
 require_relative "./clickhouse_config_patch"
 require_relative "./event_bridge_config_patch"
 require_relative "./google_cloud_pub_sub_config_patch"
 require_relative "./google_cloud_storage_config_patch"
-require_relative "./http_config_patch"
-require_relative "./otel_tracing_config_patch"
 require_relative "./rabbit_mq_config_patch"
 require_relative "./redshift_config_patch"
+require_relative "./s3_config_patch"
+require_relative "./sink_http_config_patch"
+require_relative "./sink_otel_tracing_config_patch"
 require_relative "./sink_status_in"
 require_relative "./snowflake_config_patch"
 require_relative "./sns_config_patch"
@@ -39,13 +39,13 @@ module Svix
     class AzureBlobStorage < AzureBlobStorageConfigPatch
     end
 
-    class OtelTracing < OtelTracingConfigPatch
+    class OtelTracing < SinkOtelTracingConfigPatch
     end
 
-    class Http < HttpConfigPatch
+    class Http < SinkHttpConfigPatch
     end
 
-    class AmazonS3 < AmazonS3ConfigPatch
+    class AmazonS3 < S3ConfigPatch
     end
 
     class GoogleCloudStorage < GoogleCloudStorageConfigPatch

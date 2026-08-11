@@ -2,21 +2,21 @@
 # This file is @generated
 require "json"
 
-require_relative "./azure_blob_storage_config"
-require_relative "./big_query_config"
-require_relative "./clickhouse_config"
-require_relative "./event_bridge_config"
-require_relative "./google_cloud_pub_sub_config"
-require_relative "./google_cloud_storage_config"
-require_relative "./rabbit_mq_config"
-require_relative "./redshift_config"
-require_relative "./s3_config"
-require_relative "./sink_http_config"
-require_relative "./sink_otel_v1_config"
+require_relative "./azure_blob_storage_config_in"
+require_relative "./big_query_config_in"
+require_relative "./clickhouse_config_in"
+require_relative "./event_bridge_config_in"
+require_relative "./google_cloud_pub_sub_config_in"
+require_relative "./google_cloud_storage_config_in"
+require_relative "./rabbit_mq_config_in"
+require_relative "./redshift_config_in"
+require_relative "./s3_config_in"
+require_relative "./sink_http_config_in"
+require_relative "./sink_otel_tracing_config_in"
 require_relative "./sink_status_in"
-require_relative "./snowflake_config"
-require_relative "./sns_config"
-require_relative "./sqs_config"
+require_relative "./snowflake_config_in"
+require_relative "./sns_config_in"
+require_relative "./sqs_config_in"
 
 module Svix
   class StreamSinkInConfig
@@ -36,46 +36,46 @@ module Svix
       end
     end
 
-    class AzureBlobStorage < AzureBlobStorageConfig
+    class AzureBlobStorage < AzureBlobStorageConfigIn
     end
 
-    class OtelTracing < SinkOtelV1Config
+    class OtelTracing < SinkOtelTracingConfigIn
     end
 
-    class Http < SinkHttpConfig
+    class Http < SinkHttpConfigIn
     end
 
-    class AmazonS3 < S3Config
+    class AmazonS3 < S3ConfigIn
     end
 
-    class GoogleCloudStorage < GoogleCloudStorageConfig
+    class GoogleCloudStorage < GoogleCloudStorageConfigIn
     end
 
-    class GoogleCloudPubSub < GoogleCloudPubSubConfig
+    class GoogleCloudPubSub < GoogleCloudPubSubConfigIn
     end
 
-    class Sqs < SqsConfig
+    class Sqs < SqsConfigIn
     end
 
-    class Sns < SnsConfig
+    class Sns < SnsConfigIn
     end
 
-    class BigQuery < BigQueryConfig
+    class BigQuery < BigQueryConfigIn
     end
 
-    class Clickhouse < ClickhouseConfig
+    class Clickhouse < ClickhouseConfigIn
     end
 
-    class EventBridge < EventBridgeConfig
+    class EventBridge < EventBridgeConfigIn
     end
 
-    class Snowflake < SnowflakeConfig
+    class Snowflake < SnowflakeConfigIn
     end
 
-    class RabbitMq < RabbitMqConfig
+    class RabbitMq < RabbitMqConfigIn
     end
 
-    class Redshift < RedshiftConfig
+    class Redshift < RedshiftConfigIn
     end
   end
 

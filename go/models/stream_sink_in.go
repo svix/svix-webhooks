@@ -8,20 +8,20 @@ import (
 
 // When creating an StreamSinkIn, use the appropriate config structure based on the Type:
 //   - "poller": No config needed (nil or just ignore the config field)
-//   - "azureBlobStorage": Use AzureBlobStorageConfig
-//   - "bigQuery": Use BigQueryConfig
-//   - "clickhouse": Use ClickhouseConfig
-//   - "eventBridge": Use EventBridgeConfig
-//   - "googleCloudPubSub": Use GoogleCloudPubSubConfig
-//   - "googleCloudStorage": Use GoogleCloudStorageConfig
-//   - "rabbitMq": Use RabbitMqConfig
-//   - "redshift": Use RedshiftConfig
-//   - "amazonS3": Use S3Config
-//   - "http": Use SinkHttpConfig
-//   - "otelTracing": Use SinkOtelV1Config
-//   - "snowflake": Use SnowflakeConfig
-//   - "sns": Use SnsConfig
-//   - "sqs": Use SqsConfig
+//   - "azureBlobStorage": Use AzureBlobStorageConfigIn
+//   - "bigQuery": Use BigQueryConfigIn
+//   - "clickhouse": Use ClickhouseConfigIn
+//   - "eventBridge": Use EventBridgeConfigIn
+//   - "googleCloudPubSub": Use GoogleCloudPubSubConfigIn
+//   - "googleCloudStorage": Use GoogleCloudStorageConfigIn
+//   - "rabbitMq": Use RabbitMqConfigIn
+//   - "redshift": Use RedshiftConfigIn
+//   - "amazonS3": Use S3ConfigIn
+//   - "http": Use SinkHttpConfigIn
+//   - "otelTracing": Use SinkOtelTracingConfigIn
+//   - "snowflake": Use SnowflakeConfigIn
+//   - "sns": Use SnsConfigIn
+//   - "sqs": Use SqsConfigIn
 type StreamSinkIn struct {
 	Uid *string `json:"uid,omitempty"` // An optional unique identifier for the sink.
 	// Whether the sink will receive events.
@@ -67,21 +67,21 @@ type StreamSinkInConfig interface {
 	isStreamSinkInConfig()
 }
 
-func (emptyMap) isStreamSinkInConfig()                 {}
-func (AzureBlobStorageConfig) isStreamSinkInConfig()   {}
-func (SinkOtelV1Config) isStreamSinkInConfig()         {}
-func (SinkHttpConfig) isStreamSinkInConfig()           {}
-func (S3Config) isStreamSinkInConfig()                 {}
-func (GoogleCloudStorageConfig) isStreamSinkInConfig() {}
-func (GoogleCloudPubSubConfig) isStreamSinkInConfig()  {}
-func (SqsConfig) isStreamSinkInConfig()                {}
-func (SnsConfig) isStreamSinkInConfig()                {}
-func (BigQueryConfig) isStreamSinkInConfig()           {}
-func (ClickhouseConfig) isStreamSinkInConfig()         {}
-func (EventBridgeConfig) isStreamSinkInConfig()        {}
-func (SnowflakeConfig) isStreamSinkInConfig()          {}
-func (RabbitMqConfig) isStreamSinkInConfig()           {}
-func (RedshiftConfig) isStreamSinkInConfig()           {}
+func (emptyMap) isStreamSinkInConfig()                   {}
+func (AzureBlobStorageConfigIn) isStreamSinkInConfig()   {}
+func (SinkOtelTracingConfigIn) isStreamSinkInConfig()    {}
+func (SinkHttpConfigIn) isStreamSinkInConfig()           {}
+func (S3ConfigIn) isStreamSinkInConfig()                 {}
+func (GoogleCloudStorageConfigIn) isStreamSinkInConfig() {}
+func (GoogleCloudPubSubConfigIn) isStreamSinkInConfig()  {}
+func (SqsConfigIn) isStreamSinkInConfig()                {}
+func (SnsConfigIn) isStreamSinkInConfig()                {}
+func (BigQueryConfigIn) isStreamSinkInConfig()           {}
+func (ClickhouseConfigIn) isStreamSinkInConfig()         {}
+func (EventBridgeConfigIn) isStreamSinkInConfig()        {}
+func (SnowflakeConfigIn) isStreamSinkInConfig()          {}
+func (RabbitMqConfigIn) isStreamSinkInConfig()           {}
+func (RedshiftConfigIn) isStreamSinkInConfig()           {}
 
 func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkIn
@@ -98,59 +98,59 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 	switch i.Type {
 	case "poller":
 	case "azureBlobStorage":
-		var c AzureBlobStorageConfig
+		var c AzureBlobStorageConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "bigQuery":
-		var c BigQueryConfig
+		var c BigQueryConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "clickhouse":
-		var c ClickhouseConfig
+		var c ClickhouseConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
-		var c EventBridgeConfig
+		var c EventBridgeConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "googleCloudPubSub":
-		var c GoogleCloudPubSubConfig
+		var c GoogleCloudPubSubConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "googleCloudStorage":
-		var c GoogleCloudStorageConfig
+		var c GoogleCloudStorageConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
-		var c RabbitMqConfig
+		var c RabbitMqConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "redshift":
-		var c RedshiftConfig
+		var c RedshiftConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "amazonS3":
-		var c S3Config
+		var c S3ConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "http":
-		var c SinkHttpConfig
+		var c SinkHttpConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "otelTracing":
-		var c SinkOtelV1Config
+		var c SinkOtelTracingConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "snowflake":
-		var c SnowflakeConfig
+		var c SnowflakeConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "sns":
-		var c SnsConfig
+		var c SnsConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "sqs":
-		var c SqsConfig
+		var c SqsConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	default:

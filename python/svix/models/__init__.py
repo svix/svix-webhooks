@@ -4,7 +4,6 @@ from .adobe_sign_config_out import AdobeSignConfigOut
 from .aggregate_event_types_out import AggregateEventTypesOut
 from .airwallex_config import AirwallexConfig
 from .airwallex_config_out import AirwallexConfigOut
-from .amazon_s3_config_patch import AmazonS3ConfigPatch
 from .api_token_out import ApiTokenOut
 from .app_portal_access_in import AppPortalAccessIn
 from .app_portal_access_out import AppPortalAccessOut
@@ -16,17 +15,20 @@ from .application_out import ApplicationOut
 from .application_patch import ApplicationPatch
 from .application_token_expire_in import ApplicationTokenExpireIn
 from .auto_config_sink_type import AutoConfigSinkType
-from .azure_blob_storage_config import AzureBlobStorageConfig
+from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
+from .azure_blob_storage_config_out import AzureBlobStorageConfigOut
 from .azure_blob_storage_config_patch import AzureBlobStorageConfigPatch
 from .background_task_out import BackgroundTaskOut
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
-from .big_query_config import BigQueryConfig
+from .big_query_config_in import BigQueryConfigIn
+from .big_query_config_out import BigQueryConfigOut
 from .big_query_config_patch import BigQueryConfigPatch
 from .bulk_replay_in import BulkReplayIn
 from .checkbook_config import CheckbookConfig
 from .checkbook_config_out import CheckbookConfigOut
-from .clickhouse_config import ClickhouseConfig
+from .clickhouse_config_in import ClickhouseConfigIn
+from .clickhouse_config_out import ClickhouseConfigOut
 from .clickhouse_config_patch import ClickhouseConfigPatch
 from .connector_in import ConnectorIn
 from .connector_kind import ConnectorKind
@@ -58,7 +60,8 @@ from .endpoint_transformation_patch import EndpointTransformationPatch
 from .endpoint_upsert_in import EndpointUpsertIn
 from .environment_in import EnvironmentIn
 from .environment_out import EnvironmentOut
-from .event_bridge_config import EventBridgeConfig
+from .event_bridge_config_in import EventBridgeConfigIn
+from .event_bridge_config_out import EventBridgeConfigOut
 from .event_bridge_config_patch import EventBridgeConfigPatch
 from .event_example_in import EventExampleIn
 from .event_in import EventIn
@@ -75,11 +78,12 @@ from .event_type_upsert_in import EventTypeUpsertIn
 from .expunge_all_contents_out import ExpungeAllContentsOut
 from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
-from .google_cloud_pub_sub_config import GoogleCloudPubSubConfig
+from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
+from .google_cloud_pub_sub_config_out import GoogleCloudPubSubConfigOut
 from .google_cloud_pub_sub_config_patch import GoogleCloudPubSubConfigPatch
-from .google_cloud_storage_config import GoogleCloudStorageConfig
+from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
+from .google_cloud_storage_config_out import GoogleCloudStorageConfigOut
 from .google_cloud_storage_config_patch import GoogleCloudStorageConfigPatch
-from .http_config_patch import HttpConfigPatch
 from .http_sink_headers_patch_in import HttpSinkHeadersPatchIn
 from .hubspot_config import HubspotConfig
 from .hubspot_config_out import HubspotConfigOut
@@ -144,7 +148,6 @@ from .operational_webhook_endpoint_upsert_in import OperationalWebhookEndpointUp
 from .ordering import Ordering
 from .orum_io_config import OrumIoConfig
 from .orum_io_config_out import OrumIoConfigOut
-from .otel_tracing_config_patch import OtelTracingConfigPatch
 from .panda_doc_config import PandaDocConfig
 from .panda_doc_config_out import PandaDocConfigOut
 from .poller_v2_commit_in import PollerV2CommitIn
@@ -156,11 +159,13 @@ from .polling_endpoint_message_out import PollingEndpointMessageOut
 from .polling_endpoint_out import PollingEndpointOut
 from .port_io_config import PortIoConfig
 from .port_io_config_out import PortIoConfigOut
-from .rabbit_mq_config import RabbitMqConfig
+from .rabbit_mq_config_in import RabbitMqConfigIn
+from .rabbit_mq_config_out import RabbitMqConfigOut
 from .rabbit_mq_config_patch import RabbitMqConfigPatch
 from .recover_in import RecoverIn
 from .recover_out import RecoverOut
-from .redshift_config import RedshiftConfig
+from .redshift_config_in import RedshiftConfigIn
+from .redshift_config_out import RedshiftConfigOut
 from .redshift_config_patch import RedshiftConfigPatch
 from .replay_in import ReplayIn
 from .replay_out import ReplayOut
@@ -168,14 +173,20 @@ from .rotate_poller_token_in import RotatePollerTokenIn
 from .rotate_token_out import RotateTokenOut
 from .rutter_config import RutterConfig
 from .rutter_config_out import RutterConfigOut
-from .s3_config import S3Config
+from .s3_config_in import S3ConfigIn
+from .s3_config_out import S3ConfigOut
+from .s3_config_patch import S3ConfigPatch
 from .segment_config import SegmentConfig
 from .segment_config_out import SegmentConfigOut
 from .shopify_config import ShopifyConfig
 from .shopify_config_out import ShopifyConfigOut
-from .sink_http_config import SinkHttpConfig
+from .sink_http_config_in import SinkHttpConfigIn
+from .sink_http_config_out import SinkHttpConfigOut
+from .sink_http_config_patch import SinkHttpConfigPatch
 from .sink_in_common import SinkInCommon
-from .sink_otel_v1_config import SinkOtelV1Config
+from .sink_otel_tracing_config_in import SinkOtelTracingConfigIn
+from .sink_otel_tracing_config_out import SinkOtelTracingConfigOut
+from .sink_otel_tracing_config_patch import SinkOtelTracingConfigPatch
 from .sink_secret_out import SinkSecretOut
 from .sink_status import SinkStatus
 from .sink_status_in import SinkStatusIn
@@ -183,11 +194,14 @@ from .sink_transform_in import SinkTransformIn
 from .sink_transformation_out import SinkTransformationOut
 from .slack_config import SlackConfig
 from .slack_config_out import SlackConfigOut
-from .snowflake_config import SnowflakeConfig
+from .snowflake_config_in import SnowflakeConfigIn
+from .snowflake_config_out import SnowflakeConfigOut
 from .snowflake_config_patch import SnowflakeConfigPatch
-from .sns_config import SnsConfig
+from .sns_config_in import SnsConfigIn
+from .sns_config_out import SnsConfigOut
 from .sns_config_patch import SnsConfigPatch
-from .sqs_config import SqsConfig
+from .sqs_config_in import SqsConfigIn
+from .sqs_config_out import SqsConfigOut
 from .sqs_config_patch import SqsConfigPatch
 from .starting_position import StartingPosition
 from .status_code_class import StatusCodeClass
@@ -226,7 +240,6 @@ __all__ = [
     "AggregateEventTypesOut",
     "AirwallexConfig",
     "AirwallexConfigOut",
-    "AmazonS3ConfigPatch",
     "ApiTokenOut",
     "AppPortalAccessIn",
     "AppPortalAccessOut",
@@ -238,17 +251,20 @@ __all__ = [
     "ApplicationPatch",
     "ApplicationTokenExpireIn",
     "AutoConfigSinkType",
-    "AzureBlobStorageConfig",
+    "AzureBlobStorageConfigIn",
+    "AzureBlobStorageConfigOut",
     "AzureBlobStorageConfigPatch",
     "BackgroundTaskOut",
     "BackgroundTaskStatus",
     "BackgroundTaskType",
-    "BigQueryConfig",
+    "BigQueryConfigIn",
+    "BigQueryConfigOut",
     "BigQueryConfigPatch",
     "BulkReplayIn",
     "CheckbookConfig",
     "CheckbookConfigOut",
-    "ClickhouseConfig",
+    "ClickhouseConfigIn",
+    "ClickhouseConfigOut",
     "ClickhouseConfigPatch",
     "ConnectorIn",
     "ConnectorKind",
@@ -280,7 +296,8 @@ __all__ = [
     "EndpointUpsertIn",
     "EnvironmentIn",
     "EnvironmentOut",
-    "EventBridgeConfig",
+    "EventBridgeConfigIn",
+    "EventBridgeConfigOut",
     "EventBridgeConfigPatch",
     "EventExampleIn",
     "EventIn",
@@ -297,11 +314,12 @@ __all__ = [
     "ExpungeAllContentsOut",
     "GithubConfig",
     "GithubConfigOut",
-    "GoogleCloudPubSubConfig",
+    "GoogleCloudPubSubConfigIn",
+    "GoogleCloudPubSubConfigOut",
     "GoogleCloudPubSubConfigPatch",
-    "GoogleCloudStorageConfig",
+    "GoogleCloudStorageConfigIn",
+    "GoogleCloudStorageConfigOut",
     "GoogleCloudStorageConfigPatch",
-    "HttpConfigPatch",
     "HttpSinkHeadersPatchIn",
     "HubspotConfig",
     "HubspotConfigOut",
@@ -362,7 +380,6 @@ __all__ = [
     "Ordering",
     "OrumIoConfig",
     "OrumIoConfigOut",
-    "OtelTracingConfigPatch",
     "PandaDocConfig",
     "PandaDocConfigOut",
     "PollerV2CommitIn",
@@ -374,11 +391,13 @@ __all__ = [
     "PollingEndpointOut",
     "PortIoConfig",
     "PortIoConfigOut",
-    "RabbitMqConfig",
+    "RabbitMqConfigIn",
+    "RabbitMqConfigOut",
     "RabbitMqConfigPatch",
     "RecoverIn",
     "RecoverOut",
-    "RedshiftConfig",
+    "RedshiftConfigIn",
+    "RedshiftConfigOut",
     "RedshiftConfigPatch",
     "ReplayIn",
     "ReplayOut",
@@ -386,14 +405,20 @@ __all__ = [
     "RotateTokenOut",
     "RutterConfig",
     "RutterConfigOut",
-    "S3Config",
+    "S3ConfigIn",
+    "S3ConfigOut",
+    "S3ConfigPatch",
     "SegmentConfig",
     "SegmentConfigOut",
     "ShopifyConfig",
     "ShopifyConfigOut",
-    "SinkHttpConfig",
+    "SinkHttpConfigIn",
+    "SinkHttpConfigOut",
+    "SinkHttpConfigPatch",
     "SinkInCommon",
-    "SinkOtelV1Config",
+    "SinkOtelTracingConfigIn",
+    "SinkOtelTracingConfigOut",
+    "SinkOtelTracingConfigPatch",
     "SinkSecretOut",
     "SinkStatus",
     "SinkStatusIn",
@@ -401,11 +426,14 @@ __all__ = [
     "SinkTransformationOut",
     "SlackConfig",
     "SlackConfigOut",
-    "SnowflakeConfig",
+    "SnowflakeConfigIn",
+    "SnowflakeConfigOut",
     "SnowflakeConfigPatch",
-    "SnsConfig",
+    "SnsConfigIn",
+    "SnsConfigOut",
     "SnsConfigPatch",
-    "SqsConfig",
+    "SqsConfigIn",
+    "SqsConfigOut",
     "SqsConfigPatch",
     "StartingPosition",
     "StatusCodeClass",

@@ -1,9 +1,5 @@
 // this file is @generated
 import {
-  type AmazonS3ConfigPatch,
-  AmazonS3ConfigPatchSerializer,
-} from "./amazonS3ConfigPatch";
-import {
   type AzureBlobStorageConfigPatch,
   AzureBlobStorageConfigPatchSerializer,
 } from "./azureBlobStorageConfigPatch";
@@ -27,11 +23,6 @@ import {
   type GoogleCloudStorageConfigPatch,
   GoogleCloudStorageConfigPatchSerializer,
 } from "./googleCloudStorageConfigPatch";
-import { type HttpConfigPatch, HttpConfigPatchSerializer } from "./httpConfigPatch";
-import {
-  type OtelTracingConfigPatch,
-  OtelTracingConfigPatchSerializer,
-} from "./otelTracingConfigPatch";
 import {
   type RabbitMqConfigPatch,
   RabbitMqConfigPatchSerializer,
@@ -40,6 +31,15 @@ import {
   type RedshiftConfigPatch,
   RedshiftConfigPatchSerializer,
 } from "./redshiftConfigPatch";
+import { type S3ConfigPatch, S3ConfigPatchSerializer } from "./s3ConfigPatch";
+import {
+  type SinkHttpConfigPatch,
+  SinkHttpConfigPatchSerializer,
+} from "./sinkHttpConfigPatch";
+import {
+  type SinkOtelTracingConfigPatch,
+  SinkOtelTracingConfigPatchSerializer,
+} from "./sinkOtelTracingConfigPatch";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import {
   type SnowflakeConfigPatch,
@@ -73,17 +73,17 @@ interface StreamSinkPatchAzureBlobStorage {
 
 interface StreamSinkPatchOtelTracing {
   type: "otelTracing";
-  config: OtelTracingConfigPatch;
+  config: SinkOtelTracingConfigPatch;
 }
 
 interface StreamSinkPatchHttp {
   type: "http";
-  config: HttpConfigPatch;
+  config: SinkHttpConfigPatch;
 }
 
 interface StreamSinkPatchAmazonS3 {
   type: "amazonS3";
-  config: AmazonS3ConfigPatch;
+  config: S3ConfigPatch;
 }
 
 interface StreamSinkPatchGoogleCloudStorage {
@@ -166,11 +166,11 @@ export const StreamSinkPatchSerializer = {
         case "azureBlobStorage":
           return AzureBlobStorageConfigPatchSerializer._fromJsonObject(object["config"]);
         case "otelTracing":
-          return OtelTracingConfigPatchSerializer._fromJsonObject(object["config"]);
+          return SinkOtelTracingConfigPatchSerializer._fromJsonObject(object["config"]);
         case "http":
-          return HttpConfigPatchSerializer._fromJsonObject(object["config"]);
+          return SinkHttpConfigPatchSerializer._fromJsonObject(object["config"]);
         case "amazonS3":
-          return AmazonS3ConfigPatchSerializer._fromJsonObject(object["config"]);
+          return S3ConfigPatchSerializer._fromJsonObject(object["config"]);
         case "googleCloudStorage":
           return GoogleCloudStorageConfigPatchSerializer._fromJsonObject(
             object["config"]
@@ -224,13 +224,13 @@ export const StreamSinkPatchSerializer = {
         config = AzureBlobStorageConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "otelTracing":
-        config = OtelTracingConfigPatchSerializer._toJsonObject(self.config);
+        config = SinkOtelTracingConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "http":
-        config = HttpConfigPatchSerializer._toJsonObject(self.config);
+        config = SinkHttpConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "amazonS3":
-        config = AmazonS3ConfigPatchSerializer._toJsonObject(self.config);
+        config = S3ConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "googleCloudStorage":
         config = GoogleCloudStorageConfigPatchSerializer._toJsonObject(self.config);

@@ -2,13 +2,16 @@
 use serde::{Deserialize, Serialize};
 
 use super::{
-    azure_blob_storage_config::AzureBlobStorageConfig, big_query_config::BigQueryConfig,
-    clickhouse_config::ClickhouseConfig, event_bridge_config::EventBridgeConfig,
-    google_cloud_pub_sub_config::GoogleCloudPubSubConfig,
-    google_cloud_storage_config::GoogleCloudStorageConfig, rabbit_mq_config::RabbitMqConfig,
-    redshift_config::RedshiftConfig, s3_config::S3Config, sink_http_config::SinkHttpConfig,
-    sink_otel_v1_config::SinkOtelV1Config, sink_status::SinkStatus,
-    snowflake_config::SnowflakeConfig, sns_config::SnsConfig, sqs_config::SqsConfig,
+    azure_blob_storage_config_out::AzureBlobStorageConfigOut,
+    big_query_config_out::BigQueryConfigOut, clickhouse_config_out::ClickhouseConfigOut,
+    event_bridge_config_out::EventBridgeConfigOut,
+    google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
+    google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
+    rabbit_mq_config_out::RabbitMqConfigOut, redshift_config_out::RedshiftConfigOut,
+    s3_config_out::S3ConfigOut, sink_http_config_out::SinkHttpConfigOut,
+    sink_otel_tracing_config_out::SinkOtelTracingConfigOut, sink_status::SinkStatus,
+    snowflake_config_out::SnowflakeConfigOut, sns_config_out::SnsConfigOut,
+    sqs_config_out::SqsConfigOut,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -61,31 +64,31 @@ pub enum StreamSinkOutConfig {
     #[serde(rename = "poller")]
     Poller,
     #[serde(rename = "azureBlobStorage")]
-    AzureBlobStorage(AzureBlobStorageConfig),
+    AzureBlobStorage(AzureBlobStorageConfigOut),
     #[serde(rename = "otelTracing")]
-    OtelTracing(SinkOtelV1Config),
+    OtelTracing(SinkOtelTracingConfigOut),
     #[serde(rename = "http")]
-    Http(SinkHttpConfig),
+    Http(SinkHttpConfigOut),
     #[serde(rename = "amazonS3")]
-    AmazonS3(S3Config),
-    #[serde(rename = "googleCloudStorage")]
-    GoogleCloudStorage(GoogleCloudStorageConfig),
-    #[serde(rename = "googleCloudPubSub")]
-    GoogleCloudPubSub(GoogleCloudPubSubConfig),
-    #[serde(rename = "sqs")]
-    Sqs(SqsConfig),
-    #[serde(rename = "sns")]
-    Sns(SnsConfig),
-    #[serde(rename = "bigQuery")]
-    BigQuery(BigQueryConfig),
-    #[serde(rename = "clickhouse")]
-    Clickhouse(ClickhouseConfig),
-    #[serde(rename = "eventBridge")]
-    EventBridge(EventBridgeConfig),
+    AmazonS3(S3ConfigOut),
     #[serde(rename = "snowflake")]
-    Snowflake(SnowflakeConfig),
-    #[serde(rename = "rabbitMq")]
-    RabbitMq(RabbitMqConfig),
+    Snowflake(SnowflakeConfigOut),
+    #[serde(rename = "googleCloudStorage")]
+    GoogleCloudStorage(GoogleCloudStorageConfigOut),
+    #[serde(rename = "googleCloudPubSub")]
+    GoogleCloudPubSub(GoogleCloudPubSubConfigOut),
     #[serde(rename = "redshift")]
-    Redshift(RedshiftConfig),
+    Redshift(RedshiftConfigOut),
+    #[serde(rename = "bigQuery")]
+    BigQuery(BigQueryConfigOut),
+    #[serde(rename = "clickhouse")]
+    Clickhouse(ClickhouseConfigOut),
+    #[serde(rename = "rabbitMq")]
+    RabbitMq(RabbitMqConfigOut),
+    #[serde(rename = "sqs")]
+    Sqs(SqsConfigOut),
+    #[serde(rename = "eventBridge")]
+    EventBridge(EventBridgeConfigOut),
+    #[serde(rename = "sns")]
+    Sns(SnsConfigOut),
 }

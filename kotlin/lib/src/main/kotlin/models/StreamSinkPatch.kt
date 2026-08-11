@@ -44,20 +44,21 @@ sealed class StreamSinkPatchConfig {
     }
 
     @VariantName("otelTracing")
-    data class OtelTracing(val otelTracing: OtelTracingConfigPatch) : StreamSinkPatchConfig() {
+    data class OtelTracing(val otelTracing: SinkOtelTracingConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(OtelTracingConfigPatch.serializer(), otelTracing)
+            Json.encodeToJsonElement(SinkOtelTracingConfigPatch.serializer(), otelTracing)
     }
 
     @VariantName("http")
-    data class Http(val http: HttpConfigPatch) : StreamSinkPatchConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(HttpConfigPatch.serializer(), http)
+    data class Http(val http: SinkHttpConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SinkHttpConfigPatch.serializer(), http)
     }
 
     @VariantName("amazonS3")
-    data class AmazonS3(val amazonS3: AmazonS3ConfigPatch) : StreamSinkPatchConfig() {
+    data class AmazonS3(val amazonS3: S3ConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(AmazonS3ConfigPatch.serializer(), amazonS3)
+            Json.encodeToJsonElement(S3ConfigPatch.serializer(), amazonS3)
     }
 
     @VariantName("googleCloudStorage")
@@ -136,18 +137,19 @@ sealed class StreamSinkPatchConfig {
                 "otelTracing" to
                     { config ->
                         OtelTracing(
-                            Json.decodeFromJsonElement(OtelTracingConfigPatch.serializer(), config)
+                            Json.decodeFromJsonElement(
+                                SinkOtelTracingConfigPatch.serializer(),
+                                config,
+                            )
                         )
                     },
                 "http" to
                     { config ->
-                        Http(Json.decodeFromJsonElement(HttpConfigPatch.serializer(), config))
+                        Http(Json.decodeFromJsonElement(SinkHttpConfigPatch.serializer(), config))
                     },
                 "amazonS3" to
                     { config ->
-                        AmazonS3(
-                            Json.decodeFromJsonElement(AmazonS3ConfigPatch.serializer(), config)
-                        )
+                        AmazonS3(Json.decodeFromJsonElement(S3ConfigPatch.serializer(), config))
                     },
                 "googleCloudStorage" to
                     { config ->
