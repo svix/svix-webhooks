@@ -38,16 +38,16 @@ RSpec.describe Svix::Client do
       )
 
       expect(ep.channels.to_set).to(eq(%w[ch0 ch1].to_set))
-      expect(ep.filter_types).to(be_nil)
+      expect(ep.event_types).to(be_nil)
 
       ep_patched = test_client.endpoint.patch(
         app.id,
         ep.id,
-        Svix::EndpointPatch.new(filter_types: %w[event.started event.ended])
+        Svix::EndpointPatch.new(event_types: %w[event.started event.ended])
       )
 
       expect(ep_patched.channels.to_set).to(eq(%w[ch0 ch1].to_set))
-      expect(ep_patched.filter_types.to_set).to(eq(%w[event.started event.ended].to_set))
+      expect(ep_patched.event_types.to_set).to(eq(%w[event.started event.ended].to_set))
 
       # If the serialization is handling empty response bodies, this should not throw an exception
       test_client.endpoint.delete(app.id, ep.id)
