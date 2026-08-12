@@ -143,7 +143,7 @@ public class OperationalWebhookEndpoint {
     /**
      * Rotates an operational webhook endpoint's signing secret.
      *
-     * <p>The previous secret will remain valid for the next 24 hours.
+     * <p>The previous secret will remain valid for the specified grace period (default 24 hours).
      */
     public void rotateSecret(
             final String endpointId,
@@ -158,7 +158,7 @@ public class OperationalWebhookEndpoint {
     /**
      * Rotates an operational webhook endpoint's signing secret.
      *
-     * <p>The previous secret will remain valid for the next 24 hours.
+     * <p>The previous secret will remain valid for the specified grace period (default 24 hours).
      */
     public void rotateSecret(
             final String endpointId,

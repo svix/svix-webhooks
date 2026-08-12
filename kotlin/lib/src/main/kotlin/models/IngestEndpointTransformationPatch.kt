@@ -8,4 +8,5 @@ import kotlinx.serialization.Serializable
 data class IngestEndpointTransformationPatch(
     val code: MaybeUnset<String> = MaybeUnset.Unset,
     val enabled: Boolean? = null,
+    val variables: MaybeUnset<Map<String, String>> = MaybeUnset.Unset,
 )

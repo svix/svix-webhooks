@@ -28,3 +28,5 @@ class OperationalWebhookEndpointIn(BaseModel):
     It is recommended to not set this and let the server generate the secret."""
 
     metadata: t.Optional[t.Dict[str, str]] = None
+
+    headers: t.Optional[t.Dict[str, str]] = None

@@ -21,6 +21,7 @@ export interface OperationalWebhookEndpointIn {
    */
   secret?: string | null;
   metadata?: { [key: string]: string };
+  headers?: { [key: string]: string } | null;
 }
 
 export const OperationalWebhookEndpointInSerializer = {
@@ -34,6 +35,7 @@ export const OperationalWebhookEndpointInSerializer = {
       eventTypes: object["eventTypes"],
       secret: object["secret"],
       metadata: object["metadata"],
+      headers: object["headers"],
     };
   },
 
@@ -47,6 +49,7 @@ export const OperationalWebhookEndpointInSerializer = {
       eventTypes: self.eventTypes,
       secret: self.secret,
       metadata: self.metadata,
+      headers: self.headers,
     };
   },
 };

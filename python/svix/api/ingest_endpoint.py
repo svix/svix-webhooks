@@ -177,7 +177,7 @@ class IngestEndpointAsync(ApiBaseAsync):
     ) -> None:
         """Rotates an ingest endpoint's signing secret.
 
-        The previous secret will remain valid for the next 24 hours."""
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
         await self._request_asyncio(
             method="post",
             path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate",
@@ -338,7 +338,7 @@ class IngestEndpoint(ApiBaseSync):
     ) -> None:
         """Rotates an ingest endpoint's signing secret.
 
-        The previous secret will remain valid for the next 24 hours."""
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
         self._request_sync(
             method="post",
             path="/ingest/api/v1/source/{source_id}/endpoint/{endpoint_id}/secret/rotate",

@@ -27,6 +27,9 @@ namespace Svix.Models
         [JsonProperty("metadata")]
         public Dictionary<string, string>? Metadata { get; set; } = null;
 
+        [JsonProperty("headers")]
+        public Dictionary<string, string>? Headers { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -39,6 +42,7 @@ namespace Svix.Models
             sb.Append("  Disabled: ").Append(Disabled).Append('\n');
             sb.Append("  Secret: ").Append(Secret).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
+            sb.Append("  Headers: ").Append(Headers).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

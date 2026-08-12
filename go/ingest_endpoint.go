@@ -199,7 +199,7 @@ func (ingestEndpoint IngestEndpoint) GetSecret(
 
 // Rotates an ingest endpoint's signing secret.
 //
-// The previous secret will remain valid for the next 24 hours.
+// The previous secret will remain valid for the specified grace period (default 24 hours).
 func (ingestEndpoint IngestEndpoint) RotateSecret(
 	ctx context.Context,
 	sourceId string,

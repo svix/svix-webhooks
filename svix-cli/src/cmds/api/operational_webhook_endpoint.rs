@@ -125,7 +125,11 @@ pub enum OperationalWebhookEndpointCommands {
   \"disabled\": false,
   \"eventTypes\": [\"message.attempt.failing\"],
   \"secret\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
-  \"metadata\": {\"key\": \"...\"}
+  \"metadata\": {\"key\": \"...\"},
+  \"headers\": {
+    \"X-Example\": \"123\",
+    \"X-Foobar\": \"Bar\"
+  }
 }\n\nExample response:
 {
   \"id\": \"ep_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
@@ -232,7 +236,7 @@ pub enum OperationalWebhookEndpointCommands {
     GetSecret { endpoint_id: String },
     /// Rotates an operational webhook endpoint's signing secret.
     ///
-    /// The previous secret will remain valid for the next 24 hours.
+    /// The previous secret will remain valid for the specified grace period (default 24 hours).
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
@@ -243,7 +247,8 @@ pub enum OperationalWebhookEndpointCommands {
         ))]
     #[command(after_help = "Example body:
 {
-  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"gracePeriodSeconds\": 123
 }\n")]
     RotateSecret {
         endpoint_id: String,

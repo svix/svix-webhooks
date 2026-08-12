@@ -24,4 +24,5 @@ data class IngestEndpointIn(
      */
     val secret: String? = null,
     val metadata: Map<String, String>? = null,
+    val headers: Map<String, String>? = null,
 )
