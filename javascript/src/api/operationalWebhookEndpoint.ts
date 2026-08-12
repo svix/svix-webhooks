@@ -172,7 +172,7 @@ export class OperationalWebhookEndpoint {
   /**
    * Rotates an operational webhook endpoint's signing secret.
    *
-   * The previous secret will remain valid for the next 24 hours.
+   * The previous secret will remain valid for the specified grace period (default 24 hours).
    */
   public async rotateSecret(
     endpointId: string,

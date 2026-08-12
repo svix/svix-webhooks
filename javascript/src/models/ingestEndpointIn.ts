@@ -20,6 +20,7 @@ export interface IngestEndpointIn {
    */
   secret?: string | null;
   metadata?: { [key: string]: string };
+  headers?: { [key: string]: string } | null;
 }
 
 export const IngestEndpointInSerializer = {
@@ -32,6 +33,7 @@ export const IngestEndpointInSerializer = {
       disabled: object["disabled"],
       secret: object["secret"],
       metadata: object["metadata"],
+      headers: object["headers"],
     };
   },
 
@@ -44,6 +46,7 @@ export const IngestEndpointInSerializer = {
       disabled: self.disabled,
       secret: self.secret,
       metadata: self.metadata,
+      headers: self.headers,
     };
   },
 };

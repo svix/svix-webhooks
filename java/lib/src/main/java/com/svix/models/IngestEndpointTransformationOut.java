@@ -11,6 +11,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -18,6 +21,7 @@ import lombok.ToString;
 public class IngestEndpointTransformationOut {
     @JsonProperty private String code;
     @JsonProperty private Boolean enabled;
+    @JsonProperty private Map<String, String> variables;
 
     public IngestEndpointTransformationOut() {}
 
@@ -57,6 +61,34 @@ public class IngestEndpointTransformationOut {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public IngestEndpointTransformationOut variables(Map<String, String> variables) {
+        this.variables = variables;
+        return this;
+    }
+
+    public IngestEndpointTransformationOut putVariablesItem(String key, String variablesItem) {
+        if (this.variables == null) {
+            this.variables = new HashMap<>();
+        }
+        this.variables.put(key, variablesItem);
+
+        return this;
+    }
+
+    /**
+     * Get variables
+     *
+     * @return variables
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, String> variables) {
+        this.variables = variables;
     }
 
     /**

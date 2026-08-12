@@ -36,6 +36,9 @@ pub struct OperationalWebhookEndpointIn {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::BTreeMap<String, String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub headers: Option<std::collections::BTreeMap<String, String>>,
 }
 
 impl OperationalWebhookEndpointIn {
@@ -49,6 +52,7 @@ impl OperationalWebhookEndpointIn {
             event_types: None,
             secret: None,
             metadata: None,
+            headers: None,
         }
     }
 }

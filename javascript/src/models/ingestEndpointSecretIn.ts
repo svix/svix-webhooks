@@ -8,18 +8,26 @@ export interface IngestEndpointSecretIn {
    * It is recommended to not set this and let the server generate the secret.
    */
   key?: string | null;
+  /**
+   * How long the old secret will be valid for, in seconds.
+   *
+   * Valid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.
+   */
+  gracePeriodSeconds?: number | null;
 }
 
 export const IngestEndpointSecretInSerializer = {
   _fromJsonObject(object: any): IngestEndpointSecretIn {
     return {
       key: object["key"],
+      gracePeriodSeconds: object["gracePeriodSeconds"],
     };
   },
 
   _toJsonObject(self: IngestEndpointSecretIn): any {
     return {
       key: self.key,
+      gracePeriodSeconds: self.gracePeriodSeconds,
     };
   },
 };

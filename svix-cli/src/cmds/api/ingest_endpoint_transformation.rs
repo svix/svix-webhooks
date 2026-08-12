@@ -26,7 +26,8 @@ pub enum IngestEndpointTransformationCommands {
     #[command(after_help = "Example response:
 {
   \"code\": \"...\",
-  \"enabled\": true
+  \"enabled\": true,
+  \"variables\": {\"key\": \"...\"}
 }\n")]
     Transformation {
         source_id: String,
@@ -44,7 +45,8 @@ pub enum IngestEndpointTransformationCommands {
     #[command(after_help = "Example body:
 {
   \"code\": \"...\",
-  \"enabled\": true
+  \"enabled\": true,
+  \"variables\": {\"key\": \"...\"}
 }\n")]
     Patch {
         source_id: String,

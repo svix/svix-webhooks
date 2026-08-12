@@ -159,7 +159,7 @@ class OperationalWebhookEndpointAsync(ApiBaseAsync):
     ) -> None:
         """Rotates an operational webhook endpoint's signing secret.
 
-        The previous secret will remain valid for the next 24 hours."""
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
         await self._request_asyncio(
             method="post",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",
@@ -304,7 +304,7 @@ class OperationalWebhookEndpoint(ApiBaseSync):
     ) -> None:
         """Rotates an operational webhook endpoint's signing secret.
 
-        The previous secret will remain valid for the next 24 hours."""
+        The previous secret will remain valid for the specified grace period (default 24 hours)."""
         self._request_sync(
             method="post",
             path="/api/v1/operational-webhook/endpoint/{endpoint_id}/secret/rotate",

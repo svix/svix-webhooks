@@ -17,6 +17,7 @@ import lombok.ToString;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class OperationalWebhookEndpointSecretIn {
     @JsonProperty private String key;
+    @JsonProperty private Integer gracePeriodSeconds;
 
     public OperationalWebhookEndpointSecretIn() {}
 
@@ -40,6 +41,27 @@ public class OperationalWebhookEndpointSecretIn {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public OperationalWebhookEndpointSecretIn gracePeriodSeconds(Integer gracePeriodSeconds) {
+        this.gracePeriodSeconds = gracePeriodSeconds;
+        return this;
+    }
+
+    /**
+     * How long the old secret will be valid for, in seconds.
+     *
+     * <p>Valid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.
+     *
+     * @return gracePeriodSeconds
+     */
+    @javax.annotation.Nullable
+    public Integer getGracePeriodSeconds() {
+        return gracePeriodSeconds;
+    }
+
+    public void setGracePeriodSeconds(Integer gracePeriodSeconds) {
+        this.gracePeriodSeconds = gracePeriodSeconds;
     }
 
     /**
