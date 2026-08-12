@@ -1,11 +1,11 @@
-name: Ruby Lint
+name: Ruby Lint and Tests
 
 on:
   workflow_call:
 
 jobs:
   ruby:
-    name: Ruby Lint
+    name: Ruby Lint and Tests and Tests
     runs-on: ubuntu-24.04
 
     strategy:
@@ -15,22 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Pull svix server image (and dependencies)
+        run: docker compose pull
+        working-directory: ./client-integration-tests
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
         with:
           ruby-version: ${{ matrix.ruby-version }}
 
       - name: Install dependencies
-        run: |
-          cd ruby
-          bundler install
+        working-directory: ruby
+        run: bundle install
 
       - name: Build
-        run: |
-          cd ruby
-          bundler exec rake build
+        working-directory: ruby
+        run: bundle exec rake build
 
       - name: Test
-        run: |
-          cd ruby
-          bundler exec rspec spec
+        working-directory: ruby
+        run: bundle exec rspec spec
