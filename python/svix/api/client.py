@@ -63,7 +63,7 @@ class Client:
 class AuthenticatedClient(Client):
     """A Client which has been authenticated for use on secured endpoints"""
 
-    token: str
+    token: str  # ty: ignore[dataclass-field-order]
     prefix: str = "Bearer"
     auth_header_name: str = "Authorization"
     proxy: Optional[str] = attr.ib(default=None)
