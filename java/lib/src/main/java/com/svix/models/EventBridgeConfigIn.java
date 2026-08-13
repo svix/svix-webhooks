@@ -68,11 +68,14 @@ public class EventBridgeConfigIn {
     }
 
     /**
-     * Get accessKeyId
+     * Access key ID.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
@@ -87,11 +90,14 @@ public class EventBridgeConfigIn {
     }
 
     /**
-     * Get secretAccessKey
+     * Secret access key.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return secretAccessKey
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getSecretAccessKey() {
         return secretAccessKey;
     }
@@ -106,11 +112,14 @@ public class EventBridgeConfigIn {
     }
 
     /**
-     * Get region
+     * The region of the EventBridge bus.
+     *
+     * <p>Currently a required field, but marked as optional because we may infer it from other
+     * fields in the future.
      *
      * @return region
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getRegion() {
         return region;
     }

@@ -3,4 +3,4 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class SinkOtelTracingConfigPatch(val url: String? = null)
+@Serializable data class OtelTracingConfigPatch(val url: String? = null)

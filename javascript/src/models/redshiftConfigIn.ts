@@ -6,9 +6,24 @@
  * For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.
  */
 export interface RedshiftConfigIn {
-  accessKeyId: string;
-  secretAccessKey: string;
-  region: string;
+  /**
+   * Access key ID.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  accessKeyId?: string | null;
+  /**
+   * Secret access key.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  secretAccessKey?: string | null;
+  /**
+   * The region of the Redshift DB.
+   *
+   * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+   */
+  region?: string | null;
   /** Required for provisioned clusters. */
   clusterIdentifier?: string | null;
   /** Required for provisioned clusters. */

@@ -51,11 +51,14 @@ public class SnsConfigIn {
     }
 
     /**
-     * Get region
+     * The region of the SNS instance.
+     *
+     * <p>Currently a required field, but marked as optional because we may infer it from other
+     * fields in the future.
      *
      * @return region
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getRegion() {
         return region;
     }
@@ -70,11 +73,14 @@ public class SnsConfigIn {
     }
 
     /**
-     * Get accessKeyId
+     * Access key ID.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
@@ -89,11 +95,14 @@ public class SnsConfigIn {
     }
 
     /**
-     * Get secretAccessKey
+     * Secret access key.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return secretAccessKey
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getSecretAccessKey() {
         return secretAccessKey;
     }

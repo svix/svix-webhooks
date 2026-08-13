@@ -26,6 +26,7 @@ data class StreamSinkOut(
     val batchSize: Int,
     val maxWaitSecs: Int,
     val eventTypes: List<String>? = null,
+    val channels: List<String>? = null,
     val nextRetryAt: Instant? = null,
     val metadata: Map<String, String>,
     val config: StreamSinkOutConfig,
@@ -51,9 +52,9 @@ sealed class StreamSinkOutConfig {
     }
 
     @VariantName("otelTracing")
-    data class OtelTracing(val otelTracing: SinkOtelTracingConfigOut) : StreamSinkOutConfig() {
+    data class OtelTracing(val otelTracing: OtelTracingConfigOut) : StreamSinkOutConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(SinkOtelTracingConfigOut.serializer(), otelTracing)
+            Json.encodeToJsonElement(OtelTracingConfigOut.serializer(), otelTracing)
     }
 
     @VariantName("http")
@@ -143,10 +144,7 @@ sealed class StreamSinkOutConfig {
                 "otelTracing" to
                     { config ->
                         OtelTracing(
-                            Json.decodeFromJsonElement(
-                                SinkOtelTracingConfigOut.serializer(),
-                                config,
-                            )
+                            Json.decodeFromJsonElement(OtelTracingConfigOut.serializer(), config)
                         )
                     },
                 "http" to
@@ -237,6 +235,7 @@ class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
         val batchSize: Int,
         val maxWaitSecs: Int,
         val eventTypes: List<String>? = null,
+        val channels: List<String>? = null,
         val nextRetryAt: Instant? = null,
         val metadata: Map<String, String>,
         val type: String,
@@ -258,6 +257,7 @@ class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
                 batchSize = value.batchSize,
                 maxWaitSecs = value.maxWaitSecs,
                 eventTypes = value.eventTypes,
+                channels = value.channels,
                 nextRetryAt = value.nextRetryAt,
                 metadata = value.metadata,
                 type = value.config.variantName,
@@ -279,6 +279,7 @@ class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
             batchSize = surrogate.batchSize,
             maxWaitSecs = surrogate.maxWaitSecs,
             eventTypes = surrogate.eventTypes,
+            channels = surrogate.channels,
             nextRetryAt = surrogate.nextRetryAt,
             metadata = surrogate.metadata,
             config = StreamSinkOutConfig.fromTypeAndConfig(surrogate.type, surrogate.config),

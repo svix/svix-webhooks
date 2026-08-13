@@ -7,13 +7,28 @@ use serde::{Deserialize, Serialize};
 /// Redshift Serverless, set `workgroup_name`.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RedshiftConfigIn {
+    /// Access key ID.
+    ///
+    /// Currently a required field, but marked as optional because we may add
+    /// different authentication in the future.
     #[serde(rename = "accessKeyId")]
-    pub access_key_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub access_key_id: Option<String>,
 
+    /// Secret access key.
+    ///
+    /// Currently a required field, but marked as optional because we may add
+    /// different authentication in the future.
     #[serde(rename = "secretAccessKey")]
-    pub secret_access_key: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub secret_access_key: Option<String>,
 
-    pub region: String,
+    /// The region of the Redshift DB.
+    ///
+    /// Currently a required field, but marked as optional because we may infer
+    /// it from other fields in the future.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub region: Option<String>,
 
     /// Required for provisioned clusters.
     #[serde(rename = "clusterIdentifier")]
@@ -53,11 +68,11 @@ pub struct RedshiftConfigIn {
 }
 
 impl RedshiftConfigIn {
-    pub fn new(access_key_id: String, secret_access_key: String, region: String) -> Self {
+    pub fn new() -> Self {
         Self {
-            access_key_id,
-            secret_access_key,
-            region,
+            access_key_id: None,
+            secret_access_key: None,
+            region: None,
             cluster_identifier: None,
             db_user: None,
             workgroup_name: None,
@@ -65,5 +80,11 @@ impl RedshiftConfigIn {
             schema_name: None,
             table_name: None,
         }
+    }
+}
+
+impl Default for RedshiftConfigIn {
+    fn default() -> Self {
+        Self::new()
     }
 }

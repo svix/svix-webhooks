@@ -7,16 +7,21 @@ pub struct AzureBlobStorageConfigIn {
 
     pub account: String,
 
+    /// Access key.
+    ///
+    /// Currently a required field, but marked as optional because we may add
+    /// different authentication in the future.
     #[serde(rename = "accessKey")]
-    pub access_key: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub access_key: Option<String>,
 }
 
 impl AzureBlobStorageConfigIn {
-    pub fn new(container: String, account: String, access_key: String) -> Self {
+    pub fn new(container: String, account: String) -> Self {
         Self {
             container,
             account,
-            access_key,
+            access_key: None,
         }
     }
 }

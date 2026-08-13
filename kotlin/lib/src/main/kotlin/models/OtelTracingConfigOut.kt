@@ -3,4 +3,4 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class SinkOtelTracingConfigOut(val url: String, val headers: EndpointHeadersOut)
+@Serializable data class OtelTracingConfigOut(val url: String, val headers: EndpointHeadersOut)

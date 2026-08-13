@@ -9,10 +9,15 @@ class AzureBlobStorageConfigIn implements \JsonSerializable
 {
     private array $setFields = [];
 
+    /**
+     * @param string|null $accessKey Access key.
+     *
+     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     */
     private function __construct(
         public readonly string $container,
         public readonly string $account,
-        public readonly string $accessKey,
+        public readonly ?string $accessKey = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -24,13 +29,25 @@ class AzureBlobStorageConfigIn implements \JsonSerializable
     public static function create(
         string $container,
         string $account,
-        string $accessKey,
     ): self {
         return new self(
             container: $container,
             account: $account,
+            accessKey: null,
+            setFields: ['container' => true, 'account' => true]
+        );
+    }
+
+    public function withAccessKey(?string $accessKey): self
+    {
+        $setFields = $this->setFields;
+        $setFields['accessKey'] = true;
+
+        return new self(
+            container: $this->container,
+            account: $this->account,
             accessKey: $accessKey,
-            setFields: ['container' => true, 'account' => true, 'accessKey' => true]
+            setFields: $setFields
         );
     }
 
@@ -38,8 +55,11 @@ class AzureBlobStorageConfigIn implements \JsonSerializable
     {
         $data = [
             'container' => $this->container,
-            'account' => $this->account,
-            'accessKey' => $this->accessKey];
+            'account' => $this->account];
+
+        if (isset($this->setFields['accessKey'])) {
+            $data['accessKey'] = $this->accessKey;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -52,7 +72,7 @@ class AzureBlobStorageConfigIn implements \JsonSerializable
         return new self(
             container: \Svix\Utils::deserializeString($data, 'container', true, 'AzureBlobStorageConfigIn'),
             account: \Svix\Utils::deserializeString($data, 'account', true, 'AzureBlobStorageConfigIn'),
-            accessKey: \Svix\Utils::deserializeString($data, 'accessKey', true, 'AzureBlobStorageConfigIn')
+            accessKey: \Svix\Utils::deserializeString($data, 'accessKey', false, 'AzureBlobStorageConfigIn')
         );
     }
 

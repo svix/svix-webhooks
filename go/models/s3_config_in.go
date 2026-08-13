@@ -2,9 +2,18 @@
 package models
 
 type S3ConfigIn struct {
-	Bucket          string  `json:"bucket"`
-	AccessKeyId     string  `json:"accessKeyId"`
-	SecretAccessKey string  `json:"secretAccessKey"`
-	Region          string  `json:"region"`
-	EndpointUrl     *string `json:"endpointUrl,omitempty"`
+	Bucket string `json:"bucket"`
+	// Access key ID.
+	//
+	// Currently a required field, but marked as optional because we may add different authentication in the future.
+	AccessKeyId *string `json:"accessKeyId,omitempty"`
+	// Secret access key.
+	//
+	// Currently a required field, but marked as optional because we may add different authentication in the future.
+	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+	// The region of the EventBridge bus.
+	//
+	// Currently a required field, but marked as optional because we may infer it from other fields in the future.
+	Region      *string `json:"region,omitempty"`
+	EndpointUrl *string `json:"endpointUrl,omitempty"`
 }

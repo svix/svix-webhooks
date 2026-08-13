@@ -7,5 +7,11 @@ import kotlinx.serialization.Serializable
 data class AzureBlobStorageConfigIn(
     val container: String,
     val account: String,
-    val accessKey: String,
+    /**
+     * Access key.
+     *
+     * Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
+     */
+    val accessKey: String? = null,
 )

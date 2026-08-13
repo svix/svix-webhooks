@@ -9,10 +9,19 @@ class SqsConfigIn(BaseModel):
 
     queue_url: str
 
-    region: str
+    region: t.Optional[str] = None
+    """The region of the SQS queue.
 
-    access_key_id: str
+    Currently a required field, but marked as optional because we may infer it from other fields in the future."""
 
-    secret_access_key: str
+    access_key_id: t.Optional[str] = None
+    """Access key ID.
+
+    Currently a required field, but marked as optional because we may add different authentication in the future."""
+
+    secret_access_key: t.Optional[str] = None
+    """Secret access key.
+
+    Currently a required field, but marked as optional because we may add different authentication in the future."""
 
     endpoint_url: t.Optional[str] = None

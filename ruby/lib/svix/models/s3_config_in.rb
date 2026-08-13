@@ -5,8 +5,17 @@ require "json"
 module Svix
   class S3ConfigIn
     attr_accessor :bucket
+    # Access key ID.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :access_key_id
+    # Secret access key.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :secret_access_key
+    # The region of the EventBridge bus.
+    #
+    # Currently a required field, but marked as optional because we may infer it from other fields in the future.
     attr_accessor :region
     attr_accessor :endpoint_url
 

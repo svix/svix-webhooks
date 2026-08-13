@@ -15,11 +15,11 @@ import (
 //   - "eventBridge": Use EventBridgeConfigOut
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigOut
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
+//   - "otelTracing": Use OtelTracingConfigOut
 //   - "rabbitMq": Use RabbitMqConfigOut
 //   - "redshift": Use RedshiftConfigOut
 //   - "amazonS3": Use S3ConfigOut
 //   - "http": Use SinkHttpConfigOut
-//   - "otelTracing": Use SinkOtelTracingConfigOut
 //   - "snowflake": Use SnowflakeConfigOut
 //   - "sns": Use SnsConfigOut
 //   - "sqs": Use SqsConfigOut
@@ -34,6 +34,7 @@ type StreamSinkOut struct {
 	BatchSize       int32               `json:"batchSize"`
 	MaxWaitSecs     int32               `json:"maxWaitSecs"`
 	EventTypes      []string            `json:"eventTypes,omitempty"`
+	Channels        []string            `json:"channels,omitempty"`
 	NextRetryAt     *time.Time          `json:"nextRetryAt,omitempty"`
 	Metadata        map[string]string   `json:"metadata"`
 	Type            StreamSinkOutType   `json:"type"`
@@ -66,7 +67,7 @@ type StreamSinkOutConfig interface {
 
 func (emptyMap) isStreamSinkOutConfig()                    {}
 func (AzureBlobStorageConfigOut) isStreamSinkOutConfig()   {}
-func (SinkOtelTracingConfigOut) isStreamSinkOutConfig()    {}
+func (OtelTracingConfigOut) isStreamSinkOutConfig()        {}
 func (SinkHttpConfigOut) isStreamSinkOutConfig()           {}
 func (S3ConfigOut) isStreamSinkOutConfig()                 {}
 func (SnowflakeConfigOut) isStreamSinkOutConfig()          {}
@@ -118,6 +119,10 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		var c GoogleCloudStorageConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "otelTracing":
+		var c OtelTracingConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "rabbitMq":
 		var c RabbitMqConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -132,10 +137,6 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "http":
 		var c SinkHttpConfigOut
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "otelTracing":
-		var c SinkOtelTracingConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "snowflake":

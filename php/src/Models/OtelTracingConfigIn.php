@@ -5,37 +5,54 @@ declare(strict_types=1);
 
 namespace Svix\Models;
 
-class SinkOtelTracingConfigOut implements \JsonSerializable
+class OtelTracingConfigIn implements \JsonSerializable
 {
     private array $setFields = [];
 
+    /**
+     * @param array<string, string>|null $headers
+     */
     private function __construct(
         public readonly string $url,
-        public readonly EndpointHeadersOut $headers,
+        public readonly ?array $headers = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
     }
 
     /**
-     * Create an instance of SinkOtelTracingConfigOut with required fields.
+     * Create an instance of OtelTracingConfigIn with required fields.
      */
     public static function create(
         string $url,
-        EndpointHeadersOut $headers,
     ): self {
         return new self(
             url: $url,
+            headers: null,
+            setFields: ['url' => true]
+        );
+    }
+
+    public function withHeaders(?array $headers): self
+    {
+        $setFields = $this->setFields;
+        $setFields['headers'] = true;
+
+        return new self(
+            url: $this->url,
             headers: $headers,
-            setFields: ['url' => true, 'headers' => true]
+            setFields: $setFields
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'url' => $this->url,
-            'headers' => $this->headers];
+            'url' => $this->url];
+
+        if (null !== $this->headers) {
+            $data['headers'] = $this->headers;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -46,8 +63,8 @@ class SinkOtelTracingConfigOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            url: \Svix\Utils::getValFromJson($data, 'url', true, 'SinkOtelTracingConfigOut'),
-            headers: \Svix\Utils::deserializeObject($data, 'headers', true, 'SinkOtelTracingConfigOut', [EndpointHeadersOut::class, 'fromMixed'])
+            url: \Svix\Utils::getValFromJson($data, 'url', true, 'OtelTracingConfigIn'),
+            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'OtelTracingConfigIn')
         );
     }
 

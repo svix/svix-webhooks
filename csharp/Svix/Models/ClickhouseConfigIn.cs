@@ -9,11 +9,11 @@ namespace Svix.Models
         [JsonProperty("url", Required = Required.Always)]
         public required string Url { get; set; }
 
-        [JsonProperty("username", Required = Required.Always)]
-        public required string Username { get; set; }
+        [JsonProperty("username")]
+        public string? Username { get; set; } = null;
 
-        [JsonProperty("password", Required = Required.Always)]
-        public required string Password { get; set; }
+        [JsonProperty("password")]
+        public string? Password { get; set; } = null;
 
         [JsonProperty("database")]
         public string? Database { get; set; } = null;

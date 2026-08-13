@@ -4,5 +4,5 @@ import typing as t
 from .common import BaseModel
 
 
-class SinkOtelTracingConfigPatch(BaseModel):
+class OtelTracingConfigPatch(BaseModel):
     url: t.Optional[str] = None

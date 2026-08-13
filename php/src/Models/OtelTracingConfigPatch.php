@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Models;
 
-class SinkOtelTracingConfigPatch implements \JsonSerializable
+class OtelTracingConfigPatch implements \JsonSerializable
 {
     private array $setFields = [];
 
@@ -17,7 +17,7 @@ class SinkOtelTracingConfigPatch implements \JsonSerializable
     }
 
     /**
-     * Create an instance of SinkOtelTracingConfigPatch with required fields.
+     * Create an instance of OtelTracingConfigPatch with required fields.
      */
     public static function create(
     ): self {
@@ -56,7 +56,7 @@ class SinkOtelTracingConfigPatch implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            url: \Svix\Utils::getValFromJson($data, 'url', false, 'SinkOtelTracingConfigPatch')
+            url: \Svix\Utils::getValFromJson($data, 'url', false, 'OtelTracingConfigPatch')
         );
     }
 

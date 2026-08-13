@@ -3,7 +3,7 @@
 require "json"
 
 module Svix
-  class SinkOtelTracingConfigOut
+  class OtelTracingConfigOut
     attr_accessor :url
     attr_accessor :headers
 
@@ -12,15 +12,12 @@ module Svix
 
     def initialize(attributes = {})
       unless attributes.is_a?(Hash)
-        fail(
-          ArgumentError,
-          "The input argument (attributes) must be a hash in `Svix::SinkOtelTracingConfigOut` new method"
-        )
+        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::OtelTracingConfigOut` new method")
       end
 
       attributes.each do |k, v|
         unless ALL_FIELD.include?(k.to_s)
-          fail(ArgumentError, "The field #{k} is not part of Svix::SinkOtelTracingConfigOut")
+          fail(ArgumentError, "The field #{k} is not part of Svix::OtelTracingConfigOut")
         end
 
         instance_variable_set("@#{k}", v)

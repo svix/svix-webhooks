@@ -20,14 +20,14 @@ import {
   type GoogleCloudStorageConfigIn,
   GoogleCloudStorageConfigInSerializer,
 } from "./googleCloudStorageConfigIn";
+import {
+  type OtelTracingConfigIn,
+  OtelTracingConfigInSerializer,
+} from "./otelTracingConfigIn";
 import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
 import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
 import { type S3ConfigIn, S3ConfigInSerializer } from "./s3ConfigIn";
 import { type SinkHttpConfigIn, SinkHttpConfigInSerializer } from "./sinkHttpConfigIn";
-import {
-  type SinkOtelTracingConfigIn,
-  SinkOtelTracingConfigInSerializer,
-} from "./sinkOtelTracingConfigIn";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import { type SnowflakeConfigIn, SnowflakeConfigInSerializer } from "./snowflakeConfigIn";
 import { type SnsConfigIn, SnsConfigInSerializer } from "./snsConfigIn";
@@ -56,6 +56,7 @@ interface _StreamSinkInFields {
   maxWaitSecs?: number;
   /** A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events. */
   eventTypes?: string[];
+  channels?: string[];
   metadata?: { [key: string]: string };
 }
 
@@ -74,7 +75,7 @@ interface StreamSinkInAzureBlobStorage {
 
 interface StreamSinkInOtelTracing {
   type: "otelTracing";
-  config: SinkOtelTracingConfigIn;
+  config: OtelTracingConfigIn;
 }
 
 interface StreamSinkInHttp {
@@ -167,7 +168,7 @@ export const StreamSinkInSerializer = {
         case "azureBlobStorage":
           return AzureBlobStorageConfigInSerializer._fromJsonObject(object["config"]);
         case "otelTracing":
-          return SinkOtelTracingConfigInSerializer._fromJsonObject(object["config"]);
+          return OtelTracingConfigInSerializer._fromJsonObject(object["config"]);
         case "http":
           return SinkHttpConfigInSerializer._fromJsonObject(object["config"]);
         case "amazonS3":
@@ -208,6 +209,7 @@ export const StreamSinkInSerializer = {
       batchSize: object["batchSize"],
       maxWaitSecs: object["maxWaitSecs"],
       eventTypes: object["eventTypes"],
+      channels: object["channels"],
       metadata: object["metadata"],
     };
   },
@@ -223,7 +225,7 @@ export const StreamSinkInSerializer = {
         config = AzureBlobStorageConfigInSerializer._toJsonObject(self.config);
         break;
       case "otelTracing":
-        config = SinkOtelTracingConfigInSerializer._toJsonObject(self.config);
+        config = OtelTracingConfigInSerializer._toJsonObject(self.config);
         break;
       case "http":
         config = SinkHttpConfigInSerializer._toJsonObject(self.config);
@@ -274,6 +276,7 @@ export const StreamSinkInSerializer = {
       batchSize: self.batchSize,
       maxWaitSecs: self.maxWaitSecs,
       eventTypes: self.eventTypes,
+      channels: self.channels,
       metadata: self.metadata,
     };
   },

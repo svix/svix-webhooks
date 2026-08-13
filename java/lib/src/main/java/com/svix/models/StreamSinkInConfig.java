@@ -54,7 +54,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("otelTracing")
     public static class OtelTracing extends StreamSinkInConfig {
-        private final SinkOtelTracingConfigIn otelTracing;
+        private final OtelTracingConfigIn otelTracing;
 
         @Override
         public JsonNode toJsonNode() {
@@ -255,9 +255,7 @@ public abstract class StreamSinkInConfig {
         TY_M.put(
                 "azureBlobStorage",
                 c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfigIn.class)));
-        TY_M.put(
-                "otelTracing",
-                c -> new OtelTracing(m.convertValue(c, SinkOtelTracingConfigIn.class)));
+        TY_M.put("otelTracing", c -> new OtelTracing(m.convertValue(c, OtelTracingConfigIn.class)));
         TY_M.put("http", c -> new Http(m.convertValue(c, SinkHttpConfigIn.class)));
         TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, S3ConfigIn.class)));
         TY_M.put(

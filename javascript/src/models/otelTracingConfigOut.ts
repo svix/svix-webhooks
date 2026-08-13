@@ -4,20 +4,20 @@ import {
   EndpointHeadersOutSerializer,
 } from "./endpointHeadersOut";
 
-export interface SinkOtelTracingConfigOut {
+export interface OtelTracingConfigOut {
   url: string;
   headers: EndpointHeadersOut;
 }
 
-export const SinkOtelTracingConfigOutSerializer = {
-  _fromJsonObject(object: any): SinkOtelTracingConfigOut {
+export const OtelTracingConfigOutSerializer = {
+  _fromJsonObject(object: any): OtelTracingConfigOut {
     return {
       url: object["url"],
       headers: EndpointHeadersOutSerializer._fromJsonObject(object["headers"]),
     };
   },
 
-  _toJsonObject(self: SinkOtelTracingConfigOut): any {
+  _toJsonObject(self: OtelTracingConfigOut): any {
     return {
       url: self.url,
       headers: EndpointHeadersOutSerializer._toJsonObject(self.headers),

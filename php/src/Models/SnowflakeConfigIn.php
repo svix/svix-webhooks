@@ -11,9 +11,11 @@ class SnowflakeConfigIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string $privateKey PEM-encoded private key used for signing token-based requests to the Snowflake API.
+     * @param string|null $privateKey PEM-encoded private key used for signing token-based requests to the Snowflake API.
      *
      * Beginning/end delimiters are not required.
+     *
+     * Currently a required field, but marked as optional because we may add different authentication in the future.
      * @param string      $accountIdentifier snowflake account identifier, which includes both the organization and account IDs separated by a hyphen
      * @param string      $userId            the Snowflake user id
      * @param string|null $dbName            Database name.
@@ -27,9 +29,9 @@ class SnowflakeConfigIn implements \JsonSerializable
      * Only required if not using transformations.
      */
     private function __construct(
-        public readonly string $privateKey,
         public readonly string $accountIdentifier,
         public readonly string $userId,
+        public readonly ?string $privateKey = null,
         public readonly ?string $dbName = null,
         public readonly ?string $schemaName = null,
         public readonly ?string $tableName = null,
@@ -42,18 +44,33 @@ class SnowflakeConfigIn implements \JsonSerializable
      * Create an instance of SnowflakeConfigIn with required fields.
      */
     public static function create(
-        string $privateKey,
         string $accountIdentifier,
         string $userId,
     ): self {
         return new self(
-            privateKey: $privateKey,
+            privateKey: null,
             accountIdentifier: $accountIdentifier,
             userId: $userId,
             dbName: null,
             schemaName: null,
             tableName: null,
-            setFields: ['privateKey' => true, 'accountIdentifier' => true, 'userId' => true]
+            setFields: ['accountIdentifier' => true, 'userId' => true]
+        );
+    }
+
+    public function withPrivateKey(?string $privateKey): self
+    {
+        $setFields = $this->setFields;
+        $setFields['privateKey'] = true;
+
+        return new self(
+            privateKey: $privateKey,
+            accountIdentifier: $this->accountIdentifier,
+            userId: $this->userId,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
         );
     }
 
@@ -108,10 +125,12 @@ class SnowflakeConfigIn implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'privateKey' => $this->privateKey,
             'accountIdentifier' => $this->accountIdentifier,
             'userId' => $this->userId];
 
+        if (isset($this->setFields['privateKey'])) {
+            $data['privateKey'] = $this->privateKey;
+        }
         if (null !== $this->dbName) {
             $data['dbName'] = $this->dbName;
         }
@@ -131,7 +150,7 @@ class SnowflakeConfigIn implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            privateKey: \Svix\Utils::deserializeString($data, 'privateKey', true, 'SnowflakeConfigIn'),
+            privateKey: \Svix\Utils::deserializeString($data, 'privateKey', false, 'SnowflakeConfigIn'),
             accountIdentifier: \Svix\Utils::deserializeString($data, 'accountIdentifier', true, 'SnowflakeConfigIn'),
             userId: \Svix\Utils::deserializeString($data, 'userId', true, 'SnowflakeConfigIn'),
             dbName: \Svix\Utils::deserializeString($data, 'dbName', false, 'SnowflakeConfigIn'),

@@ -20,14 +20,14 @@ import {
   type GoogleCloudStorageConfigOut,
   GoogleCloudStorageConfigOutSerializer,
 } from "./googleCloudStorageConfigOut";
+import {
+  type OtelTracingConfigOut,
+  OtelTracingConfigOutSerializer,
+} from "./otelTracingConfigOut";
 import { type RabbitMqConfigOut, RabbitMqConfigOutSerializer } from "./rabbitMqConfigOut";
 import { type RedshiftConfigOut, RedshiftConfigOutSerializer } from "./redshiftConfigOut";
 import { type S3ConfigOut, S3ConfigOutSerializer } from "./s3ConfigOut";
 import { type SinkHttpConfigOut, SinkHttpConfigOutSerializer } from "./sinkHttpConfigOut";
-import {
-  type SinkOtelTracingConfigOut,
-  SinkOtelTracingConfigOutSerializer,
-} from "./sinkOtelTracingConfigOut";
 import { type SinkStatus, SinkStatusSerializer } from "./sinkStatus";
 import {
   type SnowflakeConfigOut,
@@ -49,6 +49,7 @@ interface _StreamSinkOutFields {
   batchSize: number;
   maxWaitSecs: number;
   eventTypes?: string[];
+  channels?: string[];
   nextRetryAt?: Date | null;
   metadata: { [key: string]: string };
 }
@@ -68,7 +69,7 @@ interface StreamSinkOutAzureBlobStorage {
 
 interface StreamSinkOutOtelTracing {
   type: "otelTracing";
-  config: SinkOtelTracingConfigOut;
+  config: OtelTracingConfigOut;
 }
 
 interface StreamSinkOutHttp {
@@ -161,7 +162,7 @@ export const StreamSinkOutSerializer = {
         case "azureBlobStorage":
           return AzureBlobStorageConfigOutSerializer._fromJsonObject(object["config"]);
         case "otelTracing":
-          return SinkOtelTracingConfigOutSerializer._fromJsonObject(object["config"]);
+          return OtelTracingConfigOutSerializer._fromJsonObject(object["config"]);
         case "http":
           return SinkHttpConfigOutSerializer._fromJsonObject(object["config"]);
         case "amazonS3":
@@ -204,6 +205,7 @@ export const StreamSinkOutSerializer = {
       batchSize: object["batchSize"],
       maxWaitSecs: object["maxWaitSecs"],
       eventTypes: object["eventTypes"],
+      channels: object["channels"],
       nextRetryAt: object["nextRetryAt"] ? new Date(object["nextRetryAt"]) : null,
       metadata: object["metadata"],
     };
@@ -220,7 +222,7 @@ export const StreamSinkOutSerializer = {
         config = AzureBlobStorageConfigOutSerializer._toJsonObject(self.config);
         break;
       case "otelTracing":
-        config = SinkOtelTracingConfigOutSerializer._toJsonObject(self.config);
+        config = OtelTracingConfigOutSerializer._toJsonObject(self.config);
         break;
       case "http":
         config = SinkHttpConfigOutSerializer._toJsonObject(self.config);
@@ -273,6 +275,7 @@ export const StreamSinkOutSerializer = {
       batchSize: self.batchSize,
       maxWaitSecs: self.maxWaitSecs,
       eventTypes: self.eventTypes,
+      channels: self.channels,
       nextRetryAt: self.nextRetryAt,
       metadata: self.metadata,
     };

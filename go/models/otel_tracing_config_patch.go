@@ -3,11 +3,11 @@ package models
 
 import "encoding/json"
 
-type SinkOtelTracingConfigPatch struct {
+type OtelTracingConfigPatch struct {
 	Url *string `json:"url,omitempty"`
 }
 
-func (o SinkOtelTracingConfigPatch) MarshalJSON() ([]byte, error) {
+func (o OtelTracingConfigPatch) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Url != nil {
 		toSerialize["url"] = o.Url

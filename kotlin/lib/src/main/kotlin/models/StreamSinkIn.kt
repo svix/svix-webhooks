@@ -41,6 +41,7 @@ data class StreamSinkIn(
      * null) will not filter out any events.
      */
     val eventTypes: List<String>? = null,
+    val channels: List<String>? = null,
     val metadata: Map<String, String>? = null,
     val config: StreamSinkInConfig,
 )
@@ -65,9 +66,9 @@ sealed class StreamSinkInConfig {
     }
 
     @VariantName("otelTracing")
-    data class OtelTracing(val otelTracing: SinkOtelTracingConfigIn) : StreamSinkInConfig() {
+    data class OtelTracing(val otelTracing: OtelTracingConfigIn) : StreamSinkInConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(SinkOtelTracingConfigIn.serializer(), otelTracing)
+            Json.encodeToJsonElement(OtelTracingConfigIn.serializer(), otelTracing)
     }
 
     @VariantName("http")
@@ -156,7 +157,7 @@ sealed class StreamSinkInConfig {
                 "otelTracing" to
                     { config ->
                         OtelTracing(
-                            Json.decodeFromJsonElement(SinkOtelTracingConfigIn.serializer(), config)
+                            Json.decodeFromJsonElement(OtelTracingConfigIn.serializer(), config)
                         )
                     },
                 "http" to
@@ -263,6 +264,7 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
          * (or null) will not filter out any events.
          */
         val eventTypes: List<String>? = null,
+        val channels: List<String>? = null,
         val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
@@ -278,6 +280,7 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
                 batchSize = value.batchSize,
                 maxWaitSecs = value.maxWaitSecs,
                 eventTypes = value.eventTypes,
+                channels = value.channels,
                 metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
@@ -293,6 +296,7 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
             batchSize = surrogate.batchSize,
             maxWaitSecs = surrogate.maxWaitSecs,
             eventTypes = surrogate.eventTypes,
+            channels = surrogate.channels,
             metadata = surrogate.metadata,
             config = StreamSinkInConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )

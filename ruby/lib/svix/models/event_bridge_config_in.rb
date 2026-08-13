@@ -8,8 +8,17 @@ module Svix
     attr_accessor :event_bus_name
     # Free-form string, with a maximum of 128 characters
     attr_accessor :detail_type
+    # Access key ID.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :access_key_id
+    # Secret access key.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :secret_access_key
+    # The region of the EventBridge bus.
+    #
+    # Currently a required field, but marked as optional because we may infer it from other fields in the future.
     attr_accessor :region
 
     ALL_FIELD ||= ["event_bus_name", "detail_type", "access_key_id", "secret_access_key", "region"].freeze

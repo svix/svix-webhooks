@@ -9,8 +9,8 @@ namespace Svix.Models
     /// <summary>
     public class SnowflakeConfigIn
     {
-        [JsonProperty("privateKey", Required = Required.Always)]
-        public required string PrivateKey { get; set; }
+        [JsonProperty("privateKey")]
+        public string? PrivateKey { get; set; } = null;
 
         [JsonProperty("accountIdentifier", Required = Required.Always)]
         public required string AccountIdentifier { get; set; }

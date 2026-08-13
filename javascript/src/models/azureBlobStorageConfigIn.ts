@@ -3,7 +3,12 @@
 export interface AzureBlobStorageConfigIn {
   container: string;
   account: string;
-  accessKey: string;
+  /**
+   * Access key.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  accessKey?: string | null;
 }
 
 export const AzureBlobStorageConfigInSerializer = {

@@ -8,11 +8,11 @@ require_relative "./clickhouse_config_out"
 require_relative "./event_bridge_config_out"
 require_relative "./google_cloud_pub_sub_config_out"
 require_relative "./google_cloud_storage_config_out"
+require_relative "./otel_tracing_config_out"
 require_relative "./rabbit_mq_config_out"
 require_relative "./redshift_config_out"
 require_relative "./s3_config_out"
 require_relative "./sink_http_config_out"
-require_relative "./sink_otel_tracing_config_out"
 require_relative "./sink_status"
 require_relative "./snowflake_config_out"
 require_relative "./sns_config_out"
@@ -39,7 +39,7 @@ module Svix
     class AzureBlobStorage < AzureBlobStorageConfigOut
     end
 
-    class OtelTracing < SinkOtelTracingConfigOut
+    class OtelTracing < OtelTracingConfigOut
     end
 
     class Http < SinkHttpConfigOut
@@ -92,6 +92,7 @@ module Svix
     attr_accessor :batch_size
     attr_accessor :max_wait_secs
     attr_accessor :event_types
+    attr_accessor :channels
     attr_accessor :next_retry_at
     attr_accessor :metadata
     attr_accessor :config
@@ -107,6 +108,7 @@ module Svix
       "batch_size",
       "max_wait_secs",
       "event_types",
+      "channels",
       "next_retry_at",
       "metadata",
       "config"
@@ -176,6 +178,7 @@ module Svix
       attrs["batch_size"] = attributes["batchSize"]
       attrs["max_wait_secs"] = attributes["maxWaitSecs"]
       attrs["event_types"] = attributes["eventTypes"]
+      attrs["channels"] = attributes["channels"]
       attrs["next_retry_at"] = DateTime.rfc3339(attributes["nextRetryAt"]).to_time if attributes["nextRetryAt"]
       attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
@@ -202,6 +205,7 @@ module Svix
       out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
       out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) if @next_retry_at
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator

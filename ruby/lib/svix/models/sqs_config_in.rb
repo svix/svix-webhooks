@@ -6,8 +6,17 @@ module Svix
   # Configuration for an SQS sink.
   class SqsConfigIn
     attr_accessor :queue_url
+    # The region of the SQS queue.
+    #
+    # Currently a required field, but marked as optional because we may infer it from other fields in the future.
     attr_accessor :region
+    # Access key ID.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :access_key_id
+    # Secret access key.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :secret_access_key
     attr_accessor :endpoint_url
 

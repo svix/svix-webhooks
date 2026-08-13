@@ -24,6 +24,10 @@ import {
   GoogleCloudStorageConfigPatchSerializer,
 } from "./googleCloudStorageConfigPatch";
 import {
+  type OtelTracingConfigPatch,
+  OtelTracingConfigPatchSerializer,
+} from "./otelTracingConfigPatch";
+import {
   type RabbitMqConfigPatch,
   RabbitMqConfigPatchSerializer,
 } from "./rabbitMqConfigPatch";
@@ -36,10 +40,6 @@ import {
   type SinkHttpConfigPatch,
   SinkHttpConfigPatchSerializer,
 } from "./sinkHttpConfigPatch";
-import {
-  type SinkOtelTracingConfigPatch,
-  SinkOtelTracingConfigPatchSerializer,
-} from "./sinkOtelTracingConfigPatch";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import {
   type SnowflakeConfigPatch,
@@ -55,6 +55,7 @@ interface _StreamSinkPatchFields {
   batchSize?: number | null;
   maxWaitSecs?: number | null;
   eventTypes?: string[];
+  channels?: string[];
   metadata?: { [key: string]: string };
 }
 
@@ -73,7 +74,7 @@ interface StreamSinkPatchAzureBlobStorage {
 
 interface StreamSinkPatchOtelTracing {
   type: "otelTracing";
-  config: SinkOtelTracingConfigPatch;
+  config: OtelTracingConfigPatch;
 }
 
 interface StreamSinkPatchHttp {
@@ -166,7 +167,7 @@ export const StreamSinkPatchSerializer = {
         case "azureBlobStorage":
           return AzureBlobStorageConfigPatchSerializer._fromJsonObject(object["config"]);
         case "otelTracing":
-          return SinkOtelTracingConfigPatchSerializer._fromJsonObject(object["config"]);
+          return OtelTracingConfigPatchSerializer._fromJsonObject(object["config"]);
         case "http":
           return SinkHttpConfigPatchSerializer._fromJsonObject(object["config"]);
         case "amazonS3":
@@ -209,6 +210,7 @@ export const StreamSinkPatchSerializer = {
       batchSize: object["batchSize"],
       maxWaitSecs: object["maxWaitSecs"],
       eventTypes: object["eventTypes"],
+      channels: object["channels"],
       metadata: object["metadata"],
     };
   },
@@ -224,7 +226,7 @@ export const StreamSinkPatchSerializer = {
         config = AzureBlobStorageConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "otelTracing":
-        config = SinkOtelTracingConfigPatchSerializer._toJsonObject(self.config);
+        config = OtelTracingConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "http":
         config = SinkHttpConfigPatchSerializer._toJsonObject(self.config);
@@ -275,6 +277,7 @@ export const StreamSinkPatchSerializer = {
       batchSize: self.batchSize,
       maxWaitSecs: self.maxWaitSecs,
       eventTypes: self.eventTypes,
+      channels: self.channels,
       metadata: self.metadata,
     };
   },

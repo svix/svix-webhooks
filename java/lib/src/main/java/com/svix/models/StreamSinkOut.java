@@ -45,6 +45,7 @@ public class StreamSinkOut {
     private Integer batchSize;
     private Integer maxWaitSecs;
     private List<String> eventTypes;
+    private List<String> channels;
     private OffsetDateTime nextRetryAt;
     private Map<String, String> metadata;
     private StreamSinkOutConfig config;
@@ -96,6 +97,11 @@ public class StreamSinkOut {
 
     public StreamSinkOut eventTypes(List<String> eventTypes) {
         this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public StreamSinkOut channels(List<String> channels) {
+        this.channels = channels;
         return this;
     }
 
@@ -156,6 +162,9 @@ class StreamSinkOutSurrogate {
     @JsonProperty("eventTypes")
     List<String> eventTypes;
 
+    @JsonProperty("channels")
+    List<String> channels;
+
     @JsonProperty("nextRetryAt")
     OffsetDateTime nextRetryAt;
 
@@ -179,6 +188,7 @@ class StreamSinkOutSurrogate {
         this.batchSize = o.getBatchSize();
         this.maxWaitSecs = o.getMaxWaitSecs();
         this.eventTypes = o.getEventTypes();
+        this.channels = o.getChannels();
         this.nextRetryAt = o.getNextRetryAt();
         this.metadata = o.getMetadata();
         this.type = type;
@@ -227,6 +237,7 @@ class StreamSinkOutDeserializer extends StdDeserializer<StreamSinkOut> {
         Integer batchSize = surrogate.getBatchSize();
         Integer maxWaitSecs = surrogate.getMaxWaitSecs();
         List<String> eventTypes = surrogate.getEventTypes();
+        List<String> channels = surrogate.getChannels();
         OffsetDateTime nextRetryAt = surrogate.getNextRetryAt();
         Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();
@@ -243,6 +254,7 @@ class StreamSinkOutDeserializer extends StdDeserializer<StreamSinkOut> {
                 batchSize,
                 maxWaitSecs,
                 eventTypes,
+                channels,
                 nextRetryAt,
                 metadata,
                 sourceType);
