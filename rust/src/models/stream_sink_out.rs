@@ -7,9 +7,9 @@ use super::{
     event_bridge_config_out::EventBridgeConfigOut,
     google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
-    rabbit_mq_config_out::RabbitMqConfigOut, redshift_config_out::RedshiftConfigOut,
-    s3_config_out::S3ConfigOut, sink_http_config_out::SinkHttpConfigOut,
-    sink_otel_tracing_config_out::SinkOtelTracingConfigOut, sink_status::SinkStatus,
+    otel_tracing_config_out::OtelTracingConfigOut, rabbit_mq_config_out::RabbitMqConfigOut,
+    redshift_config_out::RedshiftConfigOut, s3_config_out::S3ConfigOut,
+    sink_http_config_out::SinkHttpConfigOut, sink_status::SinkStatus,
     snowflake_config_out::SnowflakeConfigOut, sns_config_out::SnsConfigOut,
     sqs_config_out::SqsConfigOut,
 };
@@ -48,6 +48,9 @@ pub struct StreamSinkOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event_types: Option<Vec<String>>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<Vec<String>>,
+
     #[serde(rename = "nextRetryAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub next_retry_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -66,7 +69,7 @@ pub enum StreamSinkOutConfig {
     #[serde(rename = "azureBlobStorage")]
     AzureBlobStorage(AzureBlobStorageConfigOut),
     #[serde(rename = "otelTracing")]
-    OtelTracing(SinkOtelTracingConfigOut),
+    OtelTracing(OtelTracingConfigOut),
     #[serde(rename = "http")]
     Http(SinkHttpConfigOut),
     #[serde(rename = "amazonS3")]

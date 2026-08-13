@@ -146,6 +146,9 @@ mod operational_webhook_endpoint_upsert_in;
 mod ordering;
 mod orum_io_config;
 mod orum_io_config_out;
+mod otel_tracing_config_in;
+mod otel_tracing_config_out;
+mod otel_tracing_config_patch;
 mod panda_doc_config;
 mod panda_doc_config_out;
 mod poller_v2_commit_in;
@@ -182,9 +185,6 @@ mod sink_http_config_in;
 mod sink_http_config_out;
 mod sink_http_config_patch;
 mod sink_in_common;
-mod sink_otel_tracing_config_in;
-mod sink_otel_tracing_config_out;
-mod sink_otel_tracing_config_patch;
 mod sink_secret_out;
 mod sink_status;
 mod sink_status_in;
@@ -386,6 +386,9 @@ pub use self::{
     ordering::Ordering,
     orum_io_config::OrumIoConfig,
     orum_io_config_out::OrumIoConfigOut,
+    otel_tracing_config_in::OtelTracingConfigIn,
+    otel_tracing_config_out::OtelTracingConfigOut,
+    otel_tracing_config_patch::OtelTracingConfigPatch,
     panda_doc_config::PandaDocConfig,
     panda_doc_config_out::PandaDocConfigOut,
     poller_v2_commit_in::PollerV2CommitIn,
@@ -422,9 +425,6 @@ pub use self::{
     sink_http_config_out::SinkHttpConfigOut,
     sink_http_config_patch::SinkHttpConfigPatch,
     sink_in_common::SinkInCommon,
-    sink_otel_tracing_config_in::SinkOtelTracingConfigIn,
-    sink_otel_tracing_config_out::SinkOtelTracingConfigOut,
-    sink_otel_tracing_config_patch::SinkOtelTracingConfigPatch,
     sink_secret_out::SinkSecretOut,
     sink_status::SinkStatus,
     sink_status_in::SinkStatusIn,

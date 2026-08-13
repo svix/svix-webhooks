@@ -11,11 +11,11 @@ from .common import BaseModel
 from .event_bridge_config_patch import EventBridgeConfigPatch
 from .google_cloud_pub_sub_config_patch import GoogleCloudPubSubConfigPatch
 from .google_cloud_storage_config_patch import GoogleCloudStorageConfigPatch
+from .otel_tracing_config_patch import OtelTracingConfigPatch
 from .rabbit_mq_config_patch import RabbitMqConfigPatch
 from .redshift_config_patch import RedshiftConfigPatch
 from .s3_config_patch import S3ConfigPatch
 from .sink_http_config_patch import SinkHttpConfigPatch
-from .sink_otel_tracing_config_patch import SinkOtelTracingConfigPatch
 from .sink_status_in import SinkStatusIn
 from .snowflake_config_patch import SnowflakeConfigPatch
 from .sns_config_patch import SnsConfigPatch
@@ -33,6 +33,8 @@ class StreamSinkPatch(BaseModel):
     max_wait_secs: t.Optional[int] = None
 
     event_types: t.Optional[t.List[str]] = None
+
+    channels: t.Optional[t.List[str]] = None
 
     metadata: t.Optional[t.Dict[str, str]] = None
 
@@ -56,7 +58,7 @@ class StreamSinkPatch(BaseModel):
     config: t.Union[
         t.Dict[str, t.Any],
         AzureBlobStorageConfigPatch,
-        SinkOtelTracingConfigPatch,
+        OtelTracingConfigPatch,
         SinkHttpConfigPatch,
         S3ConfigPatch,
         GoogleCloudStorageConfigPatch,
@@ -88,7 +90,7 @@ class StreamSinkPatch(BaseModel):
                 data.get("config", {})
             )
         elif output.type == "otelTracing":
-            output.config = SinkOtelTracingConfigPatch.model_validate(
+            output.config = OtelTracingConfigPatch.model_validate(
                 data.get("config", {})
             )
         elif output.type == "http":

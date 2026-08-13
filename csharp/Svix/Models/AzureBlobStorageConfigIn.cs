@@ -12,8 +12,8 @@ namespace Svix.Models
         [JsonProperty("account", Required = Required.Always)]
         public required string Account { get; set; }
 
-        [JsonProperty("accessKey", Required = Required.Always)]
-        public required string AccessKey { get; set; }
+        [JsonProperty("accessKey")]
+        public string? AccessKey { get; set; } = null;
 
         public override string ToString()
         {

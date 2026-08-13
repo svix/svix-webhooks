@@ -17,12 +17,12 @@ import java.net.URI;
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class SinkOtelTracingConfigPatch {
+public class OtelTracingConfigPatch {
     @JsonProperty private URI url;
 
-    public SinkOtelTracingConfigPatch() {}
+    public OtelTracingConfigPatch() {}
 
-    public SinkOtelTracingConfigPatch url(URI url) {
+    public OtelTracingConfigPatch url(URI url) {
         this.url = url;
         return this;
     }
@@ -42,20 +42,20 @@ public class SinkOtelTracingConfigPatch {
     }
 
     /**
-     * Create an instance of SinkOtelTracingConfigPatch given an JSON string
+     * Create an instance of OtelTracingConfigPatch given an JSON string
      *
      * @param jsonString JSON string
-     * @return An instance of SinkOtelTracingConfigPatch
+     * @return An instance of OtelTracingConfigPatch
      * @throws JsonProcessingException if the JSON string is invalid with respect to
-     *     SinkOtelTracingConfigPatch
+     *     OtelTracingConfigPatch
      */
-    public static SinkOtelTracingConfigPatch fromJson(String jsonString)
+    public static OtelTracingConfigPatch fromJson(String jsonString)
             throws JsonProcessingException {
-        return Utils.getObjectMapper().readValue(jsonString, SinkOtelTracingConfigPatch.class);
+        return Utils.getObjectMapper().readValue(jsonString, OtelTracingConfigPatch.class);
     }
 
     /**
-     * Convert an instance of SinkOtelTracingConfigPatch to an JSON string
+     * Convert an instance of OtelTracingConfigPatch to an JSON string
      *
      * @return JSON string
      */

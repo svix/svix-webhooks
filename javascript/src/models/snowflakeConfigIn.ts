@@ -6,8 +6,10 @@ export interface SnowflakeConfigIn {
    * PEM-encoded private key used for signing token-based requests to the Snowflake API.
    *
    * Beginning/end delimiters are not required.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
    */
-  privateKey: string;
+  privateKey?: string | null;
   /** Snowflake account identifier, which includes both the organization and account IDs separated by a hyphen. */
   accountIdentifier: string;
   /** The Snowflake user id. */

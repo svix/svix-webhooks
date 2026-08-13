@@ -66,11 +66,14 @@ public class AzureBlobStorageConfigIn {
     }
 
     /**
-     * Get accessKey
+     * Access key.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return accessKey
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKey() {
         return accessKey;
     }

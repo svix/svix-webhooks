@@ -3,23 +3,21 @@
 require "json"
 
 module Svix
-  class SinkOtelTracingConfigPatch
+  class OtelTracingConfigIn
     attr_accessor :url
+    attr_accessor :headers
 
-    ALL_FIELD ||= ["url"].freeze
+    ALL_FIELD ||= ["url", "headers"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
       unless attributes.is_a?(Hash)
-        fail(
-          ArgumentError,
-          "The input argument (attributes) must be a hash in `Svix::SinkOtelTracingConfigPatch` new method"
-        )
+        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::OtelTracingConfigIn` new method")
       end
 
       attributes.each do |k, v|
         unless ALL_FIELD.include?(k.to_s)
-          fail(ArgumentError, "The field #{k} is not part of Svix::SinkOtelTracingConfigPatch")
+          fail(ArgumentError, "The field #{k} is not part of Svix::OtelTracingConfigIn")
         end
 
         instance_variable_set("@#{k}", v)
@@ -31,12 +29,14 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["url"] = attributes["url"]
+      attrs["headers"] = attributes["headers"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
       out["url"] = Svix::serialize_primitive(@url) if @url
+      out["headers"] = Svix::serialize_primitive(@headers) if @headers
       out
     end
 

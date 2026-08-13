@@ -3,9 +3,24 @@
 /** Configuration for a SNS sink. */
 export interface SnsConfigIn {
   topicArn: string;
-  region: string;
-  accessKeyId: string;
-  secretAccessKey: string;
+  /**
+   * The region of the SNS instance.
+   *
+   * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+   */
+  region?: string | null;
+  /**
+   * Access key ID.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  accessKeyId?: string | null;
+  /**
+   * Secret access key.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  secretAccessKey?: string | null;
   endpointUrl?: string | null;
 }
 

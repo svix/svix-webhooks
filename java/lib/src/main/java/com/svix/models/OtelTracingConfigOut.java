@@ -12,20 +12,18 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class SinkOtelTracingConfigIn {
+public class OtelTracingConfigOut {
     @JsonProperty private URI url;
-    @JsonProperty private Map<String, String> headers;
+    @JsonProperty private EndpointHeadersOut headers;
 
-    public SinkOtelTracingConfigIn() {}
+    public OtelTracingConfigOut() {}
 
-    public SinkOtelTracingConfigIn url(URI url) {
+    public OtelTracingConfigOut url(URI url) {
         this.url = url;
         return this;
     }
@@ -44,17 +42,8 @@ public class SinkOtelTracingConfigIn {
         this.url = url;
     }
 
-    public SinkOtelTracingConfigIn headers(Map<String, String> headers) {
+    public OtelTracingConfigOut headers(EndpointHeadersOut headers) {
         this.headers = headers;
-        return this;
-    }
-
-    public SinkOtelTracingConfigIn putHeadersItem(String key, String headersItem) {
-        if (this.headers == null) {
-            this.headers = new HashMap<>();
-        }
-        this.headers.put(key, headersItem);
-
         return this;
     }
 
@@ -63,30 +52,29 @@ public class SinkOtelTracingConfigIn {
      *
      * @return headers
      */
-    @javax.annotation.Nullable
-    public Map<String, String> getHeaders() {
+    @javax.annotation.Nonnull
+    public EndpointHeadersOut getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Map<String, String> headers) {
+    public void setHeaders(EndpointHeadersOut headers) {
         this.headers = headers;
     }
 
     /**
-     * Create an instance of SinkOtelTracingConfigIn given an JSON string
+     * Create an instance of OtelTracingConfigOut given an JSON string
      *
      * @param jsonString JSON string
-     * @return An instance of SinkOtelTracingConfigIn
+     * @return An instance of OtelTracingConfigOut
      * @throws JsonProcessingException if the JSON string is invalid with respect to
-     *     SinkOtelTracingConfigIn
+     *     OtelTracingConfigOut
      */
-    public static SinkOtelTracingConfigIn fromJson(String jsonString)
-            throws JsonProcessingException {
-        return Utils.getObjectMapper().readValue(jsonString, SinkOtelTracingConfigIn.class);
+    public static OtelTracingConfigOut fromJson(String jsonString) throws JsonProcessingException {
+        return Utils.getObjectMapper().readValue(jsonString, OtelTracingConfigOut.class);
     }
 
     /**
-     * Convert an instance of SinkOtelTracingConfigIn to an JSON string
+     * Convert an instance of OtelTracingConfigOut to an JSON string
      *
      * @return JSON string
      */

@@ -6,9 +6,9 @@ use super::{
     clickhouse_config_in::ClickhouseConfigIn, event_bridge_config_in::EventBridgeConfigIn,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
     google_cloud_storage_config_in::GoogleCloudStorageConfigIn,
-    rabbit_mq_config_in::RabbitMqConfigIn, redshift_config_in::RedshiftConfigIn,
-    s3_config_in::S3ConfigIn, sink_http_config_in::SinkHttpConfigIn,
-    sink_otel_tracing_config_in::SinkOtelTracingConfigIn, sink_status_in::SinkStatusIn,
+    otel_tracing_config_in::OtelTracingConfigIn, rabbit_mq_config_in::RabbitMqConfigIn,
+    redshift_config_in::RedshiftConfigIn, s3_config_in::S3ConfigIn,
+    sink_http_config_in::SinkHttpConfigIn, sink_status_in::SinkStatusIn,
     snowflake_config_in::SnowflakeConfigIn, sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
 };
 
@@ -52,6 +52,9 @@ pub struct StreamSinkIn {
     pub event_types: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::BTreeMap<String, String>>,
 
     #[serde(flatten)]
@@ -66,7 +69,7 @@ pub enum StreamSinkInConfig {
     #[serde(rename = "azureBlobStorage")]
     AzureBlobStorage(AzureBlobStorageConfigIn),
     #[serde(rename = "otelTracing")]
-    OtelTracing(SinkOtelTracingConfigIn),
+    OtelTracing(OtelTracingConfigIn),
     #[serde(rename = "http")]
     Http(SinkHttpConfigIn),
     #[serde(rename = "amazonS3")]

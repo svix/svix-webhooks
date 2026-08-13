@@ -34,6 +34,11 @@ namespace Svix.Models
 
         public bool ShouldSerializeEventTypes() => EventTypes != null;
 
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
+
+        public bool ShouldSerializeChannels() => Channels != null;
+
         [JsonProperty("metadata")]
         public Dictionary<string, string>? Metadata { get; set; } = null;
 
@@ -62,6 +67,7 @@ namespace Svix.Models
             sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
             sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
             sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
+            sb.Append("  Channels: ").Append(Channels).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
             sb.Append("}\n");
@@ -108,8 +114,8 @@ namespace Svix.Models
         ) => new(azureBlobStorageConfigPatch, ConfigType.AzureBlobStorage);
 
         public static StreamSinkPatchConfig OtelTracing(
-            SinkOtelTracingConfigPatch sinkOtelTracingConfigPatch
-        ) => new(sinkOtelTracingConfigPatch, ConfigType.OtelTracing);
+            OtelTracingConfigPatch otelTracingConfigPatch
+        ) => new(otelTracingConfigPatch, ConfigType.OtelTracing);
 
         public static StreamSinkPatchConfig Http(SinkHttpConfigPatch sinkHttpConfigPatch) =>
             new(sinkHttpConfigPatch, ConfigType.Http);
@@ -202,7 +208,7 @@ namespace Svix.Models
         public TResult Match<TResult>(
             Func<TResult> onPoller,
             Func<AzureBlobStorageConfigPatch, TResult> onAzureBlobStorage,
-            Func<SinkOtelTracingConfigPatch, TResult> onOtelTracing,
+            Func<OtelTracingConfigPatch, TResult> onOtelTracing,
             Func<SinkHttpConfigPatch, TResult> onHttp,
             Func<S3ConfigPatch, TResult> onAmazonS3,
             Func<GoogleCloudStorageConfigPatch, TResult> onGoogleCloudStorage,
@@ -223,7 +229,7 @@ namespace Svix.Models
                 ConfigType.AzureBlobStorage => onAzureBlobStorage(
                     (AzureBlobStorageConfigPatch)_value
                 ),
-                ConfigType.OtelTracing => onOtelTracing((SinkOtelTracingConfigPatch)_value),
+                ConfigType.OtelTracing => onOtelTracing((OtelTracingConfigPatch)_value),
                 ConfigType.Http => onHttp((SinkHttpConfigPatch)_value),
                 ConfigType.AmazonS3 => onAmazonS3((S3ConfigPatch)_value),
                 ConfigType.GoogleCloudStorage => onGoogleCloudStorage(
@@ -248,7 +254,7 @@ namespace Svix.Models
         public void Switch(
             Action onPoller,
             Action<AzureBlobStorageConfigPatch> onAzureBlobStorage,
-            Action<SinkOtelTracingConfigPatch> onOtelTracing,
+            Action<OtelTracingConfigPatch> onOtelTracing,
             Action<SinkHttpConfigPatch> onHttp,
             Action<S3ConfigPatch> onAmazonS3,
             Action<GoogleCloudStorageConfigPatch> onGoogleCloudStorage,
@@ -272,7 +278,7 @@ namespace Svix.Models
                     onAzureBlobStorage((AzureBlobStorageConfigPatch)_value);
                     break;
                 case ConfigType.OtelTracing:
-                    onOtelTracing((SinkOtelTracingConfigPatch)_value);
+                    onOtelTracing((OtelTracingConfigPatch)_value);
                     break;
                 case ConfigType.Http:
                     onHttp((SinkHttpConfigPatch)_value);
@@ -344,6 +350,11 @@ namespace Svix.Models
 
         public bool ShouldSerializeEventTypes() => EventTypes != null;
 
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
+
+        public bool ShouldSerializeChannels() => Channels != null;
+
         [JsonProperty("metadata")]
         public Dictionary<string, string>? Metadata { get; set; } = null;
 
@@ -407,6 +418,7 @@ namespace Svix.Models
                 BatchSize = surrogate.BatchSize,
                 MaxWaitSecs = surrogate.MaxWaitSecs,
                 EventTypes = surrogate.EventTypes,
+                Channels = surrogate.Channels,
                 Metadata = surrogate.Metadata,
                 Config = config,
             };
@@ -431,7 +443,7 @@ namespace Svix.Models
             ["azureBlobStorage"] = c =>
                 StreamSinkPatchConfig.AzureBlobStorage(ToObj<AzureBlobStorageConfigPatch>(c)),
             ["otelTracing"] = c =>
-                StreamSinkPatchConfig.OtelTracing(ToObj<SinkOtelTracingConfigPatch>(c)),
+                StreamSinkPatchConfig.OtelTracing(ToObj<OtelTracingConfigPatch>(c)),
             ["http"] = c => StreamSinkPatchConfig.Http(ToObj<SinkHttpConfigPatch>(c)),
             ["amazonS3"] = c => StreamSinkPatchConfig.AmazonS3(ToObj<S3ConfigPatch>(c)),
             ["googleCloudStorage"] = c =>

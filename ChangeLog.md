@@ -12,6 +12,10 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/All **(Breaking)**: All the non-patch `Config` types like `S3Config`,
   `GoogleCloudPubSubConfig` etc. were split into separate `*ConfigIn` and `*ConfigOut` types
   * This fixes response deserialization for some of these types
+* Libs/All **(Breaking)**: Rename `SinkOtelTracingConfig*` to `OtelTracingConfig*`
+* Libs/All **(Breaking)**: Mark many sink config fields optional in preparation for future changes
+  (this primarily impacts authentication-related parameters that represent one of multiple
+  authentication methods supported upstream)
 * Libs/Rust **(Breaking)**: Remove `Configuration` from the public API
   * The access token can still be accessed using `svix.token()`, if you were using any of the other fields let us know!
 * Libs/Rust **(Breaking)**: Upgrade public dependency `js_option` to 0.2.0

@@ -9,14 +9,14 @@ namespace Svix.Models
         [JsonProperty("bucket", Required = Required.Always)]
         public required string Bucket { get; set; }
 
-        [JsonProperty("accessKeyId", Required = Required.Always)]
-        public required string AccessKeyId { get; set; }
+        [JsonProperty("accessKeyId")]
+        public string? AccessKeyId { get; set; } = null;
 
-        [JsonProperty("secretAccessKey", Required = Required.Always)]
-        public required string SecretAccessKey { get; set; }
+        [JsonProperty("secretAccessKey")]
+        public string? SecretAccessKey { get; set; } = null;
 
-        [JsonProperty("region", Required = Required.Always)]
-        public required string Region { get; set; }
+        [JsonProperty("region")]
+        public string? Region { get; set; } = null;
 
         [JsonProperty("endpointUrl")]
         public string? EndpointUrl { get; set; } = null;

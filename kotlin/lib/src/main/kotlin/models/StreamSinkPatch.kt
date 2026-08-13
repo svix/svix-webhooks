@@ -20,6 +20,7 @@ data class StreamSinkPatch(
     val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
     val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
     val eventTypes: List<String>? = null,
+    val channels: List<String>? = null,
     val metadata: Map<String, String>? = null,
     val config: StreamSinkPatchConfig,
 )
@@ -44,9 +45,9 @@ sealed class StreamSinkPatchConfig {
     }
 
     @VariantName("otelTracing")
-    data class OtelTracing(val otelTracing: SinkOtelTracingConfigPatch) : StreamSinkPatchConfig() {
+    data class OtelTracing(val otelTracing: OtelTracingConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(SinkOtelTracingConfigPatch.serializer(), otelTracing)
+            Json.encodeToJsonElement(OtelTracingConfigPatch.serializer(), otelTracing)
     }
 
     @VariantName("http")
@@ -137,10 +138,7 @@ sealed class StreamSinkPatchConfig {
                 "otelTracing" to
                     { config ->
                         OtelTracing(
-                            Json.decodeFromJsonElement(
-                                SinkOtelTracingConfigPatch.serializer(),
-                                config,
-                            )
+                            Json.decodeFromJsonElement(OtelTracingConfigPatch.serializer(), config)
                         )
                     },
                 "http" to
@@ -231,6 +229,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
         val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
         val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
         val eventTypes: List<String>? = null,
+        val channels: List<String>? = null,
         val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
@@ -246,6 +245,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
                 batchSize = value.batchSize,
                 maxWaitSecs = value.maxWaitSecs,
                 eventTypes = value.eventTypes,
+                channels = value.channels,
                 metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
@@ -261,6 +261,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
             batchSize = surrogate.batchSize,
             maxWaitSecs = surrogate.maxWaitSecs,
             eventTypes = surrogate.eventTypes,
+            channels = surrogate.channels,
             metadata = surrogate.metadata,
             config = StreamSinkPatchConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )

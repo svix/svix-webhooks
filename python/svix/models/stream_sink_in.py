@@ -11,11 +11,11 @@ from .common import BaseModel
 from .event_bridge_config_in import EventBridgeConfigIn
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
 from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
+from .otel_tracing_config_in import OtelTracingConfigIn
 from .rabbit_mq_config_in import RabbitMqConfigIn
 from .redshift_config_in import RedshiftConfigIn
 from .s3_config_in import S3ConfigIn
 from .sink_http_config_in import SinkHttpConfigIn
-from .sink_otel_tracing_config_in import SinkOtelTracingConfigIn
 from .sink_status_in import SinkStatusIn
 from .snowflake_config_in import SnowflakeConfigIn
 from .sns_config_in import SnsConfigIn
@@ -46,6 +46,8 @@ class StreamSinkIn(BaseModel):
     event_types: t.Optional[t.List[str]] = None
     """A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events."""
 
+    channels: t.Optional[t.List[str]] = None
+
     metadata: t.Optional[t.Dict[str, str]] = None
 
     type: t.Union[
@@ -68,7 +70,7 @@ class StreamSinkIn(BaseModel):
     config: t.Union[
         t.Dict[str, t.Any],
         AzureBlobStorageConfigIn,
-        SinkOtelTracingConfigIn,
+        OtelTracingConfigIn,
         SinkHttpConfigIn,
         S3ConfigIn,
         GoogleCloudStorageConfigIn,
@@ -100,9 +102,7 @@ class StreamSinkIn(BaseModel):
                 data.get("config", {})
             )
         elif output.type == "otelTracing":
-            output.config = SinkOtelTracingConfigIn.model_validate(
-                data.get("config", {})
-            )
+            output.config = OtelTracingConfigIn.model_validate(data.get("config", {}))
         elif output.type == "http":
             output.config = SinkHttpConfigIn.model_validate(data.get("config", {}))
         elif output.type == "amazonS3":

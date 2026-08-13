@@ -39,6 +39,9 @@ namespace Svix.Models
         [JsonProperty("eventTypes")]
         public List<string>? EventTypes { get; set; } = null;
 
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
+
         [JsonProperty("nextRetryAt")]
         public DateTime? NextRetryAt { get; set; } = null;
 
@@ -73,6 +76,7 @@ namespace Svix.Models
             sb.Append("  BatchSize: ").Append(BatchSize).Append('\n');
             sb.Append("  MaxWaitSecs: ").Append(MaxWaitSecs).Append('\n');
             sb.Append("  EventTypes: ").Append(EventTypes).Append('\n');
+            sb.Append("  Channels: ").Append(Channels).Append('\n');
             sb.Append("  NextRetryAt: ").Append(NextRetryAt).Append('\n');
             sb.Append("  Metadata: ").Append(Metadata).Append('\n');
             sb.Append("  Config: ").Append(Config).Append('\n');
@@ -119,9 +123,8 @@ namespace Svix.Models
             AzureBlobStorageConfigOut azureBlobStorageConfigOut
         ) => new(azureBlobStorageConfigOut, ConfigType.AzureBlobStorage);
 
-        public static StreamSinkOutConfig OtelTracing(
-            SinkOtelTracingConfigOut sinkOtelTracingConfigOut
-        ) => new(sinkOtelTracingConfigOut, ConfigType.OtelTracing);
+        public static StreamSinkOutConfig OtelTracing(OtelTracingConfigOut otelTracingConfigOut) =>
+            new(otelTracingConfigOut, ConfigType.OtelTracing);
 
         public static StreamSinkOutConfig Http(SinkHttpConfigOut sinkHttpConfigOut) =>
             new(sinkHttpConfigOut, ConfigType.Http);
@@ -212,7 +215,7 @@ namespace Svix.Models
         public TResult Match<TResult>(
             Func<TResult> onPoller,
             Func<AzureBlobStorageConfigOut, TResult> onAzureBlobStorage,
-            Func<SinkOtelTracingConfigOut, TResult> onOtelTracing,
+            Func<OtelTracingConfigOut, TResult> onOtelTracing,
             Func<SinkHttpConfigOut, TResult> onHttp,
             Func<S3ConfigOut, TResult> onAmazonS3,
             Func<SnowflakeConfigOut, TResult> onSnowflake,
@@ -233,7 +236,7 @@ namespace Svix.Models
                 ConfigType.AzureBlobStorage => onAzureBlobStorage(
                     (AzureBlobStorageConfigOut)_value
                 ),
-                ConfigType.OtelTracing => onOtelTracing((SinkOtelTracingConfigOut)_value),
+                ConfigType.OtelTracing => onOtelTracing((OtelTracingConfigOut)_value),
                 ConfigType.Http => onHttp((SinkHttpConfigOut)_value),
                 ConfigType.AmazonS3 => onAmazonS3((S3ConfigOut)_value),
                 ConfigType.Snowflake => onSnowflake((SnowflakeConfigOut)_value),
@@ -258,7 +261,7 @@ namespace Svix.Models
         public void Switch(
             Action onPoller,
             Action<AzureBlobStorageConfigOut> onAzureBlobStorage,
-            Action<SinkOtelTracingConfigOut> onOtelTracing,
+            Action<OtelTracingConfigOut> onOtelTracing,
             Action<SinkHttpConfigOut> onHttp,
             Action<S3ConfigOut> onAmazonS3,
             Action<SnowflakeConfigOut> onSnowflake,
@@ -282,7 +285,7 @@ namespace Svix.Models
                     onAzureBlobStorage((AzureBlobStorageConfigOut)_value);
                     break;
                 case ConfigType.OtelTracing:
-                    onOtelTracing((SinkOtelTracingConfigOut)_value);
+                    onOtelTracing((OtelTracingConfigOut)_value);
                     break;
                 case ConfigType.Http:
                     onHttp((SinkHttpConfigOut)_value);
@@ -359,6 +362,9 @@ namespace Svix.Models
         [JsonProperty("eventTypes")]
         public List<string>? EventTypes { get; set; } = null;
 
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
+
         [JsonProperty("nextRetryAt")]
         public DateTime? NextRetryAt { get; set; } = null;
 
@@ -428,6 +434,7 @@ namespace Svix.Models
                 BatchSize = surrogate.BatchSize,
                 MaxWaitSecs = surrogate.MaxWaitSecs,
                 EventTypes = surrogate.EventTypes,
+                Channels = surrogate.Channels,
                 NextRetryAt = surrogate.NextRetryAt,
                 Metadata = surrogate.Metadata,
                 Config = config,
@@ -451,7 +458,7 @@ namespace Svix.Models
                 ["azureBlobStorage"] = c =>
                     StreamSinkOutConfig.AzureBlobStorage(ToObj<AzureBlobStorageConfigOut>(c)),
                 ["otelTracing"] = c =>
-                    StreamSinkOutConfig.OtelTracing(ToObj<SinkOtelTracingConfigOut>(c)),
+                    StreamSinkOutConfig.OtelTracing(ToObj<OtelTracingConfigOut>(c)),
                 ["http"] = c => StreamSinkOutConfig.Http(ToObj<SinkHttpConfigOut>(c)),
                 ["amazonS3"] = c => StreamSinkOutConfig.AmazonS3(ToObj<S3ConfigOut>(c)),
                 ["snowflake"] = c => StreamSinkOutConfig.Snowflake(ToObj<SnowflakeConfigOut>(c)),

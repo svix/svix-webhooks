@@ -8,8 +8,12 @@ pub struct SnowflakeConfigIn {
     /// Snowflake API.
     ///
     /// Beginning/end delimiters are not required.
+    ///
+    /// Currently a required field, but marked as optional because we may add
+    /// different authentication in the future.
     #[serde(rename = "privateKey")]
-    pub private_key: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub private_key: Option<String>,
 
     /// Snowflake account identifier, which includes both the organization and
     /// account IDs separated by a hyphen.
@@ -43,9 +47,9 @@ pub struct SnowflakeConfigIn {
 }
 
 impl SnowflakeConfigIn {
-    pub fn new(private_key: String, account_identifier: String, user_id: String) -> Self {
+    pub fn new(account_identifier: String, user_id: String) -> Self {
         Self {
-            private_key,
+            private_key: None,
             account_identifier,
             user_id,
             db_name: None,

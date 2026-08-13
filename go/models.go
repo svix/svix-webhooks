@@ -148,6 +148,9 @@ type (
 	Ordering                                  = models.Ordering
 	OrumIoConfig                              = models.OrumIoConfig
 	OrumIoConfigOut                           = models.OrumIoConfigOut
+	OtelTracingConfigIn                       = models.OtelTracingConfigIn
+	OtelTracingConfigOut                      = models.OtelTracingConfigOut
+	OtelTracingConfigPatch                    = models.OtelTracingConfigPatch
 	PandaDocConfig                            = models.PandaDocConfig
 	PandaDocConfigOut                         = models.PandaDocConfigOut
 	PollingEndpointConsumerSeekIn             = models.PollingEndpointConsumerSeekIn
@@ -180,9 +183,6 @@ type (
 	SinkHttpConfigIn                          = models.SinkHttpConfigIn
 	SinkHttpConfigOut                         = models.SinkHttpConfigOut
 	SinkHttpConfigPatch                       = models.SinkHttpConfigPatch
-	SinkOtelTracingConfigIn                   = models.SinkOtelTracingConfigIn
-	SinkOtelTracingConfigOut                  = models.SinkOtelTracingConfigOut
-	SinkOtelTracingConfigPatch                = models.SinkOtelTracingConfigPatch
 	SinkSecretOut                             = models.SinkSecretOut
 	SinkStatus                                = models.SinkStatus
 	SinkStatusIn                              = models.SinkStatusIn

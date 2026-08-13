@@ -148,6 +148,9 @@ from .operational_webhook_endpoint_upsert_in import OperationalWebhookEndpointUp
 from .ordering import Ordering
 from .orum_io_config import OrumIoConfig
 from .orum_io_config_out import OrumIoConfigOut
+from .otel_tracing_config_in import OtelTracingConfigIn
+from .otel_tracing_config_out import OtelTracingConfigOut
+from .otel_tracing_config_patch import OtelTracingConfigPatch
 from .panda_doc_config import PandaDocConfig
 from .panda_doc_config_out import PandaDocConfigOut
 from .poller_v2_commit_in import PollerV2CommitIn
@@ -184,9 +187,6 @@ from .sink_http_config_in import SinkHttpConfigIn
 from .sink_http_config_out import SinkHttpConfigOut
 from .sink_http_config_patch import SinkHttpConfigPatch
 from .sink_in_common import SinkInCommon
-from .sink_otel_tracing_config_in import SinkOtelTracingConfigIn
-from .sink_otel_tracing_config_out import SinkOtelTracingConfigOut
-from .sink_otel_tracing_config_patch import SinkOtelTracingConfigPatch
 from .sink_secret_out import SinkSecretOut
 from .sink_status import SinkStatus
 from .sink_status_in import SinkStatusIn
@@ -380,6 +380,9 @@ __all__ = [
     "Ordering",
     "OrumIoConfig",
     "OrumIoConfigOut",
+    "OtelTracingConfigIn",
+    "OtelTracingConfigOut",
+    "OtelTracingConfigPatch",
     "PandaDocConfig",
     "PandaDocConfigOut",
     "PollerV2CommitIn",
@@ -416,9 +419,6 @@ __all__ = [
     "SinkHttpConfigOut",
     "SinkHttpConfigPatch",
     "SinkInCommon",
-    "SinkOtelTracingConfigIn",
-    "SinkOtelTracingConfigOut",
-    "SinkOtelTracingConfigPatch",
     "SinkSecretOut",
     "SinkStatus",
     "SinkStatusIn",

@@ -8,11 +8,11 @@ require_relative "./clickhouse_config_in"
 require_relative "./event_bridge_config_in"
 require_relative "./google_cloud_pub_sub_config_in"
 require_relative "./google_cloud_storage_config_in"
+require_relative "./otel_tracing_config_in"
 require_relative "./rabbit_mq_config_in"
 require_relative "./redshift_config_in"
 require_relative "./s3_config_in"
 require_relative "./sink_http_config_in"
-require_relative "./sink_otel_tracing_config_in"
 require_relative "./sink_status_in"
 require_relative "./snowflake_config_in"
 require_relative "./sns_config_in"
@@ -39,7 +39,7 @@ module Svix
     class AzureBlobStorage < AzureBlobStorageConfigIn
     end
 
-    class OtelTracing < SinkOtelTracingConfigIn
+    class OtelTracing < OtelTracingConfigIn
     end
 
     class Http < SinkHttpConfigIn
@@ -98,10 +98,11 @@ module Svix
     attr_accessor :max_wait_secs
     # A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
     attr_accessor :event_types
+    attr_accessor :channels
     attr_accessor :metadata
     attr_accessor :config
 
-    ALL_FIELD ||= ["uid", "status", "batch_size", "max_wait_secs", "event_types", "metadata", "config"].freeze
+    ALL_FIELD ||= ["uid", "status", "batch_size", "max_wait_secs", "event_types", "channels", "metadata", "config"].freeze
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       StreamSinkInConfig::Poller => "poller",
@@ -162,6 +163,7 @@ module Svix
       attrs["batch_size"] = attributes["batchSize"]
       attrs["max_wait_secs"] = attributes["maxWaitSecs"]
       attrs["event_types"] = attributes["eventTypes"]
+      attrs["channels"] = attributes["channels"]
       attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
@@ -182,6 +184,7 @@ module Svix
       out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
       out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize

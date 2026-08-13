@@ -51,11 +51,14 @@ public class ClickhouseConfigIn {
     }
 
     /**
-     * Username to access Clickhouse
+     * Username to access Clickhouse.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return username
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getUsername() {
         return username;
     }
@@ -70,11 +73,14 @@ public class ClickhouseConfigIn {
     }
 
     /**
-     * Password to access Clickhouse
+     * Password to access Clickhouse.
+     *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
      *
      * @return password
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getPassword() {
         return password;
     }
@@ -89,7 +95,7 @@ public class ClickhouseConfigIn {
     }
 
     /**
-     * The Clickhouse database to connect to
+     * The Clickhouse database to connect to.
      *
      * @return database
      */
@@ -108,7 +114,7 @@ public class ClickhouseConfigIn {
     }
 
     /**
-     * The Clickhouse table to write to
+     * The Clickhouse table to write to.
      *
      * @return tableName
      */

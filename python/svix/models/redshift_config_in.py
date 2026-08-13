@@ -9,11 +9,20 @@ class RedshiftConfigIn(BaseModel):
 
     For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`."""
 
-    access_key_id: str
+    access_key_id: t.Optional[str] = None
+    """Access key ID.
 
-    secret_access_key: str
+    Currently a required field, but marked as optional because we may add different authentication in the future."""
 
-    region: str
+    secret_access_key: t.Optional[str] = None
+    """Secret access key.
+
+    Currently a required field, but marked as optional because we may add different authentication in the future."""
+
+    region: t.Optional[str] = None
+    """The region of the Redshift DB.
+
+    Currently a required field, but marked as optional because we may infer it from other fields in the future."""
 
     cluster_identifier: t.Optional[str] = None
     """Required for provisioned clusters."""

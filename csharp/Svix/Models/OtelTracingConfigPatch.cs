@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class SinkOtelTracingConfigPatch
+    public class OtelTracingConfigPatch
     {
         [JsonProperty("url")]
         public string? Url { get; set; } = null;
@@ -15,7 +15,7 @@ namespace Svix.Models
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("class SinkOtelTracingConfigPatch {\n");
+            sb.Append("class OtelTracingConfigPatch {\n");
             sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("}\n");
             return sb.ToString();

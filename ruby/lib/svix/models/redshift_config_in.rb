@@ -7,8 +7,17 @@ module Svix
   #
   # For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.
   class RedshiftConfigIn
+    # Access key ID.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :access_key_id
+    # Secret access key.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :secret_access_key
+    # The region of the Redshift DB.
+    #
+    # Currently a required field, but marked as optional because we may infer it from other fields in the future.
     attr_accessor :region
     # Required for provisioned clusters.
     attr_accessor :cluster_identifier

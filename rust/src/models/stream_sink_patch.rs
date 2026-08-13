@@ -9,9 +9,9 @@ use super::{
     event_bridge_config_patch::EventBridgeConfigPatch,
     google_cloud_pub_sub_config_patch::GoogleCloudPubSubConfigPatch,
     google_cloud_storage_config_patch::GoogleCloudStorageConfigPatch,
-    rabbit_mq_config_patch::RabbitMqConfigPatch, redshift_config_patch::RedshiftConfigPatch,
-    s3_config_patch::S3ConfigPatch, sink_http_config_patch::SinkHttpConfigPatch,
-    sink_otel_tracing_config_patch::SinkOtelTracingConfigPatch, sink_status_in::SinkStatusIn,
+    otel_tracing_config_patch::OtelTracingConfigPatch, rabbit_mq_config_patch::RabbitMqConfigPatch,
+    redshift_config_patch::RedshiftConfigPatch, s3_config_patch::S3ConfigPatch,
+    sink_http_config_patch::SinkHttpConfigPatch, sink_status_in::SinkStatusIn,
     snowflake_config_patch::SnowflakeConfigPatch, sns_config_patch::SnsConfigPatch,
     sqs_config_patch::SqsConfigPatch,
 };
@@ -38,6 +38,9 @@ pub struct StreamSinkPatch {
     pub event_types: Option<Vec<String>>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub channels: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub metadata: Option<std::collections::BTreeMap<String, String>>,
 
     #[serde(flatten)]
@@ -52,7 +55,7 @@ pub enum StreamSinkPatchConfig {
     #[serde(rename = "azureBlobStorage")]
     AzureBlobStorage(AzureBlobStorageConfigPatch),
     #[serde(rename = "otelTracing")]
-    OtelTracing(SinkOtelTracingConfigPatch),
+    OtelTracing(OtelTracingConfigPatch),
     #[serde(rename = "http")]
     Http(SinkHttpConfigPatch),
     #[serde(rename = "amazonS3")]

@@ -6,6 +6,9 @@ module Svix
   class AzureBlobStorageConfigIn
     attr_accessor :container
     attr_accessor :account
+    # Access key.
+    #
+    # Currently a required field, but marked as optional because we may add different authentication in the future.
     attr_accessor :access_key
 
     ALL_FIELD ||= ["container", "account", "access_key"].freeze

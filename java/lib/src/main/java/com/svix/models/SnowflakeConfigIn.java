@@ -35,9 +35,12 @@ public class SnowflakeConfigIn {
      *
      * <p>Beginning/end delimiters are not required.
      *
+     * <p>Currently a required field, but marked as optional because we may add different
+     * authentication in the future.
+     *
      * @return privateKey
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getPrivateKey() {
         return privateKey;
     }

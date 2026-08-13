@@ -3,13 +3,21 @@
 export interface ClickhouseConfigIn {
   /** The HTTP URL of the ClickHouse server (e.g. `https://my_clickhouse:8443`). */
   url: string;
-  /** Username to access Clickhouse */
-  username: string;
-  /** Password to access Clickhouse */
-  password: string;
-  /** The Clickhouse database to connect to */
+  /**
+   * Username to access Clickhouse.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  username?: string | null;
+  /**
+   * Password to access Clickhouse.
+   *
+   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   */
+  password?: string | null;
+  /** The Clickhouse database to connect to. */
   database?: string;
-  /** The Clickhouse table to write to */
+  /** The Clickhouse table to write to. */
   tableName: string;
 }
 

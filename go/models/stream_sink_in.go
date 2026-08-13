@@ -14,11 +14,11 @@ import (
 //   - "eventBridge": Use EventBridgeConfigIn
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigIn
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigIn
+//   - "otelTracing": Use OtelTracingConfigIn
 //   - "rabbitMq": Use RabbitMqConfigIn
 //   - "redshift": Use RedshiftConfigIn
 //   - "amazonS3": Use S3ConfigIn
 //   - "http": Use SinkHttpConfigIn
-//   - "otelTracing": Use SinkOtelTracingConfigIn
 //   - "snowflake": Use SnowflakeConfigIn
 //   - "sns": Use SnsConfigIn
 //   - "sqs": Use SqsConfigIn
@@ -38,6 +38,7 @@ type StreamSinkIn struct {
 	// Note that we will never send an empty batch of events to the Sink.
 	MaxWaitSecs *uint16            `json:"maxWaitSecs,omitempty"`
 	EventTypes  []string           `json:"eventTypes,omitempty"` // A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
+	Channels    []string           `json:"channels,omitempty"`
 	Metadata    *map[string]string `json:"metadata,omitempty"`
 	Type        StreamSinkInType   `json:"type"`
 	Config      StreamSinkInConfig `json:"config"`
@@ -69,7 +70,7 @@ type StreamSinkInConfig interface {
 
 func (emptyMap) isStreamSinkInConfig()                   {}
 func (AzureBlobStorageConfigIn) isStreamSinkInConfig()   {}
-func (SinkOtelTracingConfigIn) isStreamSinkInConfig()    {}
+func (OtelTracingConfigIn) isStreamSinkInConfig()        {}
 func (SinkHttpConfigIn) isStreamSinkInConfig()           {}
 func (S3ConfigIn) isStreamSinkInConfig()                 {}
 func (GoogleCloudStorageConfigIn) isStreamSinkInConfig() {}
@@ -121,6 +122,10 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		var c GoogleCloudStorageConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "otelTracing":
+		var c OtelTracingConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "rabbitMq":
 		var c RabbitMqConfigIn
 		err = json.Unmarshal(aux.Config, &c)
@@ -135,10 +140,6 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "http":
 		var c SinkHttpConfigIn
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "otelTracing":
-		var c SinkOtelTracingConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "snowflake":

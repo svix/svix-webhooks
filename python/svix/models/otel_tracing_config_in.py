@@ -4,7 +4,7 @@ import typing as t
 from .common import BaseModel
 
 
-class SinkOtelTracingConfigIn(BaseModel):
+class OtelTracingConfigIn(BaseModel):
     url: str
 
     headers: t.Optional[t.Dict[str, str]] = None

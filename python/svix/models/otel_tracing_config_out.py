@@ -4,7 +4,7 @@ from .common import BaseModel
 from .endpoint_headers_out import EndpointHeadersOut
 
 
-class SinkOtelTracingConfigOut(BaseModel):
+class OtelTracingConfigOut(BaseModel):
     url: str
 
     headers: EndpointHeadersOut
