@@ -6,6 +6,8 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+
+## Version 2.0.0
 * Libs/All **(Breaking)**: The `PatchConfig`-suffixed types are now `ConfigPatch`-suffixed
   * In some libraries, it was previously not possible to distinguish between 'keep this field as-is'
     and 'unset this field' in the SDK
@@ -26,6 +28,8 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/Ruby, Libs/PHP: The timestamp tolerance used by webhook verification can
   now be customized through a `tolerance` constructor argument (in seconds;
   defaults to the previously hardcoded value of five minutes)
+
+See also the changes for v2.0.0-rc.1 below.
 
 ## Version 2.0.0-rc.2
 * Libs/JS: Fix a publishing issue
