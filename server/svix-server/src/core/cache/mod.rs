@@ -136,6 +136,7 @@ const RETRY_SCHEDULE: &[Duration] = &[
     Duration::from_millis(40),
 ];
 
+#[allow(clippy::double_must_use)] // macro nonsense
 #[async_trait]
 #[enum_dispatch(Cache)]
 pub trait CacheBehavior: Sync + Send {
