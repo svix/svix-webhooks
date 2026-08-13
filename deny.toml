@@ -24,6 +24,8 @@ ignore = [
     "RUSTSEC-2025-0134",
     # bincode (depended on by deno) is unmaintained
     "RUSTSEC-2025-0141",
+    # smartstring (dependency of deno) is unmaintained
+    "RUSTSEC-2026-0249",
 ]
 
 [licenses]
