@@ -47,6 +47,7 @@ See also the changes for v2.0.0-rc.1 below.
     they always were create-or-update operations and this new name reflects that
   * Rename `ingest.dashboard` to `ingest.authentication.consumer-portal-access`
   * Rename `endpoint.update-headers` to `endpoint.set-headers` (same for ingest.endpoint etc.)
+  * Rename `EndpointRateLimitStatusOut` to `EndpointThrottleRateStatusOut`
 * Libs/All:
   * Remove `svix.operationalWebhookEndpoint` in favor of `svix.operationalWebhook.endpoint`
   * Remove model types for operational webhooks (we might add them back later or provide a separate package - let us know if you want this!)
@@ -54,7 +55,6 @@ See also the changes for v2.0.0-rc.1 below.
   * Drop support for CommonJS
   * Change (sub)resource accessors from `snake_case` to `camelCase`, e.g. `svix.operational_webhook` to `svix.operationalWebhook`
   * Remove `svix.endpoint.{headersUpdate, headersPatch}` in favor of `svix.endpoint.{setHeaders, patchHeaders}`
-  * Rename `EndpointRateLimitStatusOut` to `EndpointThrottleRateStatusOut`
 * Libs/Python:
   * Remove a handful of model type re-exports from the `svix` namespace; import them from `svix.api` or `svix.models` instead
   * Stop returning a parsed JSON object from `Webhook.verify`; if you were using this, simply call `json.loads` on the passed-in data after the `verify` call
