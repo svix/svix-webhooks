@@ -18,8 +18,8 @@ public class IngestEndpointTransformation {
     }
 
     /** Get the transformation code associated with this ingest endpoint. */
-    public IngestEndpointTransformationOut transformation(
-            final String sourceId, final String endpointId) throws IOException, ApiException {
+    public IngestEndpointTransformationOut get(final String sourceId, final String endpointId)
+            throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
                         .newUrlBuilder()

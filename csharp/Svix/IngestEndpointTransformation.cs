@@ -12,7 +12,7 @@ namespace Svix
         /// <summary>
         /// Get the transformation code associated with this ingest endpoint.
         /// </summary>
-        public async Task<IngestEndpointTransformationOut> TransformationAsync(
+        public async Task<IngestEndpointTransformationOut> GetAsync(
             string sourceId,
             string endpointId,
             CancellationToken cancellationToken = default
@@ -35,7 +35,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(TransformationAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(GetAsync)} failed");
 
                 throw;
             }
@@ -44,7 +44,7 @@ namespace Svix
         /// <summary>
         /// Get the transformation code associated with this ingest endpoint.
         /// </summary>
-        public IngestEndpointTransformationOut Transformation(string sourceId, string endpointId)
+        public IngestEndpointTransformationOut Get(string sourceId, string endpointId)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Transformation)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Get)} failed");
 
                 throw;
             }
