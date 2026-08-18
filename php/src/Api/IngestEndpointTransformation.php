@@ -22,7 +22,7 @@ class IngestEndpointTransformation
      *
      * @throws ApiException
      */
-    public function transformation(
+    public function get(
         string $sourceId,
         string $endpointId,
     ): IngestEndpointTransformationOut {

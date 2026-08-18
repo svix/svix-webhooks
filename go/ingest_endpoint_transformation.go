@@ -17,7 +17,7 @@ func newIngestEndpointTransformation(client *internal.SvixHttpClient) IngestEndp
 }
 
 // Get the transformation code associated with this ingest endpoint.
-func (ingestEndpointTransformation IngestEndpointTransformation) Transformation(
+func (ingestEndpointTransformation IngestEndpointTransformation) Get(
 	ctx context.Context,
 	sourceId string,
 	endpointId string,

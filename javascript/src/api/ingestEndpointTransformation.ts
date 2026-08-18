@@ -14,7 +14,7 @@ export class IngestEndpointTransformation {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Get the transformation code associated with this ingest endpoint. */
-  public async transformation(
+  public async get(
     sourceId: string,
     endpointId: string
   ): Promise<IngestEndpointTransformationOut> {
