@@ -107,7 +107,7 @@ public class {{ type.name | to_upper_camel_case }} {
         return this;
     }
     {% elif field.type.is_map() -%}
-    {{ f_deprecated }} public {{ class_ty }} put{{ f_varname | to_upper_camel_case }}Item(String key, String {{ f_varname }}Item) {
+    {{ f_deprecated }} public {{ class_ty }} put{{ f_varname | to_upper_camel_case }}Item(String key, {{ field.type.value_type().to_java() }} {{ f_varname }}Item) {
         if (this.{{ f_varname }} == null) {
             {% if type.name is endingwith "Patch" and field.nullable -%}
             this.{{ f_varname }} = new MaybeUnset<>(new HashMap<>());

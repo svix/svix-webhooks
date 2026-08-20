@@ -28,7 +28,7 @@ public class BulkExpungeContentsOut {
         return this;
     }
 
-    public BulkExpungeContentsOut putResultsItem(String key, String resultsItem) {
+    public BulkExpungeContentsOut putResultsItem(String key, BulkExpungeStatus resultsItem) {
         if (this.results == null) {
             this.results = new HashMap<>();
         }
