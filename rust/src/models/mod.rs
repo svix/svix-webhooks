@@ -26,6 +26,9 @@ mod background_task_type;
 mod big_query_config_in;
 mod big_query_config_out;
 mod big_query_config_patch;
+mod bulk_expunge_contents_in;
+mod bulk_expunge_contents_out;
+mod bulk_expunge_status;
 mod bulk_replay_in;
 mod checkbook_config;
 mod checkbook_config_out;
@@ -266,6 +269,9 @@ pub use self::{
     big_query_config_in::BigQueryConfigIn,
     big_query_config_out::BigQueryConfigOut,
     big_query_config_patch::BigQueryConfigPatch,
+    bulk_expunge_contents_in::BulkExpungeContentsIn,
+    bulk_expunge_contents_out::BulkExpungeContentsOut,
+    bulk_expunge_status::BulkExpungeStatus,
     bulk_replay_in::BulkReplayIn,
     checkbook_config::CheckbookConfig,
     checkbook_config_out::CheckbookConfigOut,

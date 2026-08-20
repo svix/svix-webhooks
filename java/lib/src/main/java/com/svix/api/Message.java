@@ -7,6 +7,8 @@ import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
 import com.svix.models.*;
+import com.svix.models.BulkExpungeContentsIn;
+import com.svix.models.BulkExpungeContentsOut;
 import com.svix.models.ExpungeAllContentsOut;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
@@ -237,7 +239,7 @@ public class Message {
      * Delete the given message's payload.
      *
      * <p>Useful in cases when a message was accidentally sent with sensitive content. The message
-     * can't be replayed or resent once its payload has been deleted or expired.
+     * can't be replayed or resent once its payload has been deleted (or has expired).
      */
     public void expungeContent(final String appId, final String msgId)
             throws IOException, ApiException {
@@ -246,6 +248,46 @@ public class Message {
                         .newUrlBuilder()
                         .encodedPath(String.format("/api/v1/app/%s/msg/%s/content", appId, msgId));
         this.client.executeRequest("DELETE", url.build(), null, null, null);
+    }
+
+    /**
+     * Delete the payloads from the given messages under the current application
+     *
+     * <p>Useful in cases when a message was accidentally sent with sensitive content. A message
+     * can't be replayed or resent once its payload has been deleted (or has expired).
+     */
+    public BulkExpungeContentsOut bulkExpungeContent(
+            final String appId, final BulkExpungeContentsIn bulkExpungeContentsIn)
+            throws IOException, ApiException {
+        return this.bulkExpungeContent(
+                appId, bulkExpungeContentsIn, new MessageBulkExpungeContentOptions());
+    }
+
+    /**
+     * Delete the payloads from the given messages under the current application
+     *
+     * <p>Useful in cases when a message was accidentally sent with sensitive content. A message
+     * can't be replayed or resent once its payload has been deleted (or has expired).
+     */
+    public BulkExpungeContentsOut bulkExpungeContent(
+            final String appId,
+            final BulkExpungeContentsIn bulkExpungeContentsIn,
+            final MessageBulkExpungeContentOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(String.format("/api/v1/app/%s/msg/bulk-expunge", appId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                bulkExpungeContentsIn,
+                BulkExpungeContentsOut.class);
     }
 
     /**

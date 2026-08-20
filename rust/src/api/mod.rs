@@ -74,8 +74,9 @@ pub use self::{
         Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
     },
     message::{
-        Message, MessageCreateOptions, MessageExpungeAllContentsOptions, MessageGetOptions,
-        MessageListOptions, MessagePrecheckOptions,
+        Message, MessageBulkExpungeContentOptions, MessageCreateOptions,
+        MessageExpungeAllContentsOptions, MessageGetOptions, MessageListOptions,
+        MessagePrecheckOptions,
     },
     message_attempt::{
         MessageAttempt, MessageAttemptGetOptions, MessageAttemptListAttemptedDestinationsOptions,

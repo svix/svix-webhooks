@@ -119,6 +119,19 @@ impl From<MessageGetOptions> for svix::api::MessageGetOptions {
 }
 
 #[derive(Args, Clone)]
+pub struct MessageBulkExpungeContentOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessageBulkExpungeContentOptions> for svix::api::MessageBulkExpungeContentOptions {
+    fn from(value: MessageBulkExpungeContentOptions) -> Self {
+        let MessageBulkExpungeContentOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
 pub struct MessageExpungeAllContentsOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
@@ -304,7 +317,8 @@ pub enum MessageCommands {
     /// Delete the given message's payload.
     ///
     /// Useful in cases when a message was accidentally sent with sensitive content.
-    /// The message can't be replayed or resent once its payload has been deleted or expired.
+    /// The message can't be replayed or resent once its payload has been deleted
+    /// (or has expired).
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
@@ -316,6 +330,32 @@ pub enum MessageCommands {
     ExpungeContent {
         app_id: String,
         id: String,
+    },
+    /// Delete the payloads from the given messages under the current application
+    ///
+    /// Useful in cases when a message was accidentally sent with sensitive content.
+    /// A message can't be replayed or resent once its payload has been deleted
+    /// (or has expired).
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix message bulk-expunge-content app_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"ids\": [\"...\"]
+}\n\nExample response:
+{
+  \"results\": {\"key\": \"expunged\"}
+}\n")]
+    BulkExpungeContent {
+        app_id: String,
+        bulk_expunge_contents_in: Option<crate::json::JsonOf<BulkExpungeContentsIn>>,
+        #[clap(flatten)]
+        options: MessageBulkExpungeContentOptions,
     },
     /// Delete all message payloads for the application.
     ///
@@ -407,6 +447,21 @@ impl MessageCommands {
             }
             Self::ExpungeContent { app_id, id } => {
                 client.message().expunge_content(app_id, id).await?;
+            }
+            Self::BulkExpungeContent {
+                app_id,
+                bulk_expunge_contents_in,
+                options,
+            } => {
+                let resp = client
+                    .message()
+                    .bulk_expunge_content(
+                        app_id,
+                        bulk_expunge_contents_in.unwrap_or_default().into_inner(),
+                        Some(options.into()),
+                    )
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::ExpungeAllContents { app_id, options } => {
                 let resp = client

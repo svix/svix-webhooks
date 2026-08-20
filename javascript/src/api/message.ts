@@ -1,6 +1,14 @@
 // this file is @generated
 
 import {
+  type BulkExpungeContentsIn,
+  BulkExpungeContentsInSerializer,
+} from "../models/bulkExpungeContentsIn";
+import {
+  type BulkExpungeContentsOut,
+  BulkExpungeContentsOutSerializer,
+} from "../models/bulkExpungeContentsOut";
+import {
   type ExpungeAllContentsOut,
   ExpungeAllContentsOutSerializer,
 } from "../models/expungeAllContentsOut";
@@ -65,6 +73,10 @@ export interface MessageGetOptions {
    * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
    */
   withContent?: boolean;
+}
+
+export interface MessageBulkExpungeContentOptions {
+  idempotencyKey?: string;
 }
 
 export interface MessageExpungeAllContentsOptions {
@@ -190,7 +202,8 @@ export class Message {
    * Delete the given message's payload.
    *
    * Useful in cases when a message was accidentally sent with sensitive content.
-   * The message can't be replayed or resent once its payload has been deleted or expired.
+   * The message can't be replayed or resent once its payload has been deleted
+   * (or has expired).
    */
   public async expungeContent(appId: string, msgId: string): Promise<void> {
     const request = new SvixRequest(
@@ -202,6 +215,33 @@ export class Message {
     request.setPathParam("msg_id", msgId);
 
     return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /**
+   * Delete the payloads from the given messages under the current application
+   *
+   * Useful in cases when a message was accidentally sent with sensitive content.
+   * A message can't be replayed or resent once its payload has been deleted
+   * (or has expired).
+   */
+  public async bulkExpungeContent(
+    appId: string,
+    bulkExpungeContentsIn: BulkExpungeContentsIn = {},
+    options?: MessageBulkExpungeContentOptions
+  ): Promise<BulkExpungeContentsOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/msg/bulk-expunge"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(BulkExpungeContentsInSerializer._toJsonObject(bulkExpungeContentsIn));
+
+    return await request.send(
+      this.requestCtx,
+      BulkExpungeContentsOutSerializer._fromJsonObject
+    );
   }
 
   /**

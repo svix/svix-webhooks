@@ -58,6 +58,11 @@ pub struct MessageGetOptions {
 }
 
 #[derive(Default)]
+pub struct MessageBulkExpungeContentOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
 pub struct MessageExpungeAllContentsOptions {
     pub idempotency_key: Option<String>,
 }
@@ -201,7 +206,7 @@ impl<'a> Message<'a> {
     ///
     /// Useful in cases when a message was accidentally sent with sensitive
     /// content. The message can't be replayed or resent once its payload
-    /// has been deleted or expired.
+    /// has been deleted (or has expired).
     pub async fn expunge_content(&self, app_id: String, msg_id: String) -> Result<()> {
         crate::request::Request::new(
             http::Method::DELETE,
@@ -267,6 +272,28 @@ impl<'a> Message<'a> {
         .with_optional_query_param("after", after)
         .execute(self.cfg)
         .await
+    }
+
+    /// Delete the payloads from the given messages under the current
+    /// application
+    ///
+    /// Useful in cases when a message was accidentally sent with sensitive
+    /// content. A message can't be replayed or resent once its payload has
+    /// been deleted (or has expired).
+    pub async fn bulk_expunge_content(
+        &self,
+        app_id: String,
+        bulk_expunge_contents_in: BulkExpungeContentsIn,
+        options: Option<MessageBulkExpungeContentOptions>,
+    ) -> Result<BulkExpungeContentsOut> {
+        let MessageBulkExpungeContentOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(http::Method::POST, "/api/v1/app/{app_id}/msg/bulk-expunge")
+            .with_path_param("app_id", app_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(bulk_expunge_contents_in)
+            .execute(self.cfg)
+            .await
     }
 
     /// Delete all message payloads for the application.

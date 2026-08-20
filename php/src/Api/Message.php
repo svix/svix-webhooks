@@ -6,6 +6,8 @@ declare(strict_types=1);
 namespace Svix\Api;
 
 use Svix\Exception\ApiException;
+use Svix\Models\BulkExpungeContentsIn;
+use Svix\Models\BulkExpungeContentsOut;
 use Svix\Models\ExpungeAllContentsOut;
 use Svix\Models\ListResponseMessageOut;
 use Svix\Models\MessageIn;
@@ -126,7 +128,8 @@ class Message
      * Delete the given message's payload.
      *
      * Useful in cases when a message was accidentally sent with sensitive content.
-     * The message can't be replayed or resent once its payload has been deleted or expired.
+     * The message can't be replayed or resent once its payload has been deleted
+     * (or has expired).
      *
      * @throws ApiException
      */
@@ -136,6 +139,28 @@ class Message
     ): void {
         $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/msg/{$msgId}/content");
         $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Delete the payloads from the given messages under the current application.
+     *
+     * Useful in cases when a message was accidentally sent with sensitive content.
+     * A message can't be replayed or resent once its payload has been deleted
+     * (or has expired).
+     *
+     * @throws ApiException
+     */
+    public function bulkExpungeContent(
+        string $appId,
+        BulkExpungeContentsIn $bulkExpungeContentsIn,
+        MessageBulkExpungeContentOptions $options = new MessageBulkExpungeContentOptions(),
+    ): BulkExpungeContentsOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/bulk-expunge");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($bulkExpungeContentsIn));
+        $res = $this->client->send($request);
+
+        return BulkExpungeContentsOut::fromJson($res);
     }
 
     /**

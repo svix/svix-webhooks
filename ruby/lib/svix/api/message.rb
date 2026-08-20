@@ -106,6 +106,19 @@ module Svix
       )
     end
 
+    def bulk_expunge_content(app_id, bulk_expunge_contents_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/app/#{app_id}/msg/bulk-expunge",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: bulk_expunge_contents_in
+      )
+      BulkExpungeContentsOut.deserialize(res)
+    end
+
     def expunge_all_contents(app_id, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(

@@ -78,6 +78,18 @@ namespace Svix
         }
     }
 
+    public class MessageBulkExpungeContentOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class MessageExpungeAllContentsOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
@@ -472,7 +484,8 @@ namespace Svix
         /// Delete the given message's payload.
         ///
         /// Useful in cases when a message was accidentally sent with sensitive content.
-        /// The message can't be replayed or resent once its payload has been deleted or expired.
+        /// The message can't be replayed or resent once its payload has been deleted
+        /// (or has expired).
         /// </summary>
         public async Task<bool> ExpungeContentAsync(
             string appId,
@@ -506,7 +519,8 @@ namespace Svix
         /// Delete the given message's payload.
         ///
         /// Useful in cases when a message was accidentally sent with sensitive content.
-        /// The message can't be replayed or resent once its payload has been deleted or expired.
+        /// The message can't be replayed or resent once its payload has been deleted
+        /// (or has expired).
         /// </summary>
         public bool ExpungeContent(string appId, string msgId)
         {
@@ -526,6 +540,89 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(ExpungeContent)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete the payloads from the given messages under the current application
+        ///
+        /// Useful in cases when a message was accidentally sent with sensitive content.
+        /// A message can't be replayed or resent once its payload has been deleted
+        /// (or has expired).
+        /// </summary>
+        public async Task<BulkExpungeContentsOut> BulkExpungeContentAsync(
+            string appId,
+            BulkExpungeContentsIn bulkExpungeContentsIn,
+            MessageBulkExpungeContentOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new MessageBulkExpungeContentOptions();
+            }
+            bulkExpungeContentsIn =
+                bulkExpungeContentsIn
+                ?? throw new ArgumentNullException(nameof(bulkExpungeContentsIn));
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<BulkExpungeContentsOut>(
+                        method: HttpMethod.Post,
+                        path: "/api/v1/app/{app_id}/msg/bulk-expunge",
+                        pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
+                        content: bulkExpungeContentsIn,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(BulkExpungeContentAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete the payloads from the given messages under the current application
+        ///
+        /// Useful in cases when a message was accidentally sent with sensitive content.
+        /// A message can't be replayed or resent once its payload has been deleted
+        /// (or has expired).
+        /// </summary>
+        public BulkExpungeContentsOut BulkExpungeContent(
+            string appId,
+            BulkExpungeContentsIn bulkExpungeContentsIn,
+            MessageBulkExpungeContentOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new MessageBulkExpungeContentOptions();
+            }
+            bulkExpungeContentsIn =
+                bulkExpungeContentsIn
+                ?? throw new ArgumentNullException(nameof(bulkExpungeContentsIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<BulkExpungeContentsOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/bulk-expunge",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    content: bulkExpungeContentsIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(BulkExpungeContent)} failed");
 
                 throw;
             }

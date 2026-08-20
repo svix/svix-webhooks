@@ -28,6 +28,9 @@ type (
 	BigQueryConfigIn                          = models.BigQueryConfigIn
 	BigQueryConfigOut                         = models.BigQueryConfigOut
 	BigQueryConfigPatch                       = models.BigQueryConfigPatch
+	BulkExpungeContentsIn                     = models.BulkExpungeContentsIn
+	BulkExpungeContentsOut                    = models.BulkExpungeContentsOut
+	BulkExpungeStatus                         = models.BulkExpungeStatus
 	BulkReplayIn                              = models.BulkReplayIn
 	CheckbookConfig                           = models.CheckbookConfig
 	CheckbookConfigOut                        = models.CheckbookConfigOut

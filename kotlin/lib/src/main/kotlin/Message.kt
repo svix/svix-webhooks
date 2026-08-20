@@ -2,6 +2,8 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.models.ApplicationIn
+import com.svix.kotlin.models.BulkExpungeContentsIn
+import com.svix.kotlin.models.BulkExpungeContentsOut
 import com.svix.kotlin.models.ExpungeAllContentsOut
 import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
@@ -61,6 +63,8 @@ data class MessageGetOptions(
      */
     val withContent: Boolean? = null
 )
+
+data class MessageBulkExpungeContentOptions(val idempotencyKey: String? = null)
 
 data class MessageExpungeAllContentsOptions(val idempotencyKey: String? = null)
 
@@ -205,11 +209,34 @@ class Message(private val client: SvixHttpClient) {
      * Delete the given message's payload.
      *
      * Useful in cases when a message was accidentally sent with sensitive content. The message
-     * can't be replayed or resent once its payload has been deleted or expired.
+     * can't be replayed or resent once its payload has been deleted (or has expired).
      */
     suspend fun expungeContent(appId: String, msgId: String) {
         val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/$msgId/content")
         client.executeRequest<Any, Boolean>("DELETE", url.build())
+    }
+
+    /**
+     * Delete the payloads from the given messages under the current application
+     *
+     * Useful in cases when a message was accidentally sent with sensitive content. A message can't
+     * be replayed or resent once its payload has been deleted (or has expired).
+     */
+    suspend fun bulkExpungeContent(
+        appId: String,
+        bulkExpungeContentsIn: BulkExpungeContentsIn,
+        options: MessageBulkExpungeContentOptions = MessageBulkExpungeContentOptions(),
+    ): BulkExpungeContentsOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/bulk-expunge")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        return client.executeRequest<BulkExpungeContentsIn, BulkExpungeContentsOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = bulkExpungeContentsIn,
+        )
     }
 
     /**
