@@ -55,7 +55,7 @@ idna_adapter = "=1.1.0"
 indexmap = "2.6.0"
 ipnet = { version = "2.5", features = ["serde"] }
 itertools = "0.15.0"
-jsonschema = "0.49.2"
+jsonschema = "0.50.0"
 jwt-simple = "0.11.6"
 lapin = "4.10.0"
 num_enum = "0.7.2"
