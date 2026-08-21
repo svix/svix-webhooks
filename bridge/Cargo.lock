@@ -4689,7 +4689,7 @@ dependencies = [
  "deno_core",
  "enum_dispatch",
  "indexmap",
- "itertools 0.14.0",
+ "itertools 0.15.0",
  "once_cell",
  "opentelemetry",
  "opentelemetry-otlp",
