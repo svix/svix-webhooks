@@ -594,29 +594,26 @@ async fn bulk_expunge_message_content(
 
     // first, look up all the messages (with the app_id filter)
     let found = message::Entity::secure_find_by_ids_or_uids(app.id, ids.clone())
+        .find_also_related(messagecontent::Entity)
         .all(&txn)
         .await?;
 
     let mut found_ksuids = BTreeSet::new();
     let mut found_uids = BTreeMap::new();
     let mut found_in_legacy_content = BTreeSet::new();
-    for m in found {
-        found_ksuids.insert(m.id.clone());
+    let mut found_in_messagecontent = BTreeSet::new();
+    for (m, mc) in found {
         if let Some(uid) = m.uid {
             found_uids.insert(uid, m.id.clone());
         }
         if m.legacy_payload.is_some() {
-            found_in_legacy_content.insert(m.id);
+            found_in_legacy_content.insert(m.id.clone());
         }
+        if let Some(mc) = mc {
+            found_in_messagecontent.insert(mc.id);
+        }
+        found_ksuids.insert(m.id);
     }
-
-    let found_in_messagecontent =
-        messagecontent::Entity::secure_find_by_id_in(found_ksuids.clone())
-            .all(&txn)
-            .await?
-            .into_iter()
-            .map(|m| m.id)
-            .collect::<BTreeSet<_>>();
 
     message::Entity::update_many()
         .col_expr(
