@@ -1,0 +1,50 @@
+# frozen_string_literal: true
+# This file is @generated
+require "json"
+
+module Svix
+  class BulkExpungeContentsOut
+    # Results of expunging (by ID)
+    attr_accessor :results
+
+    ALL_FIELD ||= ["results"].freeze
+    private_constant :ALL_FIELD
+
+    def initialize(attributes = {})
+      unless attributes.is_a?(Hash)
+        fail(
+          ArgumentError,
+          "The input argument (attributes) must be a hash in `Svix::BulkExpungeContentsOut` new method"
+        )
+      end
+
+      attributes.each do |k, v|
+        unless ALL_FIELD.include?(k.to_s)
+          fail(ArgumentError, "The field #{k} is not part of Svix::BulkExpungeContentsOut")
+        end
+
+        instance_variable_set("@#{k}", v)
+        instance_variable_set("@__#{k}_is_defined", true)
+      end
+    end
+
+    def self.deserialize(attributes = {})
+      attributes = attributes.transform_keys(&:to_s)
+      attrs = Hash.new
+      attrs["results"] = attributes["results"]
+      new(attrs)
+    end
+
+    def serialize
+      out = Hash.new
+      out["results"] = Svix::serialize_primitive(@results) if @results
+      out
+    end
+
+    # Serializes the object to a json string
+    # @return String
+    def to_json
+      JSON.dump(serialize)
+    end
+  end
+end

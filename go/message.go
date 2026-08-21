@@ -61,6 +61,10 @@ type MessageGetOptions struct {
 	WithContent *bool
 }
 
+type MessageBulkExpungeContentOptions struct {
+	IdempotencyKey *string
+}
+
 type MessageExpungeAllContentsOptions struct {
 	IdempotencyKey *string
 }
@@ -226,7 +230,8 @@ func (message Message) Get(
 // Delete the given message's payload.
 //
 // Useful in cases when a message was accidentally sent with sensitive content.
-// The message can't be replayed or resent once its payload has been deleted or expired.
+// The message can't be replayed or resent once its payload has been deleted
+// (or has expired).
 func (message Message) ExpungeContent(
 	ctx context.Context,
 	appId string,
@@ -248,6 +253,42 @@ func (message Message) ExpungeContent(
 		nil,
 	)
 	return err
+}
+
+// Delete the payloads from the given messages under the current application
+//
+// Useful in cases when a message was accidentally sent with sensitive content.
+// A message can't be replayed or resent once its payload has been deleted
+// (or has expired).
+func (message Message) BulkExpungeContent(
+	ctx context.Context,
+	appId string,
+	bulkExpungeContentsIn models.BulkExpungeContentsIn,
+	o *MessageBulkExpungeContentOptions,
+) (*models.BulkExpungeContentsOut, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := MessageBulkExpungeContentOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.BulkExpungeContentsIn, models.BulkExpungeContentsOut](
+		ctx,
+		message.client,
+		"POST",
+		"/api/v1/app/{app_id}/msg/bulk-expunge",
+		pathMap,
+		nil,
+		headerMap,
+		&bulkExpungeContentsIn,
+	)
 }
 
 // Delete all message payloads for the application.

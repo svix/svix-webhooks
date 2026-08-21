@@ -24,6 +24,9 @@ from .background_task_type import BackgroundTaskType
 from .big_query_config_in import BigQueryConfigIn
 from .big_query_config_out import BigQueryConfigOut
 from .big_query_config_patch import BigQueryConfigPatch
+from .bulk_expunge_contents_in import BulkExpungeContentsIn
+from .bulk_expunge_contents_out import BulkExpungeContentsOut
+from .bulk_expunge_status import BulkExpungeStatus
 from .bulk_replay_in import BulkReplayIn
 from .checkbook_config import CheckbookConfig
 from .checkbook_config_out import CheckbookConfigOut
@@ -260,6 +263,9 @@ __all__ = [
     "BigQueryConfigIn",
     "BigQueryConfigOut",
     "BigQueryConfigPatch",
+    "BulkExpungeContentsIn",
+    "BulkExpungeContentsOut",
+    "BulkExpungeStatus",
     "BulkReplayIn",
     "CheckbookConfig",
     "CheckbookConfigOut",
