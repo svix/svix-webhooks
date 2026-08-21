@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Rust: Add `Svix::server_url` accessor method
 
 ## Version 2.0.0
 * Libs/All **(Breaking)**: The `PatchConfig`-suffixed types are now `ConfigPatch`-suffixed
