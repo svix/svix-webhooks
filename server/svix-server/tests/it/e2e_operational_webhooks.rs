@@ -7,7 +7,7 @@ use chrono::{DateTime, Utc};
 use http::StatusCode;
 use reqwest::Url;
 use serde::Deserialize;
-use svix::api::EventTypeOut;
+use svix::models::EventTypeOut;
 use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,

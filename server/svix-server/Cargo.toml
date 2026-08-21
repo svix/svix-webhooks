@@ -46,7 +46,6 @@ hickory-resolver = "0.26.1"
 hmac-sha256 = "1"
 http = "1.1.0"
 http-body-util = "0.1.2"
-http02 = { package = "http", version = "0.2.12" }
 hyper.workspace = true
 hyper-openssl = { version = "0.10.2", features = ["client-legacy", "tokio"] }
 hyper-util = { version = "0.1.16", features = ["client-legacy", "client-proxy", "tokio"] }
@@ -78,7 +77,7 @@ serde = { version = "1.0.184", features = ["derive"] }
 serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 serde_path_to_error = "0.1.7"
 sqlx = { version = "0.8.2", features = ["runtime-tokio-rustls", "postgres", "migrate"] }
-svix = "1.99.0"
+svix = "2.0.0"
 svix-ksuid = { version = "0.10.0", default-features = false, features = ["chrono04"] }
 svix-server-derive = { path = "../svix-server-derive" }
 thiserror = "2.0.11"
