@@ -5320,6 +5320,7 @@ dependencies = [
  "serde_path_to_error",
  "socks5-proto",
  "sqlx",
+ "strum 0.28.0",
  "svix",
  "svix-ksuid",
  "svix-server-derive",

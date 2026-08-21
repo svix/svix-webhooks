@@ -290,7 +290,7 @@ pub trait BaseUid: Deref<Target = String> {
 
 macro_rules! string_wrapper {
     ($name_id:ident) => {
-        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize, PartialOrd, Ord)]
         pub struct $name_id(pub String);
 
         string_wrapper_impl!($name_id);
@@ -384,6 +384,12 @@ macro_rules! string_wrapper_impl {
         impl From<String> for $name_id {
             fn from(s: String) -> Self {
                 $name_id(s)
+            }
+        }
+
+        impl From<&str> for $name_id {
+            fn from(s: &str) -> Self {
+                $name_id(s.to_owned())
             }
         }
     };
@@ -520,8 +526,17 @@ macro_rules! create_all_id_types {
         }
 
         // Id or uid
-        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash, PartialOrd, Ord)]
         pub struct $name_id_or_uid(pub String);
+
+        // can't impl Deref to String/str or else we get an ambiguous type and
+        // need to add a whole bunch of annotations -- no fun
+
+        impl $name_id_or_uid {
+            pub fn as_str(&self) -> &str {
+                self.0.as_str()
+            }
+        }
 
         common_jsonschema_impl!(
             $name_id_or_uid,

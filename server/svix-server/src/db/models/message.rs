@@ -89,4 +89,15 @@ impl Entity {
                 .add(Column::Uid.eq(id_or_uid)),
         )
     }
+
+    pub fn secure_find_by_ids_or_uids(
+        app_id: ApplicationId,
+        ids_or_uids: impl IntoIterator<Item = MessageIdOrUid> + Clone,
+    ) -> Select<Entity> {
+        Self::secure_find(app_id).filter(
+            Condition::any()
+                .add(Column::Id.is_in(ids_or_uids.clone()))
+                .add(Column::Uid.is_in(ids_or_uids)),
+        )
+    }
 }

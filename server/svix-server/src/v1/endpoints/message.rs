@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::{BTreeMap, BTreeSet};
+
 use aide::axum::{
     ApiRouter,
     routing::{delete_with, get_with, post_with},
@@ -27,7 +29,8 @@ use crate::{
         permissions,
         types::{
             ApplicationIdOrUid, EndpointId, EventChannel, EventChannelSet, EventTypeName,
-            EventTypeNameSet, MessageAttemptTriggerType, MessageId, MessageUid, OrganizationId,
+            EventTypeNameSet, MessageAttemptTriggerType, MessageId, MessageIdOrUid, MessageUid,
+            OrganizationId,
         },
     },
     db::models::{application, message, messagecontent},
@@ -521,7 +524,7 @@ async fn get_message(
 
 /// Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.
 ///
-/// The message can't be replayed or resent once its payload has been deleted or expired.
+/// The message can't be replayed or resent once its payload has been deleted (or has expired).
 #[aide_annotate(op_id = "v1.message.expunge-content")]
 async fn expunge_message_content(
     State(AppState { ref db, .. }): State<AppState>,
@@ -544,6 +547,121 @@ async fn expunge_message_content(
     Ok(StatusCode::NO_CONTENT)
 }
 
+#[derive(Debug, Serialize, Deserialize, Validate, JsonSchema)]
+pub struct BulkExpungeContentsIn {
+    /// Message ID or UID to delete
+    #[validate(nested)]
+    #[serde(default)]
+    #[schemars(range(min = 1, max = 250))]
+    pub ids: BTreeSet<MessageIdOrUid>,
+}
+
+#[derive(
+    Clone, Copy, PartialEq, Eq, Debug, Serialize, Deserialize, JsonSchema, strum::IntoStaticStr,
+)]
+#[serde(rename_all = "kebab-case")]
+#[strum(serialize_all = "kebab-case")]
+pub enum BulkExpungeStatus {
+    Expunged,
+    NotFound,
+}
+
+impl BulkExpungeStatus {
+    pub fn as_str(&self) -> &'static str {
+        self.into()
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize, JsonSchema)]
+pub struct BulkExpungeContentsOut {
+    /// Results of expunging (by ID)
+    pub results: BTreeMap<MessageIdOrUid, BulkExpungeStatus>,
+}
+
+/// Delete the payloads from the given messages under the current application
+///
+/// Useful in cases when a message was accidentally sent with sensitive content.
+/// A message can't be replayed or resent once its payload has been deleted
+/// (or has expired).
+#[aide_annotate(op_id = "v1.message.bulk-expunge-content")]
+async fn bulk_expunge_message_content(
+    State(AppState { ref db, .. }): State<AppState>,
+    _: Path<ApplicationPath>,
+    permissions::OrganizationWithApplication { app, .. }: permissions::OrganizationWithApplication,
+    ValidatedJson(BulkExpungeContentsIn { ids }): ValidatedJson<BulkExpungeContentsIn>,
+) -> Result<Json<BulkExpungeContentsOut>> {
+    let txn = db.begin().await?;
+
+    // first, look up all the messages (with the app_id filter)
+    let found = message::Entity::secure_find_by_ids_or_uids(app.id, ids.clone())
+        .all(&txn)
+        .await?;
+
+    let mut found_ksuids = BTreeSet::new();
+    let mut found_uids = BTreeMap::new();
+    let mut found_in_legacy_content = BTreeSet::new();
+    for m in found {
+        found_ksuids.insert(m.id.clone());
+        if let Some(uid) = m.uid {
+            found_uids.insert(uid, m.id.clone());
+        }
+        if m.legacy_payload.is_some() {
+            found_in_legacy_content.insert(m.id);
+        }
+    }
+
+    let found_in_messagecontent =
+        messagecontent::Entity::secure_find_by_id_in(found_ksuids.clone())
+            .all(&txn)
+            .await?
+            .into_iter()
+            .map(|m| m.id)
+            .collect::<BTreeSet<_>>();
+
+    message::Entity::update_many()
+        .col_expr(
+            message::Column::LegacyPayload,
+            Expr::value(None::<serde_json::Value>),
+        )
+        .filter(message::Column::Id.is_in(found_ksuids.clone()))
+        .exec(&txn)
+        .await?;
+    messagecontent::Entity::delete_many()
+        .filter(messagecontent::Column::Id.is_in(found_ksuids.clone()))
+        .exec(&txn)
+        .await?;
+
+    // build the response
+    let mut results = BTreeMap::new();
+    for msg_id_or_uid in ids {
+        // we don't know whether we found it by ID or UID, so just try both
+        let as_id: MessageId = msg_id_or_uid.0.clone().into();
+        let ksuid = if found_ksuids.contains(&as_id) {
+            as_id
+        } else {
+            let as_uid: MessageUid = msg_id_or_uid.0.clone().into();
+            if let Some(ksuid) = found_uids.remove(&as_uid) {
+                ksuid
+            } else {
+                results.insert(msg_id_or_uid, BulkExpungeStatus::NotFound);
+                continue;
+            }
+        };
+
+        let status = if found_in_legacy_content.contains(&ksuid)
+            || found_in_messagecontent.contains(&ksuid)
+        {
+            BulkExpungeStatus::Expunged
+        } else {
+            BulkExpungeStatus::NotFound
+        };
+        results.insert(msg_id_or_uid, status);
+    }
+
+    txn.commit().await?;
+    Ok(Json(BulkExpungeContentsOut { results }))
+}
+
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Message");
     ApiRouter::new()
@@ -561,6 +679,14 @@ pub fn router() -> ApiRouter<AppState> {
         .api_route_with(
             "/app/{app_id}/msg/{msg_id}/content",
             delete_with(expunge_message_content, expunge_message_content_operation),
+            &tag,
+        )
+        .api_route_with(
+            "/app/{app_id}/msg/bulk-expunge",
+            post_with(
+                bulk_expunge_message_content,
+                bulk_expunge_message_content_operation,
+            ),
             tag,
         )
 }

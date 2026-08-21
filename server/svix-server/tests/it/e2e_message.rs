@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 
+use std::collections::BTreeMap;
+
 use chrono::{Duration, Utc};
 use rand::distr::{Alphanumeric, SampleString};
 use reqwest::StatusCode;
@@ -8,12 +10,13 @@ use sea_orm::{ColumnTrait, EntityTrait, QueryFilter, sea_query::Expr};
 use serde::de::IgnoredAny;
 use serde_json::json;
 use svix_server::{
+    core::types::{BaseId, MessageId, MessageUid},
     db::models::messagecontent,
     expired_message_cleaner,
     v1::{
         endpoints::{
             attempt::MessageAttemptOut,
-            message::{MessageOut, RawPayload},
+            message::{BulkExpungeContentsOut, MessageOut, RawPayload},
         },
         utils::ListResponse,
     },
@@ -25,7 +28,10 @@ fn rand_str(len: usize) -> String {
 
 use crate::utils::{
     TestReceiver,
-    common_calls::{create_test_app, create_test_endpoint, create_test_msg_with, message_in},
+    common_calls::{
+        create_test_app, create_test_endpoint, create_test_msg_with, message_in,
+        message_in_with_uid,
+    },
     run_with_retries, start_svix_server,
 };
 
@@ -518,6 +524,166 @@ async fn test_expunge_message_payload() {
         .unwrap();
 
     assert_eq!(msg.payload.0.get(), r#"{"expired":true}"#);
+}
+
+#[tokio::test]
+async fn test_message_bulk_expunge() -> anyhow::Result<()> {
+    let (client, _jh) = start_svix_server().await;
+
+    let app_id = create_test_app(&client, "V1MessageBulkExpungeApp")
+        .await?
+        .id;
+    let receiver = TestReceiver::start(StatusCode::OK);
+    create_test_endpoint(&client, &app_id, &receiver.endpoint).await?;
+
+    let message_1: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in("event-1", json!({ "test": "value" }))?,
+            StatusCode::ACCEPTED,
+        )
+        .await?;
+
+    let message_2: MessageOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/"),
+            message_in_with_uid(
+                "event-1",
+                json!({ "test": "value" }),
+                MessageUid::from("message2uid"),
+            )?,
+            StatusCode::ACCEPTED,
+        )
+        .await?;
+
+    let other_app_id = create_test_app(&client, "V1MessageBulkExpungeApp2")
+        .await?
+        .id;
+
+    // same UID, but a different app
+    let message_2_on_other_app: MessageOut = client
+        .post(
+            &format!("api/v1/app/{other_app_id}/msg/"),
+            message_in_with_uid(
+                "event-1",
+                json!({ "test": "value" }),
+                MessageUid::from("message2uid"),
+            )?,
+            StatusCode::ACCEPTED,
+        )
+        .await?;
+
+    let app1_msgids = &[&message_1.id, &message_2.id];
+    let app2_msgids = &[&message_2_on_other_app.id];
+
+    // wait for them to be fully-persisted
+    run_with_retries(async || {
+        for id in app1_msgids {
+            let resp = client
+                .get::<MessageOut>(
+                    &format!("api/v1/app/{app_id}/msg/{id}/?with_content=true"),
+                    StatusCode::OK,
+                )
+                .await?;
+            let payload: serde_json::Value = serde_json::from_str(resp.payload.0.get())?;
+            anyhow::ensure!(payload["test"] == "value");
+        }
+        for id in app2_msgids {
+            let resp = client
+                .get::<MessageOut>(
+                    &format!("api/v1/app/{other_app_id}/msg/{id}/?with_content=true"),
+                    StatusCode::OK,
+                )
+                .await?;
+            let payload: serde_json::Value = serde_json::from_str(resp.payload.0.get())?;
+            anyhow::ensure!(payload["test"] == "value");
+        }
+        Ok(())
+    })
+    .await?;
+
+    let fake_but_valid_id = MessageId::new(None, None).to_string();
+
+    let query_ids = &[
+        &message_1.id,
+        "message2uid",
+        "this-is-not-a-real-uid",
+        &fake_but_valid_id,
+    ];
+
+    let response: BulkExpungeContentsOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/bulk-expunge"),
+            json!( { "ids": &query_ids }),
+            StatusCode::OK,
+        )
+        .await?;
+
+    let result = response
+        .results
+        .iter()
+        .map(|(k, v)| (k.as_str(), v.as_str()))
+        .collect::<BTreeMap<&str, &str>>();
+
+    assert_eq!(
+        result,
+        maplit::btreemap! {
+            message_1.id.as_str() => "expunged",
+            "message2uid" => "expunged",
+            fake_but_valid_id.as_str() => "not-found",
+            "this-is-not-a-real-uid" => "not-found"
+        }
+    );
+
+    // now verify that we don't get any contents back
+    for id in app1_msgids {
+        let resp = client
+            .get::<MessageOut>(
+                &format!("api/v1/app/{app_id}/msg/{id}/?with_content=true"),
+                StatusCode::OK,
+            )
+            .await?;
+        let payload: serde_json::Value = serde_json::from_str(resp.payload.0.get())?;
+        assert_eq!(payload["expired"], true);
+    }
+    // but nothing on the other app should be touched
+    for id in app2_msgids {
+        let resp = client
+            .get::<MessageOut>(
+                &format!("api/v1/app/{other_app_id}/msg/{id}/?with_content=true"),
+                StatusCode::OK,
+            )
+            .await?;
+        let payload: serde_json::Value = serde_json::from_str(resp.payload.0.get())?;
+        anyhow::ensure!(payload["test"] == "value");
+    }
+
+    // re-expunge (no-op)
+    let response2: BulkExpungeContentsOut = client
+        .post(
+            &format!("api/v1/app/{app_id}/msg/bulk-expunge"),
+            json!( { "ids": &query_ids }),
+            StatusCode::OK,
+        )
+        .await?;
+
+    let result2 = response2
+        .results
+        .iter()
+        .map(|(k, v)| (k.as_str(), v.as_str()))
+        .collect::<BTreeMap<&str, &str>>();
+
+    assert_eq!(
+        result2,
+        maplit::btreemap! {
+            message_1.id.as_str() => "not-found",
+            "message2uid" => "not-found",
+            fake_but_valid_id.as_str() => "not-found",
+            "this-is-not-a-real-uid" => "not-found"
+        }
+    );
+
+    Ok(())
 }
 
 #[tokio::test]
