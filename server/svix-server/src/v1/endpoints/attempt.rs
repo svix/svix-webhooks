@@ -23,6 +23,7 @@ use validator::Validate;
 use crate::{
     AppState,
     core::{
+        cryptography::Encryption,
         permissions,
         types::{
             BaseId, EndpointId, EndpointIdOrUid, EventChannel, EventTypeNameSet, MessageAttemptId,
@@ -127,18 +128,19 @@ impl EndpointMessageOut {
         msg: message::Model,
         msg_content: Option<Vec<u8>>,
         with_content: bool,
-    ) -> EndpointMessageOut {
+        encryption: &Encryption,
+    ) -> Result<EndpointMessageOut> {
         let status = if attempt.next_attempt.is_some() {
             MessageStatus::Sending
         } else {
             attempt.status
         };
-        EndpointMessageOut {
-            msg: MessageOut::from_msg_and_payload(msg, msg_content, with_content),
+        Ok(EndpointMessageOut {
+            msg: MessageOut::from_msg_and_payload(msg, msg_content, with_content, encryption)?,
             status,
             status_text: status.into(),
             next_attempt: attempt.next_attempt,
-        }
+        })
     }
 }
 
@@ -241,7 +243,9 @@ fn limit_message_join<Q: QuerySelect + QueryOrder + QueryFilter>(
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
 #[aide_annotate(op_id = "v1.message-attempt.list-attempted-messages")]
 async fn list_attempted_messages(
-    State(AppState { ref db, .. }): State<AppState>,
+    State(AppState {
+        ref db, ref cfg, ..
+    }): State<AppState>,
     ValidatedQuery(pagination): ValidatedQuery<PaginationDescending<ReversibleIterator<MessageId>>>,
     ValidatedQuery(ListAttemptedMessagesQueryParams {
         channel,
@@ -431,7 +435,8 @@ async fn list_attempted_messages(
             msg,
             msg_content,
             with_content,
-        ));
+            &cfg.encryption,
+        )?);
     }
 
     Ok(Json(EndpointMessageOut::list_response(
@@ -982,7 +987,10 @@ async fn get_messageattempt(
 #[aide_annotate(op_id = "v1.message-attempt.resend")]
 async fn resend_webhook(
     State(AppState {
-        ref db, queue_tx, ..
+        ref db,
+        queue_tx,
+        ref cfg,
+        ..
     }): State<AppState>,
     Path(ApplicationMsgEndpointPath {
         msg_id,
@@ -998,7 +1006,7 @@ async fn resend_webhook(
         .ok_or_else(|| HttpError::not_found(None, None))?;
 
     let msg_content = match msg_content {
-        Some(m) => serde_json::from_slice(&m.payload).ok(),
+        Some(m) => serde_json::from_slice(&cfg.encryption.decrypt_payload(&m.payload)?).ok(),
         None => msg.legacy_payload,
     };
     if msg_content.is_none() {

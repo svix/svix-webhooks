@@ -62,6 +62,10 @@ pub struct Encryption(Option<Key>);
 impl Encryption {
     const NONCE_SIZE: usize = 24;
 
+    /// First byte of an encrypted-at-rest payload, distinguishing it from plaintext.
+    /// Payloads are JSON or UTF-8 strings, so plaintext can never start with `0x00`.
+    const PAYLOAD_MARKER: u8 = 0x00;
+
     pub fn new_noop() -> Self {
         Self(None)
     }
@@ -99,6 +103,35 @@ impl Encryption {
         }
     }
 
+    /// Encrypts a payload for storage with a [`Self::PAYLOAD_MARKER`] prefix.
+    /// No-op when encryption is disabled.
+    pub fn encrypt_payload(&self, data: &[u8]) -> Result<Vec<u8>> {
+        if self.enabled() {
+            let mut ret = vec![Self::PAYLOAD_MARKER];
+            ret.append(&mut self.encrypt(data)?);
+            Ok(ret)
+        } else {
+            Ok(data.to_vec())
+        }
+    }
+
+    /// Decrypts a stored payload. Unmarked payloads predate encryption at rest
+    /// and are returned as-is.
+    pub fn decrypt_payload(&self, data: &[u8]) -> Result<Vec<u8>> {
+        match data.split_first() {
+            Some((&Self::PAYLOAD_MARKER, ciphertext)) => {
+                if self.enabled() {
+                    self.decrypt(ciphertext)
+                } else {
+                    Err(crate::error::Error::generic(
+                        "main_secret unset, can't decrypt payload",
+                    ))
+                }
+            }
+            _ => Ok(data.to_vec()),
+        }
+    }
+
     pub fn enabled(&self) -> bool {
         self.0.is_some()
     }
@@ -121,5 +154,52 @@ mod tests {
         let ciphertext = encryption.encrypt(clear).unwrap();
         let clear2 = encryption.decrypt(&ciphertext).unwrap();
         assert_eq!(&clear[..], &clear2[..]);
+    }
+
+    #[test]
+    fn test_payload_round_trip() {
+        let clear = br#"{"hello":"world"}"#;
+        let encryption = Encryption::new([1; 32]);
+        let ciphertext = encryption.encrypt_payload(clear).unwrap();
+        assert_ne!(&ciphertext[..], &clear[..]);
+        assert!(!ciphertext.starts_with(b"{"));
+        let clear2 = encryption.decrypt_payload(&ciphertext).unwrap();
+        assert_eq!(&clear[..], &clear2[..]);
+    }
+
+    #[test]
+    fn test_payload_noop_passthrough() {
+        let clear = br#"{"hello":"world"}"#;
+        let encryption = Encryption::new_noop();
+        let ciphertext = encryption.encrypt_payload(clear).unwrap();
+        assert_eq!(&ciphertext[..], &clear[..]);
+        let clear2 = encryption.decrypt_payload(&ciphertext).unwrap();
+        assert_eq!(&clear[..], &clear2[..]);
+    }
+
+    #[test]
+    fn test_payload_plaintext_backward_compat() {
+        let clear = br#"{"hello":"world"}"#;
+        let encryption = Encryption::new([1; 32]);
+        let out = encryption.decrypt_payload(clear).unwrap();
+        assert_eq!(&out[..], &clear[..]);
+    }
+
+    #[test]
+    fn test_payload_wrong_key_fails() {
+        let clear = br#"{"hello":"world"}"#;
+        let ciphertext = Encryption::new([1; 32]).encrypt_payload(clear).unwrap();
+        assert!(
+            Encryption::new([2; 32])
+                .decrypt_payload(&ciphertext)
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn test_payload_noop_cant_decrypt() {
+        let clear = br#"{"hello":"world"}"#;
+        let ciphertext = Encryption::new([1; 32]).encrypt_payload(clear).unwrap();
+        assert!(Encryption::new_noop().decrypt_payload(&ciphertext).is_err());
     }
 }

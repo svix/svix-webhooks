@@ -818,7 +818,7 @@ async fn process_queue_task_inner(
     worker_context: WorkerContext<'_>,
     queue_task: QueueTask,
 ) -> Result<()> {
-    let WorkerContext { db, cache, .. }: WorkerContext<'_> = worker_context;
+    let WorkerContext { db, cache, cfg, .. }: WorkerContext<'_> = worker_context;
     let span = tracing::Span::current();
 
     let (mut msg, msg_content, force_endpoint, trigger_type, attempt_count, status) =
@@ -906,7 +906,9 @@ async fn process_queue_task_inner(
     span.record("org_id", &msg.org_id.0);
 
     let payload = msg_content
-        .and_then(|m| String::from_utf8(m.payload).ok())
+        .map(|m| cfg.encryption.decrypt_payload(&m.payload))
+        .transpose()?
+        .and_then(|p| String::from_utf8(p).ok())
         .or_else(|| {
             msg.legacy_payload
                 .take()

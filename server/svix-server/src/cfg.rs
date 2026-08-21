@@ -126,6 +126,11 @@ pub struct ConfigurationInner {
     )]
     pub encryption: Encryption,
 
+    /// Whether to encrypt message payloads at rest using `main_secret`. If set without
+    /// `main_secret`, an error is logged at startup and payloads are not encrypted.
+    #[serde(default)]
+    pub payload_encryption_enabled: bool,
+
     /// Contains the secret and algorithm for signing JWTs
     #[serde(flatten)]
     pub jwt_signing_config: Arc<JwtSigningConfig>,
@@ -389,6 +394,16 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
 }
 
 impl ConfigurationInner {
+    /// The [`Encryption`] for writing message payloads: a no-op unless
+    /// `payload_encryption_enabled` is set. Reads always use [`Self::encryption`].
+    pub fn payload_encryption(&self) -> Encryption {
+        if self.payload_encryption_enabled {
+            self.encryption.clone()
+        } else {
+            Encryption::new_noop()
+        }
+    }
+
     pub(self) fn queue_dsn(&self) -> Option<&str> {
         self.queue_dsn.as_deref().or(self.redis_dsn.as_deref())
     }
@@ -610,6 +625,13 @@ pub fn load() -> anyhow::Result<Arc<ConfigurationInner>> {
     config
         .validate()
         .context("failed to validate configuration")?;
+
+    if config.payload_encryption_enabled && !config.encryption.enabled() {
+        tracing::error!(
+            "payload_encryption_enabled is set but main_secret is not; \
+             message payloads will NOT be encrypted"
+        );
+    }
     Ok(Arc::from(config))
 }
 
@@ -650,6 +672,35 @@ mod tests {
 
         let err = actual.unwrap_err();
         assert_eq!(err.to_string(), "missing field `jwt_secret`");
+    }
+
+    #[test]
+    fn test_payload_encryption_without_main_secret_is_noop() {
+        use validator::Validate;
+
+        use super::DEFAULTS;
+        use crate::core::cryptography::Encryption;
+
+        let figment = Figment::new()
+            .merge(Toml::string(DEFAULTS))
+            .merge(Toml::string(
+                r#"
+jwt_secret = "test value"
+redis_dsn = "redis://localhost:6379"
+"#,
+            ));
+        let mut cfg = try_extract(figment).unwrap();
+
+        assert!(!cfg.payload_encryption_enabled);
+        assert!(!cfg.payload_encryption().enabled());
+
+        // Flag without main_secret is valid but keeps payload encryption a no-op
+        cfg.payload_encryption_enabled = true;
+        assert!(cfg.validate().is_ok());
+        assert!(!cfg.payload_encryption().enabled());
+
+        cfg.encryption = Encryption::new([1; 32]);
+        assert!(cfg.payload_encryption().enabled());
     }
 
     #[test]
