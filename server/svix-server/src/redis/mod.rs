@@ -1,10 +1,10 @@
 mod cluster;
 mod sentinel;
+mod standalone;
 
 use std::{sync::Arc, time::Duration};
 
 use bb8::{Pool, RunError};
-use bb8_redis::RedisConnectionManager;
 use redis::{
     AsyncConnectionConfig, ProtocolVersion, RedisConnectionInfo, RedisError, TlsMode,
     aio::ConnectionManagerConfig, sentinel::SentinelNodeConnectionInfo,
@@ -12,7 +12,7 @@ use redis::{
 use sentinel::RedisSentinelConnectionManager;
 use tokio::sync::Mutex;
 
-pub use self::cluster::RedisClusterConnectionManager;
+pub use self::{cluster::RedisClusterConnectionManager, standalone::RedisConnectionManager};
 use crate::cfg::{CacheBackend, QueueBackend, SentinelConfig};
 
 pub const REDIS_CONN_TIMEOUT: Duration = Duration::from_secs(2);
@@ -57,24 +57,10 @@ impl RedisManager {
                 RedisManager::NonClustered(pool)
             }
             RedisVariant::Sentinel(cfg) => {
-                let tls_mode = cfg.redis_tls_mode_secure.then_some(TlsMode::Secure);
-                let protocol = if cfg.redis_use_resp3 {
-                    ProtocolVersion::RESP3
-                } else {
-                    ProtocolVersion::default()
-                };
                 let mgr = RedisSentinelConnectionManager::new(
                     vec![dsn],
                     cfg.service_name.clone(),
-                    Some(SentinelNodeConnectionInfo {
-                        tls_mode,
-                        redis_connection_info: Some(RedisConnectionInfo {
-                            db: cfg.redis_db.unwrap_or(0),
-                            username: cfg.redis_username.clone(),
-                            password: cfg.redis_password.clone(),
-                            protocol,
-                        }),
-                    }),
+                    Some(sentinel_node_connection_info(cfg)),
                 )
                 .expect("Error initializing RedisSentinelConnectionManager");
                 let pool = bb8::Pool::builder()
@@ -108,31 +94,17 @@ impl RedisManager {
                     cli,
                     ConnectionManagerConfig::new()
                         .set_number_of_retries(1)
-                        .set_connection_timeout(REDIS_CONN_TIMEOUT),
+                        .set_connection_timeout(Some(REDIS_CONN_TIMEOUT)),
                 )
                 .await
                 .expect("Failed to get redis-unpooled connection manager");
                 RedisManager::NonClusteredUnpooled(con)
             }
             RedisVariant::Sentinel(cfg) => {
-                let tls_mode = cfg.redis_tls_mode_secure.then_some(TlsMode::Secure);
-                let protocol = if cfg.redis_use_resp3 {
-                    ProtocolVersion::RESP3
-                } else {
-                    ProtocolVersion::default()
-                };
                 let cli = redis::sentinel::SentinelClient::build(
                     vec![dsn],
                     cfg.service_name.clone(),
-                    Some(SentinelNodeConnectionInfo {
-                        tls_mode,
-                        redis_connection_info: Some(RedisConnectionInfo {
-                            db: cfg.redis_db.unwrap_or(0),
-                            username: cfg.redis_username.clone(),
-                            password: cfg.redis_password.clone(),
-                            protocol,
-                        }),
-                    }),
+                    Some(sentinel_node_connection_info(cfg)),
                     redis::sentinel::SentinelServerType::Master,
                 )
                 .expect("Failed to build sentinel client");
@@ -183,13 +155,40 @@ impl RedisManager {
                 let mut conn = conn.lock().await;
                 let con = conn
                     .get_async_connection_with_config(
-                        &AsyncConnectionConfig::new().set_response_timeout(REDIS_CONN_TIMEOUT),
+                        &AsyncConnectionConfig::new()
+                            .set_response_timeout(Some(REDIS_CONN_TIMEOUT)),
                     )
                     .await?;
                 Ok(RedisConnection::SentinelUnpooled(con))
             }
         }
     }
+}
+
+fn sentinel_node_connection_info(cfg: &SentinelConfig) -> SentinelNodeConnectionInfo {
+    let protocol = if cfg.redis_use_resp3 {
+        ProtocolVersion::RESP3
+    } else {
+        ProtocolVersion::default()
+    };
+
+    let mut conn_info = RedisConnectionInfo::default()
+        .set_db(cfg.redis_db.unwrap_or(0))
+        .set_protocol(protocol);
+    if let Some(username) = &cfg.redis_username {
+        conn_info = conn_info.set_username(username);
+    }
+    if let Some(password) = &cfg.redis_password {
+        conn_info = conn_info.set_password(password);
+    }
+
+    let mut node_conn_info =
+        SentinelNodeConnectionInfo::default().set_redis_connection_info(conn_info);
+    if cfg.redis_tls_mode_secure {
+        node_conn_info = node_conn_info.set_tls_mode(TlsMode::Secure);
+    }
+
+    node_conn_info
 }
 
 pub enum RedisConnection<'a> {

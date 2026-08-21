@@ -29,7 +29,6 @@ axum = "0.8.9"
 axum-extra = { version = "0.10.3", features = ["typed-header"] }
 base64 = "0.22"
 bb8 = "0.9.0"
-bb8-redis = "0.24.0"
 blake2 = "0.10.4"
 bytes = "1.1.0"
 chacha20poly1305 = "0.10.1"
@@ -61,7 +60,7 @@ jsonschema = "0.49.2"
 jwt-simple = "0.11.6"
 lapin = "4.10.0"
 num_enum = "0.7.2"
-omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "acb40983ed65f6cbebb19c05d590249306674a33", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "8b760df52eb9210c86e6d898ffe8d44f552bd782", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
 openssl = "0.10.72"
 opentelemetry = { version = "0.32.0", features = ["metrics"] }
 opentelemetry-http = "0.32.0"
@@ -69,7 +68,7 @@ opentelemetry-otlp = { version = "0.32.0", default-features = false, features = 
 opentelemetry-semantic-conventions = "0.32.0"
 opentelemetry_sdk = { version = "0.32.0", features = ["rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
 rand = "0.10"
-redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
+redis = { version = "1.6.0", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "connection-manager", "sentinel"] }
 regex = "1.5.5"
 reqwest = { version = "0.13.4", default-features = false, features = ["json", "rustls", "hickory-dns"] }
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }

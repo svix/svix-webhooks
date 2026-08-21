@@ -9,6 +9,7 @@ use figment::{
     providers::{Env, Format, Toml},
 };
 use ipnet::IpNet;
+use redis::TlsMode;
 use serde::{Deserialize, Deserializer};
 use tracing::Level;
 use url::Url;
@@ -567,8 +568,16 @@ impl From<SentinelConfig> for omniqueue::backends::redis::SentinelConfig {
             redis_password,
             redis_use_resp3,
         } = val;
+
+        let redis_tls_mode = if redis_tls_mode_secure {
+            TlsMode::Secure
+        } else {
+            TlsMode::Insecure
+        };
+
         omniqueue::backends::redis::SentinelConfig {
             service_name,
+            redis_tls_mode: Some(redis_tls_mode),
             redis_tls_mode_secure,
             redis_db,
             redis_username,
