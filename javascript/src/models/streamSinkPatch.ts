@@ -1,52 +1,52 @@
 // this file is @generated
 import {
-  type AmazonS3PatchConfig,
-  AmazonS3PatchConfigSerializer,
-} from "./amazonS3PatchConfig";
+  type AzureBlobStorageConfigPatch,
+  AzureBlobStorageConfigPatchSerializer,
+} from "./azureBlobStorageConfigPatch";
 import {
-  type AzureBlobStoragePatchConfig,
-  AzureBlobStoragePatchConfigSerializer,
-} from "./azureBlobStoragePatchConfig";
+  type BigQueryConfigPatch,
+  BigQueryConfigPatchSerializer,
+} from "./bigQueryConfigPatch";
 import {
-  type BigQueryPatchConfig,
-  BigQueryPatchConfigSerializer,
-} from "./bigQueryPatchConfig";
+  type ClickhouseConfigPatch,
+  ClickhouseConfigPatchSerializer,
+} from "./clickhouseConfigPatch";
 import {
-  type ClickhousePatchConfig,
-  ClickhousePatchConfigSerializer,
-} from "./clickhousePatchConfig";
+  type EventBridgeConfigPatch,
+  EventBridgeConfigPatchSerializer,
+} from "./eventBridgeConfigPatch";
 import {
-  type EventBridgePatchConfig,
-  EventBridgePatchConfigSerializer,
-} from "./eventBridgePatchConfig";
+  type GoogleCloudPubSubConfigPatch,
+  GoogleCloudPubSubConfigPatchSerializer,
+} from "./googleCloudPubSubConfigPatch";
 import {
-  type GoogleCloudPubSubPatchConfig,
-  GoogleCloudPubSubPatchConfigSerializer,
-} from "./googleCloudPubSubPatchConfig";
+  type GoogleCloudStorageConfigPatch,
+  GoogleCloudStorageConfigPatchSerializer,
+} from "./googleCloudStorageConfigPatch";
 import {
-  type GoogleCloudStoragePatchConfig,
-  GoogleCloudStoragePatchConfigSerializer,
-} from "./googleCloudStoragePatchConfig";
-import { type HttpPatchConfig, HttpPatchConfigSerializer } from "./httpPatchConfig";
+  type OtelTracingConfigPatch,
+  OtelTracingConfigPatchSerializer,
+} from "./otelTracingConfigPatch";
 import {
-  type OtelTracingPatchConfig,
-  OtelTracingPatchConfigSerializer,
-} from "./otelTracingPatchConfig";
+  type RabbitMqConfigPatch,
+  RabbitMqConfigPatchSerializer,
+} from "./rabbitMqConfigPatch";
 import {
-  type RabbitMqPatchConfig,
-  RabbitMqPatchConfigSerializer,
-} from "./rabbitMqPatchConfig";
+  type RedshiftConfigPatch,
+  RedshiftConfigPatchSerializer,
+} from "./redshiftConfigPatch";
+import { type S3ConfigPatch, S3ConfigPatchSerializer } from "./s3ConfigPatch";
 import {
-  type RedshiftPatchConfig,
-  RedshiftPatchConfigSerializer,
-} from "./redshiftPatchConfig";
+  type SinkHttpConfigPatch,
+  SinkHttpConfigPatchSerializer,
+} from "./sinkHttpConfigPatch";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import {
-  type SnowflakePatchConfig,
-  SnowflakePatchConfigSerializer,
-} from "./snowflakePatchConfig";
-import { type SnsPatchConfig, SnsPatchConfigSerializer } from "./snsPatchConfig";
-import { type SqsPatchConfig, SqsPatchConfigSerializer } from "./sqsPatchConfig";
+  type SnowflakeConfigPatch,
+  SnowflakeConfigPatchSerializer,
+} from "./snowflakeConfigPatch";
+import { type SnsConfigPatch, SnsConfigPatchSerializer } from "./snsConfigPatch";
+import { type SqsConfigPatch, SqsConfigPatchSerializer } from "./sqsConfigPatch";
 
 interface _StreamSinkPatchFields {
   /** The StreamSink's UID. */
@@ -55,6 +55,7 @@ interface _StreamSinkPatchFields {
   batchSize?: number | null;
   maxWaitSecs?: number | null;
   eventTypes?: string[];
+  channels?: string[];
   metadata?: { [key: string]: string };
 }
 
@@ -68,72 +69,72 @@ interface StreamSinkPatchPoller {
 
 interface StreamSinkPatchAzureBlobStorage {
   type: "azureBlobStorage";
-  config: AzureBlobStoragePatchConfig;
+  config: AzureBlobStorageConfigPatch;
 }
 
 interface StreamSinkPatchOtelTracing {
   type: "otelTracing";
-  config: OtelTracingPatchConfig;
+  config: OtelTracingConfigPatch;
 }
 
 interface StreamSinkPatchHttp {
   type: "http";
-  config: HttpPatchConfig;
+  config: SinkHttpConfigPatch;
 }
 
 interface StreamSinkPatchAmazonS3 {
   type: "amazonS3";
-  config: AmazonS3PatchConfig;
+  config: S3ConfigPatch;
 }
 
 interface StreamSinkPatchGoogleCloudStorage {
   type: "googleCloudStorage";
-  config: GoogleCloudStoragePatchConfig;
+  config: GoogleCloudStorageConfigPatch;
 }
 
 interface StreamSinkPatchGoogleCloudPubSub {
   type: "googleCloudPubSub";
-  config: GoogleCloudPubSubPatchConfig;
+  config: GoogleCloudPubSubConfigPatch;
 }
 
 interface StreamSinkPatchSqs {
   type: "sqs";
-  config: SqsPatchConfig;
+  config: SqsConfigPatch;
 }
 
 interface StreamSinkPatchSns {
   type: "sns";
-  config: SnsPatchConfig;
+  config: SnsConfigPatch;
 }
 
 interface StreamSinkPatchBigQuery {
   type: "bigQuery";
-  config: BigQueryPatchConfig;
+  config: BigQueryConfigPatch;
 }
 
 interface StreamSinkPatchClickhouse {
   type: "clickhouse";
-  config: ClickhousePatchConfig;
+  config: ClickhouseConfigPatch;
 }
 
 interface StreamSinkPatchEventBridge {
   type: "eventBridge";
-  config: EventBridgePatchConfig;
+  config: EventBridgeConfigPatch;
 }
 
 interface StreamSinkPatchSnowflake {
   type: "snowflake";
-  config: SnowflakePatchConfig;
+  config: SnowflakeConfigPatch;
 }
 
 interface StreamSinkPatchRabbitMq {
   type: "rabbitMq";
-  config: RabbitMqPatchConfig;
+  config: RabbitMqConfigPatch;
 }
 
 interface StreamSinkPatchRedshift {
   type: "redshift";
-  config: RedshiftPatchConfig;
+  config: RedshiftConfigPatch;
 }
 
 export type StreamSinkPatch = _StreamSinkPatchFields &
@@ -164,35 +165,35 @@ export const StreamSinkPatchSerializer = {
         case "poller":
           return {};
         case "azureBlobStorage":
-          return AzureBlobStoragePatchConfigSerializer._fromJsonObject(object["config"]);
+          return AzureBlobStorageConfigPatchSerializer._fromJsonObject(object["config"]);
         case "otelTracing":
-          return OtelTracingPatchConfigSerializer._fromJsonObject(object["config"]);
+          return OtelTracingConfigPatchSerializer._fromJsonObject(object["config"]);
         case "http":
-          return HttpPatchConfigSerializer._fromJsonObject(object["config"]);
+          return SinkHttpConfigPatchSerializer._fromJsonObject(object["config"]);
         case "amazonS3":
-          return AmazonS3PatchConfigSerializer._fromJsonObject(object["config"]);
+          return S3ConfigPatchSerializer._fromJsonObject(object["config"]);
         case "googleCloudStorage":
-          return GoogleCloudStoragePatchConfigSerializer._fromJsonObject(
+          return GoogleCloudStorageConfigPatchSerializer._fromJsonObject(
             object["config"]
           );
         case "googleCloudPubSub":
-          return GoogleCloudPubSubPatchConfigSerializer._fromJsonObject(object["config"]);
+          return GoogleCloudPubSubConfigPatchSerializer._fromJsonObject(object["config"]);
         case "sqs":
-          return SqsPatchConfigSerializer._fromJsonObject(object["config"]);
+          return SqsConfigPatchSerializer._fromJsonObject(object["config"]);
         case "sns":
-          return SnsPatchConfigSerializer._fromJsonObject(object["config"]);
+          return SnsConfigPatchSerializer._fromJsonObject(object["config"]);
         case "bigQuery":
-          return BigQueryPatchConfigSerializer._fromJsonObject(object["config"]);
+          return BigQueryConfigPatchSerializer._fromJsonObject(object["config"]);
         case "clickhouse":
-          return ClickhousePatchConfigSerializer._fromJsonObject(object["config"]);
+          return ClickhouseConfigPatchSerializer._fromJsonObject(object["config"]);
         case "eventBridge":
-          return EventBridgePatchConfigSerializer._fromJsonObject(object["config"]);
+          return EventBridgeConfigPatchSerializer._fromJsonObject(object["config"]);
         case "snowflake":
-          return SnowflakePatchConfigSerializer._fromJsonObject(object["config"]);
+          return SnowflakeConfigPatchSerializer._fromJsonObject(object["config"]);
         case "rabbitMq":
-          return RabbitMqPatchConfigSerializer._fromJsonObject(object["config"]);
+          return RabbitMqConfigPatchSerializer._fromJsonObject(object["config"]);
         case "redshift":
-          return RedshiftPatchConfigSerializer._fromJsonObject(object["config"]);
+          return RedshiftConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -209,6 +210,7 @@ export const StreamSinkPatchSerializer = {
       batchSize: object["batchSize"],
       maxWaitSecs: object["maxWaitSecs"],
       eventTypes: object["eventTypes"],
+      channels: object["channels"],
       metadata: object["metadata"],
     };
   },
@@ -221,46 +223,46 @@ export const StreamSinkPatchSerializer = {
         config = {};
         break;
       case "azureBlobStorage":
-        config = AzureBlobStoragePatchConfigSerializer._toJsonObject(self.config);
+        config = AzureBlobStorageConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "otelTracing":
-        config = OtelTracingPatchConfigSerializer._toJsonObject(self.config);
+        config = OtelTracingConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "http":
-        config = HttpPatchConfigSerializer._toJsonObject(self.config);
+        config = SinkHttpConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "amazonS3":
-        config = AmazonS3PatchConfigSerializer._toJsonObject(self.config);
+        config = S3ConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "googleCloudStorage":
-        config = GoogleCloudStoragePatchConfigSerializer._toJsonObject(self.config);
+        config = GoogleCloudStorageConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "googleCloudPubSub":
-        config = GoogleCloudPubSubPatchConfigSerializer._toJsonObject(self.config);
+        config = GoogleCloudPubSubConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "sqs":
-        config = SqsPatchConfigSerializer._toJsonObject(self.config);
+        config = SqsConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "sns":
-        config = SnsPatchConfigSerializer._toJsonObject(self.config);
+        config = SnsConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "bigQuery":
-        config = BigQueryPatchConfigSerializer._toJsonObject(self.config);
+        config = BigQueryConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "clickhouse":
-        config = ClickhousePatchConfigSerializer._toJsonObject(self.config);
+        config = ClickhouseConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "eventBridge":
-        config = EventBridgePatchConfigSerializer._toJsonObject(self.config);
+        config = EventBridgeConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "snowflake":
-        config = SnowflakePatchConfigSerializer._toJsonObject(self.config);
+        config = SnowflakeConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "rabbitMq":
-        config = RabbitMqPatchConfigSerializer._toJsonObject(self.config);
+        config = RabbitMqConfigPatchSerializer._toJsonObject(self.config);
         break;
       case "redshift":
-        config = RedshiftPatchConfigSerializer._toJsonObject(self.config);
+        config = RedshiftConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 
@@ -275,6 +277,7 @@ export const StreamSinkPatchSerializer = {
       batchSize: self.batchSize,
       maxWaitSecs: self.maxWaitSecs,
       eventTypes: self.eventTypes,
+      channels: self.channels,
       metadata: self.metadata,
     };
   },

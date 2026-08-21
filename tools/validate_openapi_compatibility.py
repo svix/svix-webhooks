@@ -554,6 +554,12 @@ class OpenAPI:
     def parse(cls, json: dict):
         self = cls()
         for name, value in json.get("components", {}).get("schemas", {}).items():
+            # These schemas are not meant to be part of the spec,
+            # and are not referenced anywhere.
+            # Seems like a waste of time to support them.
+            if name in ["GetMetricsOut", "MetricOut"]:
+                continue
+
             self.components_schemas[name] = Schema.parse(value)
         for path, methods in json.get("paths", {}).items():
             for method, props in methods.items():

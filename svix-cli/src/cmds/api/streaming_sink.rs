@@ -109,6 +109,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 100,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
@@ -122,6 +123,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 123,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
 }\n")]
@@ -152,6 +154,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 123,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
 }\n")]
@@ -175,6 +178,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 100,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
@@ -188,6 +192,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 123,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
 }\n")]
@@ -225,6 +230,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 100,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"metadata\": {\"key\": \"...\"}
 }\n\nExample response:
 {
@@ -238,6 +244,7 @@ pub enum StreamingSinkCommands {
   \"batchSize\": 123,
   \"maxWaitSecs\": 123,
   \"eventTypes\": [\"...\"],
+  \"channels\": [\"...\"],
   \"nextRetryAt\": \"2030-01-01T00:00:00Z\",
   \"metadata\": {\"key\": \"...\"}
 }\n")]

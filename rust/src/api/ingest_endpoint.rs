@@ -145,7 +145,8 @@ impl<'a> IngestEndpoint<'a> {
 
     /// Rotates an ingest endpoint's signing secret.
     ///
-    /// The previous secret will remain valid for the next 24 hours.
+    /// The previous secret will remain valid for the specified grace period
+    /// (default 24 hours).
     pub async fn rotate_secret(
         &self,
         source_id: String,

@@ -18,7 +18,7 @@ pub enum IngestEndpointTransformationCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix ingest endpoint transformation transformation src_abc000000000000000000 ep_abc000000000000000000000000\n",
+            "Example: svix ingest endpoint transformation get src_abc000000000000000000 ep_abc000000000000000000000000\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -26,9 +26,10 @@ pub enum IngestEndpointTransformationCommands {
     #[command(after_help = "Example response:
 {
   \"code\": \"...\",
-  \"enabled\": true
+  \"enabled\": true,
+  \"variables\": {\"key\": \"...\"}
 }\n")]
-    Transformation {
+    Get {
         source_id: String,
         endpoint_id: String,
     },
@@ -44,7 +45,8 @@ pub enum IngestEndpointTransformationCommands {
     #[command(after_help = "Example body:
 {
   \"code\": \"...\",
-  \"enabled\": true
+  \"enabled\": true,
+  \"variables\": {\"key\": \"...\"}
 }\n")]
     Patch {
         source_id: String,
@@ -61,7 +63,7 @@ impl IngestEndpointTransformationCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::Transformation {
+            Self::Get {
                 source_id,
                 endpoint_id,
             } => {
@@ -69,7 +71,7 @@ impl IngestEndpointTransformationCommands {
                     .ingest()
                     .endpoint()
                     .transformation()
-                    .transformation(source_id, endpoint_id)
+                    .get(source_id, endpoint_id)
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

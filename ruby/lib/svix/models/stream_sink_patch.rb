@@ -2,21 +2,21 @@
 # This file is @generated
 require "json"
 
-require_relative "./amazon_s3_patch_config"
-require_relative "./azure_blob_storage_patch_config"
-require_relative "./big_query_patch_config"
-require_relative "./clickhouse_patch_config"
-require_relative "./event_bridge_patch_config"
-require_relative "./google_cloud_pub_sub_patch_config"
-require_relative "./google_cloud_storage_patch_config"
-require_relative "./http_patch_config"
-require_relative "./otel_tracing_patch_config"
-require_relative "./rabbit_mq_patch_config"
-require_relative "./redshift_patch_config"
+require_relative "./azure_blob_storage_config_patch"
+require_relative "./big_query_config_patch"
+require_relative "./clickhouse_config_patch"
+require_relative "./event_bridge_config_patch"
+require_relative "./google_cloud_pub_sub_config_patch"
+require_relative "./google_cloud_storage_config_patch"
+require_relative "./otel_tracing_config_patch"
+require_relative "./rabbit_mq_config_patch"
+require_relative "./redshift_config_patch"
+require_relative "./s3_config_patch"
+require_relative "./sink_http_config_patch"
 require_relative "./sink_status_in"
-require_relative "./snowflake_patch_config"
-require_relative "./sns_patch_config"
-require_relative "./sqs_patch_config"
+require_relative "./snowflake_config_patch"
+require_relative "./sns_config_patch"
+require_relative "./sqs_config_patch"
 
 module Svix
   class StreamSinkPatchConfig
@@ -36,46 +36,46 @@ module Svix
       end
     end
 
-    class AzureBlobStorage < AzureBlobStoragePatchConfig
+    class AzureBlobStorage < AzureBlobStorageConfigPatch
     end
 
-    class OtelTracing < OtelTracingPatchConfig
+    class OtelTracing < OtelTracingConfigPatch
     end
 
-    class Http < HttpPatchConfig
+    class Http < SinkHttpConfigPatch
     end
 
-    class AmazonS3 < AmazonS3PatchConfig
+    class AmazonS3 < S3ConfigPatch
     end
 
-    class GoogleCloudStorage < GoogleCloudStoragePatchConfig
+    class GoogleCloudStorage < GoogleCloudStorageConfigPatch
     end
 
-    class GoogleCloudPubSub < GoogleCloudPubSubPatchConfig
+    class GoogleCloudPubSub < GoogleCloudPubSubConfigPatch
     end
 
-    class Sqs < SqsPatchConfig
+    class Sqs < SqsConfigPatch
     end
 
-    class Sns < SnsPatchConfig
+    class Sns < SnsConfigPatch
     end
 
-    class BigQuery < BigQueryPatchConfig
+    class BigQuery < BigQueryConfigPatch
     end
 
-    class Clickhouse < ClickhousePatchConfig
+    class Clickhouse < ClickhouseConfigPatch
     end
 
-    class EventBridge < EventBridgePatchConfig
+    class EventBridge < EventBridgeConfigPatch
     end
 
-    class Snowflake < SnowflakePatchConfig
+    class Snowflake < SnowflakeConfigPatch
     end
 
-    class RabbitMq < RabbitMqPatchConfig
+    class RabbitMq < RabbitMqConfigPatch
     end
 
-    class Redshift < RedshiftPatchConfig
+    class Redshift < RedshiftConfigPatch
     end
   end
 
@@ -86,10 +86,11 @@ module Svix
     attr_accessor :batch_size
     attr_accessor :max_wait_secs
     attr_accessor :event_types
+    attr_accessor :channels
     attr_accessor :metadata
     attr_accessor :config
 
-    ALL_FIELD ||= ["uid", "status", "batch_size", "max_wait_secs", "event_types", "metadata", "config"].freeze
+    ALL_FIELD ||= ["uid", "status", "batch_size", "max_wait_secs", "event_types", "channels", "metadata", "config"].freeze
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       StreamSinkPatchConfig::Poller => "poller",
@@ -150,6 +151,7 @@ module Svix
       attrs["batch_size"] = attributes["batchSize"]
       attrs["max_wait_secs"] = attributes["maxWaitSecs"]
       attrs["event_types"] = attributes["eventTypes"]
+      attrs["channels"] = attributes["channels"]
       attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
@@ -170,6 +172,7 @@ module Svix
       out["batchSize"] = Svix::serialize_primitive(@batch_size) if @__batch_size_is_defined
       out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @__max_wait_secs_is_defined
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize

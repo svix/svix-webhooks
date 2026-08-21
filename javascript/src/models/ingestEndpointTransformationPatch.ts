@@ -3,6 +3,7 @@
 export interface IngestEndpointTransformationPatch {
   code?: string | null;
   enabled?: boolean;
+  variables?: { [key: string]: string } | null;
 }
 
 export const IngestEndpointTransformationPatchSerializer = {
@@ -10,6 +11,7 @@ export const IngestEndpointTransformationPatchSerializer = {
     return {
       code: object["code"],
       enabled: object["enabled"],
+      variables: object["variables"],
     };
   },
 
@@ -17,6 +19,7 @@ export const IngestEndpointTransformationPatchSerializer = {
     return {
       code: self.code,
       enabled: self.enabled,
+      variables: self.variables,
     };
   },
 };

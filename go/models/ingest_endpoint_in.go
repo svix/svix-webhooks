@@ -16,4 +16,5 @@ type IngestEndpointIn struct {
 	// It is recommended to not set this and let the server generate the secret.
 	Secret   *string            `json:"secret,omitempty"`
 	Metadata *map[string]string `json:"metadata,omitempty"`
+	Headers  *map[string]string `json:"headers,omitempty"`
 }

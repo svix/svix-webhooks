@@ -20,6 +20,7 @@ data class StreamSinkPatch(
     val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
     val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
     val eventTypes: List<String>? = null,
+    val channels: List<String>? = null,
     val metadata: Map<String, String>? = null,
     val config: StreamSinkPatchConfig,
 )
@@ -37,87 +38,88 @@ sealed class StreamSinkPatchConfig {
     }
 
     @VariantName("azureBlobStorage")
-    data class AzureBlobStorage(val azureBlobStorage: AzureBlobStoragePatchConfig) :
+    data class AzureBlobStorage(val azureBlobStorage: AzureBlobStorageConfigPatch) :
         StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(AzureBlobStoragePatchConfig.serializer(), azureBlobStorage)
+            Json.encodeToJsonElement(AzureBlobStorageConfigPatch.serializer(), azureBlobStorage)
     }
 
     @VariantName("otelTracing")
-    data class OtelTracing(val otelTracing: OtelTracingPatchConfig) : StreamSinkPatchConfig() {
+    data class OtelTracing(val otelTracing: OtelTracingConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(OtelTracingPatchConfig.serializer(), otelTracing)
+            Json.encodeToJsonElement(OtelTracingConfigPatch.serializer(), otelTracing)
     }
 
     @VariantName("http")
-    data class Http(val http: HttpPatchConfig) : StreamSinkPatchConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(HttpPatchConfig.serializer(), http)
+    data class Http(val http: SinkHttpConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SinkHttpConfigPatch.serializer(), http)
     }
 
     @VariantName("amazonS3")
-    data class AmazonS3(val amazonS3: AmazonS3PatchConfig) : StreamSinkPatchConfig() {
+    data class AmazonS3(val amazonS3: S3ConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(AmazonS3PatchConfig.serializer(), amazonS3)
+            Json.encodeToJsonElement(S3ConfigPatch.serializer(), amazonS3)
     }
 
     @VariantName("googleCloudStorage")
-    data class GoogleCloudStorage(val googleCloudStorage: GoogleCloudStoragePatchConfig) :
+    data class GoogleCloudStorage(val googleCloudStorage: GoogleCloudStorageConfigPatch) :
         StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(GoogleCloudStoragePatchConfig.serializer(), googleCloudStorage)
+            Json.encodeToJsonElement(GoogleCloudStorageConfigPatch.serializer(), googleCloudStorage)
     }
 
     @VariantName("googleCloudPubSub")
-    data class GoogleCloudPubSub(val googleCloudPubSub: GoogleCloudPubSubPatchConfig) :
+    data class GoogleCloudPubSub(val googleCloudPubSub: GoogleCloudPubSubConfigPatch) :
         StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(GoogleCloudPubSubPatchConfig.serializer(), googleCloudPubSub)
+            Json.encodeToJsonElement(GoogleCloudPubSubConfigPatch.serializer(), googleCloudPubSub)
     }
 
     @VariantName("sqs")
-    data class Sqs(val sqs: SqsPatchConfig) : StreamSinkPatchConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(SqsPatchConfig.serializer(), sqs)
+    data class Sqs(val sqs: SqsConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SqsConfigPatch.serializer(), sqs)
     }
 
     @VariantName("sns")
-    data class Sns(val sns: SnsPatchConfig) : StreamSinkPatchConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(SnsPatchConfig.serializer(), sns)
+    data class Sns(val sns: SnsConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(SnsConfigPatch.serializer(), sns)
     }
 
     @VariantName("bigQuery")
-    data class BigQuery(val bigQuery: BigQueryPatchConfig) : StreamSinkPatchConfig() {
+    data class BigQuery(val bigQuery: BigQueryConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(BigQueryPatchConfig.serializer(), bigQuery)
+            Json.encodeToJsonElement(BigQueryConfigPatch.serializer(), bigQuery)
     }
 
     @VariantName("clickhouse")
-    data class Clickhouse(val clickhouse: ClickhousePatchConfig) : StreamSinkPatchConfig() {
+    data class Clickhouse(val clickhouse: ClickhouseConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(ClickhousePatchConfig.serializer(), clickhouse)
+            Json.encodeToJsonElement(ClickhouseConfigPatch.serializer(), clickhouse)
     }
 
     @VariantName("eventBridge")
-    data class EventBridge(val eventBridge: EventBridgePatchConfig) : StreamSinkPatchConfig() {
+    data class EventBridge(val eventBridge: EventBridgeConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(EventBridgePatchConfig.serializer(), eventBridge)
+            Json.encodeToJsonElement(EventBridgeConfigPatch.serializer(), eventBridge)
     }
 
     @VariantName("snowflake")
-    data class Snowflake(val snowflake: SnowflakePatchConfig) : StreamSinkPatchConfig() {
+    data class Snowflake(val snowflake: SnowflakeConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(SnowflakePatchConfig.serializer(), snowflake)
+            Json.encodeToJsonElement(SnowflakeConfigPatch.serializer(), snowflake)
     }
 
     @VariantName("rabbitMq")
-    data class RabbitMq(val rabbitMq: RabbitMqPatchConfig) : StreamSinkPatchConfig() {
+    data class RabbitMq(val rabbitMq: RabbitMqConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(RabbitMqPatchConfig.serializer(), rabbitMq)
+            Json.encodeToJsonElement(RabbitMqConfigPatch.serializer(), rabbitMq)
     }
 
     @VariantName("redshift")
-    data class Redshift(val redshift: RedshiftPatchConfig) : StreamSinkPatchConfig() {
+    data class Redshift(val redshift: RedshiftConfigPatch) : StreamSinkPatchConfig() {
         override fun toJsonElement() =
-            Json.encodeToJsonElement(RedshiftPatchConfig.serializer(), redshift)
+            Json.encodeToJsonElement(RedshiftConfigPatch.serializer(), redshift)
     }
 
     companion object {
@@ -128,7 +130,7 @@ sealed class StreamSinkPatchConfig {
                     { config ->
                         AzureBlobStorage(
                             Json.decodeFromJsonElement(
-                                AzureBlobStoragePatchConfig.serializer(),
+                                AzureBlobStorageConfigPatch.serializer(),
                                 config,
                             )
                         )
@@ -136,24 +138,22 @@ sealed class StreamSinkPatchConfig {
                 "otelTracing" to
                     { config ->
                         OtelTracing(
-                            Json.decodeFromJsonElement(OtelTracingPatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(OtelTracingConfigPatch.serializer(), config)
                         )
                     },
                 "http" to
                     { config ->
-                        Http(Json.decodeFromJsonElement(HttpPatchConfig.serializer(), config))
+                        Http(Json.decodeFromJsonElement(SinkHttpConfigPatch.serializer(), config))
                     },
                 "amazonS3" to
                     { config ->
-                        AmazonS3(
-                            Json.decodeFromJsonElement(AmazonS3PatchConfig.serializer(), config)
-                        )
+                        AmazonS3(Json.decodeFromJsonElement(S3ConfigPatch.serializer(), config))
                     },
                 "googleCloudStorage" to
                     { config ->
                         GoogleCloudStorage(
                             Json.decodeFromJsonElement(
-                                GoogleCloudStoragePatchConfig.serializer(),
+                                GoogleCloudStorageConfigPatch.serializer(),
                                 config,
                             )
                         )
@@ -162,53 +162,53 @@ sealed class StreamSinkPatchConfig {
                     { config ->
                         GoogleCloudPubSub(
                             Json.decodeFromJsonElement(
-                                GoogleCloudPubSubPatchConfig.serializer(),
+                                GoogleCloudPubSubConfigPatch.serializer(),
                                 config,
                             )
                         )
                     },
                 "sqs" to
                     { config ->
-                        Sqs(Json.decodeFromJsonElement(SqsPatchConfig.serializer(), config))
+                        Sqs(Json.decodeFromJsonElement(SqsConfigPatch.serializer(), config))
                     },
                 "sns" to
                     { config ->
-                        Sns(Json.decodeFromJsonElement(SnsPatchConfig.serializer(), config))
+                        Sns(Json.decodeFromJsonElement(SnsConfigPatch.serializer(), config))
                     },
                 "bigQuery" to
                     { config ->
                         BigQuery(
-                            Json.decodeFromJsonElement(BigQueryPatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(BigQueryConfigPatch.serializer(), config)
                         )
                     },
                 "clickhouse" to
                     { config ->
                         Clickhouse(
-                            Json.decodeFromJsonElement(ClickhousePatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(ClickhouseConfigPatch.serializer(), config)
                         )
                     },
                 "eventBridge" to
                     { config ->
                         EventBridge(
-                            Json.decodeFromJsonElement(EventBridgePatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(EventBridgeConfigPatch.serializer(), config)
                         )
                     },
                 "snowflake" to
                     { config ->
                         Snowflake(
-                            Json.decodeFromJsonElement(SnowflakePatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(SnowflakeConfigPatch.serializer(), config)
                         )
                     },
                 "rabbitMq" to
                     { config ->
                         RabbitMq(
-                            Json.decodeFromJsonElement(RabbitMqPatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(RabbitMqConfigPatch.serializer(), config)
                         )
                     },
                 "redshift" to
                     { config ->
                         Redshift(
-                            Json.decodeFromJsonElement(RedshiftPatchConfig.serializer(), config)
+                            Json.decodeFromJsonElement(RedshiftConfigPatch.serializer(), config)
                         )
                     },
             )
@@ -229,6 +229,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
         val batchSize: MaybeUnset<UShort> = MaybeUnset.Unset,
         val maxWaitSecs: MaybeUnset<UShort> = MaybeUnset.Unset,
         val eventTypes: List<String>? = null,
+        val channels: List<String>? = null,
         val metadata: Map<String, String>? = null,
         val type: String,
         val config: JsonElement,
@@ -244,6 +245,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
                 batchSize = value.batchSize,
                 maxWaitSecs = value.maxWaitSecs,
                 eventTypes = value.eventTypes,
+                channels = value.channels,
                 metadata = value.metadata,
                 type = value.config.variantName,
                 config = value.config.toJsonElement(),
@@ -259,6 +261,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
             batchSize = surrogate.batchSize,
             maxWaitSecs = surrogate.maxWaitSecs,
             eventTypes = surrogate.eventTypes,
+            channels = surrogate.channels,
             metadata = surrogate.metadata,
             config = StreamSinkPatchConfig.fromTypeAndConfig(surrogate.type, surrogate.config),
         )

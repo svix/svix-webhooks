@@ -133,7 +133,7 @@ impl Svix {
                 Some("au") => "https://api.au.svix.com",
                 _ => "https://api.svix.com",
             }
-            .to_string()
+            .to_owned()
         });
         let cfg = Arc::new(Configuration {
             base_path,
@@ -158,6 +158,14 @@ impl Svix {
     /// Get back the access token used to construct this `Svix` client.
     pub fn token(&self) -> Option<&str> {
         self.cfg.bearer_access_token.as_deref()
+    }
+
+    /// Get the server base URL used for API requests.
+    ///
+    /// Never includes a trailing slash, even if one was part of the server URL
+    /// passed via [`SvixOptions`].
+    pub fn server_url(&self) -> &str {
+        &self.cfg.base_path
     }
 }
 

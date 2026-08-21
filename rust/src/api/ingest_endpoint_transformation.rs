@@ -11,7 +11,7 @@ impl<'a> IngestEndpointTransformation<'a> {
     }
 
     /// Get the transformation code associated with this ingest endpoint.
-    pub async fn transformation(
+    pub async fn get(
         &self,
         source_id: String,
         endpoint_id: String,

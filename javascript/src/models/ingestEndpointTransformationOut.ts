@@ -3,6 +3,7 @@
 export interface IngestEndpointTransformationOut {
   code?: string | null;
   enabled?: boolean;
+  variables?: { [key: string]: string } | null;
 }
 
 export const IngestEndpointTransformationOutSerializer = {
@@ -10,6 +11,7 @@ export const IngestEndpointTransformationOutSerializer = {
     return {
       code: object["code"],
       enabled: object["enabled"],
+      variables: object["variables"],
     };
   },
 
@@ -17,6 +19,7 @@ export const IngestEndpointTransformationOutSerializer = {
     return {
       code: self.code,
       enabled: self.enabled,
+      variables: self.variables,
     };
   },
 };

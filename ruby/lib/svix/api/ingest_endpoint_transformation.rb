@@ -9,7 +9,7 @@ module Svix
       @client = client
     end
 
-    def transformation(source_id, endpoint_id)
+    def get(source_id, endpoint_id)
       res = @client.execute_request(
         "GET",
         "/ingest/api/v1/source/#{source_id}/endpoint/#{endpoint_id}/transformation"

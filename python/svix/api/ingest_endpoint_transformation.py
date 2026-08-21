@@ -4,7 +4,7 @@ from .common import ApiBaseAsync, ApiBaseSync
 
 
 class IngestEndpointTransformationAsync(ApiBaseAsync):
-    async def transformation(
+    async def get(
         self, source_id: str, endpoint_id: str
     ) -> IngestEndpointTransformationOut:
         """Get the transformation code associated with this ingest endpoint."""
@@ -39,9 +39,7 @@ class IngestEndpointTransformationAsync(ApiBaseAsync):
 
 
 class IngestEndpointTransformation(ApiBaseSync):
-    def transformation(
-        self, source_id: str, endpoint_id: str
-    ) -> IngestEndpointTransformationOut:
+    def get(self, source_id: str, endpoint_id: str) -> IngestEndpointTransformationOut:
         """Get the transformation code associated with this ingest endpoint."""
         response = self._request_sync(
             method="get",

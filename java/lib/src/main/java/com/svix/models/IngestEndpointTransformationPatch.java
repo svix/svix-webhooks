@@ -12,6 +12,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ToString
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -19,6 +22,7 @@ import lombok.ToString;
 public class IngestEndpointTransformationPatch {
     @JsonProperty private MaybeUnset<String> code;
     @JsonProperty private Boolean enabled;
+    @JsonProperty private MaybeUnset<Map<String, String>> variables;
 
     public IngestEndpointTransformationPatch() {}
 
@@ -61,6 +65,37 @@ public class IngestEndpointTransformationPatch {
 
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public IngestEndpointTransformationPatch variables(Map<String, String> variables) {
+        this.variables = new MaybeUnset<>(variables);
+        return this;
+    }
+
+    public IngestEndpointTransformationPatch putVariablesItem(String key, String variablesItem) {
+        if (this.variables == null) {
+            this.variables = new MaybeUnset<>(new HashMap<>());
+        }
+        this.variables.getValue().put(key, variablesItem);
+
+        return this;
+    }
+
+    /**
+     * Get variables
+     *
+     * @return variables
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getVariables() {
+        if (variables == null) {
+            return null;
+        }
+        return variables.getValue();
+    }
+
+    public void setVariables(Map<String, String> variables) {
+        this.variables = new MaybeUnset<>(variables);
     }
 
     /**

@@ -39,6 +39,7 @@ public class StreamSinkPatch {
     private Short batchSize;
     private Short maxWaitSecs;
     private List<String> eventTypes;
+    private List<String> channels;
     private Map<String, String> metadata;
     private StreamSinkPatchConfig config;
 
@@ -64,6 +65,11 @@ public class StreamSinkPatch {
 
     public StreamSinkPatch eventTypes(List<String> eventTypes) {
         this.eventTypes = eventTypes;
+        return this;
+    }
+
+    public StreamSinkPatch channels(List<String> channels) {
+        this.channels = channels;
         return this;
     }
 
@@ -104,6 +110,9 @@ class StreamSinkPatchSurrogate {
     @JsonProperty("eventTypes")
     List<String> eventTypes;
 
+    @JsonProperty("channels")
+    List<String> channels;
+
     @JsonProperty("metadata")
     Map<String, String> metadata;
 
@@ -119,6 +128,7 @@ class StreamSinkPatchSurrogate {
         this.batchSize = o.getBatchSize();
         this.maxWaitSecs = o.getMaxWaitSecs();
         this.eventTypes = o.getEventTypes();
+        this.channels = o.getChannels();
         this.metadata = o.getMetadata();
         this.type = type;
         this.config = config;
@@ -163,11 +173,12 @@ class StreamSinkPatchDeserializer extends StdDeserializer<StreamSinkPatch> {
         Short batchSize = surrogate.getBatchSize();
         Short maxWaitSecs = surrogate.getMaxWaitSecs();
         List<String> eventTypes = surrogate.getEventTypes();
+        List<String> channels = surrogate.getChannels();
         Map<String, String> metadata = surrogate.getMetadata();
         String type = surrogate.getType();
         JsonNode config = surrogate.getConfig();
         StreamSinkPatchConfig sourceType = StreamSinkPatchConfig.fromTypeAndConfig(type, config);
         return new StreamSinkPatch(
-                uid, status, batchSize, maxWaitSecs, eventTypes, metadata, sourceType);
+                uid, status, batchSize, maxWaitSecs, eventTypes, channels, metadata, sourceType);
     }
 }

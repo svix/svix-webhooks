@@ -2,21 +2,21 @@
 # This file is @generated
 require "json"
 
-require_relative "./azure_blob_storage_config"
-require_relative "./big_query_config"
-require_relative "./clickhouse_config"
-require_relative "./event_bridge_config"
-require_relative "./google_cloud_pub_sub_config"
-require_relative "./google_cloud_storage_config"
-require_relative "./rabbit_mq_config"
-require_relative "./redshift_config"
-require_relative "./s3_config"
-require_relative "./sink_http_config"
-require_relative "./sink_otel_v1_config"
+require_relative "./azure_blob_storage_config_out"
+require_relative "./big_query_config_out"
+require_relative "./clickhouse_config_out"
+require_relative "./event_bridge_config_out"
+require_relative "./google_cloud_pub_sub_config_out"
+require_relative "./google_cloud_storage_config_out"
+require_relative "./otel_tracing_config_out"
+require_relative "./rabbit_mq_config_out"
+require_relative "./redshift_config_out"
+require_relative "./s3_config_out"
+require_relative "./sink_http_config_out"
 require_relative "./sink_status"
-require_relative "./snowflake_config"
-require_relative "./sns_config"
-require_relative "./sqs_config"
+require_relative "./snowflake_config_out"
+require_relative "./sns_config_out"
+require_relative "./sqs_config_out"
 
 module Svix
   class StreamSinkOutConfig
@@ -36,46 +36,46 @@ module Svix
       end
     end
 
-    class AzureBlobStorage < AzureBlobStorageConfig
+    class AzureBlobStorage < AzureBlobStorageConfigOut
     end
 
-    class OtelTracing < SinkOtelV1Config
+    class OtelTracing < OtelTracingConfigOut
     end
 
-    class Http < SinkHttpConfig
+    class Http < SinkHttpConfigOut
     end
 
-    class AmazonS3 < S3Config
+    class AmazonS3 < S3ConfigOut
     end
 
-    class GoogleCloudStorage < GoogleCloudStorageConfig
+    class Snowflake < SnowflakeConfigOut
     end
 
-    class GoogleCloudPubSub < GoogleCloudPubSubConfig
+    class GoogleCloudStorage < GoogleCloudStorageConfigOut
     end
 
-    class Sqs < SqsConfig
+    class GoogleCloudPubSub < GoogleCloudPubSubConfigOut
     end
 
-    class Sns < SnsConfig
+    class Redshift < RedshiftConfigOut
     end
 
-    class BigQuery < BigQueryConfig
+    class BigQuery < BigQueryConfigOut
     end
 
-    class Clickhouse < ClickhouseConfig
+    class Clickhouse < ClickhouseConfigOut
     end
 
-    class EventBridge < EventBridgeConfig
+    class RabbitMq < RabbitMqConfigOut
     end
 
-    class Snowflake < SnowflakeConfig
+    class Sqs < SqsConfigOut
     end
 
-    class RabbitMq < RabbitMqConfig
+    class EventBridge < EventBridgeConfigOut
     end
 
-    class Redshift < RedshiftConfig
+    class Sns < SnsConfigOut
     end
   end
 
@@ -92,6 +92,7 @@ module Svix
     attr_accessor :batch_size
     attr_accessor :max_wait_secs
     attr_accessor :event_types
+    attr_accessor :channels
     attr_accessor :next_retry_at
     attr_accessor :metadata
     attr_accessor :config
@@ -107,6 +108,7 @@ module Svix
       "batch_size",
       "max_wait_secs",
       "event_types",
+      "channels",
       "next_retry_at",
       "metadata",
       "config"
@@ -118,16 +120,16 @@ module Svix
       StreamSinkOutConfig::OtelTracing => "otelTracing",
       StreamSinkOutConfig::Http => "http",
       StreamSinkOutConfig::AmazonS3 => "amazonS3",
+      StreamSinkOutConfig::Snowflake => "snowflake",
       StreamSinkOutConfig::GoogleCloudStorage => "googleCloudStorage",
       StreamSinkOutConfig::GoogleCloudPubSub => "googleCloudPubSub",
-      StreamSinkOutConfig::Sqs => "sqs",
-      StreamSinkOutConfig::Sns => "sns",
+      StreamSinkOutConfig::Redshift => "redshift",
       StreamSinkOutConfig::BigQuery => "bigQuery",
       StreamSinkOutConfig::Clickhouse => "clickhouse",
-      StreamSinkOutConfig::EventBridge => "eventBridge",
-      StreamSinkOutConfig::Snowflake => "snowflake",
       StreamSinkOutConfig::RabbitMq => "rabbitMq",
-      StreamSinkOutConfig::Redshift => "redshift"
+      StreamSinkOutConfig::Sqs => "sqs",
+      StreamSinkOutConfig::EventBridge => "eventBridge",
+      StreamSinkOutConfig::Sns => "sns"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert
@@ -176,6 +178,7 @@ module Svix
       attrs["batch_size"] = attributes["batchSize"]
       attrs["max_wait_secs"] = attributes["maxWaitSecs"]
       attrs["event_types"] = attributes["eventTypes"]
+      attrs["channels"] = attributes["channels"]
       attrs["next_retry_at"] = DateTime.rfc3339(attributes["nextRetryAt"]).to_time if attributes["nextRetryAt"]
       attrs["metadata"] = attributes["metadata"]
       unless NAME_TO_TYPE.key?(attributes["type"])
@@ -202,6 +205,7 @@ module Svix
       out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
       out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
       out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
+      out["channels"] = Svix::serialize_primitive(@channels) if @channels
       out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) if @next_retry_at
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
       out["type"] = @__enum_discriminator

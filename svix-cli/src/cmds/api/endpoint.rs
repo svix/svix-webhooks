@@ -824,7 +824,7 @@ impl EndpointCommands {
                 id,
                 endpoint_transformation_in,
             } => {
-                #[allow(deprecated)]
+                #[expect(deprecated)]
                 client
                     .endpoint()
                     .transformation_partial_update(

@@ -106,7 +106,7 @@ class OperationalWebhookEndpoint(private val client: SvixHttpClient) {
     /**
      * Rotates an operational webhook endpoint's signing secret.
      *
-     * The previous secret will remain valid for the next 24 hours.
+     * The previous secret will remain valid for the specified grace period (default 24 hours).
      */
     suspend fun rotateSecret(
         endpointId: String,

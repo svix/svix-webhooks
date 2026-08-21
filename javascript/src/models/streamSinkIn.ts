@@ -1,28 +1,37 @@
 // this file is @generated
 import {
-  type AzureBlobStorageConfig,
-  AzureBlobStorageConfigSerializer,
-} from "./azureBlobStorageConfig";
-import { type BigQueryConfig, BigQueryConfigSerializer } from "./bigQueryConfig";
-import { type ClickhouseConfig, ClickhouseConfigSerializer } from "./clickhouseConfig";
-import { type EventBridgeConfig, EventBridgeConfigSerializer } from "./eventBridgeConfig";
+  type AzureBlobStorageConfigIn,
+  AzureBlobStorageConfigInSerializer,
+} from "./azureBlobStorageConfigIn";
+import { type BigQueryConfigIn, BigQueryConfigInSerializer } from "./bigQueryConfigIn";
 import {
-  type GoogleCloudPubSubConfig,
-  GoogleCloudPubSubConfigSerializer,
-} from "./googleCloudPubSubConfig";
+  type ClickhouseConfigIn,
+  ClickhouseConfigInSerializer,
+} from "./clickhouseConfigIn";
 import {
-  type GoogleCloudStorageConfig,
-  GoogleCloudStorageConfigSerializer,
-} from "./googleCloudStorageConfig";
-import { type RabbitMqConfig, RabbitMqConfigSerializer } from "./rabbitMqConfig";
-import { type RedshiftConfig, RedshiftConfigSerializer } from "./redshiftConfig";
-import { type S3Config, S3ConfigSerializer } from "./s3Config";
-import { type SinkHttpConfig, SinkHttpConfigSerializer } from "./sinkHttpConfig";
-import { type SinkOtelV1Config, SinkOtelV1ConfigSerializer } from "./sinkOtelV1Config";
+  type EventBridgeConfigIn,
+  EventBridgeConfigInSerializer,
+} from "./eventBridgeConfigIn";
+import {
+  type GoogleCloudPubSubConfigIn,
+  GoogleCloudPubSubConfigInSerializer,
+} from "./googleCloudPubSubConfigIn";
+import {
+  type GoogleCloudStorageConfigIn,
+  GoogleCloudStorageConfigInSerializer,
+} from "./googleCloudStorageConfigIn";
+import {
+  type OtelTracingConfigIn,
+  OtelTracingConfigInSerializer,
+} from "./otelTracingConfigIn";
+import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
+import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
+import { type S3ConfigIn, S3ConfigInSerializer } from "./s3ConfigIn";
+import { type SinkHttpConfigIn, SinkHttpConfigInSerializer } from "./sinkHttpConfigIn";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
-import { type SnowflakeConfig, SnowflakeConfigSerializer } from "./snowflakeConfig";
-import { type SnsConfig, SnsConfigSerializer } from "./snsConfig";
-import { type SqsConfig, SqsConfigSerializer } from "./sqsConfig";
+import { type SnowflakeConfigIn, SnowflakeConfigInSerializer } from "./snowflakeConfigIn";
+import { type SnsConfigIn, SnsConfigInSerializer } from "./snsConfigIn";
+import { type SqsConfigIn, SqsConfigInSerializer } from "./sqsConfigIn";
 
 interface _StreamSinkInFields {
   /** An optional unique identifier for the sink. */
@@ -47,6 +56,7 @@ interface _StreamSinkInFields {
   maxWaitSecs?: number;
   /** A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events. */
   eventTypes?: string[];
+  channels?: string[];
   metadata?: { [key: string]: string };
 }
 
@@ -60,72 +70,72 @@ interface StreamSinkInPoller {
 
 interface StreamSinkInAzureBlobStorage {
   type: "azureBlobStorage";
-  config: AzureBlobStorageConfig;
+  config: AzureBlobStorageConfigIn;
 }
 
 interface StreamSinkInOtelTracing {
   type: "otelTracing";
-  config: SinkOtelV1Config;
+  config: OtelTracingConfigIn;
 }
 
 interface StreamSinkInHttp {
   type: "http";
-  config: SinkHttpConfig;
+  config: SinkHttpConfigIn;
 }
 
 interface StreamSinkInAmazonS3 {
   type: "amazonS3";
-  config: S3Config;
+  config: S3ConfigIn;
 }
 
 interface StreamSinkInGoogleCloudStorage {
   type: "googleCloudStorage";
-  config: GoogleCloudStorageConfig;
+  config: GoogleCloudStorageConfigIn;
 }
 
 interface StreamSinkInGoogleCloudPubSub {
   type: "googleCloudPubSub";
-  config: GoogleCloudPubSubConfig;
+  config: GoogleCloudPubSubConfigIn;
 }
 
 interface StreamSinkInSqs {
   type: "sqs";
-  config: SqsConfig;
+  config: SqsConfigIn;
 }
 
 interface StreamSinkInSns {
   type: "sns";
-  config: SnsConfig;
+  config: SnsConfigIn;
 }
 
 interface StreamSinkInBigQuery {
   type: "bigQuery";
-  config: BigQueryConfig;
+  config: BigQueryConfigIn;
 }
 
 interface StreamSinkInClickhouse {
   type: "clickhouse";
-  config: ClickhouseConfig;
+  config: ClickhouseConfigIn;
 }
 
 interface StreamSinkInEventBridge {
   type: "eventBridge";
-  config: EventBridgeConfig;
+  config: EventBridgeConfigIn;
 }
 
 interface StreamSinkInSnowflake {
   type: "snowflake";
-  config: SnowflakeConfig;
+  config: SnowflakeConfigIn;
 }
 
 interface StreamSinkInRabbitMq {
   type: "rabbitMq";
-  config: RabbitMqConfig;
+  config: RabbitMqConfigIn;
 }
 
 interface StreamSinkInRedshift {
   type: "redshift";
-  config: RedshiftConfig;
+  config: RedshiftConfigIn;
 }
 
 export type StreamSinkIn = _StreamSinkInFields &
@@ -156,33 +166,33 @@ export const StreamSinkInSerializer = {
         case "poller":
           return {};
         case "azureBlobStorage":
-          return AzureBlobStorageConfigSerializer._fromJsonObject(object["config"]);
+          return AzureBlobStorageConfigInSerializer._fromJsonObject(object["config"]);
         case "otelTracing":
-          return SinkOtelV1ConfigSerializer._fromJsonObject(object["config"]);
+          return OtelTracingConfigInSerializer._fromJsonObject(object["config"]);
         case "http":
-          return SinkHttpConfigSerializer._fromJsonObject(object["config"]);
+          return SinkHttpConfigInSerializer._fromJsonObject(object["config"]);
         case "amazonS3":
-          return S3ConfigSerializer._fromJsonObject(object["config"]);
+          return S3ConfigInSerializer._fromJsonObject(object["config"]);
         case "googleCloudStorage":
-          return GoogleCloudStorageConfigSerializer._fromJsonObject(object["config"]);
+          return GoogleCloudStorageConfigInSerializer._fromJsonObject(object["config"]);
         case "googleCloudPubSub":
-          return GoogleCloudPubSubConfigSerializer._fromJsonObject(object["config"]);
+          return GoogleCloudPubSubConfigInSerializer._fromJsonObject(object["config"]);
         case "sqs":
-          return SqsConfigSerializer._fromJsonObject(object["config"]);
+          return SqsConfigInSerializer._fromJsonObject(object["config"]);
         case "sns":
-          return SnsConfigSerializer._fromJsonObject(object["config"]);
+          return SnsConfigInSerializer._fromJsonObject(object["config"]);
         case "bigQuery":
-          return BigQueryConfigSerializer._fromJsonObject(object["config"]);
+          return BigQueryConfigInSerializer._fromJsonObject(object["config"]);
         case "clickhouse":
-          return ClickhouseConfigSerializer._fromJsonObject(object["config"]);
+          return ClickhouseConfigInSerializer._fromJsonObject(object["config"]);
         case "eventBridge":
-          return EventBridgeConfigSerializer._fromJsonObject(object["config"]);
+          return EventBridgeConfigInSerializer._fromJsonObject(object["config"]);
         case "snowflake":
-          return SnowflakeConfigSerializer._fromJsonObject(object["config"]);
+          return SnowflakeConfigInSerializer._fromJsonObject(object["config"]);
         case "rabbitMq":
-          return RabbitMqConfigSerializer._fromJsonObject(object["config"]);
+          return RabbitMqConfigInSerializer._fromJsonObject(object["config"]);
         case "redshift":
-          return RedshiftConfigSerializer._fromJsonObject(object["config"]);
+          return RedshiftConfigInSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -199,6 +209,7 @@ export const StreamSinkInSerializer = {
       batchSize: object["batchSize"],
       maxWaitSecs: object["maxWaitSecs"],
       eventTypes: object["eventTypes"],
+      channels: object["channels"],
       metadata: object["metadata"],
     };
   },
@@ -211,46 +222,46 @@ export const StreamSinkInSerializer = {
         config = {};
         break;
       case "azureBlobStorage":
-        config = AzureBlobStorageConfigSerializer._toJsonObject(self.config);
+        config = AzureBlobStorageConfigInSerializer._toJsonObject(self.config);
         break;
       case "otelTracing":
-        config = SinkOtelV1ConfigSerializer._toJsonObject(self.config);
+        config = OtelTracingConfigInSerializer._toJsonObject(self.config);
         break;
       case "http":
-        config = SinkHttpConfigSerializer._toJsonObject(self.config);
+        config = SinkHttpConfigInSerializer._toJsonObject(self.config);
         break;
       case "amazonS3":
-        config = S3ConfigSerializer._toJsonObject(self.config);
+        config = S3ConfigInSerializer._toJsonObject(self.config);
         break;
       case "googleCloudStorage":
-        config = GoogleCloudStorageConfigSerializer._toJsonObject(self.config);
+        config = GoogleCloudStorageConfigInSerializer._toJsonObject(self.config);
         break;
       case "googleCloudPubSub":
-        config = GoogleCloudPubSubConfigSerializer._toJsonObject(self.config);
+        config = GoogleCloudPubSubConfigInSerializer._toJsonObject(self.config);
         break;
       case "sqs":
-        config = SqsConfigSerializer._toJsonObject(self.config);
+        config = SqsConfigInSerializer._toJsonObject(self.config);
         break;
       case "sns":
-        config = SnsConfigSerializer._toJsonObject(self.config);
+        config = SnsConfigInSerializer._toJsonObject(self.config);
         break;
       case "bigQuery":
-        config = BigQueryConfigSerializer._toJsonObject(self.config);
+        config = BigQueryConfigInSerializer._toJsonObject(self.config);
         break;
       case "clickhouse":
-        config = ClickhouseConfigSerializer._toJsonObject(self.config);
+        config = ClickhouseConfigInSerializer._toJsonObject(self.config);
         break;
       case "eventBridge":
-        config = EventBridgeConfigSerializer._toJsonObject(self.config);
+        config = EventBridgeConfigInSerializer._toJsonObject(self.config);
         break;
       case "snowflake":
-        config = SnowflakeConfigSerializer._toJsonObject(self.config);
+        config = SnowflakeConfigInSerializer._toJsonObject(self.config);
         break;
       case "rabbitMq":
-        config = RabbitMqConfigSerializer._toJsonObject(self.config);
+        config = RabbitMqConfigInSerializer._toJsonObject(self.config);
         break;
       case "redshift":
-        config = RedshiftConfigSerializer._toJsonObject(self.config);
+        config = RedshiftConfigInSerializer._toJsonObject(self.config);
         break;
     }
 
@@ -265,6 +276,7 @@ export const StreamSinkInSerializer = {
       batchSize: self.batchSize,
       maxWaitSecs: self.maxWaitSecs,
       eventTypes: self.eventTypes,
+      channels: self.channels,
       metadata: self.metadata,
     };
   },

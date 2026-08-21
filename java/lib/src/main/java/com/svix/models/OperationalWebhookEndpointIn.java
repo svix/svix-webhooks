@@ -30,6 +30,7 @@ public class OperationalWebhookEndpointIn {
     @JsonProperty private Set<String> eventTypes;
     @JsonProperty private String secret;
     @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private Map<String, String> headers;
 
     public OperationalWebhookEndpointIn() {}
 
@@ -206,6 +207,34 @@ public class OperationalWebhookEndpointIn {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+    }
+
+    public OperationalWebhookEndpointIn headers(Map<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public OperationalWebhookEndpointIn putHeadersItem(String key, String headersItem) {
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
+        this.headers.put(key, headersItem);
+
+        return this;
+    }
+
+    /**
+     * Get headers
+     *
+     * @return headers
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     /**

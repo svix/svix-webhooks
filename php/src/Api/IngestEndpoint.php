@@ -128,7 +128,7 @@ class IngestEndpoint
     /**
      * Rotates an ingest endpoint's signing secret.
      *
-     * The previous secret will remain valid for the next 24 hours.
+     * The previous secret will remain valid for the specified grace period (default 24 hours).
      *
      * @throws ApiException
      */

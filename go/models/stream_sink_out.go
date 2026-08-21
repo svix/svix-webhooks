@@ -9,20 +9,20 @@ import (
 
 // When creating an StreamSinkOut, use the appropriate config structure based on the Type:
 //   - "poller": No config needed (nil or just ignore the config field)
-//   - "azureBlobStorage": Use AzureBlobStorageConfig
-//   - "bigQuery": Use BigQueryConfig
-//   - "clickhouse": Use ClickhouseConfig
-//   - "eventBridge": Use EventBridgeConfig
-//   - "googleCloudPubSub": Use GoogleCloudPubSubConfig
-//   - "googleCloudStorage": Use GoogleCloudStorageConfig
-//   - "rabbitMq": Use RabbitMqConfig
-//   - "redshift": Use RedshiftConfig
-//   - "amazonS3": Use S3Config
-//   - "http": Use SinkHttpConfig
-//   - "otelTracing": Use SinkOtelV1Config
-//   - "snowflake": Use SnowflakeConfig
-//   - "sns": Use SnsConfig
-//   - "sqs": Use SqsConfig
+//   - "azureBlobStorage": Use AzureBlobStorageConfigOut
+//   - "bigQuery": Use BigQueryConfigOut
+//   - "clickhouse": Use ClickhouseConfigOut
+//   - "eventBridge": Use EventBridgeConfigOut
+//   - "googleCloudPubSub": Use GoogleCloudPubSubConfigOut
+//   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
+//   - "otelTracing": Use OtelTracingConfigOut
+//   - "rabbitMq": Use RabbitMqConfigOut
+//   - "redshift": Use RedshiftConfigOut
+//   - "amazonS3": Use S3ConfigOut
+//   - "http": Use SinkHttpConfigOut
+//   - "snowflake": Use SnowflakeConfigOut
+//   - "sns": Use SnsConfigOut
+//   - "sqs": Use SqsConfigOut
 type StreamSinkOut struct {
 	Id              string              `json:"id"`            // The sink's ID.
 	Uid             *string             `json:"uid,omitempty"` // The sink's UID.
@@ -34,6 +34,7 @@ type StreamSinkOut struct {
 	BatchSize       int32               `json:"batchSize"`
 	MaxWaitSecs     int32               `json:"maxWaitSecs"`
 	EventTypes      []string            `json:"eventTypes,omitempty"`
+	Channels        []string            `json:"channels,omitempty"`
 	NextRetryAt     *time.Time          `json:"nextRetryAt,omitempty"`
 	Metadata        map[string]string   `json:"metadata"`
 	Type            StreamSinkOutType   `json:"type"`
@@ -48,37 +49,37 @@ const (
 	StreamSinkOutTypeOtelTracing        StreamSinkOutType = "otelTracing"
 	StreamSinkOutTypeHttp               StreamSinkOutType = "http"
 	StreamSinkOutTypeAmazonS3           StreamSinkOutType = "amazonS3"
+	StreamSinkOutTypeSnowflake          StreamSinkOutType = "snowflake"
 	StreamSinkOutTypeGoogleCloudStorage StreamSinkOutType = "googleCloudStorage"
 	StreamSinkOutTypeGoogleCloudPubSub  StreamSinkOutType = "googleCloudPubSub"
-	StreamSinkOutTypeSqs                StreamSinkOutType = "sqs"
-	StreamSinkOutTypeSns                StreamSinkOutType = "sns"
+	StreamSinkOutTypeRedshift           StreamSinkOutType = "redshift"
 	StreamSinkOutTypeBigQuery           StreamSinkOutType = "bigQuery"
 	StreamSinkOutTypeClickhouse         StreamSinkOutType = "clickhouse"
-	StreamSinkOutTypeEventBridge        StreamSinkOutType = "eventBridge"
-	StreamSinkOutTypeSnowflake          StreamSinkOutType = "snowflake"
 	StreamSinkOutTypeRabbitMq           StreamSinkOutType = "rabbitMq"
-	StreamSinkOutTypeRedshift           StreamSinkOutType = "redshift"
+	StreamSinkOutTypeSqs                StreamSinkOutType = "sqs"
+	StreamSinkOutTypeEventBridge        StreamSinkOutType = "eventBridge"
+	StreamSinkOutTypeSns                StreamSinkOutType = "sns"
 )
 
 type StreamSinkOutConfig interface {
 	isStreamSinkOutConfig()
 }
 
-func (emptyMap) isStreamSinkOutConfig()                 {}
-func (AzureBlobStorageConfig) isStreamSinkOutConfig()   {}
-func (SinkOtelV1Config) isStreamSinkOutConfig()         {}
-func (SinkHttpConfig) isStreamSinkOutConfig()           {}
-func (S3Config) isStreamSinkOutConfig()                 {}
-func (GoogleCloudStorageConfig) isStreamSinkOutConfig() {}
-func (GoogleCloudPubSubConfig) isStreamSinkOutConfig()  {}
-func (SqsConfig) isStreamSinkOutConfig()                {}
-func (SnsConfig) isStreamSinkOutConfig()                {}
-func (BigQueryConfig) isStreamSinkOutConfig()           {}
-func (ClickhouseConfig) isStreamSinkOutConfig()         {}
-func (EventBridgeConfig) isStreamSinkOutConfig()        {}
-func (SnowflakeConfig) isStreamSinkOutConfig()          {}
-func (RabbitMqConfig) isStreamSinkOutConfig()           {}
-func (RedshiftConfig) isStreamSinkOutConfig()           {}
+func (emptyMap) isStreamSinkOutConfig()                    {}
+func (AzureBlobStorageConfigOut) isStreamSinkOutConfig()   {}
+func (OtelTracingConfigOut) isStreamSinkOutConfig()        {}
+func (SinkHttpConfigOut) isStreamSinkOutConfig()           {}
+func (S3ConfigOut) isStreamSinkOutConfig()                 {}
+func (SnowflakeConfigOut) isStreamSinkOutConfig()          {}
+func (GoogleCloudStorageConfigOut) isStreamSinkOutConfig() {}
+func (GoogleCloudPubSubConfigOut) isStreamSinkOutConfig()  {}
+func (RedshiftConfigOut) isStreamSinkOutConfig()           {}
+func (BigQueryConfigOut) isStreamSinkOutConfig()           {}
+func (ClickhouseConfigOut) isStreamSinkOutConfig()         {}
+func (RabbitMqConfigOut) isStreamSinkOutConfig()           {}
+func (SqsConfigOut) isStreamSinkOutConfig()                {}
+func (EventBridgeConfigOut) isStreamSinkOutConfig()        {}
+func (SnsConfigOut) isStreamSinkOutConfig()                {}
 
 func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkOut
@@ -95,59 +96,59 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 	switch i.Type {
 	case "poller":
 	case "azureBlobStorage":
-		var c AzureBlobStorageConfig
+		var c AzureBlobStorageConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "bigQuery":
-		var c BigQueryConfig
+		var c BigQueryConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "clickhouse":
-		var c ClickhouseConfig
+		var c ClickhouseConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
-		var c EventBridgeConfig
+		var c EventBridgeConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "googleCloudPubSub":
-		var c GoogleCloudPubSubConfig
+		var c GoogleCloudPubSubConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "googleCloudStorage":
-		var c GoogleCloudStorageConfig
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "rabbitMq":
-		var c RabbitMqConfig
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "redshift":
-		var c RedshiftConfig
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "amazonS3":
-		var c S3Config
-		err = json.Unmarshal(aux.Config, &c)
-		i.Config = c
-	case "http":
-		var c SinkHttpConfig
+		var c GoogleCloudStorageConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "otelTracing":
-		var c SinkOtelV1Config
+		var c OtelTracingConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "rabbitMq":
+		var c RabbitMqConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "redshift":
+		var c RedshiftConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "amazonS3":
+		var c S3ConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "http":
+		var c SinkHttpConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "snowflake":
-		var c SnowflakeConfig
+		var c SnowflakeConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "sns":
-		var c SnsConfig
+		var c SnsConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "sqs":
-		var c SqsConfig
+		var c SqsConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	default:
@@ -175,14 +176,14 @@ var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"otelTracing":        StreamSinkOutTypeOtelTracing,
 	"http":               StreamSinkOutTypeHttp,
 	"amazonS3":           StreamSinkOutTypeAmazonS3,
+	"snowflake":          StreamSinkOutTypeSnowflake,
 	"googleCloudStorage": StreamSinkOutTypeGoogleCloudStorage,
 	"googleCloudPubSub":  StreamSinkOutTypeGoogleCloudPubSub,
-	"sqs":                StreamSinkOutTypeSqs,
-	"sns":                StreamSinkOutTypeSns,
+	"redshift":           StreamSinkOutTypeRedshift,
 	"bigQuery":           StreamSinkOutTypeBigQuery,
 	"clickhouse":         StreamSinkOutTypeClickhouse,
-	"eventBridge":        StreamSinkOutTypeEventBridge,
-	"snowflake":          StreamSinkOutTypeSnowflake,
 	"rabbitMq":           StreamSinkOutTypeRabbitMq,
-	"redshift":           StreamSinkOutTypeRedshift,
+	"sqs":                StreamSinkOutTypeSqs,
+	"eventBridge":        StreamSinkOutTypeEventBridge,
+	"sns":                StreamSinkOutTypeSns,
 }

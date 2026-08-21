@@ -39,7 +39,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("azureBlobStorage")
     public static class AzureBlobStorage extends StreamSinkInConfig {
-        private final AzureBlobStorageConfig azureBlobStorage;
+        private final AzureBlobStorageConfigIn azureBlobStorage;
 
         @Override
         public JsonNode toJsonNode() {
@@ -54,7 +54,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("otelTracing")
     public static class OtelTracing extends StreamSinkInConfig {
-        private final SinkOtelV1Config otelTracing;
+        private final OtelTracingConfigIn otelTracing;
 
         @Override
         public JsonNode toJsonNode() {
@@ -69,7 +69,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("http")
     public static class Http extends StreamSinkInConfig {
-        private final SinkHttpConfig http;
+        private final SinkHttpConfigIn http;
 
         @Override
         public JsonNode toJsonNode() {
@@ -84,7 +84,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("amazonS3")
     public static class AmazonS3 extends StreamSinkInConfig {
-        private final S3Config amazonS3;
+        private final S3ConfigIn amazonS3;
 
         @Override
         public JsonNode toJsonNode() {
@@ -99,7 +99,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("googleCloudStorage")
     public static class GoogleCloudStorage extends StreamSinkInConfig {
-        private final GoogleCloudStorageConfig googleCloudStorage;
+        private final GoogleCloudStorageConfigIn googleCloudStorage;
 
         @Override
         public JsonNode toJsonNode() {
@@ -114,7 +114,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("googleCloudPubSub")
     public static class GoogleCloudPubSub extends StreamSinkInConfig {
-        private final GoogleCloudPubSubConfig googleCloudPubSub;
+        private final GoogleCloudPubSubConfigIn googleCloudPubSub;
 
         @Override
         public JsonNode toJsonNode() {
@@ -129,7 +129,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("sqs")
     public static class Sqs extends StreamSinkInConfig {
-        private final SqsConfig sqs;
+        private final SqsConfigIn sqs;
 
         @Override
         public JsonNode toJsonNode() {
@@ -144,7 +144,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("sns")
     public static class Sns extends StreamSinkInConfig {
-        private final SnsConfig sns;
+        private final SnsConfigIn sns;
 
         @Override
         public JsonNode toJsonNode() {
@@ -159,7 +159,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("bigQuery")
     public static class BigQuery extends StreamSinkInConfig {
-        private final BigQueryConfig bigQuery;
+        private final BigQueryConfigIn bigQuery;
 
         @Override
         public JsonNode toJsonNode() {
@@ -174,7 +174,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("clickhouse")
     public static class Clickhouse extends StreamSinkInConfig {
-        private final ClickhouseConfig clickhouse;
+        private final ClickhouseConfigIn clickhouse;
 
         @Override
         public JsonNode toJsonNode() {
@@ -189,7 +189,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("eventBridge")
     public static class EventBridge extends StreamSinkInConfig {
-        private final EventBridgeConfig eventBridge;
+        private final EventBridgeConfigIn eventBridge;
 
         @Override
         public JsonNode toJsonNode() {
@@ -204,7 +204,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("snowflake")
     public static class Snowflake extends StreamSinkInConfig {
-        private final SnowflakeConfig snowflake;
+        private final SnowflakeConfigIn snowflake;
 
         @Override
         public JsonNode toJsonNode() {
@@ -219,7 +219,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("rabbitMq")
     public static class RabbitMq extends StreamSinkInConfig {
-        private final RabbitMqConfig rabbitMq;
+        private final RabbitMqConfigIn rabbitMq;
 
         @Override
         public JsonNode toJsonNode() {
@@ -234,7 +234,7 @@ public abstract class StreamSinkInConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("redshift")
     public static class Redshift extends StreamSinkInConfig {
-        private final RedshiftConfig redshift;
+        private final RedshiftConfigIn redshift;
 
         @Override
         public JsonNode toJsonNode() {
@@ -254,24 +254,24 @@ public abstract class StreamSinkInConfig {
         TY_M.put("poller", c -> new Poller());
         TY_M.put(
                 "azureBlobStorage",
-                c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfig.class)));
-        TY_M.put("otelTracing", c -> new OtelTracing(m.convertValue(c, SinkOtelV1Config.class)));
-        TY_M.put("http", c -> new Http(m.convertValue(c, SinkHttpConfig.class)));
-        TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, S3Config.class)));
+                c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfigIn.class)));
+        TY_M.put("otelTracing", c -> new OtelTracing(m.convertValue(c, OtelTracingConfigIn.class)));
+        TY_M.put("http", c -> new Http(m.convertValue(c, SinkHttpConfigIn.class)));
+        TY_M.put("amazonS3", c -> new AmazonS3(m.convertValue(c, S3ConfigIn.class)));
         TY_M.put(
                 "googleCloudStorage",
-                c -> new GoogleCloudStorage(m.convertValue(c, GoogleCloudStorageConfig.class)));
+                c -> new GoogleCloudStorage(m.convertValue(c, GoogleCloudStorageConfigIn.class)));
         TY_M.put(
                 "googleCloudPubSub",
-                c -> new GoogleCloudPubSub(m.convertValue(c, GoogleCloudPubSubConfig.class)));
-        TY_M.put("sqs", c -> new Sqs(m.convertValue(c, SqsConfig.class)));
-        TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsConfig.class)));
-        TY_M.put("bigQuery", c -> new BigQuery(m.convertValue(c, BigQueryConfig.class)));
-        TY_M.put("clickhouse", c -> new Clickhouse(m.convertValue(c, ClickhouseConfig.class)));
-        TY_M.put("eventBridge", c -> new EventBridge(m.convertValue(c, EventBridgeConfig.class)));
-        TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakeConfig.class)));
-        TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfig.class)));
-        TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfig.class)));
+                c -> new GoogleCloudPubSub(m.convertValue(c, GoogleCloudPubSubConfigIn.class)));
+        TY_M.put("sqs", c -> new Sqs(m.convertValue(c, SqsConfigIn.class)));
+        TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsConfigIn.class)));
+        TY_M.put("bigQuery", c -> new BigQuery(m.convertValue(c, BigQueryConfigIn.class)));
+        TY_M.put("clickhouse", c -> new Clickhouse(m.convertValue(c, ClickhouseConfigIn.class)));
+        TY_M.put("eventBridge", c -> new EventBridge(m.convertValue(c, EventBridgeConfigIn.class)));
+        TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakeConfigIn.class)));
+        TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfigIn.class)));
+        TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfigIn.class)));
     }
 
     public static StreamSinkInConfig fromTypeAndConfig(String type, JsonNode config) {

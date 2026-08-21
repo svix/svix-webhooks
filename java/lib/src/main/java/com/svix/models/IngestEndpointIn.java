@@ -27,6 +27,7 @@ public class IngestEndpointIn {
     @JsonProperty private Boolean disabled;
     @JsonProperty private String secret;
     @JsonProperty private Map<String, String> metadata;
+    @JsonProperty private Map<String, String> headers;
 
     public IngestEndpointIn() {}
 
@@ -175,6 +176,34 @@ public class IngestEndpointIn {
 
     public void setMetadata(Map<String, String> metadata) {
         this.metadata = metadata;
+    }
+
+    public IngestEndpointIn headers(Map<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public IngestEndpointIn putHeadersItem(String key, String headersItem) {
+        if (this.headers == null) {
+            this.headers = new HashMap<>();
+        }
+        this.headers.put(key, headersItem);
+
+        return this;
+    }
+
+    /**
+     * Get headers
+     *
+     * @return headers
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
     }
 
     /**

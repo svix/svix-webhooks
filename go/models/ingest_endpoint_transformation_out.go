@@ -2,6 +2,7 @@
 package models
 
 type IngestEndpointTransformationOut struct {
-	Code    *string `json:"code,omitempty"`
-	Enabled *bool   `json:"enabled,omitempty"`
+	Code      *string            `json:"code,omitempty"`
+	Enabled   *bool              `json:"enabled,omitempty"`
+	Variables *map[string]string `json:"variables,omitempty"`
 }

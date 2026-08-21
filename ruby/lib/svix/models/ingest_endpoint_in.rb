@@ -19,8 +19,9 @@ module Svix
     # It is recommended to not set this and let the server generate the secret.
     attr_accessor :secret
     attr_accessor :metadata
+    attr_accessor :headers
 
-    ALL_FIELD ||= ["url", "description", "throttle_rate", "uid", "disabled", "secret", "metadata"].freeze
+    ALL_FIELD ||= ["url", "description", "throttle_rate", "uid", "disabled", "secret", "metadata", "headers"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -48,6 +49,7 @@ module Svix
       attrs["disabled"] = attributes["disabled"]
       attrs["secret"] = attributes["secret"]
       attrs["metadata"] = attributes["metadata"]
+      attrs["headers"] = attributes["headers"]
       new(attrs)
     end
 
@@ -60,6 +62,7 @@ module Svix
       out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
       out["secret"] = Svix::serialize_primitive(@secret) if @secret
       out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["headers"] = Svix::serialize_primitive(@headers) if @headers
       out
     end
 

@@ -6,10 +6,7 @@ import com.svix.kotlin.models.IngestEndpointTransformationPatch
 
 class IngestEndpointTransformation(private val client: SvixHttpClient) {
     /** Get the transformation code associated with this ingest endpoint. */
-    suspend fun transformation(
-        sourceId: String,
-        endpointId: String,
-    ): IngestEndpointTransformationOut {
+    suspend fun get(sourceId: String, endpointId: String): IngestEndpointTransformationOut {
         val url =
             client
                 .newUrlBuilder()

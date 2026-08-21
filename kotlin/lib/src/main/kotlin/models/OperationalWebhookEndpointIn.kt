@@ -25,4 +25,5 @@ data class OperationalWebhookEndpointIn(
      */
     val secret: String? = null,
     val metadata: Map<String, String>? = null,
+    val headers: Map<String, String>? = null,
 )

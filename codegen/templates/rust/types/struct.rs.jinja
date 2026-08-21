@@ -1,5 +1,6 @@
 {% from "types/macros.rs.jinja" import field_name -%}
 {% if type.name is endingwith "Patch" -%}
+    #[allow(unused_imports)]
     use js_option::JsOption;
 {% endif -%}
 use serde::{Deserialize, Serialize};
@@ -35,7 +36,7 @@ impl {{ type_name }} {
         {% endfor -%}
     ) -> Self {
         {% if type.fields | selectattr("deprecated") | length > 0 -%}
-            #[allow(deprecated)]
+            #[expect(deprecated)]
         {% endif -%}
         Self {
             {% for field in type.fields -%}

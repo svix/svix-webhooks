@@ -19,6 +19,7 @@ class IngestEndpointIn implements \JsonSerializable
      * Format: `base64` encoded random bytes optionally prefixed with `whsec_`.
      * It is recommended to not set this and let the server generate the secret.
      * @param array<string, string>|null $metadata
+     * @param array<string, string>|null $headers
      */
     private function __construct(
         public readonly string $url,
@@ -28,6 +29,7 @@ class IngestEndpointIn implements \JsonSerializable
         public readonly ?bool $disabled = null,
         public readonly ?string $secret = null,
         public readonly ?array $metadata = null,
+        public readonly ?array $headers = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -47,6 +49,7 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: null,
             secret: null,
             metadata: null,
+            headers: null,
             setFields: ['url' => true]
         );
     }
@@ -64,6 +67,7 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: $this->disabled,
             secret: $this->secret,
             metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
@@ -81,6 +85,7 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: $this->disabled,
             secret: $this->secret,
             metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
@@ -98,6 +103,7 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: $this->disabled,
             secret: $this->secret,
             metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
@@ -115,6 +121,7 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: $disabled,
             secret: $this->secret,
             metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
@@ -132,6 +139,7 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: $this->disabled,
             secret: $secret,
             metadata: $this->metadata,
+            headers: $this->headers,
             setFields: $setFields
         );
     }
@@ -149,6 +157,25 @@ class IngestEndpointIn implements \JsonSerializable
             disabled: $this->disabled,
             secret: $this->secret,
             metadata: $metadata,
+            headers: $this->headers,
+            setFields: $setFields
+        );
+    }
+
+    public function withHeaders(?array $headers): self
+    {
+        $setFields = $this->setFields;
+        $setFields['headers'] = true;
+
+        return new self(
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            secret: $this->secret,
+            metadata: $this->metadata,
+            headers: $headers,
             setFields: $setFields
         );
     }
@@ -176,6 +203,9 @@ class IngestEndpointIn implements \JsonSerializable
         if (null !== $this->metadata) {
             $data['metadata'] = $this->metadata;
         }
+        if (isset($this->setFields['headers'])) {
+            $data['headers'] = $this->headers;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -192,7 +222,8 @@ class IngestEndpointIn implements \JsonSerializable
             uid: \Svix\Utils::deserializeString($data, 'uid', false, 'IngestEndpointIn'),
             disabled: \Svix\Utils::deserializeBool($data, 'disabled', false, 'IngestEndpointIn'),
             secret: \Svix\Utils::deserializeString($data, 'secret', false, 'IngestEndpointIn'),
-            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'IngestEndpointIn')
+            metadata: \Svix\Utils::getValFromJson($data, 'metadata', false, 'IngestEndpointIn'),
+            headers: \Svix\Utils::getValFromJson($data, 'headers', false, 'IngestEndpointIn')
         );
     }
 

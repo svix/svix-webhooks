@@ -4,22 +4,22 @@ import typing as t
 from pydantic import ModelWrapValidatorHandler, model_validator
 from typing_extensions import Self
 
-from .azure_blob_storage_config import AzureBlobStorageConfig
-from .big_query_config import BigQueryConfig
-from .clickhouse_config import ClickhouseConfig
+from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
+from .big_query_config_in import BigQueryConfigIn
+from .clickhouse_config_in import ClickhouseConfigIn
 from .common import BaseModel
-from .event_bridge_config import EventBridgeConfig
-from .google_cloud_pub_sub_config import GoogleCloudPubSubConfig
-from .google_cloud_storage_config import GoogleCloudStorageConfig
-from .rabbit_mq_config import RabbitMqConfig
-from .redshift_config import RedshiftConfig
-from .s3_config import S3Config
-from .sink_http_config import SinkHttpConfig
-from .sink_otel_v1_config import SinkOtelV1Config
+from .event_bridge_config_in import EventBridgeConfigIn
+from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
+from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
+from .otel_tracing_config_in import OtelTracingConfigIn
+from .rabbit_mq_config_in import RabbitMqConfigIn
+from .redshift_config_in import RedshiftConfigIn
+from .s3_config_in import S3ConfigIn
+from .sink_http_config_in import SinkHttpConfigIn
 from .sink_status_in import SinkStatusIn
-from .snowflake_config import SnowflakeConfig
-from .sns_config import SnsConfig
-from .sqs_config import SqsConfig
+from .snowflake_config_in import SnowflakeConfigIn
+from .sns_config_in import SnsConfigIn
+from .sqs_config_in import SqsConfigIn
 
 
 class StreamSinkIn(BaseModel):
@@ -46,6 +46,8 @@ class StreamSinkIn(BaseModel):
     event_types: t.Optional[t.List[str]] = None
     """A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events."""
 
+    channels: t.Optional[t.List[str]] = None
+
     metadata: t.Optional[t.Dict[str, str]] = None
 
     type: t.Union[
@@ -67,20 +69,20 @@ class StreamSinkIn(BaseModel):
     ]
     config: t.Union[
         t.Dict[str, t.Any],
-        AzureBlobStorageConfig,
-        SinkOtelV1Config,
-        SinkHttpConfig,
-        S3Config,
-        GoogleCloudStorageConfig,
-        GoogleCloudPubSubConfig,
-        SqsConfig,
-        SnsConfig,
-        BigQueryConfig,
-        ClickhouseConfig,
-        EventBridgeConfig,
-        SnowflakeConfig,
-        RabbitMqConfig,
-        RedshiftConfig,
+        AzureBlobStorageConfigIn,
+        OtelTracingConfigIn,
+        SinkHttpConfigIn,
+        S3ConfigIn,
+        GoogleCloudStorageConfigIn,
+        GoogleCloudPubSubConfigIn,
+        SqsConfigIn,
+        SnsConfigIn,
+        BigQueryConfigIn,
+        ClickhouseConfigIn,
+        EventBridgeConfigIn,
+        SnowflakeConfigIn,
+        RabbitMqConfigIn,
+        RedshiftConfigIn,
     ]
 
     @model_validator(mode="wrap")
@@ -96,39 +98,39 @@ class StreamSinkIn(BaseModel):
         if output.type == "poller":
             output.config = data.get("config", {})
         elif output.type == "azureBlobStorage":
-            output.config = AzureBlobStorageConfig.model_validate(
+            output.config = AzureBlobStorageConfigIn.model_validate(
                 data.get("config", {})
             )
         elif output.type == "otelTracing":
-            output.config = SinkOtelV1Config.model_validate(data.get("config", {}))
+            output.config = OtelTracingConfigIn.model_validate(data.get("config", {}))
         elif output.type == "http":
-            output.config = SinkHttpConfig.model_validate(data.get("config", {}))
+            output.config = SinkHttpConfigIn.model_validate(data.get("config", {}))
         elif output.type == "amazonS3":
-            output.config = S3Config.model_validate(data.get("config", {}))
+            output.config = S3ConfigIn.model_validate(data.get("config", {}))
         elif output.type == "googleCloudStorage":
-            output.config = GoogleCloudStorageConfig.model_validate(
+            output.config = GoogleCloudStorageConfigIn.model_validate(
                 data.get("config", {})
             )
         elif output.type == "googleCloudPubSub":
-            output.config = GoogleCloudPubSubConfig.model_validate(
+            output.config = GoogleCloudPubSubConfigIn.model_validate(
                 data.get("config", {})
             )
         elif output.type == "sqs":
-            output.config = SqsConfig.model_validate(data.get("config", {}))
+            output.config = SqsConfigIn.model_validate(data.get("config", {}))
         elif output.type == "sns":
-            output.config = SnsConfig.model_validate(data.get("config", {}))
+            output.config = SnsConfigIn.model_validate(data.get("config", {}))
         elif output.type == "bigQuery":
-            output.config = BigQueryConfig.model_validate(data.get("config", {}))
+            output.config = BigQueryConfigIn.model_validate(data.get("config", {}))
         elif output.type == "clickhouse":
-            output.config = ClickhouseConfig.model_validate(data.get("config", {}))
+            output.config = ClickhouseConfigIn.model_validate(data.get("config", {}))
         elif output.type == "eventBridge":
-            output.config = EventBridgeConfig.model_validate(data.get("config", {}))
+            output.config = EventBridgeConfigIn.model_validate(data.get("config", {}))
         elif output.type == "snowflake":
-            output.config = SnowflakeConfig.model_validate(data.get("config", {}))
+            output.config = SnowflakeConfigIn.model_validate(data.get("config", {}))
         elif output.type == "rabbitMq":
-            output.config = RabbitMqConfig.model_validate(data.get("config", {}))
+            output.config = RabbitMqConfigIn.model_validate(data.get("config", {}))
         elif output.type == "redshift":
-            output.config = RedshiftConfig.model_validate(data.get("config", {}))
+            output.config = RedshiftConfigIn.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

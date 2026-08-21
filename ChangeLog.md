@@ -6,6 +6,19 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Rust: Add `Svix::server_url` accessor method
+
+## Version 2.0.0
+* Libs/All **(Breaking)**: The `PatchConfig`-suffixed types are now `ConfigPatch`-suffixed
+  * In some libraries, it was previously not possible to distinguish between 'keep this field as-is'
+    and 'unset this field' in the SDK
+* Libs/All **(Breaking)**: All the non-patch `Config` types like `S3Config`,
+  `GoogleCloudPubSubConfig` etc. were split into separate `*ConfigIn` and `*ConfigOut` types
+  * This fixes response deserialization for some of these types
+* Libs/All **(Breaking)**: Rename `SinkOtelTracingConfig*` to `OtelTracingConfig*`
+* Libs/All **(Breaking)**: Mark many sink config fields optional in preparation for future changes
+  (this primarily impacts authentication-related parameters that represent one of multiple
+  authentication methods supported upstream)
 * Libs/Rust **(Breaking)**: Remove `Configuration` from the public API
   * The access token can still be accessed using `svix.token()`, if you were using any of the other fields let us know!
 * Libs/Rust **(Breaking)**: Upgrade public dependency `js_option` to 0.2.0
@@ -16,6 +29,8 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/Ruby, Libs/PHP: The timestamp tolerance used by webhook verification can
   now be customized through a `tolerance` constructor argument (in seconds;
   defaults to the previously hardcoded value of five minutes)
+
+See also the changes for v2.0.0-rc.1 below.
 
 ## Version 2.0.0-rc.2
 * Libs/JS: Fix a publishing issue
@@ -33,6 +48,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
     they always were create-or-update operations and this new name reflects that
   * Rename `ingest.dashboard` to `ingest.authentication.consumer-portal-access`
   * Rename `endpoint.update-headers` to `endpoint.set-headers` (same for ingest.endpoint etc.)
+  * Rename `EndpointRateLimitStatusOut` to `EndpointThrottleRateStatusOut`
 * Libs/All:
   * Remove `svix.operationalWebhookEndpoint` in favor of `svix.operationalWebhook.endpoint`
   * Remove model types for operational webhooks (we might add them back later or provide a separate package - let us know if you want this!)
@@ -40,7 +56,6 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
   * Drop support for CommonJS
   * Change (sub)resource accessors from `snake_case` to `camelCase`, e.g. `svix.operational_webhook` to `svix.operationalWebhook`
   * Remove `svix.endpoint.{headersUpdate, headersPatch}` in favor of `svix.endpoint.{setHeaders, patchHeaders}`
-  * Rename `EndpointRateLimitStatusOut` to `EndpointThrottleRateStatusOut`
 * Libs/Python:
   * Remove a handful of model type re-exports from the `svix` namespace; import them from `svix.api` or `svix.models` instead
   * Stop returning a parsed JSON object from `Webhook.verify`; if you were using this, simply call `json.loads` on the passed-in data after the `verify` call
