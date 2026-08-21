@@ -18,10 +18,6 @@ ignore = [
     "RUSTSEC-2026-0173",
     # TODO: Wait for dependencies to upgrade off of paste
     "RUSTSEC-2024-0436",
-    # rustls-pemfile is unmaintained, but we only use it for parsing system
-    # certificates. This is not a serious attack vector for our use case.
-    # TODO: Upgrade rustls-native-certs to 0.8.x to get rid of this.
-    "RUSTSEC-2025-0134",
     # bincode (depended on by deno) is unmaintained
     "RUSTSEC-2025-0141",
     # smartstring (dependency of deno) is unmaintained

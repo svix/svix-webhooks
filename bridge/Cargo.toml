@@ -33,6 +33,7 @@ uninlined_format_args = "warn"
 
 [workspace.dependencies]
 axum = { version = "0.8.9", features = ["macros"] }
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "8b760df52eb9210c86e6d898ffe8d44f552bd782", default-features = false, features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"] }
 opentelemetry = "0.32.0"
 opentelemetry-otlp = { version = "0.32.0", features = ["metrics", "grpc-tonic", "reqwest-client"] }
 opentelemetry_sdk = { version = "0.32.0", features = ["metrics", "rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }
