@@ -169,6 +169,46 @@
                 ],
                 "type": "string"
             },
+            "BulkExpungeContentsIn": {
+                "properties": {
+                    "ids": {
+                        "default": [],
+                        "description": "Message ID or UID to delete",
+                        "items": {
+                            "example": "unique-msg-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "type": "array",
+                        "uniqueItems": true
+                    }
+                },
+                "type": "object"
+            },
+            "BulkExpungeContentsOut": {
+                "properties": {
+                    "results": {
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/BulkExpungeStatus"
+                        },
+                        "description": "Results of expunging (by ID)",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "results"
+                ],
+                "type": "object"
+            },
+            "BulkExpungeStatus": {
+                "enum": [
+                    "expunged",
+                    "not-found"
+                ],
+                "type": "string"
+            },
             "EmptyResponse": {
                 "type": "object"
             },
@@ -5307,6 +5347,122 @@
                 ]
             }
         },
+        "/api/v1/app/{app_id}/msg/bulk-expunge": {
+            "post": {
+                "description": "Delete the payloads from the given messages under the current application\n\nUseful in cases when a message was accidentally sent with sensitive content.\nA message can't be replayed or resent once its payload has been deleted\n(or has expired).",
+                "operationId": "v1.message.bulk-expunge-content",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "required": true,
+                        "schema": {
+                            "example": "unique-app-identifier",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "description": "The request's idempotency key",
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BulkExpungeContentsIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BulkExpungeContentsOut"
+                                }
+                            }
+                        },
+                        "description": ""
+                    },
+                    "401": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Unauthorized"
+                    },
+                    "403": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Not Found"
+                    },
+                    "409": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Conflict"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        },
+                        "description": "Validation Error"
+                    },
+                    "429": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        },
+                        "description": "Too Many Requests"
+                    }
+                },
+                "summary": "Bulk Expunge Message Content",
+                "tags": [
+                    "Message"
+                ]
+            }
+        },
         "/api/v1/app/{app_id}/msg/{msg_id}": {
             "get": {
                 "description": "Get a message by its ID or eventID.",
@@ -5660,7 +5816,7 @@
         },
         "/api/v1/app/{app_id}/msg/{msg_id}/content": {
             "delete": {
-                "description": "Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.\n\nThe message can't be replayed or resent once its payload has been deleted or expired.",
+                "description": "Delete the given message's payload. Useful in cases when a message was accidentally sent with sensitive content.\n\nThe message can't be replayed or resent once its payload has been deleted (or has expired).",
                 "operationId": "v1.message.expunge-content",
                 "parameters": [
                     {

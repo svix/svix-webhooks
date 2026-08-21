@@ -432,7 +432,7 @@ pub fn setup_tracing_for_tests() {
                 // Output is only printed for failing tests, but still we shouldn't overload
                 // the output with unnecessary info. When debugging a specific test, it's easy
                 // to override this default by setting the `RUST_LOG` environment variable.
-                "svix_server=debug".into()
+                "it=debug,svix_server=debug,info".into()
             }),
         )
         .with(tracing_subscriber::fmt::layer().with_test_writer())
