@@ -1,7 +1,8 @@
 use redis::{
-    ErrorKind, FromRedisValue, IntoConnectionInfo, RedisError,
+    ErrorKind, FromRedisValue, IntoConnectionInfo, RedisError, ServerErrorKind,
     cluster::{ClusterClient, ClusterClientBuilder},
     cluster_routing::{MultipleNodeRoutingInfo, ResponsePolicy, RoutingInfo},
+    io::tcp::TcpSettings,
 };
 
 /// ConnectionManager that implements `bb8::ManageConnection` and supports
@@ -16,7 +17,10 @@ impl RedisClusterConnectionManager {
         info: T,
     ) -> Result<RedisClusterConnectionManager, RedisError> {
         Ok(RedisClusterConnectionManager {
-            client: ClusterClientBuilder::new(vec![info]).retries(0).build()?,
+            client: ClusterClientBuilder::new(vec![info])
+                .retries(0)
+                .tcp_settings(TcpSettings::default().set_nodelay(true))
+                .build()?,
         })
     }
 }
@@ -32,17 +36,19 @@ impl bb8::ManageConnection for RedisClusterConnectionManager {
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
         let pong = conn
             .route_command(
-                &redis::cmd("PING"),
+                redis::cmd("PING"),
                 RoutingInfo::MultiNode((
                     MultipleNodeRoutingInfo::AllMasters,
                     Some(ResponsePolicy::OneSucceeded),
                 )),
             )
-            .await
-            .and_then(|v| String::from_redis_value(&v))?;
-        match pong.as_str() {
+            .await?;
+        match String::from_redis_value(pong)?.as_str() {
             "PONG" => Ok(()),
-            _ => Err((ErrorKind::ResponseError, "ping request").into()),
+            _ => {
+                let kind = ErrorKind::Server(ServerErrorKind::ResponseError);
+                Err((kind, "ping request").into())
+            }
         }
     }
 
