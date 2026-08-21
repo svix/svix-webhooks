@@ -1,12 +1,12 @@
 use std::{
     io::{Error, Result},
     path::PathBuf,
+    sync::LazyLock,
     time::Duration,
 };
 
 use clap::Parser;
 use itertools::{Either, Itertools};
-use once_cell::sync::Lazy;
 use opentelemetry::{InstrumentationScope, trace::TracerProvider as _};
 use opentelemetry_otlp::WithExportConfig as _;
 use opentelemetry_sdk::{
@@ -44,7 +44,7 @@ compile_error!("jemalloc cannot be enabled on msvc");
 // Seems like it would be useful to be able to configure this.
 // In some docker setups, hostname is sometimes the container id, and advertising this can be
 // helpful.
-static INSTANCE_ID: Lazy<String> = Lazy::new(|| KsuidMs::now(None).to_string());
+static INSTANCE_ID: LazyLock<String> = LazyLock::new(|| KsuidMs::now(None).to_string());
 
 fn get_svc_identifiers(cfg: &Config) -> opentelemetry_sdk::Resource {
     opentelemetry_sdk::Resource::builder()

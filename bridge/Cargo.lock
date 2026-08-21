@@ -4690,7 +4690,6 @@ dependencies = [
  "enum_dispatch",
  "indexmap",
  "itertools 0.15.0",
- "once_cell",
  "opentelemetry",
  "opentelemetry-otlp",
  "opentelemetry_sdk",

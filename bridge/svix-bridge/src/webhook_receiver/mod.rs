@@ -1,4 +1,9 @@
-use std::{convert::Infallible, net::SocketAddr, sync::Arc, time::Duration};
+use std::{
+    convert::Infallible,
+    net::SocketAddr,
+    sync::{Arc, LazyLock},
+    time::Duration,
+};
 
 use axum::{
     Router,
@@ -39,8 +44,7 @@ fn router() -> Router<InternalState> {
         )
         .route("/health", get(health_handler))
 }
-static START_TIME: once_cell::sync::Lazy<std::time::Instant> =
-    once_cell::sync::Lazy::new(std::time::Instant::now);
+static START_TIME: LazyLock<std::time::Instant> = LazyLock::new(std::time::Instant::now);
 
 fn get_uptime_seconds() -> u64 {
     START_TIME.elapsed().as_secs()
@@ -64,7 +68,7 @@ pub async fn run(
     routes: Vec<WebhookReceiverConfig>,
     transformer_tx: TransformerTx,
 ) -> std::io::Result<()> {
-    once_cell::sync::Lazy::force(&START_TIME);
+    LazyLock::force(&START_TIME);
     let state = InternalState::from_receiver_configs(routes, transformer_tx)
         .await
         .map_err(std::io::Error::other)?;
