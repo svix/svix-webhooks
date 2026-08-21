@@ -56,7 +56,7 @@ fn get_test_plugin(
 async fn declare_queue(name: &str, channel: &Channel) -> Queue {
     channel
         .queue_declare(
-            name,
+            name.into(),
             QueueDeclareOptions {
                 auto_delete: true,
                 ..Default::default()
@@ -68,18 +68,17 @@ async fn declare_queue(name: &str, channel: &Channel) -> Queue {
 }
 
 async fn mq_connection(uri: &str) -> Connection {
-    let options = ConnectionProperties::default()
-        .with_connection_name("test".into())
-        .with_executor(tokio_executor_trait::Tokio::current())
-        .with_reactor(tokio_reactor_trait::Tokio::current());
-    Connection::connect(uri, options).await.unwrap()
+    let options = ConnectionProperties::default().with_connection_name("test".into());
+    Connection::connect_with_runtime(uri, options, async_rs::Runtime::tokio_current())
+        .await
+        .unwrap()
 }
 
 async fn publish(channel: &Channel, queue_name: &str, payload: &[u8]) {
     let confirm = channel
         .basic_publish(
-            "",
-            queue_name,
+            "".into(),
+            queue_name.into(),
             Default::default(),
             payload,
             Default::default(),
@@ -144,7 +143,7 @@ async fn test_consume_ok() {
 
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
@@ -222,7 +221,7 @@ async fn test_consume_transformed_json_ok() {
 
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
@@ -305,7 +304,7 @@ async fn test_consume_transformed_string_ok() {
 
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
@@ -358,7 +357,7 @@ async fn test_missing_app_id_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
@@ -410,7 +409,7 @@ async fn test_missing_event_type_nack() {
     tokio::time::sleep(Duration::from_millis(WAIT_MS)).await;
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
@@ -461,7 +460,7 @@ async fn test_consume_svix_503() {
     assert!(!handle.is_finished());
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
@@ -506,7 +505,7 @@ async fn test_consume_svix_offline() {
     assert!(!handle.is_finished());
     handle.abort();
     channel
-        .queue_delete(queue_name, Default::default())
+        .queue_delete(queue_name.into(), Default::default())
         .await
         .ok();
 }
