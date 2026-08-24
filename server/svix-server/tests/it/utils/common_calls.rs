@@ -13,7 +13,8 @@ use serde::{
 use serde_json::json;
 use svix_server::{
     core::types::{
-        ApplicationId, EventChannel, EventTypeName, FeatureFlagSet, MessageId, metadata::Metadata,
+        ApplicationId, EventChannel, EventTypeName, FeatureFlagSet, MessageId, MessageUid,
+        metadata::Metadata,
     },
     v1::{
         endpoints::{
@@ -122,6 +123,22 @@ pub fn message_in<T: Serialize>(event_type: &str, payload: T) -> Result<MessageI
         payload_retention_period: 5,
         channels: None,
         uid: None,
+        extra_params: None,
+        application: None,
+    })
+}
+
+pub fn message_in_with_uid<T: Serialize>(
+    event_type: &str,
+    payload: T,
+    uid: MessageUid,
+) -> Result<MessageIn> {
+    Ok(MessageIn {
+        event_type: EventTypeName(event_type.to_owned()),
+        payload: RawPayload::from_string(serde_json::to_string(&payload)?)?,
+        payload_retention_period: 5,
+        channels: None,
+        uid: Some(uid),
         extra_params: None,
         application: None,
     })
