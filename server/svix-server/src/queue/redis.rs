@@ -181,34 +181,36 @@ async fn new_pair_inner(
         .try_into()
         .expect("Pending duration out of bounds");
 
-    // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
-    tokio::spawn({
-        let pool = pool.clone();
-        let prefix = queue_prefix.to_owned();
+    if cfg.enable_redis_v1_v2_queue_migration {
+        // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
+        tokio::spawn({
+            let pool = pool.clone();
+            let prefix = queue_prefix.to_owned();
 
-        async move {
-            let delays = [
-                // 11.25 min
-                Duration::from_secs(60 * 11 + 15),
-                // 22.5 min
-                Duration::from_secs(60 * 22 + 30),
-                // 45 min
-                Duration::from_secs(60 * 45),
-                // 1.5 hours
-                Duration::from_secs(60 * 30 * 3),
-                // 3 hours
-                Duration::from_secs(60 * 60 * 3),
-                // 6 hours
-                Duration::from_secs(60 * 60 * 6),
-                // 12 hours
-                Duration::from_secs(60 * 60 * 12),
-                // 24 hours
-                Duration::from_secs(60 * 60 * 24),
-            ];
+            async move {
+                let delays = [
+                    // 11.25 min
+                    Duration::from_secs(60 * 11 + 15),
+                    // 22.5 min
+                    Duration::from_secs(60 * 22 + 30),
+                    // 45 min
+                    Duration::from_secs(60 * 45),
+                    // 1.5 hours
+                    Duration::from_secs(60 * 30 * 3),
+                    // 3 hours
+                    Duration::from_secs(60 * 60 * 3),
+                    // 6 hours
+                    Duration::from_secs(60 * 60 * 6),
+                    // 12 hours
+                    Duration::from_secs(60 * 60 * 12),
+                    // 24 hours
+                    Duration::from_secs(60 * 60 * 24),
+                ];
 
-            run_migration_schedule(&delays, pool, &prefix).await;
-        }
-    });
+                run_migration_schedule(&delays, pool, &prefix).await;
+            }
+        });
+    }
 
     // Metrics task
     tokio::spawn({

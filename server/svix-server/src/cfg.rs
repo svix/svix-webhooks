@@ -246,8 +246,20 @@ pub struct ConfigurationInner {
     /// Should this instance run background migrations
     pub background_migrations_enabled: bool,
 
+    /// Enable migration task for old redis queue tasks.
+    ///
+    /// Defaults to `true`. Can be safely set to `false` if redis contains no
+    /// (more) pre-v0.64.0 queue tasks.
+    /// Has no effect if the queue backend is not redis.
+    #[serde(default = "default_true")]
+    pub enable_redis_v1_v2_queue_migration: bool,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 #[derive(Clone, Debug, Deserialize)]
