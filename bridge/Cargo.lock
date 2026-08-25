@@ -3174,7 +3174,7 @@ dependencies = [
 [[package]]
 name = "omniqueue"
 version = "0.3.0"
-source = "git+https://github.com/svix/omniqueue-rs?rev=8b760df52eb9210c86e6d898ffe8d44f552bd782#8b760df52eb9210c86e6d898ffe8d44f552bd782"
+source = "git+https://github.com/svix/omniqueue-rs?rev=8be4f888b198023bbf109bc8e7b0360046ae30da#8be4f888b198023bbf109bc8e7b0360046ae30da"
 dependencies = [
  "aws-config",
  "aws-sdk-sqs",

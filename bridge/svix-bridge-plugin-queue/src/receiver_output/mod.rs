@@ -23,7 +23,7 @@ impl QueueForwarder {
             QueueOutputOpts::GcpPubSub(cfg) => crate::gcp_pubsub::producer(cfg).await?,
             QueueOutputOpts::RabbitMQ(cfg) => crate::rabbitmq::producer(cfg).await?,
             QueueOutputOpts::Redis(cfg) => crate::redis::producer(cfg).await?,
-            QueueOutputOpts::Sqs(cfg) => crate::sqs::producer(cfg).await?,
+            QueueOutputOpts::Sqs(cfg) => crate::sqs::producer(cfg).await,
         })
     }
 

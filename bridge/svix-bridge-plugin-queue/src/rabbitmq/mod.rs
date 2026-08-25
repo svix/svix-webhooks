@@ -1,7 +1,7 @@
-use omniqueue::{DynConsumer, DynProducer, backends};
+use omniqueue::{DynConsumer, DynProducer, QueueConsumer as _, QueueProducer as _, backends};
 use serde::Deserialize;
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 
 // wrapper because lapin::BasicConsumeOptions no longer implements Deserialize
 mod consume_options {
@@ -106,7 +106,7 @@ pub struct RabbitMqOutputOpts {
 }
 
 pub async fn consumer(cfg: &RabbitMqInputOpts) -> Result<DynConsumer> {
-    backends::rabbitmq::RabbitMqBackend::builder(backends::rabbitmq::RabbitMqConfig {
+    let c = backends::rabbitmq::RabbitMqBackend::builder(backends::rabbitmq::RabbitMqConfig {
         uri: cfg.uri.clone(),
         connection_properties: backends::rabbitmq::ConnectionProperties::default(),
         publish_exchange: String::new(),
@@ -120,13 +120,14 @@ pub async fn consumer(cfg: &RabbitMqInputOpts) -> Result<DynConsumer> {
         consume_prefetch_count: None,
         requeue_on_nack: cfg.requeue_on_nack,
     })
-    .make_dynamic()
     .build_consumer()
-    .await
-    .map_err(Error::from)
+    .await?
+    .into_dyn();
+
+    Ok(c)
 }
 pub async fn producer(cfg: &RabbitMqOutputOpts) -> Result<DynProducer> {
-    backends::rabbitmq::RabbitMqBackend::builder(backends::rabbitmq::RabbitMqConfig {
+    let p = backends::rabbitmq::RabbitMqBackend::builder(backends::rabbitmq::RabbitMqConfig {
         uri: cfg.uri.clone(),
         // N.b the connection properties type is not serde-friendly. If we want to expose some
         // of these settings we'll probably need to provide our own type and build the real one
@@ -144,8 +145,9 @@ pub async fn producer(cfg: &RabbitMqOutputOpts) -> Result<DynProducer> {
         consume_prefetch_count: None,
         requeue_on_nack: false,
     })
-    .make_dynamic()
     .build_producer()
-    .await
-    .map_err(Error::from)
+    .await?
+    .into_dyn();
+
+    Ok(p)
 }
