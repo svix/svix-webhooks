@@ -1,7 +1,5 @@
-use omniqueue::{DynConsumer, DynProducer, backends};
+use omniqueue::{DynConsumer, DynProducer, QueueConsumer as _, QueueProducer as _, backends};
 use serde::Deserialize;
-
-use crate::error::{Error, Result};
 
 #[derive(Debug, Default, Deserialize)]
 pub struct SqsInputOpts {
@@ -17,24 +15,22 @@ pub struct SqsOutputOpts {
     pub override_endpoint: bool,
 }
 
-pub async fn consumer(cfg: &SqsInputOpts) -> Result<DynConsumer> {
+pub async fn consumer(cfg: &SqsInputOpts) -> DynConsumer {
     backends::SqsBackend::builder(backends::SqsConfig {
         queue_dsn: cfg.queue_dsn.clone(),
         override_endpoint: cfg.override_endpoint,
     })
-    .make_dynamic()
     .build_consumer()
     .await
-    .map_err(Error::from)
+    .into_dyn()
 }
 
-pub async fn producer(cfg: &SqsOutputOpts) -> Result<DynProducer> {
+pub async fn producer(cfg: &SqsOutputOpts) -> DynProducer {
     backends::SqsBackend::builder(backends::SqsConfig {
         queue_dsn: cfg.queue_dsn.clone(),
         override_endpoint: cfg.override_endpoint,
     })
-    .make_dynamic()
     .build_producer()
     .await
-    .map_err(Error::from)
+    .into_dyn()
 }
