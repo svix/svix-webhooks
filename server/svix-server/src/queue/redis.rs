@@ -95,10 +95,13 @@ pub async fn new_pair(
     .await
 }
 
-/// Runs Redis queue migrations with the given delay schedule. Migrations are run on this schedule
-/// such that if an old instance of the server is online after the migrations are made, that no data
-/// will be lost assuming the old server is taken offline before the last scheduled delay.
-async fn run_migration_schedule(delays: &[Duration], pool: RedisManager) {
+/// Runs Redis queue migrations with the given delay schedule.
+///
+/// Migrations are run on this schedule such that if an old instance
+/// of the server is online after the migrations are made,
+/// that no data will be lost assuming the old server is
+/// taken offline before the last scheduled delay.
+async fn run_migration_schedule(delays: &[Duration], pool: RedisManager, prefix: &str) {
     let mut conn = pool
         .get()
         .await
@@ -106,13 +109,13 @@ async fn run_migration_schedule(delays: &[Duration], pool: RedisManager) {
 
     for delay in delays {
         // drain legacy queues:
-        if let Err(e) = migrate_v1_to_v2_queues(&mut conn).await {
-            tracing::error!("Error migrating queue: {}", e);
+        if let Err(e) = migrate_v1_to_v2_queues(&mut conn, prefix).await {
+            tracing::error!("Error migrating queue: {e}");
             tokio::time::sleep(*delay).await;
             continue;
         }
-        if let Err(e) = migrate_v2_to_v3_queues(&mut conn).await {
-            tracing::error!("Error migrating queue: {}", e);
+        if let Err(e) = migrate_v2_to_v3_queues(&mut conn, prefix).await {
+            tracing::error!("Error migrating queue: {e}");
             tokio::time::sleep(*delay).await;
             continue;
         }
@@ -181,6 +184,7 @@ async fn new_pair_inner(
     // Migrate v1 queues to v2 and v2 queues to v3 on a loop with exponential backoff.
     tokio::spawn({
         let pool = pool.clone();
+        let prefix = queue_prefix.to_owned();
 
         async move {
             let delays = [
@@ -202,7 +206,7 @@ async fn new_pair_inner(
                 Duration::from_secs(60 * 60 * 24),
             ];
 
-            run_migration_schedule(&delays, pool).await;
+            run_migration_schedule(&delays, pool, &prefix).await;
         }
     });
 
@@ -300,9 +304,12 @@ fn task_from_redis_key(key: &str) -> serde_json::Result<Arc<QueueTask>> {
     serde_json::from_str(&key[pos + 1..])
 }
 
-async fn migrate_v2_to_v3_queues(conn: &mut RedisConnection<'_>) -> Result<()> {
-    migrate_list_to_stream(conn, LEGACY_V2_MAIN, MAIN).await?;
-    migrate_list_to_stream(conn, LEGACY_V2_PROCESSING, MAIN).await?;
+async fn migrate_v2_to_v3_queues(conn: &mut RedisConnection<'_>, prefix: &str) -> Result<()> {
+    // only main queue needs the prefix, the legacy ones never used a prefix
+    let main = format!("{prefix}{MAIN}");
+
+    migrate_list_to_stream(conn, LEGACY_V2_MAIN, &main).await?;
+    migrate_list_to_stream(conn, LEGACY_V2_PROCESSING, &main).await?;
 
     Ok(())
 }
@@ -346,10 +353,13 @@ async fn migrate_list_to_stream(
     }
 }
 
-async fn migrate_v1_to_v2_queues(conn: &mut RedisConnection<'_>) -> Result<()> {
+async fn migrate_v1_to_v2_queues(conn: &mut RedisConnection<'_>, prefix: &str) -> Result<()> {
+    // only delayed queue needs the prefix, the legacy ones never used a prefix
+    let delayed = format!("{prefix}{DELAYED}");
+
     migrate_list(conn, LEGACY_V1_MAIN, LEGACY_V2_MAIN).await?;
     migrate_list(conn, LEGACY_V1_PROCESSING, LEGACY_V2_PROCESSING).await?;
-    migrate_sset(conn, LEGACY_V1_DELAYED, DELAYED).await?;
+    migrate_sset(conn, LEGACY_V1_DELAYED, &delayed).await?;
 
     Ok(())
 }
