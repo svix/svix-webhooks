@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Fix startup panic ("Could not automatically determine the process-level CryptoProvider") when connecting to Postgres with `sslmode=verify-ca`
 
 ## Version 1.100.0
 * Upgrade dependencies

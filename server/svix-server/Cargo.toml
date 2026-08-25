@@ -72,6 +72,7 @@ rand = "0.10"
 redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
 regex = "1.5.5"
 reqwest = { version = "0.13.4", default-features = false, features = ["json", "rustls", "hickory-dns"] }
+rustls = "0.23.43"
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 sea-orm = { version = "1.1.1", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json"], default-features = false }
 sentry = { version = "0.48.2", default-features = false, features = ["backtrace", "contexts", "debug-images", "panic", "tracing", "transport"] }
