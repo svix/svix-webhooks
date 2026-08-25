@@ -2,7 +2,7 @@
 name = "svix-server"
 description = "Svix webhooks server"
 publish = false
-version = "1.100.0"
+version.workspace = true
 edition.workspace = true
 license.workspace = true
 # bump .github/workflows/server-ci.yml when changing this
