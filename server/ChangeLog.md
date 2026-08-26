@@ -1,7 +1,11 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.101.0
+* Add `v1.message.bulk-expunge-content` endpoint
 * Fix startup panic ("Could not automatically determine the process-level CryptoProvider") when connecting to Postgres with `sslmode=verify-ca`
+* Fix missing queue prefixes in redis queue migration code
 
 ## Version 1.100.0
 * Upgrade dependencies

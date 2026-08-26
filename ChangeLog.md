@@ -9,8 +9,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Version 2.1.0
 * Libs/All: Add support for new bulk-expunge endpoint (`svix.message.bulkExpungeContent`)
-  * At the time of writing, it is a cloud-only endpoint, but it is in the process of being added
-    to Svix Server OSS as well (likely to be released in Server v1.101.0)
+  * For Svix Server OSS, this endpoint is available as of v1.101.0
 * Libs/Rust: Add `Svix::server_url` accessor method
 
 ## Version 2.0.0
