@@ -1856,9 +1856,9 @@ dependencies = [
 
 [[package]]
 name = "h2"
-version = "0.4.16"
+version = "0.4.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a9f37a958b41b3b19ee2707c06439c0e9e547e847223eb791ecb0cb821c65e27"
+checksum = "ef8e5e5a340588f4452631496976cf8636d4a7ecf600239fdc27615d2530bc16"
 dependencies = [
  "atomic-waker",
  "bytes",
@@ -2148,8 +2148,8 @@ checksum = "df3b46402a9d5adb4c86a0cf463f42e19994e3ee891101b1841f30a545cb49a9"
 
 [[package]]
 name = "hyper"
-version = "1.11.0"
-source = "git+https://github.com/svix/hyper.git?rev=7d3bff970b5c218d4cdaa0807ed27d22a4090fa4#7d3bff970b5c218d4cdaa0807ed27d22a4090fa4"
+version = "1.11.1"
+source = "git+https://github.com/svix/hyper.git?rev=3874b0d849c3fad5abf01e73d2ed9120ae002863#3874b0d849c3fad5abf01e73d2ed9120ae002863"
 dependencies = [
  "atomic-waker",
  "bytes",
