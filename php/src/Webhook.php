@@ -82,7 +82,7 @@ class Webhook
             }
 
             if (hash_equals($expectedSignature, $passedSignature)) {
-                return json_decode($payload, true);
+                return;
             }
         }
         throw new Exception\WebhookVerificationException("No matching signature found");

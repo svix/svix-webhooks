@@ -6,21 +6,15 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 {
     private const TOLERANCE = 5 * 60;
 
-    public function testValidSignatureIsValidAndReturnsJson()
+    public function testValidSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
-    public function testValidBrandlessSignatureIsValidAndReturnsJson()
+    public function testValidBrandlessSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
         $unbrandedHeaders = array(
@@ -32,12 +26,6 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
     public function testInvalidSignatureThrowsException()
@@ -128,12 +116,6 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
     public function testCustomToleranceRejectsOldTimestampInsideDefault()
@@ -153,12 +135,6 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
     public function testCustomToleranceRejectsNewTimestampInsideDefault()
