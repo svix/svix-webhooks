@@ -6,6 +6,8 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Rust: Re-export `Svix`, `Webhook`, `AutoConfig` and `AutoConfigConsumer`,
+  `Error` and `Result` at the crate root
 
 ## Version 2.1.0
 * Libs/All: Add support for new bulk-expunge endpoint (`svix.message.bulkExpungeContent`)
