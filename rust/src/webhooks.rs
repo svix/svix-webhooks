@@ -309,8 +309,8 @@ mod tests {
         let payload = br#"{"email":"test@example.com","username":"test_user"}"#;
         let wh = Webhook::new(&secret).unwrap();
 
-        // Checks that timestamps that are in the future or too old are rejected by
-        // `verify` but okay for `verify_ignoring_timestamp`.
+        // Checks that timestamps that are in the future or too old are rejected
+        // by `verify` but okay for `verify_ignoring_timestamp`.
         for ts in [
             now() - (super::TOLERANCE_IN_SECONDS as i64 + 1),
             now() + (super::TOLERANCE_IN_SECONDS as i64 + 1),
@@ -336,8 +336,8 @@ mod tests {
             (ts + 1).to_string().parse().unwrap(),
         );
 
-        // Both versions should reject the timestamp if it's not the same one used to
-        // produce the signature.
+        // Both versions should reject the timestamp if it's not the same one
+        // used to produce the signature.
         assert!(wh.verify(payload, &headers,).is_err());
         assert!(wh.verify_ignoring_timestamp(payload, &headers,).is_err());
     }
