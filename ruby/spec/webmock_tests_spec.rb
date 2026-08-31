@@ -306,6 +306,19 @@ describe "API Client" do
     )
   end
 
+  it "accepts symbol keys for struct enum content" do
+    sink = Svix::AutoConfigSinkType.new(
+      config: Svix::AutoConfigSinkTypeConfig::Http.new(url: "https://example.com/webhook")
+    )
+
+    expect(sink.serialize).to(
+      eq(
+        "type" => "http",
+        "config" => {"url" => "https://example.com/webhook"}
+      )
+    )
+  end
+
   it "serializes false values in patch models" do
     expect(Svix::EndpointTransformationPatch.new(enabled: false).serialize)
       .to(eq({"enabled" => false}))
