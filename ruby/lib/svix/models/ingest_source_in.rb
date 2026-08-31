@@ -42,8 +42,8 @@ module Svix
       end
       # Serializes the object to a json string
       # @return String
-      def to_json
-        JSON.dump(serialize)
+      def to_json(*args)
+        serialize.to_json(*args)
       end
     end
 
@@ -292,8 +292,8 @@ module Svix
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
 
   end

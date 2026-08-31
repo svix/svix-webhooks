@@ -337,6 +337,16 @@ describe "API Client" do
     )
   end
 
+  it "supports the JSON generator protocol for models" do
+    model = Svix::ApplicationIn.new(name: "example")
+
+    expect(model.to_json).to(eq('{"name":"example"}'))
+    expect(JSON.generate([model])).to(eq('[{"name":"example"}]'))
+    expect(JSON.parse(JSON.generate({model: model}, space: " "))).to(
+      eq("model" => {"name" => "example"})
+    )
+  end
+
   it "serializes false values in patch models" do
     expect(Svix::EndpointTransformationPatch.new(enabled: false).serialize)
       .to(eq({"enabled" => false}))
