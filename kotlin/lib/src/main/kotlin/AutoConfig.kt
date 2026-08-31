@@ -15,6 +15,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class InvalidAutoConfigTokenException : Exception {
     constructor() : super("invalid token")
+    constructor(detail: String) : super(detail)
     constructor(cause: Throwable) : super("invalid token", cause)
 }
 
@@ -69,13 +70,15 @@ constructor(token: String, endpoint: EndpointIn) {
 
     companion object {
         private const val AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_"
+        private const val UNSUPPORTED_TOKEN_VERSION =
+            "Unsupported token version. You might need to update the Svix SDK to use this token"
 
         private val json = Json { ignoreUnknownKeys = true }
 
         @Throws(InvalidAutoConfigTokenException::class)
         internal fun decodeAutoConfigTokenV1(token: String): AutoConfigTokenContentV1 {
             if (!token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
-                throw InvalidAutoConfigTokenException()
+                throw InvalidAutoConfigTokenException(UNSUPPORTED_TOKEN_VERSION)
             }
             val b64 = token.substring(AUTOCONFIG_TOKEN_PREFIX_V1.length)
 

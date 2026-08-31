@@ -30,8 +30,12 @@ namespace Svix.Tests
             var json = """{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}""";
             var token = "wrong_" + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
-            Assert.Throws<AutoConfigException>(() =>
+            var ex = Assert.Throws<AutoConfigException>(() =>
                 new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
+            );
+            Assert.Equal(
+                "Unsupported token version. You might need to update the Svix SDK to use this token",
+                ex.Message
             );
         }
 

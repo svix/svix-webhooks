@@ -39,7 +39,9 @@ final class AutoConfigTest extends TestCase
     public function testWrongPrefixThrowsInvalidArgument(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('invalid token');
+        $this->expectExceptionMessage(
+            'Unsupported token version. You might need to update the Svix SDK to use this token',
+        );
 
         new AutoConfig(
             'not_auto_v1_' . base64_encode(json_encode(self::minimalValidPayload())),

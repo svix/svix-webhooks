@@ -42,7 +42,13 @@ test("AutoConfig rejects wrong prefix", () => {
     tok: "t",
   });
   const token = `wrong_${Buffer.from(json, "utf8").toString("base64")}`;
-  assert.throws(() => new AutoConfig(token, { url: "https://x" }), AutoConfigError);
+  assert.throws(
+    () => new AutoConfig(token, { url: "https://x" }),
+    (err: unknown) =>
+      err instanceof AutoConfigError &&
+      err.message ===
+        "Unsupported token version. You might need to update the Svix SDK to use this token"
+  );
 });
 
 test("AutoConfig rejects invalid JSON payload", () => {

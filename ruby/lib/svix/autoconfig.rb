@@ -10,6 +10,7 @@ require "svix/api_internal/endpoint_auto_config"
 module Svix
   class AutoConfig
     AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_"
+    UNSUPPORTED_TOKEN_VERSION = "Unsupported token version. You might need to update the Svix SDK to use this token"
 
     class InvalidTokenError < StandardError; end
 
@@ -42,7 +43,7 @@ module Svix
     class << self
       def decode_token!(token)
         unless token.is_a?(String) && token.start_with?(AUTOCONFIG_TOKEN_PREFIX_V1)
-          raise InvalidTokenError
+          raise InvalidTokenError, UNSUPPORTED_TOKEN_VERSION
         end
 
         encoded = token.byteslice(AUTOCONFIG_TOKEN_PREFIX_V1.length..-1)

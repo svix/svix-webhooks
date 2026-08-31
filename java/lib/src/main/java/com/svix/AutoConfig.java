@@ -15,6 +15,8 @@ import java.util.Map;
 
 public final class AutoConfig {
   static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+  static final String UNSUPPORTED_TOKEN_VERSION =
+      "Unsupported token version. You might need to update the Svix SDK to use this token";
 
   private final String appId;
   private final String endpointId;
@@ -75,7 +77,7 @@ public final class AutoConfig {
    */
   static DecodedTokenContent decodeToken(final String token) throws InvalidTokenException {
     if (token == null || !token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
-      throw new InvalidTokenException();
+      throw new InvalidTokenException(UNSUPPORTED_TOKEN_VERSION);
     }
 
     final byte[] decoded;
@@ -154,6 +156,10 @@ public final class AutoConfig {
   public static final class InvalidTokenException extends Exception {
     public InvalidTokenException() {
       super("invalid token");
+    }
+
+    public InvalidTokenException(final String detail) {
+      super(detail);
     }
 
     public InvalidTokenException(final Throwable cause) {

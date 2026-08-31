@@ -3,6 +3,7 @@ package com.svix.kotlin
 import com.svix.kotlin.models.EndpointIn
 import java.util.Base64
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class AutoConfigTest {
@@ -27,7 +28,12 @@ class AutoConfigTest {
             """{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}"""
         val token = "wrong_" + Base64.getEncoder().encodeToString(json.toByteArray(Charsets.UTF_8))
 
-        assertFailsWith<InvalidAutoConfigTokenException> { AutoConfig(token, minimalEndpoint()) }
+        val ex =
+            assertFailsWith<InvalidAutoConfigTokenException> { AutoConfig(token, minimalEndpoint()) }
+        assertEquals(
+            "Unsupported token version. You might need to update the Svix SDK to use this token",
+            ex.message,
+        )
     }
 
     @Test
