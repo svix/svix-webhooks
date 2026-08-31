@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Ruby: Add missing accessors for `connector`, `streaming` APIs
 
 ## Version 2.2.0
 * Libs/JavaScript **(Breaking)**: Remove JSON parsing from `Webhook.verify`, for consistency with

@@ -133,6 +133,9 @@ extra_codegen_args = [
 template = "templates/ruby/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api"
 [[ruby.task]]
+template = "templates/ruby/api_summary.rb.jinja"
+output_dir = "ruby/lib/svix"
+[[ruby.task]]
 template = "templates/ruby/summary.rb.jinja"
 output_dir = "ruby/lib"
 [[ruby.task]]

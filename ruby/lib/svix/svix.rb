@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# This file is @generated
 
 module Svix
   class SvixOptions
@@ -15,6 +16,7 @@ module Svix
     attr_accessor :application
     attr_accessor :authentication
     attr_accessor :background_task
+    attr_accessor :connector
     attr_accessor :endpoint
     attr_accessor :environment
     attr_accessor :event_type
@@ -25,6 +27,7 @@ module Svix
     attr_accessor :message_attempt
     attr_accessor :operational_webhook
     attr_accessor :statistics
+    attr_accessor :streaming
 
     def initialize(auth_token, options = SvixOptions.new)
       region = auth_token.split(".").last
@@ -48,6 +51,7 @@ module Svix
       @application = Application.new(api_client)
       @authentication = Authentication.new(api_client)
       @background_task = BackgroundTask.new(api_client)
+      @connector = Connector.new(api_client)
       @endpoint = Endpoint.new(api_client)
       @environment = Environment.new(api_client)
       @event_type = EventType.new(api_client)
@@ -58,6 +62,7 @@ module Svix
       @message_attempt = MessageAttempt.new(api_client)
       @operational_webhook = OperationalWebhook.new(api_client)
       @statistics = Statistics.new(api_client)
+      @streaming = Streaming.new(api_client)
     end
   end
 end
