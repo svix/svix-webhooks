@@ -2306,6 +2306,9 @@
         "ruby/lib/svix/models/zoom_config_out.rb"
     ],
     [
+        "ruby/lib/svix/svix.rb"
+    ],
+    [
         "rust/src/api/application.rs",
         "rust/src/api/authentication.rs",
         "rust/src/api/background_task.rs",
