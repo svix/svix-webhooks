@@ -162,6 +162,9 @@ type (
 	PollingEndpointOut                        = models.PollingEndpointOut
 	PortIoConfig                              = models.PortIoConfig
 	PortIoConfigOut                           = models.PortIoConfigOut
+	PostgresConfigIn                          = models.PostgresConfigIn
+	PostgresConfigOut                         = models.PostgresConfigOut
+	PostgresConfigPatch                       = models.PostgresConfigPatch
 	RabbitMqConfigIn                          = models.RabbitMqConfigIn
 	RabbitMqConfigOut                         = models.RabbitMqConfigOut
 	RabbitMqConfigPatch                       = models.RabbitMqConfigPatch

@@ -13,6 +13,7 @@ from .event_bridge_config_out import EventBridgeConfigOut
 from .google_cloud_pub_sub_config_out import GoogleCloudPubSubConfigOut
 from .google_cloud_storage_config_out import GoogleCloudStorageConfigOut
 from .otel_tracing_config_out import OtelTracingConfigOut
+from .postgres_config_out import PostgresConfigOut
 from .rabbit_mq_config_out import RabbitMqConfigOut
 from .redshift_config_out import RedshiftConfigOut
 from .s3_config_out import S3ConfigOut
@@ -68,6 +69,7 @@ class StreamSinkOut(BaseModel):
         t.Literal["sqs"],
         t.Literal["eventBridge"],
         t.Literal["sns"],
+        t.Literal["postgres"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -85,6 +87,7 @@ class StreamSinkOut(BaseModel):
         SqsConfigOut,
         EventBridgeConfigOut,
         SnsConfigOut,
+        PostgresConfigOut,
     ]
 
     @model_validator(mode="wrap")
@@ -133,6 +136,8 @@ class StreamSinkOut(BaseModel):
             output.config = EventBridgeConfigOut.model_validate(data.get("config", {}))
         elif output.type == "sns":
             output.config = SnsConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "postgres":
+            output.config = PostgresConfigOut.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

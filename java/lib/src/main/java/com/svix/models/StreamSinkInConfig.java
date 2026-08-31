@@ -242,6 +242,21 @@ public abstract class StreamSinkInConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postgres")
+    public static class Postgres extends StreamSinkInConfig {
+        private final PostgresConfigIn postgres;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postgres);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkInConfig create(JsonNode config);
@@ -272,6 +287,7 @@ public abstract class StreamSinkInConfig {
         TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakeConfigIn.class)));
         TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfigIn.class)));
         TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfigIn.class)));
+        TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigIn.class)));
     }
 
     public static StreamSinkInConfig fromTypeAndConfig(String type, JsonNode config) {

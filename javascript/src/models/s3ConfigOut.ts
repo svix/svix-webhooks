@@ -2,9 +2,11 @@
 
 export interface S3ConfigOut {
   bucket: string;
-  accessKeyId: string;
+  accessKeyId?: string | null;
   region: string;
   endpointUrl?: string | null;
+  roleArn?: string | null;
+  externalId?: string | null;
 }
 
 export const S3ConfigOutSerializer = {
@@ -14,6 +16,8 @@ export const S3ConfigOutSerializer = {
       accessKeyId: object["accessKeyId"],
       region: object["region"],
       endpointUrl: object["endpointUrl"],
+      roleArn: object["roleArn"],
+      externalId: object["externalId"],
     };
   },
 
@@ -23,6 +27,8 @@ export const S3ConfigOutSerializer = {
       accessKeyId: self.accessKeyId,
       region: self.region,
       endpointUrl: self.endpointUrl,
+      roleArn: self.roleArn,
+      externalId: self.externalId,
     };
   },
 };

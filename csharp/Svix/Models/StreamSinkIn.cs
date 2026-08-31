@@ -140,6 +140,9 @@ namespace Svix.Models
         public static StreamSinkInConfig Redshift(RedshiftConfigIn redshiftConfigIn) =>
             new(redshiftConfigIn, ConfigType.Redshift);
 
+        public static StreamSinkInConfig Postgres(PostgresConfigIn postgresConfigIn) =>
+            new(postgresConfigIn, ConfigType.Postgres);
+
         private enum ConfigType
         {
             [EnumMember(Value = "poller")]
@@ -186,6 +189,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "redshift")]
             Redshift,
+
+            [EnumMember(Value = "postgres")]
+            Postgres,
         }
 
         public TResult Match<TResult>(
@@ -203,7 +209,8 @@ namespace Svix.Models
             Func<EventBridgeConfigIn, TResult> onEventBridge,
             Func<SnowflakeConfigIn, TResult> onSnowflake,
             Func<RabbitMqConfigIn, TResult> onRabbitMq,
-            Func<RedshiftConfigIn, TResult> onRedshift
+            Func<RedshiftConfigIn, TResult> onRedshift,
+            Func<PostgresConfigIn, TResult> onPostgres
         )
         {
             return _type switch
@@ -227,6 +234,7 @@ namespace Svix.Models
                 ConfigType.Snowflake => onSnowflake((SnowflakeConfigIn)_value),
                 ConfigType.RabbitMq => onRabbitMq((RabbitMqConfigIn)_value),
                 ConfigType.Redshift => onRedshift((RedshiftConfigIn)_value),
+                ConfigType.Postgres => onPostgres((PostgresConfigIn)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -247,7 +255,8 @@ namespace Svix.Models
             Action<EventBridgeConfigIn> onEventBridge,
             Action<SnowflakeConfigIn> onSnowflake,
             Action<RabbitMqConfigIn> onRabbitMq,
-            Action<RedshiftConfigIn> onRedshift
+            Action<RedshiftConfigIn> onRedshift,
+            Action<PostgresConfigIn> onPostgres
         )
         {
             switch (_type)
@@ -296,6 +305,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Redshift:
                     onRedshift((RedshiftConfigIn)_value);
+                    break;
+                case ConfigType.Postgres:
+                    onPostgres((PostgresConfigIn)_value);
                     break;
                 default:
                     // unreachable
@@ -424,6 +436,7 @@ namespace Svix.Models
                 ["snowflake"] = c => StreamSinkInConfig.Snowflake(ToObj<SnowflakeConfigIn>(c)),
                 ["rabbitMq"] = c => StreamSinkInConfig.RabbitMq(ToObj<RabbitMqConfigIn>(c)),
                 ["redshift"] = c => StreamSinkInConfig.Redshift(ToObj<RedshiftConfigIn>(c)),
+                ["postgres"] = c => StreamSinkInConfig.Postgres(ToObj<PostgresConfigIn>(c)),
             };
     }
 }

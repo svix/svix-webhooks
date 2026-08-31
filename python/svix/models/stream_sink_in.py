@@ -12,6 +12,7 @@ from .event_bridge_config_in import EventBridgeConfigIn
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
 from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
 from .otel_tracing_config_in import OtelTracingConfigIn
+from .postgres_config_in import PostgresConfigIn
 from .rabbit_mq_config_in import RabbitMqConfigIn
 from .redshift_config_in import RedshiftConfigIn
 from .s3_config_in import S3ConfigIn
@@ -66,6 +67,7 @@ class StreamSinkIn(BaseModel):
         t.Literal["snowflake"],
         t.Literal["rabbitMq"],
         t.Literal["redshift"],
+        t.Literal["postgres"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -83,6 +85,7 @@ class StreamSinkIn(BaseModel):
         SnowflakeConfigIn,
         RabbitMqConfigIn,
         RedshiftConfigIn,
+        PostgresConfigIn,
     ]
 
     @model_validator(mode="wrap")
@@ -131,6 +134,8 @@ class StreamSinkIn(BaseModel):
             output.config = RabbitMqConfigIn.model_validate(data.get("config", {}))
         elif output.type == "redshift":
             output.config = RedshiftConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "postgres":
+            output.config = PostgresConfigIn.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

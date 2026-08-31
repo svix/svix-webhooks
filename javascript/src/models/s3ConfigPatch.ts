@@ -4,6 +4,8 @@ export interface S3ConfigPatch {
   bucket?: string;
   accessKeyId?: string;
   secretAccessKey?: string;
+  roleArn?: string;
+  externalId?: string;
   region?: string;
   endpointUrl?: string;
 }
@@ -14,6 +16,8 @@ export const S3ConfigPatchSerializer = {
       bucket: object["bucket"],
       accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      roleArn: object["roleArn"],
+      externalId: object["externalId"],
       region: object["region"],
       endpointUrl: object["endpointUrl"],
     };
@@ -24,6 +28,8 @@ export const S3ConfigPatchSerializer = {
       bucket: self.bucket,
       accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      roleArn: self.roleArn,
+      externalId: self.externalId,
       region: self.region,
       endpointUrl: self.endpointUrl,
     };

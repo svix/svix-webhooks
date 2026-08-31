@@ -8,43 +8,47 @@ import (
 )
 
 type SettingsInternalPatch struct {
-	CustomColor                   utils.Nullable[string]                `json:"customColor"`
-	CustomLogoUrl                 utils.Nullable[string]                `json:"customLogoUrl"`
-	CustomThemeOverride           utils.Nullable[CustomThemeOverride]   `json:"customThemeOverride"`
-	CustomStringsOverride         utils.Nullable[CustomStringsOverride] `json:"customStringsOverride"`
-	CustomBaseFontSize            utils.Nullable[int64]                 `json:"customBaseFontSize"`
-	CustomFontFamily              utils.Nullable[string]                `json:"customFontFamily"`
-	CustomFontFamilyUrl           utils.Nullable[string]                `json:"customFontFamilyUrl"`
-	DisableEndpointOnFailure      *bool                                 `json:"disableEndpointOnFailure,omitempty"`
-	DisplayName                   utils.Nullable[string]                `json:"displayName"`
-	EnableChannels                *bool                                 `json:"enableChannels,omitempty"`
-	EnableEndpointMtlsConfig      *bool                                 `json:"enableEndpointMtlsConfig,omitempty"`
-	EnableEndpointOauthConfig     *bool                                 `json:"enableEndpointOauthConfig,omitempty"`
-	EnableIntegrationManagement   *bool                                 `json:"enableIntegrationManagement,omitempty"`
-	EnableMessageStream           *bool                                 `json:"enableMessageStream,omitempty"`
-	AdvancedEndpointTypes         []AdvancedEndpointType                `json:"advancedEndpointTypes,omitempty"`
-	EnableMsgAtmptLog             *bool                                 `json:"enableMsgAtmptLog,omitempty"`
-	EnableOtlp                    *bool                                 `json:"enableOtlp,omitempty"`
-	EnableTransformations         *bool                                 `json:"enableTransformations,omitempty"`
-	EnforceHttps                  *bool                                 `json:"enforceHttps,omitempty"`
-	EventCatalogPublished         *bool                                 `json:"eventCatalogPublished,omitempty"`
-	ReadOnly                      *bool                                 `json:"readOnly,omitempty"`
-	RequireEndpointChannel        *bool                                 `json:"requireEndpointChannel,omitempty"`
-	RequireEndpointFilterTypes    *bool                                 `json:"requireEndpointFilterTypes,omitempty"`
-	RetryPolicy                   utils.Nullable[[]int32]               `json:"retryPolicy"`
-	WhitelabelHeaders             *bool                                 `json:"whitelabelHeaders,omitempty"`
-	SendSvixWebhookHeaders        *bool                                 `json:"sendSvixWebhookHeaders,omitempty"`
-	ColorPaletteLight             utils.Nullable[CustomColorPalette]    `json:"colorPaletteLight"`
-	ColorPaletteDark              utils.Nullable[CustomColorPalette]    `json:"colorPaletteDark"`
-	ShowUseSvixPlay               *bool                                 `json:"showUseSvixPlay,omitempty"`
-	WipeSuccessfulPayload         *bool                                 `json:"wipeSuccessfulPayload,omitempty"`
-	EnableApplicationAlerts       *bool                                 `json:"enableApplicationAlerts,omitempty"`
-	ApplicationAlertEvents        []ApplicationAlertEvent               `json:"applicationAlertEvents,omitempty"`
-	ApplicationAlertsDashboardUrl utils.Nullable[string]                `json:"applicationAlertsDashboardUrl"`
-	ApplicationAlertsLogoUrl      utils.Nullable[string]                `json:"applicationAlertsLogoUrl"`
-	ShowFeatureTooltips           *bool                                 `json:"showFeatureTooltips,omitempty"`
-	WebhooksAutoConfig            *bool                                 `json:"webhooksAutoConfig,omitempty"`
-	McpToken                      *bool                                 `json:"mcpToken,omitempty"`
+	CustomColor           utils.Nullable[string]                `json:"customColor"`
+	CustomLogoUrl         utils.Nullable[string]                `json:"customLogoUrl"`
+	CustomThemeOverride   utils.Nullable[CustomThemeOverride]   `json:"customThemeOverride"`
+	CustomStringsOverride utils.Nullable[CustomStringsOverride] `json:"customStringsOverride"`
+	CustomBaseFontSize    utils.Nullable[int64]                 `json:"customBaseFontSize"`
+	CustomFontFamily      utils.Nullable[string]                `json:"customFontFamily"`
+	CustomFontFamilyUrl   utils.Nullable[string]                `json:"customFontFamilyUrl"`
+	// A CSS `font-family` value, used as-is by the App Portal.
+	//
+	// Can be combined with `customFontFamily`, which only accepts one of the fonts the App Portal knows how to load: when both are set, that font is placed first and this stack provides the fallbacks.
+	CustomFontStack               utils.Nullable[string]             `json:"customFontStack"`
+	DisableEndpointOnFailure      *bool                              `json:"disableEndpointOnFailure,omitempty"`
+	DisplayName                   utils.Nullable[string]             `json:"displayName"`
+	EnableChannels                *bool                              `json:"enableChannels,omitempty"`
+	EnableEndpointMtlsConfig      *bool                              `json:"enableEndpointMtlsConfig,omitempty"`
+	EnableEndpointOauthConfig     *bool                              `json:"enableEndpointOauthConfig,omitempty"`
+	EnableIntegrationManagement   *bool                              `json:"enableIntegrationManagement,omitempty"`
+	EnableMessageStream           *bool                              `json:"enableMessageStream,omitempty"`
+	AdvancedEndpointTypes         []AdvancedEndpointType             `json:"advancedEndpointTypes,omitempty"`
+	EnableMsgAtmptLog             *bool                              `json:"enableMsgAtmptLog,omitempty"`
+	EnableOtlp                    *bool                              `json:"enableOtlp,omitempty"`
+	EnableTransformations         *bool                              `json:"enableTransformations,omitempty"`
+	EnforceHttps                  *bool                              `json:"enforceHttps,omitempty"`
+	EventCatalogPublished         *bool                              `json:"eventCatalogPublished,omitempty"`
+	ReadOnly                      *bool                              `json:"readOnly,omitempty"`
+	RequireEndpointChannel        *bool                              `json:"requireEndpointChannel,omitempty"`
+	RequireEndpointFilterTypes    *bool                              `json:"requireEndpointFilterTypes,omitempty"`
+	RetryPolicy                   utils.Nullable[[]int32]            `json:"retryPolicy"`
+	WhitelabelHeaders             *bool                              `json:"whitelabelHeaders,omitempty"`
+	SendSvixWebhookHeaders        *bool                              `json:"sendSvixWebhookHeaders,omitempty"`
+	ColorPaletteLight             utils.Nullable[CustomColorPalette] `json:"colorPaletteLight"`
+	ColorPaletteDark              utils.Nullable[CustomColorPalette] `json:"colorPaletteDark"`
+	ShowUseSvixPlay               *bool                              `json:"showUseSvixPlay,omitempty"`
+	WipeSuccessfulPayload         *bool                              `json:"wipeSuccessfulPayload,omitempty"`
+	EnableApplicationAlerts       *bool                              `json:"enableApplicationAlerts,omitempty"`
+	ApplicationAlertEvents        []ApplicationAlertEvent            `json:"applicationAlertEvents,omitempty"`
+	ApplicationAlertsDashboardUrl utils.Nullable[string]             `json:"applicationAlertsDashboardUrl"`
+	ApplicationAlertsLogoUrl      utils.Nullable[string]             `json:"applicationAlertsLogoUrl"`
+	ShowFeatureTooltips           *bool                              `json:"showFeatureTooltips,omitempty"`
+	WebhooksAutoConfig            *bool                              `json:"webhooksAutoConfig,omitempty"`
+	McpToken                      *bool                              `json:"mcpToken,omitempty"`
 }
 
 func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
@@ -69,6 +73,9 @@ func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.CustomFontFamilyUrl.IsSet() {
 		toSerialize["customFontFamilyUrl"] = o.CustomFontFamilyUrl
+	}
+	if o.CustomFontStack.IsSet() {
+		toSerialize["customFontStack"] = o.CustomFontStack
 	}
 	if o.DisableEndpointOnFailure != nil {
 		toSerialize["disableEndpointOnFailure"] = o.DisableEndpointOnFailure

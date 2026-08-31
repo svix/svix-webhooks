@@ -6,9 +6,9 @@ use super::{
     clickhouse_config_in::ClickhouseConfigIn, event_bridge_config_in::EventBridgeConfigIn,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
     google_cloud_storage_config_in::GoogleCloudStorageConfigIn,
-    otel_tracing_config_in::OtelTracingConfigIn, rabbit_mq_config_in::RabbitMqConfigIn,
-    redshift_config_in::RedshiftConfigIn, s3_config_in::S3ConfigIn,
-    sink_http_config_in::SinkHttpConfigIn, sink_status_in::SinkStatusIn,
+    otel_tracing_config_in::OtelTracingConfigIn, postgres_config_in::PostgresConfigIn,
+    rabbit_mq_config_in::RabbitMqConfigIn, redshift_config_in::RedshiftConfigIn,
+    s3_config_in::S3ConfigIn, sink_http_config_in::SinkHttpConfigIn, sink_status_in::SinkStatusIn,
     snowflake_config_in::SnowflakeConfigIn, sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
 };
 
@@ -94,4 +94,6 @@ pub enum StreamSinkInConfig {
     RabbitMq(RabbitMqConfigIn),
     #[serde(rename = "redshift")]
     Redshift(RedshiftConfigIn),
+    #[serde(rename = "postgres")]
+    Postgres(PostgresConfigIn),
 }

@@ -8,6 +8,8 @@ data class S3ConfigPatch(
     val bucket: String? = null,
     val accessKeyId: String? = null,
     val secretAccessKey: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val region: String? = null,
     val endpointUrl: String? = null,
 )

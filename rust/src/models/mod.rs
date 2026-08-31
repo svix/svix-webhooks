@@ -163,6 +163,9 @@ mod polling_endpoint_message_out;
 mod polling_endpoint_out;
 mod port_io_config;
 mod port_io_config_out;
+mod postgres_config_in;
+mod postgres_config_out;
+mod postgres_config_patch;
 mod rabbit_mq_config_in;
 mod rabbit_mq_config_out;
 mod rabbit_mq_config_patch;
@@ -406,6 +409,9 @@ pub use self::{
     polling_endpoint_out::PollingEndpointOut,
     port_io_config::PortIoConfig,
     port_io_config_out::PortIoConfigOut,
+    postgres_config_in::PostgresConfigIn,
+    postgres_config_out::PostgresConfigOut,
+    postgres_config_patch::PostgresConfigPatch,
     rabbit_mq_config_in::RabbitMqConfigIn,
     rabbit_mq_config_out::RabbitMqConfigOut,
     rabbit_mq_config_patch::RabbitMqConfigPatch,

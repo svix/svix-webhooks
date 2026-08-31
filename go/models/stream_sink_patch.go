@@ -17,6 +17,7 @@ import (
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigPatch
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
 //   - "otelTracing": Use OtelTracingConfigPatch
+//   - "postgres": Use PostgresConfigPatch
 //   - "rabbitMq": Use RabbitMqConfigPatch
 //   - "redshift": Use RedshiftConfigPatch
 //   - "amazonS3": Use S3ConfigPatch
@@ -54,6 +55,7 @@ const (
 	StreamSinkPatchTypeSnowflake          StreamSinkPatchType = "snowflake"
 	StreamSinkPatchTypeRabbitMq           StreamSinkPatchType = "rabbitMq"
 	StreamSinkPatchTypeRedshift           StreamSinkPatchType = "redshift"
+	StreamSinkPatchTypePostgres           StreamSinkPatchType = "postgres"
 )
 
 type StreamSinkPatchConfig interface {
@@ -75,6 +77,7 @@ func (EventBridgeConfigPatch) isStreamSinkPatchConfig()        {}
 func (SnowflakeConfigPatch) isStreamSinkPatchConfig()          {}
 func (RabbitMqConfigPatch) isStreamSinkPatchConfig()           {}
 func (RedshiftConfigPatch) isStreamSinkPatchConfig()           {}
+func (PostgresConfigPatch) isStreamSinkPatchConfig()           {}
 
 func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkPatch
@@ -116,6 +119,10 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "otelTracing":
 		var c OtelTracingConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postgres":
+		var c PostgresConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
@@ -181,4 +188,5 @@ var StreamSinkPatchTypeFromString = map[string]StreamSinkPatchType{
 	"snowflake":          StreamSinkPatchTypeSnowflake,
 	"rabbitMq":           StreamSinkPatchTypeRabbitMq,
 	"redshift":           StreamSinkPatchTypeRedshift,
+	"postgres":           StreamSinkPatchTypePostgres,
 }
