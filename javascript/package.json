@@ -35,7 +35,7 @@
     "fmt": "biome format --write"
   },
   "dependencies": {
-    "standardwebhooks": "1.0.0"
+    "standardwebhooks": "^1.1.1"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.4",

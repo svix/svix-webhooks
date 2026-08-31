@@ -30,7 +30,7 @@ export class Webhook {
       | WebhookRequiredHeaders
       | WebhookUnbrandedRequiredHeaders
       | Record<string, string>
-  ): unknown {
+  ): undefined {
     const headers: Record<string, string> = {};
     for (const key of Object.keys(headers_)) {
       headers[key.toLowerCase()] = (headers_ as Record<string, string>)[key];
@@ -42,7 +42,7 @@ export class Webhook {
     headers["webhook-timestamp"] =
       headers["svix-timestamp"] ?? headers["webhook-timestamp"] ?? "";
 
-    return this.inner.verify(payload, headers);
+    this.inner.verify(payload, headers, { jsonParse: false });
   }
 
   public sign(msgId: string, timestamp: Date, payload: string | Buffer): string {
