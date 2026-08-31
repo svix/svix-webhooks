@@ -39,6 +39,24 @@ describe "API Client" do
     expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&with_content=false&tag=%23"))
   end
 
+  it "encodes integer and boolean query params" do
+    stub_request(:get, "#{host}/api/v1/app/app_id/msg")
+      .with(query: hash_including({}))
+      .to_return(
+        status: 200,
+        body: ListResponseMessageOut_JSON
+      )
+
+    svx.message.list("app_id", {limit: 5, with_content: true})
+
+    expect(WebMock).to(
+      have_requested(
+        :get,
+        "#{host}/api/v1/app/app_id/msg?limit=5&with_content=true"
+      )
+    )
+  end
+
   it "test Date in query param" do
     stub_request(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id")
       .with(query: hash_including({}))
