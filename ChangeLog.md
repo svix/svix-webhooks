@@ -6,6 +6,12 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/JavaScript **(Breaking)**: Remove JSON parsing from `Webhook.verify`, for consistency with
+  SDKs for other languages (this was meant to be part of the recently-released v2.0.0 but forgotten
+  for JavaScript and PHP - we're yanking v2.0.0 and v2.1.0 of the JS SDK in response)
+* Libs/PHP **(Breaking)**: Remove JSON parsing from `Webhook.verify`, for consistency with
+  SDKs for other languages (this was meant to be part of the recently-released v2.0.0 but forgotten
+  for JavaScript and PHP - we're yanking v2.0.0 and v2.1.0 of the PHP SDK in response)
 * Libs/Rust: Re-export `Svix`, `Webhook`, `AutoConfig` and `AutoConfigConsumer`,
   `Error` and `Result` at the crate root
 
