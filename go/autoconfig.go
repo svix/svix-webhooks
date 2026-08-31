@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -14,6 +15,7 @@ import (
 )
 
 const autoConfigTokenPrefixV1 = "auto_v1_"
+const unsupportedTokenVersion = "Unsupported token version. You might need to update the Svix SDK to use this token"
 
 var ErrInvalidAutoConfigToken = errors.New("invalid token")
 
@@ -38,7 +40,7 @@ type AutoConfig struct {
 func decodeAutoConfigTokenV1(token string) (*autoConfigTokenContentV1, error) {
 	token, ok := strings.CutPrefix(token, autoConfigTokenPrefixV1)
 	if !ok {
-		return nil, ErrInvalidAutoConfigToken
+		return nil, fmt.Errorf("%w: %s", ErrInvalidAutoConfigToken, unsupportedTokenVersion)
 	}
 
 	decoded, err := base64.StdEncoding.DecodeString(token)

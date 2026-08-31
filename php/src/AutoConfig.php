@@ -15,6 +15,7 @@ use Svix\Request\SvixHttpClient;
 final class AutoConfig
 {
     private const AUTOCONFIG_TOKEN_PREFIX_V1 = 'auto_v1_';
+    private const UNSUPPORTED_TOKEN_VERSION = 'Unsupported token version. You might need to update the Svix SDK to use this token';
 
     private string $appId;
 
@@ -84,7 +85,7 @@ final class AutoConfig
     public static function decodeToken(string $token): array
     {
         if (!str_starts_with($token, self::AUTOCONFIG_TOKEN_PREFIX_V1)) {
-            throw new \InvalidArgumentException('invalid token');
+            throw new \InvalidArgumentException(self::UNSUPPORTED_TOKEN_VERSION);
         }
 
         $encoded = substr($token, strlen(self::AUTOCONFIG_TOKEN_PREFIX_V1));

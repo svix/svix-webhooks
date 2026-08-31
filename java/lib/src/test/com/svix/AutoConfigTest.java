@@ -30,8 +30,10 @@ public class AutoConfigTest {
                 String token = "wrong_" + Base64.getEncoder()
                                 .encodeToString(json.getBytes(StandardCharsets.UTF_8));
 
-                assertThrows(AutoConfig.InvalidTokenException.class,
+                AutoConfig.InvalidTokenException ex = assertThrows(
+                                AutoConfig.InvalidTokenException.class,
                                 () -> AutoConfig.decodeToken(token));
+                assertEquals(AutoConfig.UNSUPPORTED_TOKEN_VERSION, ex.getMessage());
         }
 
         @Test

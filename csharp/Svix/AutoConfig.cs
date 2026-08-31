@@ -20,6 +20,8 @@ namespace Svix
     public class AutoConfig
     {
         private const string AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+        private const string UnsupportedTokenVersion =
+            "Unsupported token version. You might need to update the Svix SDK to use this token";
 
         private readonly string appId;
         private readonly string endpointId;
@@ -106,7 +108,7 @@ namespace Svix
 
             if (!token.StartsWith(AUTOCONFIG_TOKEN_PREFIX_V1, StringComparison.Ordinal))
             {
-                throw new AutoConfigException();
+                throw new AutoConfigException(UnsupportedTokenVersion);
             }
 
             var b64 = token.Substring(AUTOCONFIG_TOKEN_PREFIX_V1.Length);

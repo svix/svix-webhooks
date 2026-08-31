@@ -4,7 +4,11 @@ import json
 import pytest
 
 from svix import AutoConfigConsumer, AutoConfigError
-from svix.autoconfig import _AUTOCONFIG_TOKEN_PREFIX_V1, _decode_autoconfig_token_v1
+from svix.autoconfig import (
+    _AUTOCONFIG_TOKEN_PREFIX_V1,
+    _UNSUPPORTED_TOKEN_VERSION,
+    _decode_autoconfig_token_v1,
+)
 from svix.models import SinkInCommon
 from svix.models.auto_config_sink_type import AutoConfigSinkType
 from svix.models.subscribe_in import SubscribeIn
@@ -55,8 +59,9 @@ def test_decode_autoconfig_token_v1_rejects_bad_prefix():
     raw = json.dumps(payload).encode()
     token = f"wrong_{base64.b64encode(raw).decode('ascii')}"
 
-    with pytest.raises(AutoConfigError):
+    with pytest.raises(AutoConfigError) as exc_info:
         _decode_autoconfig_token_v1(token)
+    assert str(exc_info.value) == _UNSUPPORTED_TOKEN_VERSION
 
 
 def test_decode_autoconfig_token_v1_rejects_invalid_json():

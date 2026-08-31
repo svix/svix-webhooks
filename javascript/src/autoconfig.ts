@@ -10,6 +10,8 @@ import {
 } from "./webhook";
 
 const AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+const UNSUPPORTED_TOKEN_VERSION =
+  "Unsupported token version. You might need to update the Svix SDK to use this token";
 
 export interface AutoConfigTokenContentV1 {
   aid: string;
@@ -45,7 +47,7 @@ export function isAutoConfigTokenContentV1(
 
 export function decodeAutoconfigTokenV1(token: string): AutoConfigTokenContentV1 {
   if (!token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
-    throw new AutoConfigError();
+    throw new AutoConfigError(UNSUPPORTED_TOKEN_VERSION);
   }
   const b64 = token.slice(AUTOCONFIG_TOKEN_PREFIX_V1.length);
   let json: string;

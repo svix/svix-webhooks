@@ -29,6 +29,9 @@ from .models import (
 from .webhooks import Webhook
 
 _AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_"
+_UNSUPPORTED_TOKEN_VERSION = (
+    "Unsupported token version. You might need to update the Svix SDK to use this token"
+)
 
 
 class AutoConfigError(Exception):
@@ -47,7 +50,7 @@ class _AutoConfigTokenContentV1(pydantic.BaseModel):
 
 def _decode_autoconfig_token_v1(token: str) -> _AutoConfigTokenContentV1:
     if not token.startswith(_AUTOCONFIG_TOKEN_PREFIX_V1):
-        raise AutoConfigError("invalid token")
+        raise AutoConfigError(_UNSUPPORTED_TOKEN_VERSION)
     b64 = token[len(_AUTOCONFIG_TOKEN_PREFIX_V1) :]
     # Ensure b64 has padding, which is required by the python base64 module
     try:

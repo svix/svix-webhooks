@@ -3,6 +3,7 @@ package svix
 import (
 	"encoding/base64"
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -38,6 +39,9 @@ func TestDecodeAutoConfigTokenV1RejectsBadPrefix(t *testing.T) {
 	_, err := decodeAutoConfigTokenV1(token)
 	if !errors.Is(err, ErrInvalidAutoConfigToken) {
 		t.Fatalf("expected ErrInvalidAutoConfigToken, got %v", err)
+	}
+	if !strings.Contains(err.Error(), unsupportedTokenVersion) {
+		t.Fatalf("expected unsupported token version detail, got %v", err)
 	}
 }
 

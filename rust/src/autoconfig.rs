@@ -34,34 +34,39 @@ pub struct AutoConfig {
 }
 
 const AUTOCONFIG_TOKEN_PREFIX_V1: &str = "auto_v1_";
+const UNSUPPORTED_TOKEN_VERSION: &str =
+    "Unsupported token version. You might need to update the Svix SDK to use this token";
 
 #[derive(thiserror::Error, Debug)]
 #[non_exhaustive]
 pub enum AutoConfigError {
-    #[error("invalid token")]
-    InvalidToken,
+    #[error("{}", .detail.unwrap_or("invalid token"))]
+    InvalidToken { detail: Option<&'static str> },
 }
 
 pub fn decode_autoconfig_token_v1(
     token: &str,
 ) -> std::result::Result<AutoConfigTokenContentV1, AutoConfigError> {
-    let token = token
-        .strip_prefix(AUTOCONFIG_TOKEN_PREFIX_V1)
-        .ok_or(AutoConfigError::InvalidToken)?;
+    let token =
+        token
+            .strip_prefix(AUTOCONFIG_TOKEN_PREFIX_V1)
+            .ok_or(AutoConfigError::InvalidToken {
+                detail: Some(UNSUPPORTED_TOKEN_VERSION),
+            })?;
 
     let decoded = BASE64_STANDARD
         .decode(token)
-        .map_err(|_| AutoConfigError::InvalidToken)?;
+        .map_err(|_| AutoConfigError::InvalidToken { detail: None })?;
 
     serde_json::from_slice::<AutoConfigTokenContentV1>(&decoded)
-        .map_err(|_| AutoConfigError::InvalidToken)
+        .map_err(|_| AutoConfigError::InvalidToken { detail: None })
 }
 
 impl AutoConfig {
     pub fn new(token: String, endpoint: EndpointIn) -> std::result::Result<Self, AutoConfigError> {
         let content = decode_autoconfig_token_v1(&token)?;
-        let webhook =
-            Webhook::new(&content.endpoint_secret).map_err(|_| AutoConfigError::InvalidToken)?;
+        let webhook = Webhook::new(&content.endpoint_secret)
+            .map_err(|_| AutoConfigError::InvalidToken { detail: None })?;
 
         let svix = Svix::new(
             content.token_plaintext,
@@ -123,7 +128,9 @@ mod tests {
         let token = format!("wrong_{base64_json}");
         assert!(matches!(
             decode_autoconfig_token_v1(&token),
-            Err(AutoConfigError::InvalidToken)
+            Err(AutoConfigError::InvalidToken {
+                detail: Some(UNSUPPORTED_TOKEN_VERSION)
+            })
         ));
     }
 
@@ -133,7 +140,7 @@ mod tests {
         let token = format!("{AUTOCONFIG_TOKEN_PREFIX_V1}{base64_not_json}",);
         assert!(matches!(
             decode_autoconfig_token_v1(&token),
-            Err(AutoConfigError::InvalidToken)
+            Err(AutoConfigError::InvalidToken { detail: None })
         ));
     }
 }

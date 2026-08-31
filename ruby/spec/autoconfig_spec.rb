@@ -20,7 +20,10 @@ RSpec.describe Svix::AutoConfig do
     it "rejects a bad prefix" do
       json = '{"aid":"a","eid":"e","surl":"https://x","esec":"whsec_Zm9v","tok":"t"}'
       token = "wrong_#{Base64.strict_encode64(json)}"
-      expect { described_class.decode_token!(token) }.to raise_error(Svix::AutoConfig::InvalidTokenError)
+      expect { described_class.decode_token!(token) }.to raise_error(
+        Svix::AutoConfig::InvalidTokenError,
+        "Unsupported token version. You might need to update the Svix SDK to use this token"
+      )
     end
 
     it "rejects invalid json" do
