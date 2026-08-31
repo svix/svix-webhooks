@@ -69,7 +69,7 @@ module Svix
         unless ALL_FIELD.include?(k.to_s)
           fail(ArgumentError, "The field #{k} is not part of Svix::{{ class_ty }}")
         end
-        if k == "{{type.content_field | to_snake_case }}"
+        if k.to_s == "{{type.content_field | to_snake_case }}"
           unless TYPE_TO_NAME.key?(v.class)
             fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
           end

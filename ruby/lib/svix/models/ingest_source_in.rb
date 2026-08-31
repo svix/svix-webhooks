@@ -245,7 +245,7 @@ module Svix
           fail(ArgumentError, "The field #{k} is not part of Svix::IngestSourceIn")
         end
 
-        if k == "config"
+        if k.to_s == "config"
           unless TYPE_TO_NAME.key?(v.class)
             fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
           end
