@@ -113,7 +113,7 @@ module Svix
           elsif v.is_a?(Time)
             encoded_query_pairs.append("#{k}=#{CGI.escape(v.utc.to_datetime.rfc3339)}")
           else
-            encoded_query_pairs.append("#{k}=#{CGI.escape(v)}")
+            encoded_query_pairs.append("#{k}=#{CGI.escape(v.to_s)}")
           end
         elsif k == "with_content"
           # default with_content to false, it only defaults to true
