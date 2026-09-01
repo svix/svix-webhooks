@@ -16,18 +16,28 @@ const UNSUPPORTED_TOKEN_VERSION =
   "Unsupported token version. You might need to update the Svix SDK to use this token";
 
 export interface AutoConfigTokenContentV1 {
+  // Application ID
   aid: string;
+  // Endpoint ID
   eid: string;
+  // Server URL
   surl: string;
+  // Endpoint secret
   esec: string;
+  // Token
   tok: string;
 }
 
 export interface AutoConfigTokenContentV2 {
+  // Application ID
   aid: string;
+  // Autoconfig ID
   sid: string;
+  // Server URL
   surl: string;
+  // Endpoint secret
   esec: string;
+  // Token
   tok: string;
 }
 
