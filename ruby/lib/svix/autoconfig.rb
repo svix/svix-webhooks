@@ -6,10 +6,12 @@ require "uri"
 
 require "svix/models/subscribe_in"
 require "svix/api_internal/endpoint_auto_config_deprecated"
+require "svix/api_internal/endpoint_autoconfig"
 
 module Svix
   class AutoConfig
     AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_"
+    AUTOCONFIG_TOKEN_PREFIX_V2 = "auto_v2_"
     UNSUPPORTED_TOKEN_VERSION = "Unsupported token version. You might need to update the Svix SDK to use this token"
 
     class InvalidTokenError < StandardError; end
@@ -19,7 +21,8 @@ module Svix
     def initialize(token, endpoint_in)
       content = AutoConfig.decode_token!(token)
       @app_id = content.fetch("app_id")
-      @endpoint_id = content.fetch("endpoint_id")
+      @endpoint_id = content["endpoint_id"]
+      @autoconfig_id = content["autoconfig_id"]
       @endpoint = endpoint_in
       @webhook = Webhook.new(content.fetch("endpoint_secret"))
       @client = SvixHttpClient.new(
@@ -29,11 +32,19 @@ module Svix
     end
 
     def subscribe
-      EndpointAutoConfigDeprecated.new(@client).update(
-        @app_id,
-        @endpoint_id,
-        SubscribeIn.new("endpoint" => @endpoint)
-      )
+      if @autoconfig_id
+        EndpointAutoconfig.new(@client).subscribe(
+          @app_id,
+          @autoconfig_id,
+          @endpoint
+        )
+      else
+        EndpointAutoConfigDeprecated.new(@client).update(
+          @app_id,
+          @endpoint_id,
+          SubscribeIn.new("endpoint" => @endpoint)
+        )
+      end
     end
 
     def verify(payload, headers)
@@ -42,26 +53,48 @@ module Svix
 
     class << self
       def decode_token!(token)
-        unless token.is_a?(String) && token.start_with?(AUTOCONFIG_TOKEN_PREFIX_V1)
+        unless token.is_a?(String)
           raise InvalidTokenError, UNSUPPORTED_TOKEN_VERSION
         end
 
-        encoded = token.byteslice(AUTOCONFIG_TOKEN_PREFIX_V1.length..-1)
+        if token.start_with?(AUTOCONFIG_TOKEN_PREFIX_V1)
+          data = parse_token_payload!(token, AUTOCONFIG_TOKEN_PREFIX_V1)
+          {
+            "version" => "v1",
+            "app_id" => data.fetch("aid"),
+            "endpoint_id" => data.fetch("eid"),
+            "server_url" => data.fetch("surl"),
+            "endpoint_secret" => data.fetch("esec"),
+            "token_plaintext" => data.fetch("tok"),
+          }
+        elsif token.start_with?(AUTOCONFIG_TOKEN_PREFIX_V2)
+          data = parse_token_payload!(token, AUTOCONFIG_TOKEN_PREFIX_V2)
+          {
+            "version" => "v2",
+            "app_id" => data.fetch("aid"),
+            "autoconfig_id" => data.fetch("sid"),
+            "server_url" => data.fetch("surl"),
+            "endpoint_secret" => data.fetch("esec"),
+            "token_plaintext" => data.fetch("tok"),
+          }
+        else
+          raise InvalidTokenError, UNSUPPORTED_TOKEN_VERSION
+        end
+      rescue ArgumentError, JSON::ParserError, KeyError, TypeError
+        raise InvalidTokenError
+      end
+
+      private
+
+      def parse_token_payload!(token, prefix)
+        encoded = token.byteslice(prefix.length..-1)
         json = Base64.decode64(encoded)
         data = JSON.parse(json)
         unless data.is_a?(Hash)
           raise InvalidTokenError
         end
 
-        {
-          "app_id" => data.fetch("aid"),
-          "endpoint_id" => data.fetch("eid"),
-          "server_url" => data.fetch("surl"),
-          "endpoint_secret" => data.fetch("esec"),
-          "token_plaintext" => data.fetch("tok"),
-        }
-      rescue ArgumentError, JSON::ParserError, KeyError, TypeError
-        raise InvalidTokenError
+        data
       end
     end
   end

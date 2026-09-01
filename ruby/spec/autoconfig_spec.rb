@@ -15,6 +15,21 @@ RSpec.describe Svix::AutoConfig do
       expect(content["server_url"]).to eq("https://api.example.test")
       expect(content["endpoint_secret"]).to eq("whsec_Zm9v")
       expect(content["token_plaintext"]).to eq("sk_test_xyz")
+      expect(content["version"]).to eq("v1")
+    end
+
+    it "parses a v2 payload" do
+      json = '{"aid":"app_1","sid":"acfg_2","surl":"https://api.example.test","esec":"whsec_Zm9v","tok":"sk_test_xyz"}'
+      token = "#{described_class::AUTOCONFIG_TOKEN_PREFIX_V2}#{Base64.strict_encode64(json)}"
+      content = described_class.decode_token!(token)
+
+      expect(content["app_id"]).to eq("app_1")
+      expect(content["autoconfig_id"]).to eq("acfg_2")
+      expect(content["endpoint_id"]).to be_nil
+      expect(content["server_url"]).to eq("https://api.example.test")
+      expect(content["endpoint_secret"]).to eq("whsec_Zm9v")
+      expect(content["token_plaintext"]).to eq("sk_test_xyz")
+      expect(content["version"]).to eq("v2")
     end
 
     it "rejects a bad prefix" do
