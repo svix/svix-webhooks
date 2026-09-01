@@ -9,19 +9,20 @@ import {
 import { decodeAutoconfigToken } from "./autoconfig";
 import type { DestinationIn } from "./models/destinationIn";
 import type { DestinationOut } from "./models/destinationOut";
+import type { EndpointOut } from "./models/endpointOut";
 import type { PollerV2PollOut } from "./models/pollerV2PollOut";
 import type { SinkInCommon } from "./models/sinkInCommon";
-import { SinkStatusIn } from "./models/sinkStatusIn";
+import { SinkStatus } from "./models/sinkStatus";
 import type { SvixRequestContext } from "./request";
 
 export class AutoConfigConsumer {
   private readonly appId: string;
-  private readonly sinkIn: DestinationIn;
+  private readonly sinkIn: SinkInCommon;
   private readonly requestCtx: SvixRequestContext;
   private sinkId?: string;
   private readonly autoconfigId?: string;
 
-  public constructor(token: string, sinkIn: DestinationIn) {
+  public constructor(token: string, sinkIn: SinkInCommon) {
     const decoded = decodeAutoconfigToken(token);
 
     this.appId = decoded.content.aid;
@@ -48,19 +49,21 @@ export class AutoConfigConsumer {
       ).autoconfig.subscribe(
         this.appId,
         this.autoconfigId,
-        this.sinkIn
+        sinkInCommonToPollingDestination(this.sinkIn)
       );
       this.sinkId = destination.id;
       return destination;
     }
 
     // v1
-    return endpoint.autoConfigDeprecated.update(this.appId, this.sinkId as string, {
-      sink: {
-        type: "poller",
-        config: destinationInToSinkInCommon(this.sinkIn),
-      },
-    }) as unknown as DestinationOut;
+    return destinationOutFromV1Endpoint(
+      await endpoint.autoConfigDeprecated.update(this.appId, this.sinkId as string, {
+        sink: {
+          type: "poller",
+          config: this.sinkIn,
+        },
+      })
+    );
   }
 
   public async receive(
@@ -94,15 +97,30 @@ export class AutoConfigConsumer {
   }
 }
 
-function destinationInToSinkInCommon(destination: DestinationIn): SinkInCommon {
+function sinkInCommonToPollingDestination(sink: SinkInCommon): DestinationIn {
   return {
-    uid: destination.uid,
-    eventTypes: destination.eventTypes,
-    channels: destination.channels,
-    metadata: destination.metadata,
-    disabled:
-      destination.status === undefined
-        ? undefined
-        : destination.status === SinkStatusIn.Disabled,
+    type: "pollingEndpoint",
+    eventTypes: sink.eventTypes ?? undefined,
+    channels: sink.channels ?? undefined,
+    metadata: sink.metadata,
+    uid: sink.uid,
+  };
+}
+
+function destinationOutFromV1Endpoint(endpoint: EndpointOut): DestinationOut {
+  return {
+    id: endpoint.id,
+    uid: endpoint.uid,
+    status: endpoint.disabled ? SinkStatus.Disabled : SinkStatus.Enabled,
+    currentIterator: "",
+    createdAt: endpoint.createdAt,
+    updatedAt: endpoint.updatedAt,
+    batchSize: 0,
+    maxWaitSecs: 0,
+    eventTypes: endpoint.eventTypes ?? undefined,
+    channels: endpoint.channels ?? undefined,
+    metadata: endpoint.metadata,
+    type: "pollingEndpoint",
+    config: {},
   };
 }

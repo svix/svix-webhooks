@@ -158,7 +158,6 @@ test("subscribe", async (t) => {
       tok: "sk_test_xyz",
     });
     const consumer = new AutoConfigConsumer(token, {
-      type: "pollingEndpoint",
       eventTypes: ["issue.opened"],
     });
     await consumer.subscribe();
@@ -182,7 +181,6 @@ test("subscribe", async (t) => {
       tok: "sk_test_xyz",
     });
     const consumer = new AutoConfigConsumer(token, {
-      type: "pollingEndpoint",
       channels: ["ch1"],
     });
     const out = await consumer.subscribe();
@@ -209,7 +207,7 @@ test("subscribe", async (t) => {
       esec: "whsec_Zm9v",
       tok: "sk_test_xyz",
     });
-    const consumer = new AutoConfigConsumer(token, { type: "pollingEndpoint" });
+    const consumer = new AutoConfigConsumer(token, {});
     await consumer.receive("c1");
     const requests = await pollMock.getSeenRequests();
     assert.equal(requests.length, 1);
