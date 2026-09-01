@@ -12,13 +12,17 @@ class S3ConfigIn implements \JsonSerializable
     /**
      * @param string|null $accessKeyId Access key ID.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `secret_access_key`) if `role_arn` is null
      * @param string|null $secretAccessKey Secret access key.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
-     * @param string|null $region The region of the EventBridge bus.
+     * Required (along with `access_key_id`) if `role_arn` is null
+     * @param string|null $region the region of the S3 bucket
      *
-     * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+     * Currently a required field, but marked as optional because we may infer it from other fields in the future
+     * @param string|null $roleArn    Role ARN for delegated authentication
+     * @param string|null $externalId Shared secret passed as the STS ExternalId.
+     *
+     * Required if `role_arn` is not null.
      */
     private function __construct(
         public readonly string $bucket,
@@ -26,6 +30,8 @@ class S3ConfigIn implements \JsonSerializable
         public readonly ?string $secretAccessKey = null,
         public readonly ?string $region = null,
         public readonly ?string $endpointUrl = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -43,6 +49,8 @@ class S3ConfigIn implements \JsonSerializable
             secretAccessKey: null,
             region: null,
             endpointUrl: null,
+            roleArn: null,
+            externalId: null,
             setFields: ['bucket' => true]
         );
     }
@@ -58,6 +66,8 @@ class S3ConfigIn implements \JsonSerializable
             secretAccessKey: $this->secretAccessKey,
             region: $this->region,
             endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             setFields: $setFields
         );
     }
@@ -73,6 +83,8 @@ class S3ConfigIn implements \JsonSerializable
             secretAccessKey: $secretAccessKey,
             region: $this->region,
             endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             setFields: $setFields
         );
     }
@@ -88,6 +100,8 @@ class S3ConfigIn implements \JsonSerializable
             secretAccessKey: $this->secretAccessKey,
             region: $region,
             endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             setFields: $setFields
         );
     }
@@ -103,6 +117,42 @@ class S3ConfigIn implements \JsonSerializable
             secretAccessKey: $this->secretAccessKey,
             region: $this->region,
             endpointUrl: $endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            bucket: $this->bucket,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
+            endpointUrl: $this->endpointUrl,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            bucket: $this->bucket,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            region: $this->region,
+            endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             setFields: $setFields
         );
     }
@@ -124,6 +174,12 @@ class S3ConfigIn implements \JsonSerializable
         if (isset($this->setFields['endpointUrl'])) {
             $data['endpointUrl'] = $this->endpointUrl;
         }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -138,7 +194,9 @@ class S3ConfigIn implements \JsonSerializable
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'S3ConfigIn'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'S3ConfigIn'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'S3ConfigIn'),
-            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'S3ConfigIn')
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'S3ConfigIn'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'S3ConfigIn'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'S3ConfigIn')
         );
     }
 

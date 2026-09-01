@@ -24,6 +24,7 @@ import {
   type OtelTracingConfigIn,
   OtelTracingConfigInSerializer,
 } from "./otelTracingConfigIn";
+import { type PostgresConfigIn, PostgresConfigInSerializer } from "./postgresConfigIn";
 import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
 import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
 import { type S3ConfigIn, S3ConfigInSerializer } from "./s3ConfigIn";
@@ -138,6 +139,11 @@ interface StreamSinkInRedshift {
   config: RedshiftConfigIn;
 }
 
+interface StreamSinkInPostgres {
+  type: "postgres";
+  config: PostgresConfigIn;
+}
+
 export type StreamSinkIn = _StreamSinkInFields &
   (
     | StreamSinkInPoller
@@ -155,6 +161,7 @@ export type StreamSinkIn = _StreamSinkInFields &
     | StreamSinkInSnowflake
     | StreamSinkInRabbitMq
     | StreamSinkInRedshift
+    | StreamSinkInPostgres
   );
 
 export const StreamSinkInSerializer = {
@@ -193,6 +200,8 @@ export const StreamSinkInSerializer = {
           return RabbitMqConfigInSerializer._fromJsonObject(object["config"]);
         case "redshift":
           return RedshiftConfigInSerializer._fromJsonObject(object["config"]);
+        case "postgres":
+          return PostgresConfigInSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -262,6 +271,9 @@ export const StreamSinkInSerializer = {
         break;
       case "redshift":
         config = RedshiftConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "postgres":
+        config = PostgresConfigInSerializer._toJsonObject(self.config);
         break;
     }
 

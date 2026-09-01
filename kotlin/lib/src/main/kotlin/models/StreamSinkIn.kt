@@ -141,6 +141,12 @@ sealed class StreamSinkInConfig {
             Json.encodeToJsonElement(RedshiftConfigIn.serializer(), redshift)
     }
 
+    @VariantName("postgres")
+    data class Postgres(val postgres: PostgresConfigIn) : StreamSinkInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostgresConfigIn.serializer(), postgres)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkInConfig>(
@@ -223,6 +229,10 @@ sealed class StreamSinkInConfig {
                 "redshift" to
                     { config ->
                         Redshift(Json.decodeFromJsonElement(RedshiftConfigIn.serializer(), config))
+                    },
+                "postgres" to
+                    { config ->
+                        Postgres(Json.decodeFromJsonElement(PostgresConfigIn.serializer(), config))
                     },
             )
 

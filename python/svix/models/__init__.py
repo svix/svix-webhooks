@@ -165,6 +165,9 @@ from .polling_endpoint_message_out import PollingEndpointMessageOut
 from .polling_endpoint_out import PollingEndpointOut
 from .port_io_config import PortIoConfig
 from .port_io_config_out import PortIoConfigOut
+from .postgres_config_in import PostgresConfigIn
+from .postgres_config_out import PostgresConfigOut
+from .postgres_config_patch import PostgresConfigPatch
 from .rabbit_mq_config_in import RabbitMqConfigIn
 from .rabbit_mq_config_out import RabbitMqConfigOut
 from .rabbit_mq_config_patch import RabbitMqConfigPatch
@@ -400,6 +403,9 @@ __all__ = [
     "PollingEndpointOut",
     "PortIoConfig",
     "PortIoConfigOut",
+    "PostgresConfigIn",
+    "PostgresConfigOut",
+    "PostgresConfigPatch",
     "RabbitMqConfigIn",
     "RabbitMqConfigOut",
     "RabbitMqConfigPatch",

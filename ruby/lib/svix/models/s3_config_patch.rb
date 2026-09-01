@@ -7,10 +7,12 @@ module Svix
     attr_accessor :bucket
     attr_accessor :access_key_id
     attr_accessor :secret_access_key
+    attr_accessor :role_arn
+    attr_accessor :external_id
     attr_accessor :region
     attr_accessor :endpoint_url
 
-    ALL_FIELD ||= ["bucket", "access_key_id", "secret_access_key", "region", "endpoint_url"].freeze
+    ALL_FIELD ||= ["bucket", "access_key_id", "secret_access_key", "role_arn", "external_id", "region", "endpoint_url"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,6 +36,8 @@ module Svix
       attrs["bucket"] = attributes["bucket"]
       attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       attrs["region"] = attributes["region"]
       attrs["endpoint_url"] = attributes["endpointUrl"]
       new(attrs)
@@ -44,6 +48,8 @@ module Svix
       out["bucket"] = Svix::serialize_primitive(@bucket) if @bucket
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) if @role_arn
+      out["externalId"] = Svix::serialize_primitive(@external_id) if @external_id
       out["region"] = Svix::serialize_primitive(@region) if @region
       out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
       out

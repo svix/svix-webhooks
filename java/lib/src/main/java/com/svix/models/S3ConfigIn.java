@@ -23,6 +23,8 @@ public class S3ConfigIn {
     @JsonProperty private String secretAccessKey;
     @JsonProperty private String region;
     @JsonProperty private URI endpointUrl;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
 
     public S3ConfigIn() {}
 
@@ -53,8 +55,7 @@ public class S3ConfigIn {
     /**
      * Access key ID.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `secret_access_key`) if `role_arn` is null
      *
      * @return accessKeyId
      */
@@ -75,8 +76,7 @@ public class S3ConfigIn {
     /**
      * Secret access key.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `access_key_id`) if `role_arn` is null
      *
      * @return secretAccessKey
      */
@@ -95,7 +95,7 @@ public class S3ConfigIn {
     }
 
     /**
-     * The region of the EventBridge bus.
+     * The region of the S3 bucket
      *
      * <p>Currently a required field, but marked as optional because we may infer it from other
      * fields in the future.
@@ -128,6 +128,46 @@ public class S3ConfigIn {
 
     public void setEndpointUrl(URI endpointUrl) {
         this.endpointUrl = endpointUrl;
+    }
+
+    public S3ConfigIn roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Role ARN for delegated authentication
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public S3ConfigIn externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Shared secret passed as the STS ExternalId.
+     *
+     * <p>Required if `role_arn` is not null.
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     /**

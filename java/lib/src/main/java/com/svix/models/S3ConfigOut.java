@@ -22,6 +22,8 @@ public class S3ConfigOut {
     @JsonProperty private String accessKeyId;
     @JsonProperty private String region;
     @JsonProperty private URI endpointUrl;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
 
     public S3ConfigOut() {}
 
@@ -54,7 +56,7 @@ public class S3ConfigOut {
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
@@ -99,6 +101,44 @@ public class S3ConfigOut {
 
     public void setEndpointUrl(URI endpointUrl) {
         this.endpointUrl = endpointUrl;
+    }
+
+    public S3ConfigOut roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public S3ConfigOut externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     /**

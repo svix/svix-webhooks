@@ -7,19 +7,25 @@ module Svix
     attr_accessor :bucket
     # Access key ID.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Required (along with `secret_access_key`) if `role_arn` is null
     attr_accessor :access_key_id
     # Secret access key.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Required (along with `access_key_id`) if `role_arn` is null
     attr_accessor :secret_access_key
-    # The region of the EventBridge bus.
+    # The region of the S3 bucket
     #
     # Currently a required field, but marked as optional because we may infer it from other fields in the future.
     attr_accessor :region
     attr_accessor :endpoint_url
+    # Role ARN for delegated authentication
+    attr_accessor :role_arn
+    # Shared secret passed as the STS ExternalId.
+    #
+    # Required if `role_arn` is not null.
+    attr_accessor :external_id
 
-    ALL_FIELD ||= ["bucket", "access_key_id", "secret_access_key", "region", "endpoint_url"].freeze
+    ALL_FIELD ||= ["bucket", "access_key_id", "secret_access_key", "region", "endpoint_url", "role_arn", "external_id"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -45,6 +51,8 @@ module Svix
       attrs["secret_access_key"] = attributes["secretAccessKey"]
       attrs["region"] = attributes["region"]
       attrs["endpoint_url"] = attributes["endpointUrl"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       new(attrs)
     end
 
@@ -55,6 +63,8 @@ module Svix
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
       out["region"] = Svix::serialize_primitive(@region) if @region
       out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @endpoint_url
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) if @role_arn
+      out["externalId"] = Svix::serialize_primitive(@external_id) if @external_id
       out
     end
 

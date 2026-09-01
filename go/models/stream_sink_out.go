@@ -16,6 +16,7 @@ import (
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigOut
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
 //   - "otelTracing": Use OtelTracingConfigOut
+//   - "postgres": Use PostgresConfigOut
 //   - "rabbitMq": Use RabbitMqConfigOut
 //   - "redshift": Use RedshiftConfigOut
 //   - "amazonS3": Use S3ConfigOut
@@ -59,6 +60,7 @@ const (
 	StreamSinkOutTypeSqs                StreamSinkOutType = "sqs"
 	StreamSinkOutTypeEventBridge        StreamSinkOutType = "eventBridge"
 	StreamSinkOutTypeSns                StreamSinkOutType = "sns"
+	StreamSinkOutTypePostgres           StreamSinkOutType = "postgres"
 )
 
 type StreamSinkOutConfig interface {
@@ -80,6 +82,7 @@ func (RabbitMqConfigOut) isStreamSinkOutConfig()           {}
 func (SqsConfigOut) isStreamSinkOutConfig()                {}
 func (EventBridgeConfigOut) isStreamSinkOutConfig()        {}
 func (SnsConfigOut) isStreamSinkOutConfig()                {}
+func (PostgresConfigOut) isStreamSinkOutConfig()           {}
 
 func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkOut
@@ -121,6 +124,10 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "otelTracing":
 		var c OtelTracingConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postgres":
+		var c PostgresConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
@@ -186,4 +193,5 @@ var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"sqs":                StreamSinkOutTypeSqs,
 	"eventBridge":        StreamSinkOutTypeEventBridge,
 	"sns":                StreamSinkOutTypeSns,
+	"postgres":           StreamSinkOutTypePostgres,
 }

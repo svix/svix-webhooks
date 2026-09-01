@@ -164,6 +164,9 @@ namespace Svix.Models
         public static StreamSinkOutConfig Sns(SnsConfigOut snsConfigOut) =>
             new(snsConfigOut, ConfigType.Sns);
 
+        public static StreamSinkOutConfig Postgres(PostgresConfigOut postgresConfigOut) =>
+            new(postgresConfigOut, ConfigType.Postgres);
+
         private enum ConfigType
         {
             [EnumMember(Value = "poller")]
@@ -210,6 +213,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "sns")]
             Sns,
+
+            [EnumMember(Value = "postgres")]
+            Postgres,
         }
 
         public TResult Match<TResult>(
@@ -227,7 +233,8 @@ namespace Svix.Models
             Func<RabbitMqConfigOut, TResult> onRabbitMq,
             Func<SqsConfigOut, TResult> onSqs,
             Func<EventBridgeConfigOut, TResult> onEventBridge,
-            Func<SnsConfigOut, TResult> onSns
+            Func<SnsConfigOut, TResult> onSns,
+            Func<PostgresConfigOut, TResult> onPostgres
         )
         {
             return _type switch
@@ -253,6 +260,7 @@ namespace Svix.Models
                 ConfigType.Sqs => onSqs((SqsConfigOut)_value),
                 ConfigType.EventBridge => onEventBridge((EventBridgeConfigOut)_value),
                 ConfigType.Sns => onSns((SnsConfigOut)_value),
+                ConfigType.Postgres => onPostgres((PostgresConfigOut)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -273,7 +281,8 @@ namespace Svix.Models
             Action<RabbitMqConfigOut> onRabbitMq,
             Action<SqsConfigOut> onSqs,
             Action<EventBridgeConfigOut> onEventBridge,
-            Action<SnsConfigOut> onSns
+            Action<SnsConfigOut> onSns,
+            Action<PostgresConfigOut> onPostgres
         )
         {
             switch (_type)
@@ -322,6 +331,9 @@ namespace Svix.Models
                     break;
                 case ConfigType.Sns:
                     onSns((SnsConfigOut)_value);
+                    break;
+                case ConfigType.Postgres:
+                    onPostgres((PostgresConfigOut)_value);
                     break;
                 default:
                     // unreachable
@@ -474,6 +486,7 @@ namespace Svix.Models
                 ["eventBridge"] = c =>
                     StreamSinkOutConfig.EventBridge(ToObj<EventBridgeConfigOut>(c)),
                 ["sns"] = c => StreamSinkOutConfig.Sns(ToObj<SnsConfigOut>(c)),
+                ["postgres"] = c => StreamSinkOutConfig.Postgres(ToObj<PostgresConfigOut>(c)),
             };
     }
 }

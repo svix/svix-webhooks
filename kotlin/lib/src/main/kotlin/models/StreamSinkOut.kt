@@ -128,6 +128,12 @@ sealed class StreamSinkOutConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SnsConfigOut.serializer(), sns)
     }
 
+    @VariantName("postgres")
+    data class Postgres(val postgres: PostgresConfigOut) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostgresConfigOut.serializer(), postgres)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkOutConfig>(
@@ -210,6 +216,10 @@ sealed class StreamSinkOutConfig {
                 "sns" to
                     { config ->
                         Sns(Json.decodeFromJsonElement(SnsConfigOut.serializer(), config))
+                    },
+                "postgres" to
+                    { config ->
+                        Postgres(Json.decodeFromJsonElement(PostgresConfigOut.serializer(), config))
                     },
             )
 

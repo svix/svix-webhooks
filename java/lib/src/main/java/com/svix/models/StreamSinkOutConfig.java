@@ -242,6 +242,21 @@ public abstract class StreamSinkOutConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postgres")
+    public static class Postgres extends StreamSinkOutConfig {
+        private final PostgresConfigOut postgres;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postgres);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkOutConfig create(JsonNode config);
@@ -274,6 +289,7 @@ public abstract class StreamSinkOutConfig {
         TY_M.put(
                 "eventBridge", c -> new EventBridge(m.convertValue(c, EventBridgeConfigOut.class)));
         TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsConfigOut.class)));
+        TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigOut.class)));
     }
 
     public static StreamSinkOutConfig fromTypeAndConfig(String type, JsonNode config) {

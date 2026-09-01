@@ -24,6 +24,7 @@ import {
   type OtelTracingConfigOut,
   OtelTracingConfigOutSerializer,
 } from "./otelTracingConfigOut";
+import { type PostgresConfigOut, PostgresConfigOutSerializer } from "./postgresConfigOut";
 import { type RabbitMqConfigOut, RabbitMqConfigOutSerializer } from "./rabbitMqConfigOut";
 import { type RedshiftConfigOut, RedshiftConfigOutSerializer } from "./redshiftConfigOut";
 import { type S3ConfigOut, S3ConfigOutSerializer } from "./s3ConfigOut";
@@ -132,6 +133,11 @@ interface StreamSinkOutSns {
   config: SnsConfigOut;
 }
 
+interface StreamSinkOutPostgres {
+  type: "postgres";
+  config: PostgresConfigOut;
+}
+
 export type StreamSinkOut = _StreamSinkOutFields &
   (
     | StreamSinkOutPoller
@@ -149,6 +155,7 @@ export type StreamSinkOut = _StreamSinkOutFields &
     | StreamSinkOutSqs
     | StreamSinkOutEventBridge
     | StreamSinkOutSns
+    | StreamSinkOutPostgres
   );
 
 export const StreamSinkOutSerializer = {
@@ -187,6 +194,8 @@ export const StreamSinkOutSerializer = {
           return EventBridgeConfigOutSerializer._fromJsonObject(object["config"]);
         case "sns":
           return SnsConfigOutSerializer._fromJsonObject(object["config"]);
+        case "postgres":
+          return PostgresConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -259,6 +268,9 @@ export const StreamSinkOutSerializer = {
         break;
       case "sns":
         config = SnsConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "postgres":
+        config = PostgresConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

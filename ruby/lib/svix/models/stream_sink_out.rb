@@ -9,6 +9,7 @@ require_relative "./event_bridge_config_out"
 require_relative "./google_cloud_pub_sub_config_out"
 require_relative "./google_cloud_storage_config_out"
 require_relative "./otel_tracing_config_out"
+require_relative "./postgres_config_out"
 require_relative "./rabbit_mq_config_out"
 require_relative "./redshift_config_out"
 require_relative "./s3_config_out"
@@ -77,6 +78,9 @@ module Svix
 
     class Sns < SnsConfigOut
     end
+
+    class Postgres < PostgresConfigOut
+    end
   end
 
   class StreamSinkOut
@@ -129,7 +133,8 @@ module Svix
       StreamSinkOutConfig::RabbitMq => "rabbitMq",
       StreamSinkOutConfig::Sqs => "sqs",
       StreamSinkOutConfig::EventBridge => "eventBridge",
-      StreamSinkOutConfig::Sns => "sns"
+      StreamSinkOutConfig::Sns => "sns",
+      StreamSinkOutConfig::Postgres => "postgres"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

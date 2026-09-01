@@ -7,6 +7,8 @@ type S3ConfigPatch struct {
 	Bucket          *string `json:"bucket,omitempty"`
 	AccessKeyId     *string `json:"accessKeyId,omitempty"`
 	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+	RoleArn         *string `json:"roleArn,omitempty"`
+	ExternalId      *string `json:"externalId,omitempty"`
 	Region          *string `json:"region,omitempty"`
 	EndpointUrl     *string `json:"endpointUrl,omitempty"`
 }
@@ -21,6 +23,12 @@ func (o S3ConfigPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.SecretAccessKey != nil {
 		toSerialize["secretAccessKey"] = o.SecretAccessKey
+	}
+	if o.RoleArn != nil {
+		toSerialize["roleArn"] = o.RoleArn
+	}
+	if o.ExternalId != nil {
+		toSerialize["externalId"] = o.ExternalId
 	}
 	if o.Region != nil {
 		toSerialize["region"] = o.Region
