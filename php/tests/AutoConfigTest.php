@@ -10,9 +10,9 @@ use Svix\Models\EndpointIn;
 
 final class AutoConfigTest extends TestCase
 {
-    private static function encodeAutoConfigToken(array $payload): string
+    private static function encodeAutoConfigToken(array $payload, string $prefix = 'auto_v1_'): string
     {
-        return 'auto_v1_' . base64_encode(json_encode($payload, JSON_THROW_ON_ERROR));
+        return $prefix . base64_encode(json_encode($payload, JSON_THROW_ON_ERROR));
     }
 
     private static function minimalValidPayload(): array
@@ -34,6 +34,22 @@ final class AutoConfigTest extends TestCase
         $ac = new AutoConfig($token, EndpointIn::create('https://consumer.example/webhook'));
 
         $this->assertInstanceOf(AutoConfig::class, $ac);
+    }
+
+    public function testValidV2TokenConstructsAutoConfig(): void
+    {
+        $payload = self::minimalValidPayload();
+        unset($payload['eid']);
+        $payload['sid'] = 'acfg_2';
+        $token = self::encodeAutoConfigToken($payload, 'auto_v2_');
+
+        $ac = new AutoConfig($token, EndpointIn::create('https://consumer.example/webhook'));
+
+        $this->assertInstanceOf(AutoConfig::class, $ac);
+        $decoded = AutoConfig::decodeToken($token);
+        $this->assertSame('v2', $decoded['version']);
+        $this->assertSame('acfg_2', $decoded['autoconfig_id']);
+        $this->assertArrayNotHasKey('endpoint_id', $decoded);
     }
 
     public function testWrongPrefixThrowsInvalidArgument(): void
