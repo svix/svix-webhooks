@@ -5,7 +5,7 @@ using Svix.Models;
 
 namespace Svix.ApiInternal
 {
-    public class EndpointAutoConfig(SvixClient client)
+    public class EndpointAutoConfigDeprecated(SvixClient client)
     {
         readonly SvixClient _client = client;
 

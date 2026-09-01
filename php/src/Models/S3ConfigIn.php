@@ -22,7 +22,7 @@ class S3ConfigIn implements \JsonSerializable
      * @param string|null $roleArn    Role ARN for delegated authentication
      * @param string|null $externalId Shared secret passed as the STS ExternalId.
      *
-     * Required if `role_arn` is not null.
+     * Recommended if `role_arn` is not null.
      */
     private function __construct(
         public readonly string $bucket,

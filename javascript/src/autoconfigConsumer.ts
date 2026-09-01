@@ -29,7 +29,7 @@ export class AutoConfigConsumer {
   }
 
   public subscribe(): Promise<EndpointOut> {
-    return new InternalEndpoint(this.requestCtx).autoConfig.update(
+    return new InternalEndpoint(this.requestCtx).autoConfigDeprecated.update(
       this.appId,
       this.sinkId,
       {

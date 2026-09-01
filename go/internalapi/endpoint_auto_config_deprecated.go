@@ -8,16 +8,16 @@ import (
 	"github.com/svix/svix-webhooks/go/models"
 )
 
-type EndpointAutoConfig struct {
+type EndpointAutoConfigDeprecated struct {
 	client *internal.SvixHttpClient
 }
 
-func newEndpointAutoConfig(client *internal.SvixHttpClient) EndpointAutoConfig {
-	return EndpointAutoConfig{client}
+func newEndpointAutoConfigDeprecated(client *internal.SvixHttpClient) EndpointAutoConfigDeprecated {
+	return EndpointAutoConfigDeprecated{client}
 }
 
 // Update an auto-config endpoint by providing endpoint details.
-func (endpointAutoConfig EndpointAutoConfig) Update(
+func (endpointAutoConfigDeprecated EndpointAutoConfigDeprecated) Update(
 	ctx context.Context,
 	appId string,
 	endpointId string,
@@ -29,7 +29,7 @@ func (endpointAutoConfig EndpointAutoConfig) Update(
 	}
 	return internal.ExecuteRequest[models.SubscribeIn, models.EndpointOut](
 		ctx,
-		endpointAutoConfig.client,
+		endpointAutoConfigDeprecated.client,
 		"PUT",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/auto-config",
 		pathMap,

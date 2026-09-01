@@ -48,7 +48,7 @@ impl AutoConfigConsumer {
         let mut subscribe_in = SubscribeIn::new();
         subscribe_in.sink = Some(AutoConfigSinkType::Poller(self.sink_in.clone()));
 
-        api_internal::endpoint_auto_config(self.svix.cfg())
+        api_internal::endpoint_auto_config_deprecated(self.svix.cfg())
             .update(self.app_id.clone(), self.sink_id.clone(), subscribe_in)
             .await
     }

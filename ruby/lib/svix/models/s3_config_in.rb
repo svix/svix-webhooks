@@ -22,7 +22,7 @@ module Svix
     attr_accessor :role_arn
     # Shared secret passed as the STS ExternalId.
     #
-    # Required if `role_arn` is not null.
+    # Recommended if `role_arn` is not null.
     attr_accessor :external_id
 
     ALL_FIELD ||= ["bucket", "access_key_id", "secret_access_key", "region", "endpoint_url", "role_arn", "external_id"].freeze

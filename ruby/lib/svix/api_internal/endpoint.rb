@@ -5,10 +5,12 @@ require "net/http"
 
 module Svix
   class Endpoint
-    attr_accessor :auto_config
+    attr_accessor :auto_config_deprecated
+    attr_accessor :autoconfig
     def initialize(client)
       @client = client
-      @auto_config = EndpointAutoConfig.new(client)
+      @auto_config_deprecated = EndpointAutoConfigDeprecated.new(client)
+      @autoconfig = EndpointAutoconfig.new(client)
     end
 
     def transformation_partial_update(app_id, endpoint_id, endpoint_transformation_in)

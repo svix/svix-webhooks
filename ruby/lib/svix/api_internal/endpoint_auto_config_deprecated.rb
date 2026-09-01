@@ -4,7 +4,7 @@
 require "net/http"
 
 module Svix
-  class EndpointAutoConfig
+  class EndpointAutoConfigDeprecated
     def initialize(client)
       @client = client
     end

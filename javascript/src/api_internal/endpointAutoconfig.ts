@@ -1,26 +1,26 @@
 // this file is @generated
 
+import { type EndpointIn, EndpointInSerializer } from "../models/endpointIn";
 import { type EndpointOut, EndpointOutSerializer } from "../models/endpointOut";
-import { type SubscribeIn, SubscribeInSerializer } from "../models/subscribeIn";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
-export class EndpointAutoConfig {
+export class EndpointAutoconfig {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
-  /** Update an auto-config endpoint by providing endpoint details. */
-  public async update(
+  /** Create or update the HTTP endpoint for an AutoConfig subscription. */
+  public async subscribe(
     appId: string,
-    endpointId: string,
-    subscribeIn: SubscribeIn = {}
+    autoconfigId: string,
+    endpointIn: EndpointIn
   ): Promise<EndpointOut> {
     const request = new SvixRequest(
       HttpMethod.PUT,
-      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/auto-config"
+      "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}/endpoint"
     );
 
     request.setPathParam("app_id", appId);
-    request.setPathParam("endpoint_id", endpointId);
-    request.setBody(SubscribeInSerializer._toJsonObject(subscribeIn));
+    request.setPathParam("autoconfig_id", autoconfigId);
+    request.setBody(EndpointInSerializer._toJsonObject(endpointIn));
 
     return await request.send(this.requestCtx, EndpointOutSerializer._fromJsonObject);
   }

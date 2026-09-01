@@ -7,9 +7,9 @@ import pydantic
 from .api.client import AuthenticatedClient
 from .api.common import _make_httpx_async_client, _make_httpx_client
 from .api.svix import Svix, SvixOptions
-from .api_internal.endpoint_auto_config import (
-    EndpointAutoConfig,
-    EndpointAutoConfigAsync,
+from .api_internal.endpoint_auto_config_deprecated import (
+    EndpointAutoConfigDeprecated,
+    EndpointAutoConfigDeprecatedAsync,
 )
 from .api_internal.message_pollerv2 import (
     MessagePollerv2,
@@ -71,8 +71,8 @@ class AutoConfig:
     _endpoint: EndpointIn
     _webhook: Webhook
     _client: AuthenticatedClient
-    _sync_api: t.Optional[EndpointAutoConfig]
-    _async_api: t.Optional[EndpointAutoConfigAsync]
+    _sync_api: t.Optional[EndpointAutoConfigDeprecated]
+    _async_api: t.Optional[EndpointAutoConfigDeprecatedAsync]
 
     def __init__(self, token: str, endpoint: EndpointIn) -> None:
         content = _decode_autoconfig_token_v1(token)
@@ -95,7 +95,7 @@ class AutoConfig:
     def subscribe(self) -> EndpointOut:
         if self._sync_api is None:
             httpx_client = _make_httpx_client(self._client)
-            self._sync_api = EndpointAutoConfig(self._client, httpx_client)
+            self._sync_api = EndpointAutoConfigDeprecated(self._client, httpx_client)
 
         return self._sync_api.update(
             self._app_id,
@@ -106,7 +106,9 @@ class AutoConfig:
     async def subscribe_async(self) -> EndpointOut:
         if self._async_api is None:
             httpx_client = _make_httpx_async_client(self._client)
-            self._async_api = EndpointAutoConfigAsync(self._client, httpx_client)
+            self._async_api = EndpointAutoConfigDeprecatedAsync(
+                self._client, httpx_client
+            )
 
         return await self._async_api.update(
             self._app_id,
@@ -148,7 +150,7 @@ class AutoConfigConsumer:
         if self._httpx_client is None:
             self._httpx_client = _make_httpx_client(self._client)
 
-        return EndpointAutoConfig(self._client, self._httpx_client).update(
+        return EndpointAutoConfigDeprecated(self._client, self._httpx_client).update(
             self._app_id,
             self._sink_id,
             self._subscribe_in(),
@@ -158,7 +160,7 @@ class AutoConfigConsumer:
         if self._httpx_async_client is None:
             self._httpx_async_client = _make_httpx_async_client(self._client)
 
-        return await EndpointAutoConfigAsync(
+        return await EndpointAutoConfigDeprecatedAsync(
             self._client, self._httpx_async_client
         ).update(
             self._app_id,

@@ -43,7 +43,7 @@ func NewAutoConfigConsumer(token string, sinkIn models.SinkInCommon) (*AutoConfi
 
 // Subscribe registers or updates the polling sink via the auto-config API.
 func (a *AutoConfigConsumer) Subscribe(ctx context.Context) (*models.EndpointOut, error) {
-	return a.svix.Endpoint().AutoConfig().Update(
+	return a.svix.Endpoint().AutoConfigDeprecated().Update(
 		ctx,
 		a.appID,
 		a.sinkID,

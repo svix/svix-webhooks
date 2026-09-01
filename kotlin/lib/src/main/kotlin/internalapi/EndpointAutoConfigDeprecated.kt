@@ -5,7 +5,7 @@ import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.SubscribeIn
 
-class EndpointAutoConfig(private val client: SvixHttpClient) {
+class EndpointAutoConfigDeprecated(private val client: SvixHttpClient) {
     /** Update an auto-config endpoint by providing endpoint details. */
     suspend fun update(appId: String, endpointId: String, subscribeIn: SubscribeIn): EndpointOut {
         val url =

@@ -6,11 +6,11 @@ declare(strict_types=1);
 namespace Svix\ApiInternal;
 
 use Svix\Exception\ApiException;
+use Svix\Models\EndpointIn;
 use Svix\Models\EndpointOut;
-use Svix\Models\SubscribeIn;
 use Svix\Request\SvixHttpClient;
 
-class EndpointAutoConfig
+class EndpointAutoconfig
 {
     public function __construct(
         private readonly SvixHttpClient $client,
@@ -18,17 +18,17 @@ class EndpointAutoConfig
     }
 
     /**
-     * Update an auto-config endpoint by providing endpoint details.
+     * Create or update the HTTP endpoint for an AutoConfig subscription.
      *
      * @throws ApiException
      */
-    public function update(
+    public function subscribe(
         string $appId,
-        string $endpointId,
-        SubscribeIn $subscribeIn,
+        string $autoconfigId,
+        EndpointIn $endpointIn,
     ): EndpointOut {
-        $request = $this->client->newReq('PUT', "/api/v1/app/{$appId}/endpoint/{$endpointId}/auto-config");
-        $request->setBody(json_encode($subscribeIn));
+        $request = $this->client->newReq('PUT', "/api/v1/app/{$appId}/autoconfig/{$autoconfigId}/endpoint");
+        $request->setBody(json_encode($endpointIn));
         $res = $this->client->send($request);
 
         return EndpointOut::fromJson($res);

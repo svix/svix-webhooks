@@ -27,7 +27,7 @@ namespace Svix
 
         public async Task<EndpointOut> SubscribeAsync(CancellationToken cancellationToken = default)
         {
-            return await new EndpointAutoConfig(client).UpdateAsync(
+            return await new EndpointAutoConfigDeprecated(client).UpdateAsync(
                 appId,
                 sinkId,
                 new SubscribeIn
@@ -43,7 +43,7 @@ namespace Svix
 
         public EndpointOut Subscribe()
         {
-            return new EndpointAutoConfig(client).Update(
+            return new EndpointAutoConfigDeprecated(client).Update(
                 appId,
                 sinkId,
                 new SubscribeIn

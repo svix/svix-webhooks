@@ -3,7 +3,7 @@ from ..models import EndpointOut, SubscribeIn
 from .common import ApiBaseAsync, ApiBaseSync
 
 
-class EndpointAutoConfigAsync(ApiBaseAsync):
+class EndpointAutoConfigDeprecatedAsync(ApiBaseAsync):
     async def update(
         self, app_id: str, endpoint_id: str, subscribe_in: SubscribeIn
     ) -> EndpointOut:
@@ -20,7 +20,7 @@ class EndpointAutoConfigAsync(ApiBaseAsync):
         return EndpointOut.model_validate(response.json())
 
 
-class EndpointAutoConfig(ApiBaseSync):
+class EndpointAutoConfigDeprecated(ApiBaseSync):
     def update(
         self, app_id: str, endpoint_id: str, subscribe_in: SubscribeIn
     ) -> EndpointOut:

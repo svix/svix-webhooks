@@ -31,7 +31,7 @@ data class S3ConfigIn(
     /**
      * Shared secret passed as the STS ExternalId.
      *
-     * Required if `role_arn` is not null.
+     * Recommended if `role_arn` is not null.
      */
     val externalId: String? = null,
 )

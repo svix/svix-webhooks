@@ -1,7 +1,7 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
-import com.svix.kotlin.internal.EndpointAutoConfig
+import com.svix.kotlin.internal.EndpointAutoConfigDeprecated
 import com.svix.kotlin.internal.MessagePollerv2
 import com.svix.kotlin.internal.MessagePollerv2ConsumerCommitOptions
 import com.svix.kotlin.internal.MessagePollerv2ConsumerPollOptions
@@ -44,7 +44,7 @@ constructor(token: String, sinkIn: SinkInCommon) {
                         config = AutoConfigSinkTypeConfig.Poller(sinkIn),
                     ),
             )
-        return EndpointAutoConfig(httpClient).update(appId, sinkId, subscribeIn)
+        return EndpointAutoConfigDeprecated(httpClient).update(appId, sinkId, subscribeIn)
     }
 
     @Throws(ApiException::class)
