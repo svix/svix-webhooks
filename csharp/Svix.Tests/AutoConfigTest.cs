@@ -8,6 +8,7 @@ namespace Svix.Tests
     public class AutoConfigTests
     {
         private const string AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+        private const string AUTOCONFIG_TOKEN_PREFIX_V2 = "auto_v2_";
 
         [Fact]
         public void ValidToken_DoesNotThrow()
@@ -16,6 +17,21 @@ namespace Svix.Tests
                 """{"aid":"app_1","eid":"ep_2","surl":"https://api.example.test","esec":"whsec_Zm9v","tok":"sk_test_xyz"}""";
             var token =
                 AUTOCONFIG_TOKEN_PREFIX_V1 + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+
+            var ex = Record.Exception(() =>
+                new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
+            );
+
+            Assert.Null(ex);
+        }
+
+        [Fact]
+        public void ValidV2Token_DoesNotThrow()
+        {
+            var json =
+                """{"aid":"app_1","sid":"acfg_2","surl":"https://api.example.test","esec":"whsec_Zm9v","tok":"sk_test_xyz"}""";
+            var token =
+                AUTOCONFIG_TOKEN_PREFIX_V2 + Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
             var ex = Record.Exception(() =>
                 new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
@@ -44,6 +60,18 @@ namespace Svix.Tests
         {
             var token =
                 AUTOCONFIG_TOKEN_PREFIX_V1
+                + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
+
+            Assert.Throws<AutoConfigException>(() =>
+                new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
+            );
+        }
+
+        [Fact]
+        public void InvalidV2Json_ThrowsAutoConfigException()
+        {
+            var token =
+                AUTOCONFIG_TOKEN_PREFIX_V2
                 + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
 
             Assert.Throws<AutoConfigException>(() =>
