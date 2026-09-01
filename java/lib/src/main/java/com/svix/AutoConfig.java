@@ -5,6 +5,7 @@ import com.svix.exceptions.ApiException;
 import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookVerificationException;
 import com.svix.internalapi.EndpointAutoConfigDeprecated;
+import com.svix.internalapi.EndpointAutoconfig;
 import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
 import com.svix.models.SubscribeIn;
@@ -15,11 +16,13 @@ import java.util.Map;
 
 public final class AutoConfig {
   static final String AUTOCONFIG_TOKEN_PREFIX_V1 = "auto_v1_";
+  static final String AUTOCONFIG_TOKEN_PREFIX_V2 = "auto_v2_";
   static final String UNSUPPORTED_TOKEN_VERSION =
       "Unsupported token version. You might need to update the Svix SDK to use this token";
 
   private final String appId;
   private final String endpointId;
+  private final String autoconfigId;
   private final EndpointIn endpoint;
   private final Webhook webhook;
   private final Svix svix;
@@ -28,6 +31,7 @@ public final class AutoConfig {
     DecodedTokenContent content = decodeToken(token);
     this.appId = content.getAppId();
     this.endpointId = content.getEndpointId();
+    this.autoconfigId = content.getAutoconfigId();
     this.endpoint = endpointIn;
     try {
       this.webhook = new Webhook(content.getEndpointSecret());
@@ -54,12 +58,20 @@ public final class AutoConfig {
     return endpointId;
   }
 
+  public String getAutoconfigId() {
+    return autoconfigId;
+  }
+
   public EndpointIn getEndpoint() {
     return endpoint;
   }
 
   /** Registers this endpoint with Svix using the auto-config API. */
   public EndpointOut subscribe() throws IOException, ApiException {
+    if (autoconfigId != null) {
+      return new EndpointAutoconfig(svix.getHttpClient()).subscribe(appId, autoconfigId,
+          endpoint);
+    }
     return new EndpointAutoConfigDeprecated(svix.getHttpClient()).update(appId, endpointId,
         new SubscribeIn().endpoint(endpoint));
   }
@@ -76,13 +88,36 @@ public final class AutoConfig {
    *         or does not contain a valid JSON payload with the required fields.
    */
   static DecodedTokenContent decodeToken(final String token) throws InvalidTokenException {
-    if (token == null || !token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
+    if (token != null && token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V1)) {
+      return decodeTokenV1(token);
+    }
+    if (token != null && token.startsWith(AUTOCONFIG_TOKEN_PREFIX_V2)) {
+      return decodeTokenV2(token);
+    }
+    throw new InvalidTokenException(UNSUPPORTED_TOKEN_VERSION);
+  }
+
+  static DecodedTokenContent decodeTokenV1(final String token) throws InvalidTokenException {
+    JsonNode node = parseTokenPayload(token, AUTOCONFIG_TOKEN_PREFIX_V1);
+    return new DecodedTokenContent(requiredText(node, "aid"), requiredText(node, "eid"), null,
+        requiredText(node, "surl"), requiredText(node, "esec"), requiredText(node, "tok"));
+  }
+
+  static DecodedTokenContent decodeTokenV2(final String token) throws InvalidTokenException {
+    JsonNode node = parseTokenPayload(token, AUTOCONFIG_TOKEN_PREFIX_V2);
+    return new DecodedTokenContent(requiredText(node, "aid"), null, requiredText(node, "sid"),
+        requiredText(node, "surl"), requiredText(node, "esec"), requiredText(node, "tok"));
+  }
+
+  private static JsonNode parseTokenPayload(final String token, final String prefix)
+      throws InvalidTokenException {
+    if (token == null || !token.startsWith(prefix)) {
       throw new InvalidTokenException(UNSUPPORTED_TOKEN_VERSION);
     }
 
     final byte[] decoded;
     try {
-      decoded = Base64.getDecoder().decode(token.substring(AUTOCONFIG_TOKEN_PREFIX_V1.length()));
+      decoded = Base64.getDecoder().decode(token.substring(prefix.length()));
     } catch (IllegalArgumentException e) {
       throw new InvalidTokenException(e);
     }
@@ -97,14 +132,7 @@ public final class AutoConfig {
     if (node == null || !node.isObject()) {
       throw new InvalidTokenException();
     }
-
-    String appId = requiredText(node, "aid");
-    String endpointId = requiredText(node, "eid");
-    String serverUrl = requiredText(node, "surl");
-    String endpointSecret = requiredText(node, "esec");
-    String tokenPlaintext = requiredText(node, "tok");
-
-    return new DecodedTokenContent(appId, endpointId, serverUrl, endpointSecret, tokenPlaintext);
+    return node;
   }
 
   private static String requiredText(final JsonNode node, final String field)
@@ -119,14 +147,17 @@ public final class AutoConfig {
   public static final class DecodedTokenContent {
     private final String appId;
     private final String endpointId;
+    private final String autoconfigId;
     private final String serverUrl;
     private final String endpointSecret;
     private final String tokenPlaintext;
 
-    private DecodedTokenContent(final String appId, final String endpointId, final String serverUrl,
-        final String endpointSecret, final String tokenPlaintext) {
+    private DecodedTokenContent(final String appId, final String endpointId,
+        final String autoconfigId, final String serverUrl, final String endpointSecret,
+        final String tokenPlaintext) {
       this.appId = appId;
       this.endpointId = endpointId;
+      this.autoconfigId = autoconfigId;
       this.serverUrl = serverUrl;
       this.endpointSecret = endpointSecret;
       this.tokenPlaintext = tokenPlaintext;
@@ -138,6 +169,10 @@ public final class AutoConfig {
 
     public String getEndpointId() {
       return endpointId;
+    }
+
+    public String getAutoconfigId() {
+      return autoconfigId;
     }
 
     public String getServerUrl() {
