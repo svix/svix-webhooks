@@ -87,7 +87,8 @@ def test_auto_config_sink_type_revalidates_when_nested():
 
 def test_auto_config_consumer_subscribe_in_payload():
     consumer = AutoConfigConsumer(
-        _make_token(), SinkInCommon(event_types=["issue.opened"])
+        _make_token(),
+        SinkInCommon(event_types=["issue.opened"]),
     )
     subscribe_in = consumer._subscribe_in()
 
