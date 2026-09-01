@@ -1,50 +1,73 @@
 import { SvixInternal } from "./api_internal";
+import { Destination as InternalDestination } from "./api_internal/destination";
 import { Endpoint as InternalEndpoint } from "./api_internal/endpoint";
 import {
   MessagePollerv2 as InternalMessagePollerv2,
   type MessagePollerv2ConsumerCommitOptions,
   type MessagePollerv2ConsumerPollOptions,
 } from "./api_internal/messagePollerv2";
-import { decodeAutoconfigTokenV1 } from "./autoconfig";
-import type { EndpointOut } from "./models/endpointOut";
+import { decodeAutoconfigToken } from "./autoconfig";
+import type { DestinationIn } from "./models/destinationIn";
+import type { DestinationOut } from "./models/destinationOut";
 import type { PollerV2PollOut } from "./models/pollerV2PollOut";
 import type { SinkInCommon } from "./models/sinkInCommon";
+import { SinkStatusIn } from "./models/sinkStatusIn";
 import type { SvixRequestContext } from "./request";
 
 export class AutoConfigConsumer {
   private readonly appId: string;
-  private readonly sinkId: string;
-  private readonly sinkIn: SinkInCommon;
+  private readonly sinkIn: DestinationIn;
   private readonly requestCtx: SvixRequestContext;
+  private sinkId?: string;
+  private readonly autoconfigId?: string;
 
-  public constructor(token: string, sinkIn: SinkInCommon) {
-    const content = decodeAutoconfigTokenV1(token);
+  public constructor(token: string, sinkIn: DestinationIn) {
+    const decoded = decodeAutoconfigToken(token);
 
-    this.appId = content.aid;
-    this.sinkId = content.eid;
+    this.appId = decoded.content.aid;
     this.sinkIn = sinkIn;
 
-    const svix = new SvixInternal(content.tok, { serverUrl: content.surl });
+    if (decoded.version === "v1") {
+      this.sinkId = decoded.content.eid;
+    } else {
+      this.autoconfigId = decoded.content.sid;
+    }
+
+    const svix = new SvixInternal(decoded.content.tok, {
+      serverUrl: decoded.content.surl,
+    });
     this.requestCtx = svix.getRequestCtx();
   }
 
-  public subscribe(): Promise<EndpointOut> {
-    return new InternalEndpoint(this.requestCtx).autoConfigDeprecated.update(
-      this.appId,
-      this.sinkId,
-      {
-        sink: {
-          type: "poller",
-          config: this.sinkIn,
-        },
-      }
-    );
+  public async subscribe(): Promise<DestinationOut> {
+    const endpoint = new InternalEndpoint(this.requestCtx);
+    if (this.autoconfigId != null) {
+      // v2
+      const destination = await new InternalDestination(
+        this.requestCtx
+      ).autoconfig.subscribe(
+        this.appId,
+        this.autoconfigId,
+        this.sinkIn
+      );
+      this.sinkId = destination.id;
+      return destination;
+    }
+
+    // v1
+    return endpoint.autoConfigDeprecated.update(this.appId, this.sinkId as string, {
+      sink: {
+        type: "poller",
+        config: destinationInToSinkInCommon(this.sinkIn),
+      },
+    }) as unknown as DestinationOut;
   }
 
-  public receive(
+  public async receive(
     consumerId: string,
     options?: MessagePollerv2ConsumerPollOptions
   ): Promise<PollerV2PollOut> {
+    this.sinkId = this.sinkId ?? (await this.subscribe()).id;
     return new InternalMessagePollerv2(this.requestCtx).consumerPoll(
       this.appId,
       this.sinkId,
@@ -53,11 +76,12 @@ export class AutoConfigConsumer {
     );
   }
 
-  public commit(
+  public async commit(
     consumerId: string,
     offset: number,
     options?: MessagePollerv2ConsumerCommitOptions
   ): Promise<void> {
+    this.sinkId = this.sinkId ?? (await this.subscribe()).id;
     return new InternalMessagePollerv2(this.requestCtx).consumerCommit(
       this.appId,
       this.sinkId,
@@ -68,4 +92,17 @@ export class AutoConfigConsumer {
       options
     );
   }
+}
+
+function destinationInToSinkInCommon(destination: DestinationIn): SinkInCommon {
+  return {
+    uid: destination.uid,
+    eventTypes: destination.eventTypes,
+    channels: destination.channels,
+    metadata: destination.metadata,
+    disabled:
+      destination.status === undefined
+        ? undefined
+        : destination.status === SinkStatusIn.Disabled,
+  };
 }
