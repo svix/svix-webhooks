@@ -9,7 +9,6 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Version 2.3.0
 * Libs/All: Add new streaming sink types
-* Libs/All: Prepare for AutoConfig v2
 * Libs/Ruby: Add missing accessors for `connector`, `streaming` APIs
 * Libs/Ruby: Accept symbol keys in struct enums (thanks @anishfyi)
 * Libs/Ruby: Fix various small bugs (thanks @clinejj and @anishfyi)
