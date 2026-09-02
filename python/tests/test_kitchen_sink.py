@@ -2,8 +2,9 @@ import os
 import typing as t
 
 import pytest
+import requests
 
-from svix import SvixOptions
+from svix import AutoConfig, SvixOptions
 from svix.api import (
     ApplicationIn,
     EndpointIn,
@@ -57,3 +58,37 @@ def test_endpoint_crud(client) -> None:
     # Should succeed without error if the deserialization handles empty response bodies
     # correctly
     client.endpoint.delete(app.id, ep.id)
+
+
+def test_autoconfig(client) -> None:
+    if client is None:
+        # the version of pytest that works with python3.8 has a bug in its type
+        # annotations that reports pytest.skip() as taking 0 arguments
+        pytest.skip("$SVIX_TOKEN and $SVIX_SERVER_URL must be set to run this test")  # ty: ignore[too-many-positional-arguments]
+
+    app = client.application.create(ApplicationIn(name="app"))
+
+    response = requests.post(
+        f"{SERVER_URL}/api/v1/app/{app.id}/auto-config",
+        headers={"Authorization": f"Bearer {TOKEN}"},
+        timeout=30,
+    )
+    response.raise_for_status()
+    assert response.status_code == 201
+    autoconfig_out = response.json()
+    endpoint_id = autoconfig_out["endpId"]
+    autoconfig_token = autoconfig_out["token"]
+
+    endpoint_url = "https://example.svix.com/autoconfig"
+    configured = AutoConfig(
+        autoconfig_token,
+        EndpointIn(url=endpoint_url),
+    ).subscribe()
+    assert configured.id == endpoint_id
+    assert configured.url == endpoint_url
+
+    ep = client.endpoint.get(app.id, endpoint_id)
+    assert ep.id == endpoint_id
+    assert ep.url == endpoint_url
+
+    client.endpoint.delete(app.id, endpoint_id)
