@@ -26,8 +26,9 @@ updates:
         patterns:
           - '*'
     schedule:
-      interval: "weekly"
-      day: "wednesday"
+      interval: "cron"
+      # Every third Wednesday of the month at 08:00 UTC
+      cronjob: "0 8 15-21 * WED"
   - package-ecosystem: "uv"
     directory: "/python"
     open-pull-requests-limit: 2
