@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Add `opentelemetry_logs_enabled` to optionally send log events to the configured OpenTelemetry collector (`opentelemetry_address`), in addition to stdout. Disabled by default
 
 ## Version 1.101.0
 * Add `v1.message.bulk-expunge-content` endpoint
