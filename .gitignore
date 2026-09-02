@@ -15,3 +15,11 @@ target/
 
 # Codegen script
 /.codegen-tmp/
+
+# Live AutoConfig SDK harness (contains org token + minted tokens)
+/test-sdks-harness/fixtures.json
+/test-sdks-harness/rust/target/
+/test-sdks-harness/csharp/bin/
+/test-sdks-harness/csharp/obj/
+/test-sdks-harness/java/out/
+/test-sdks-harness/go/ac_it_go

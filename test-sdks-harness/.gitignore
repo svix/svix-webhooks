@@ -1,0 +1,9 @@
+fixtures.json
+rust/target/
+rust/Cargo.lock
+csharp/bin/
+csharp/obj/
+java/out/
+go/ac_it_go
+go/go.sum
+kotlin/last-results.txt
