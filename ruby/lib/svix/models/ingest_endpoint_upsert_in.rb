@@ -50,12 +50,12 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) unless @throttle_rate.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["disabled"] = Svix::serialize_primitive(@disabled) unless @disabled.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out
     end
 

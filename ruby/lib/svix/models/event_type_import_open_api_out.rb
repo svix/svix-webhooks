@@ -36,7 +36,7 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["data"] = Svix::serialize_schema_ref(@data) if @data
+      out["data"] = Svix::serialize_schema_ref(@data) unless @data.nil?
       out
     end
 

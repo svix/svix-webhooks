@@ -49,10 +49,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["password"] = Svix::serialize_primitive(@password) if @password
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
-      out["sslRootCert"] = Svix::serialize_primitive(@ssl_root_cert) if @ssl_root_cert
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["password"] = Svix::serialize_primitive(@password) unless @password.nil?
+      out["tableName"] = Svix::serialize_primitive(@table_name) unless @table_name.nil?
+      out["sslRootCert"] = Svix::serialize_primitive(@ssl_root_cert) unless @ssl_root_cert.nil?
       out
     end
 

@@ -39,10 +39,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["eventBusName"] = Svix::serialize_primitive(@event_bus_name) if @event_bus_name
-      out["detailType"] = Svix::serialize_primitive(@detail_type) if @detail_type
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["region"] = Svix::serialize_primitive(@region) if @region
+      out["eventBusName"] = Svix::serialize_primitive(@event_bus_name) unless @event_bus_name.nil?
+      out["detailType"] = Svix::serialize_primitive(@detail_type) unless @detail_type.nil?
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
       out
     end
 

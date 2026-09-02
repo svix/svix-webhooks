@@ -38,8 +38,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["headers"] = Svix::serialize_primitive(@headers) if @headers
-      out["sensitive"] = Svix::serialize_primitive(@sensitive) if @sensitive
+      out["headers"] = Svix::serialize_primitive(@headers) unless @headers.nil?
+      out["sensitive"] = Svix::serialize_primitive(@sensitive) unless @sensitive.nil?
       out
     end
 

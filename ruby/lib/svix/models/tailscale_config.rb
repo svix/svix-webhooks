@@ -39,8 +39,11 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["secret"] = Svix::serialize_primitive(@secret) if @secret
-      out["timestampGraceSeconds"] = Svix::serialize_primitive(@timestamp_grace_seconds) if @timestamp_grace_seconds
+      out["secret"] = Svix::serialize_primitive(@secret) unless @secret.nil?
+      unless @timestamp_grace_seconds.nil?
+        out["timestampGraceSeconds"] = Svix::serialize_primitive(@timestamp_grace_seconds)
+      end
+
       out
     end
 

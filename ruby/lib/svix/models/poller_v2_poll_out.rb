@@ -35,8 +35,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["data"] = @data.map { |v| v.serialize } if @data
-      out["done"] = Svix::serialize_primitive(@done) if @done
+      out["data"] = @data.map { |v| v.serialize } unless @data.nil?
+      out["done"] = Svix::serialize_primitive(@done) unless @done.nil?
       out
     end
 

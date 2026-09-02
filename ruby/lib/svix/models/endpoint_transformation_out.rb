@@ -42,10 +42,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["code"] = Svix::serialize_primitive(@code) if @code
-      out["enabled"] = Svix::serialize_primitive(@enabled) if @enabled
-      out["variables"] = Svix::serialize_primitive(@variables) if @variables
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["code"] = Svix::serialize_primitive(@code) unless @code.nil?
+      out["enabled"] = Svix::serialize_primitive(@enabled) unless @enabled.nil?
+      out["variables"] = Svix::serialize_primitive(@variables) unless @variables.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
       out
     end
 

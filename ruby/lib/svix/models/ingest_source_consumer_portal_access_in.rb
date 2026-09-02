@@ -42,8 +42,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["readOnly"] = Svix::serialize_primitive(@read_only) if @read_only
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["readOnly"] = Svix::serialize_primitive(@read_only) unless @read_only.nil?
       out
     end
 

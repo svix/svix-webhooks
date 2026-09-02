@@ -43,10 +43,10 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
       out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @__throttle_rate_is_defined
       out["uid"] = Svix::serialize_primitive(@uid) if @__uid_is_defined
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out
     end
 

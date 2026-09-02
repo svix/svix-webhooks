@@ -66,16 +66,16 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["logo"] = Svix::serialize_primitive(@logo) if @logo
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["kind"] = Svix::serialize_schema_ref(@kind) if @kind
-      out["instructions"] = Svix::serialize_primitive(@instructions) if @instructions
-      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) if @allowed_event_types
-      out["transformation"] = Svix::serialize_primitive(@transformation) if @transformation
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["productType"] = Svix::serialize_schema_ref(@product_type) if @product_type
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["logo"] = Svix::serialize_primitive(@logo) unless @logo.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["kind"] = Svix::serialize_schema_ref(@kind) unless @kind.nil?
+      out["instructions"] = Svix::serialize_primitive(@instructions) unless @instructions.nil?
+      out["allowedEventTypes"] = Svix::serialize_primitive(@allowed_event_types) unless @allowed_event_types.nil?
+      out["transformation"] = Svix::serialize_primitive(@transformation) unless @transformation.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["productType"] = Svix::serialize_schema_ref(@product_type) unless @product_type.nil?
       out
     end
 

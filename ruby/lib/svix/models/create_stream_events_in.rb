@@ -38,8 +38,8 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["events"] = @events.map { |v| v.serialize } if @events
-      out["stream"] = Svix::serialize_schema_ref(@stream) if @stream
+      out["events"] = @events.map { |v| v.serialize } unless @events.nil?
+      out["stream"] = Svix::serialize_schema_ref(@stream) unless @stream.nil?
       out
     end
 

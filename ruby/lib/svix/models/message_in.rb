@@ -78,16 +78,25 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["eventId"] = Svix::serialize_primitive(@event_id) if @event_id
-      out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
-      out["payload"] = Svix::serialize_primitive(@payload) if @payload
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["application"] = Svix::serialize_schema_ref(@application) if @application
-      out["tags"] = Svix::serialize_primitive(@tags) if @tags
-      out["transformationsParams"] = Svix::serialize_primitive(@transformations_params) if @transformations_params
-      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) if @deliver_at
-      out["payloadRetentionPeriod"] = Svix::serialize_primitive(@payload_retention_period) if @payload_retention_period
-      out["payloadRetentionHours"] = Svix::serialize_primitive(@payload_retention_hours) if @payload_retention_hours
+      out["eventId"] = Svix::serialize_primitive(@event_id) unless @event_id.nil?
+      out["eventType"] = Svix::serialize_primitive(@event_type) unless @event_type.nil?
+      out["payload"] = Svix::serialize_primitive(@payload) unless @payload.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["application"] = Svix::serialize_schema_ref(@application) unless @application.nil?
+      out["tags"] = Svix::serialize_primitive(@tags) unless @tags.nil?
+      unless @transformations_params.nil?
+        out["transformationsParams"] = Svix::serialize_primitive(@transformations_params)
+      end
+
+      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) unless @deliver_at.nil?
+      unless @payload_retention_period.nil?
+        out["payloadRetentionPeriod"] = Svix::serialize_primitive(@payload_retention_period)
+      end
+
+      unless @payload_retention_hours.nil?
+        out["payloadRetentionHours"] = Svix::serialize_primitive(@payload_retention_hours)
+      end
+
       out
     end
 

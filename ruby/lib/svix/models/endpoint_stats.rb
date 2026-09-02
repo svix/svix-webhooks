@@ -41,11 +41,11 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["success"] = Svix::serialize_primitive(@success) if @success
-      out["pending"] = Svix::serialize_primitive(@pending) if @pending
-      out["sending"] = Svix::serialize_primitive(@sending) if @sending
-      out["fail"] = Svix::serialize_primitive(@fail) if @fail
-      out["canceled"] = Svix::serialize_primitive(@canceled) if @canceled
+      out["success"] = Svix::serialize_primitive(@success) unless @success.nil?
+      out["pending"] = Svix::serialize_primitive(@pending) unless @pending.nil?
+      out["sending"] = Svix::serialize_primitive(@sending) unless @sending.nil?
+      out["fail"] = Svix::serialize_primitive(@fail) unless @fail.nil?
+      out["canceled"] = Svix::serialize_primitive(@canceled) unless @canceled.nil?
       out
     end
 

@@ -74,12 +74,12 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["application"] = Svix::serialize_schema_ref(@application) if @application
-      out["readOnly"] = Svix::serialize_primitive(@read_only) if @read_only
-      out["capabilities"] = @capabilities.map { |v| v.serialize } if @capabilities
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["sessionId"] = Svix::serialize_primitive(@session_id) if @session_id
+      out["application"] = Svix::serialize_schema_ref(@application) unless @application.nil?
+      out["readOnly"] = Svix::serialize_primitive(@read_only) unless @read_only.nil?
+      out["capabilities"] = @capabilities.map { |v| v.serialize } unless @capabilities.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["sessionId"] = Svix::serialize_primitive(@session_id) unless @session_id.nil?
       out
     end
 

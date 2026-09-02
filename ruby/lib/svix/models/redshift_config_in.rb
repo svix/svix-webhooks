@@ -83,15 +83,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) if @cluster_identifier
-      out["dbUser"] = Svix::serialize_primitive(@db_user) if @db_user
-      out["workgroupName"] = Svix::serialize_primitive(@workgroup_name) if @workgroup_name
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
-      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
+      out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) unless @cluster_identifier.nil?
+      out["dbUser"] = Svix::serialize_primitive(@db_user) unless @db_user.nil?
+      out["workgroupName"] = Svix::serialize_primitive(@workgroup_name) unless @workgroup_name.nil?
+      out["dbName"] = Svix::serialize_primitive(@db_name) unless @db_name.nil?
+      out["schemaName"] = Svix::serialize_primitive(@schema_name) unless @schema_name.nil?
+      out["tableName"] = Svix::serialize_primitive(@table_name) unless @table_name.nil?
       out
     end
 

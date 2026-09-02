@@ -42,11 +42,11 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
-      out["archived"] = Svix::serialize_primitive(@archived) if @archived
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
+      out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
       out
     end
 
