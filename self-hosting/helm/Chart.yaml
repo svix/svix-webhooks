@@ -1,0 +1,17 @@
+name: svix
+description: A Helm chart for Svix webhook service
+apiVersion: v2
+version: 0.1.0
+keywords:
+  - webhooks
+  - svix
+  - api
+  - kubernetes
+home: https://www.svix.com
+sources:
+  - https://github.com/svix/svix-webhooks
+maintainers:
+  - name: Svix Team
+    email: contact@svix.com
+icon: https://avatars.githubusercontent.com/u/80175132?s=200&v=4
+appVersion: "1.0.0"
