@@ -27,6 +27,10 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/All: Add support for new bulk-expunge endpoint (`svix.message.bulkExpungeContent`)
   * For Svix Server OSS, this endpoint is available as of v1.101.0
 * Libs/Rust: Add `Svix::server_url` accessor method
+* Libs/Ruby, Libs/PHP: Webhook verification now falls back to a case-insensitive
+  header lookup when the exact lowercase names are absent, so header sets like
+  `Svix-Id` (as returned by PHP's `getallheaders()` and by Rack) verify instead of
+  failing with "Missing required headers"
 
 ## Version 2.0.0
 * Libs/All **(Breaking)**: The `PatchConfig`-suffixed types are now `ConfigPatch`-suffixed
