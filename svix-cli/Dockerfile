@@ -3,7 +3,7 @@
 # NOTE: this should be built from the root of `svix-webhooks`
 # with `docker build -f svix-cli/Dockerfile .`# Base build
 
-FROM cgr.dev/chainguard/wolfi-base@sha256:57108e597a8cf3bd376b810f1c3539c21942daefa242cb9dddaae30f8aac735d AS build
+FROM cgr.dev/chainguard/wolfi-base@sha256:103eb3f4444c68ea2453bf3aad09d860eaa5a698effb3e656cd607f630f0e46d AS build
 SHELL ["/bin/sh", "-eux", "-c"]
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
     apk add rust~1.96.1 \
@@ -42,7 +42,7 @@ RUN mkdir /scripts
 COPY bridge/scripts/check-deps.sh /scripts/check-deps.sh
 
 # Production
-FROM cgr.dev/chainguard/wolfi-base@sha256:a31344ab2cb8618db84f535eec56f76f6178b142cb92cb2e48676cc2dcebea72 AS prod
+FROM cgr.dev/chainguard/wolfi-base@sha256:103eb3f4444c68ea2453bf3aad09d860eaa5a698effb3e656cd607f630f0e46d AS prod
 
 SHELL ["/bin/sh", "-eux", "-c"]
 
