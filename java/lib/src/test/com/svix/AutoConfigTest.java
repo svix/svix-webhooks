@@ -1,6 +1,7 @@
 package com.svix;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
@@ -19,6 +20,23 @@ public class AutoConfigTest {
 
                 assertEquals("app_1", content.getAppId());
                 assertEquals("ep_2", content.getEndpointId());
+                assertNull(content.getAutoconfigId());
+                assertEquals("https://api.example.test", content.getServerUrl());
+                assertEquals("whsec_Zm9v", content.getEndpointSecret());
+                assertEquals("sk_test_xyz", content.getTokenPlaintext());
+        }
+
+        @Test
+        public void decodeTokenParsesV2Payload() throws Exception {
+                String json = "{\"aid\":\"app_1\",\"sid\":\"acfg_2\",\"surl\":\"https://api.example.test\",\"esec\":\"whsec_Zm9v\",\"tok\":\"sk_test_xyz\"}";
+                String token = AutoConfig.AUTOCONFIG_TOKEN_PREFIX_V2 + Base64.getEncoder()
+                                .encodeToString(json.getBytes(StandardCharsets.UTF_8));
+
+                AutoConfig.DecodedTokenContent content = AutoConfig.decodeToken(token);
+
+                assertEquals("app_1", content.getAppId());
+                assertNull(content.getEndpointId());
+                assertEquals("acfg_2", content.getAutoconfigId());
                 assertEquals("https://api.example.test", content.getServerUrl());
                 assertEquals("whsec_Zm9v", content.getEndpointSecret());
                 assertEquals("sk_test_xyz", content.getTokenPlaintext());
@@ -39,6 +57,15 @@ public class AutoConfigTest {
         @Test
         public void decodeTokenRejectsInvalidJson() {
                 String token = AutoConfig.AUTOCONFIG_TOKEN_PREFIX_V1 + Base64.getEncoder()
+                                .encodeToString("not json".getBytes(StandardCharsets.UTF_8));
+
+                assertThrows(AutoConfig.InvalidTokenException.class,
+                                () -> AutoConfig.decodeToken(token));
+        }
+
+        @Test
+        public void decodeTokenRejectsInvalidJsonV2() {
+                String token = AutoConfig.AUTOCONFIG_TOKEN_PREFIX_V2 + Base64.getEncoder()
                                 .encodeToString("not json".getBytes(StandardCharsets.UTF_8));
 
                 assertThrows(AutoConfig.InvalidTokenException.class,

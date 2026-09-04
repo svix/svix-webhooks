@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Svix;
 
 use GuzzleHttp\Client;
+use Svix\ApiInternal\EndpointAutoconfig;
 use Svix\ApiInternal\EndpointAutoConfigDeprecated;
 use Svix\Exception\ApiException;
 use Svix\Models\EndpointIn;
@@ -15,11 +16,14 @@ use Svix\Request\SvixHttpClient;
 final class AutoConfig
 {
     private const AUTOCONFIG_TOKEN_PREFIX_V1 = 'auto_v1_';
+    private const AUTOCONFIG_TOKEN_PREFIX_V2 = 'auto_v2_';
     private const UNSUPPORTED_TOKEN_VERSION = 'Unsupported token version. You might need to update the Svix SDK to use this token';
 
     private string $appId;
 
-    private string $endpointId;
+    private ?string $endpointId = null;
+
+    private ?string $autoconfigId = null;
 
     private EndpointIn $endpoint;
 
@@ -34,7 +38,8 @@ final class AutoConfig
     {
         $content = self::decodeToken($token);
         $this->appId = $content['app_id'];
-        $this->endpointId = $content['endpoint_id'];
+        $this->endpointId = $content['endpoint_id'] ?? null;
+        $this->autoconfigId = $content['autoconfig_id'] ?? null;
         $this->endpoint = $endpoint;
 
         try {
@@ -59,10 +64,18 @@ final class AutoConfig
      */
     public function subscribe(): EndpointOut
     {
+        if ($this->autoconfigId !== null) {
+            return (new EndpointAutoconfig($this->client))->subscribe(
+                $this->appId,
+                $this->autoconfigId,
+                $this->endpoint,
+            );
+        }
+
         return (new EndpointAutoConfigDeprecated($this->client))->update(
             $this->appId,
-            $this->endpointId,
-            SubscribeIn::create($this->endpoint),
+            $this->endpointId ?? '',
+            SubscribeIn::create()->withEndpoint($this->endpoint),
         );
     }
 
@@ -78,17 +91,40 @@ final class AutoConfig
     /**
      * @internal
      *
-     * @return array{app_id: string, endpoint_id: string, server_url: string, endpoint_secret: string, token_plaintext: string}
+     * @return array{
+     *     version: string,
+     *     app_id: string,
+     *     endpoint_id?: string,
+     *     autoconfig_id?: string,
+     *     server_url: string,
+     *     endpoint_secret: string,
+     *     token_plaintext: string
+     * }
      *
      * @throws \InvalidArgumentException if the token is invalid
      */
     public static function decodeToken(string $token): array
     {
-        if (!str_starts_with($token, self::AUTOCONFIG_TOKEN_PREFIX_V1)) {
-            throw new \InvalidArgumentException(self::UNSUPPORTED_TOKEN_VERSION);
+        if (str_starts_with($token, self::AUTOCONFIG_TOKEN_PREFIX_V1)) {
+            $data = self::parseTokenPayload($token, self::AUTOCONFIG_TOKEN_PREFIX_V1);
+
+            return self::tokenContentFromPayload($data, 'v1', 'eid', 'endpoint_id');
+        }
+        if (str_starts_with($token, self::AUTOCONFIG_TOKEN_PREFIX_V2)) {
+            $data = self::parseTokenPayload($token, self::AUTOCONFIG_TOKEN_PREFIX_V2);
+
+            return self::tokenContentFromPayload($data, 'v2', 'sid', 'autoconfig_id');
         }
 
-        $encoded = substr($token, strlen(self::AUTOCONFIG_TOKEN_PREFIX_V1));
+        throw new \InvalidArgumentException(self::UNSUPPORTED_TOKEN_VERSION);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function parseTokenPayload(string $token, string $prefix): array
+    {
+        $encoded = substr($token, strlen($prefix));
         if ($encoded === false || $encoded === '') {
             throw new \InvalidArgumentException('invalid token');
         }
@@ -108,10 +144,33 @@ final class AutoConfig
             throw new \InvalidArgumentException('invalid token');
         }
 
+        return $data;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     *
+     * @return array{
+     *     version: string,
+     *     app_id: string,
+     *     endpoint_id?: string,
+     *     autoconfig_id?: string,
+     *     server_url: string,
+     *     endpoint_secret: string,
+     *     token_plaintext: string
+     * }
+     */
+    private static function tokenContentFromPayload(
+        array $data,
+        string $version,
+        string $idKey,
+        string $idField,
+    ): array {
         try {
             return [
+                'version' => $version,
                 'app_id' => (string) $data['aid'],
-                'endpoint_id' => (string) $data['eid'],
+                $idField => (string) $data[$idKey],
                 'server_url' => (string) $data['surl'],
                 'endpoint_secret' => (string) $data['esec'],
                 'token_plaintext' => (string) $data['tok'],
