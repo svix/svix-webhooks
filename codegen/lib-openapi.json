@@ -11292,7 +11292,7 @@
                 ],
                 "summary": "Create Subscription",
                 "description": "Create a new auto-config flow (creates an endpoint awaiting configuration).",
-                "operationId": "v1.endpoint.auto-config.create",
+                "operationId": "v1.endpoint.auto-config-deprecated.create",
                 "parameters": [
                     {
                         "in": "path",
@@ -11416,7 +11416,7 @@
                 ],
                 "summary": "Get Subscription",
                 "description": "Get the current auto-config token in censored form.",
-                "operationId": "v1.endpoint.auto-config.get",
+                "operationId": "v1.endpoint.auto-config-deprecated.get",
                 "parameters": [
                     {
                         "in": "path",
@@ -11544,7 +11544,7 @@
                 ],
                 "summary": "Update Subscription",
                 "description": "Update an auto-config endpoint by providing endpoint details.",
-                "operationId": "v1.endpoint.auto-config.update",
+                "operationId": "v1.endpoint.auto-config-deprecated.update",
                 "parameters": [
                     {
                         "in": "path",
@@ -11684,7 +11684,7 @@
                 ],
                 "summary": "Rotate Subscription",
                 "description": "Rotate the auth token for an auto-config endpoint.",
-                "operationId": "v1.endpoint.auto-config.rotate",
+                "operationId": "v1.endpoint.auto-config-deprecated.rotate",
                 "parameters": [
                     {
                         "in": "path",
@@ -20856,7 +20856,7 @@
                 "parameters": [
                     {
                         "in": "query",
-                        "name": "startDate",
+                        "name": "start_date",
                         "description": "Filter the range to data starting from this date.",
                         "schema": {
                             "description": "Filter the range to data starting from this date.",
@@ -20868,7 +20868,7 @@
                     },
                     {
                         "in": "query",
-                        "name": "endDate",
+                        "name": "end_date",
                         "description": "Filter the range to data ending by this date.",
                         "schema": {
                             "description": "Filter the range to data ending by this date.",
@@ -22630,6 +22630,411 @@
                         "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/background-task/qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
                     }
                 ]
+            }
+        },
+        "/api/v1/app/{app_id}/autoconfig": {
+            "post": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Create Subscription",
+                "description": "Create an AutoConfig subscription.",
+                "operationId": "v1.endpoint.autoconfig.create",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutoConfigOut2"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}/endpoint": {
+            "put": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Subscribe Endpoint",
+                "description": "Create or update the HTTP endpoint for an AutoConfig subscription.",
+                "operationId": "v1.endpoint.autoconfig.subscribe",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "autoconfig_id",
+                        "description": "The AutoConfigSubscription's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The AutoConfigSubscription's ID.",
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 32,
+                            "pattern": "^auto_[A-Za-z0-9]{27}$",
+                            "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}/destination": {
+            "put": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Subscribe Destination",
+                "description": "Create or update the destination for an AutoConfig subscription.",
+                "operationId": "v1.destination.autoconfig.subscribe",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "autoconfig_id",
+                        "description": "The AutoConfigSubscription's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The AutoConfigSubscription's ID.",
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 32,
+                            "pattern": "^auto_[A-Za-z0-9]{27}$",
+                            "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "description": "The destination's type and type-specific configuration.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DestinationIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DestinationOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
             }
         },
         "/api/v1/app/{app_id}/destination": {
@@ -24905,12 +25310,12 @@
                     },
                     {
                         "in": "query",
-                        "name": "withContent",
+                        "name": "with_content",
                         "description": "When `false`, omit the (potentially large) `response` body from each attempt.",
                         "schema": {
                             "description": "When `false`, omit the (potentially large) `response` body from each attempt.",
                             "type": "boolean",
-                            "default": true
+                            "default": false
                         },
                         "style": "form"
                     }
@@ -30608,12 +31013,12 @@
                     },
                     {
                         "in": "query",
-                        "name": "withContent",
+                        "name": "with_content",
                         "description": "When `false`, omit the (potentially large) `response` body from each attempt.",
                         "schema": {
                             "description": "When `false`, omit the (potentially large) `response` body from each attempt.",
                             "type": "boolean",
-                            "default": true
+                            "default": false
                         },
                         "style": "form"
                     }
@@ -46853,7 +47258,7 @@
                     "Stream"
                 ]
             },
-            "SinkIn": {
+            "LegacySinkIn": {
                 "type": "object",
                 "properties": {
                     "description": {
@@ -46982,7 +47387,7 @@
                     }
                 ]
             },
-            "SinkOut": {
+            "LegacySinkOut": {
                 "type": "object",
                 "properties": {
                     "id": {
@@ -47124,13 +47529,13 @@
                     "updatedAt"
                 ]
             },
-            "ListResponse_SinkOut_": {
+            "ListResponse_LegacySinkOut_": {
                 "type": "object",
                 "properties": {
                     "data": {
                         "type": "array",
                         "items": {
-                            "$ref": "#/components/schemas/SinkOut"
+                            "$ref": "#/components/schemas/LegacySinkOut"
                         }
                     },
                     "iterator": {
@@ -51744,33 +52149,805 @@
                     "updatedAt"
                 ]
             },
-            "ListResponse_DestinationOut_": {
+            "AutoConfigOut2": {
                 "type": "object",
                 "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/DestinationOut"
-                        }
-                    },
-                    "iterator": {
+                    "createdAt": {
                         "type": "string",
-                        "nullable": true,
-                        "example": "iterator"
+                        "format": "date-time"
                     },
-                    "prevIterator": {
-                        "type": "string",
-                        "nullable": true,
-                        "example": "-iterator"
-                    },
-                    "done": {
-                        "type": "boolean"
+                    "token": {
+                        "type": "string"
                     }
                 },
                 "required": [
-                    "data",
-                    "done",
-                    "iterator"
+                    "createdAt",
+                    "token"
+                ]
+            },
+            "DestinationIn": {
+                "description": "The destination's type and type-specific configuration.",
+                "type": "object",
+                "properties": {
+                    "uid": {
+                        "description": "An optional unique identifier for the destination.",
+                        "type": "string",
+                        "maxLength": 60,
+                        "minLength": 1,
+                        "pattern": "^(?!sink_)[a-zA-Z0-9_-]+$",
+                        "example": "unique-identifier",
+                        "nullable": true
+                    },
+                    "status": {
+                        "description": "Whether the destination will receive events.\n\nIf the destination is `enabled`, events sent to the application will be dispatched to the destination in order.\n\nIf the destination is `disabled`, events will not be dispatched until the destination is reenabled.",
+                        "default": "enabled",
+                        "$ref": "#/components/schemas/SinkStatusIn"
+                    },
+                    "batchSize": {
+                        "description": "How many events will be batched in a request to the destination.",
+                        "type": "integer",
+                        "format": "uint16",
+                        "default": 100,
+                        "minimum": 1,
+                        "maximum": 1000,
+                        "example": 100
+                    },
+                    "maxWaitSecs": {
+                        "description": "How long to wait before a batch of events is sent, if the `batchSize` is not reached.\n\nFor example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after 10 seconds or 100 events, whichever comes first.\n\nNote that an empty batch is never sent to the destination.",
+                        "type": "integer",
+                        "format": "uint16",
+                        "default": 0,
+                        "maximum": 300,
+                        "minimum": 0.0
+                    },
+                    "eventTypes": {
+                        "description": "A list of event types that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events.",
+                        "type": "array",
+                        "default": [],
+                        "items": {
+                            "description": "The event type's name",
+                            "type": "string",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "user.signup"
+                        }
+                    },
+                    "channels": {
+                        "description": "A list of channels that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events.",
+                        "type": "array",
+                        "default": [],
+                        "items": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.:+]+$",
+                            "example": "project_1337"
+                        }
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "default": {},
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "pollingEndpoint"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "azureBlobStorage"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/AzureBlobStorageConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "otelTracing"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/OtelTracingConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "fifoEndpoint"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/FifoEndpointConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "amazonS3"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/S3ConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "googleCloudStorage"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/GoogleCloudStorageConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "googleCloudPubSub"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/GoogleCloudPubSubConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "sqs"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/SqsConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "sns"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/SnsConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "bigQuery"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/BigQueryConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "clickhouse"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ClickhouseConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "eventBridge"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/EventBridgeConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "snowflake"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/SnowflakeConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "rabbitMq"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/RabbitMqConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "redshift"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/RedshiftConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postgres"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostgresConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    }
+                ]
+            },
+            "SinkStatusIn": {
+                "type": "string",
+                "enum": [
+                    "enabled",
+                    "disabled"
+                ]
+            },
+            "AzureBlobStorageConfigIn": {
+                "type": "object",
+                "properties": {
+                    "container": {
+                        "type": "string"
+                    },
+                    "account": {
+                        "type": "string"
+                    },
+                    "accessKey": {
+                        "description": "Access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "account",
+                    "container"
+                ]
+            },
+            "OtelTracingConfigIn": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "headers": {
+                        "type": "object",
+                        "default": {},
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "url"
+                ]
+            },
+            "FifoEndpointConfigIn": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "headers": {
+                        "type": "object",
+                        "default": {},
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "key": {
+                        "type": "string",
+                        "default": null,
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "url"
+                ]
+            },
+            "S3ConfigIn": {
+                "type": "object",
+                "properties": {
+                    "bucket": {
+                        "type": "string"
+                    },
+                    "accessKeyId": {
+                        "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is null",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "secretAccessKey": {
+                        "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is null",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "region": {
+                        "description": "The region of the S3 bucket\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "endpointUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                    },
+                    "roleArn": {
+                        "description": "Role ARN for delegated authentication",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "externalId": {
+                        "description": "Shared secret passed as the STS ExternalId.\n\nRecommended if `role_arn` is not null.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "bucket"
+                ]
+            },
+            "GoogleCloudStorageConfigIn": {
+                "description": "Configuration for a Google Cloud Storage sink.\n\nWrite stream events into the named bucket using the supplied Google Cloud credentials.",
+                "type": "object",
+                "properties": {
+                    "bucket": {
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "description": "Google Cloud Credentials JSON Object as a string.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "bucket",
+                    "credentials"
+                ]
+            },
+            "GoogleCloudPubSubConfigIn": {
+                "type": "object",
+                "properties": {
+                    "projectId": {
+                        "type": "string"
+                    },
+                    "topicId": {
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "description": "Google Cloud Credentials JSON Object as a string.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "credentials",
+                    "projectId",
+                    "topicId"
+                ]
+            },
+            "SqsConfigIn": {
+                "description": "Configuration for an SQS sink.",
+                "type": "object",
+                "properties": {
+                    "queueUrl": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "region": {
+                        "description": "The region of the SQS queue.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "accessKeyId": {
+                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "secretAccessKey": {
+                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "endpointUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "queueUrl"
+                ]
+            },
+            "SnsConfigIn": {
+                "description": "Configuration for a SNS sink.",
+                "type": "object",
+                "properties": {
+                    "topicArn": {
+                        "type": "string"
+                    },
+                    "region": {
+                        "description": "The region of the SNS instance.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "accessKeyId": {
+                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "secretAccessKey": {
+                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "endpointUrl": {
+                        "type": "string",
+                        "format": "uri",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "topicArn"
+                ]
+            },
+            "BigQueryConfigIn": {
+                "description": "Configuration for a Google Cloud BigQuery sink.",
+                "type": "object",
+                "properties": {
+                    "projectId": {
+                        "type": "string"
+                    },
+                    "datasetId": {
+                        "type": "string"
+                    },
+                    "tableId": {
+                        "type": "string"
+                    },
+                    "credentials": {
+                        "description": "Google Cloud Credentials JSON Object as a string.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "credentials",
+                    "datasetId",
+                    "projectId",
+                    "tableId"
+                ]
+            },
+            "ClickhouseConfigIn": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "description": "The HTTP URL of the ClickHouse server (e.g. `https://my_clickhouse:8443`).",
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "username": {
+                        "description": "Username to access Clickhouse.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "password": {
+                        "description": "Password to access Clickhouse.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "database": {
+                        "description": "The Clickhouse database to connect to.",
+                        "type": "string",
+                        "default": "default"
+                    },
+                    "tableName": {
+                        "description": "The Clickhouse table to write to.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "tableName",
+                    "url"
+                ]
+            },
+            "EventBridgeConfigIn": {
+                "type": "object",
+                "properties": {
+                    "eventBusName": {
+                        "description": "The name or ARN of the event bus to receive the event",
+                        "type": "string"
+                    },
+                    "detailType": {
+                        "description": "Free-form string, with a maximum of 128 characters",
+                        "type": "string",
+                        "default": "application/json",
+                        "maxLength": 128,
+                        "example": "ResourceGroups Resource State Change"
+                    },
+                    "accessKeyId": {
+                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "secretAccessKey": {
+                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "region": {
+                        "description": "The region of the EventBridge bus.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "eventBusName"
+                ]
+            },
+            "SnowflakeConfigIn": {
+                "description": "Configuration parameters for defining a Snowflake sink.",
+                "type": "object",
+                "properties": {
+                    "privateKey": {
+                        "description": "PEM-encoded private key used for signing token-based requests to the Snowflake API.\n\nBeginning/end delimiters are not required.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "accountIdentifier": {
+                        "description": "Snowflake account identifier, which includes both the organization and account IDs separated by a hyphen.",
+                        "type": "string"
+                    },
+                    "userId": {
+                        "description": "The Snowflake user id.",
+                        "type": "string"
+                    },
+                    "dbName": {
+                        "description": "Database name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    },
+                    "schemaName": {
+                        "description": "Schema name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    },
+                    "tableName": {
+                        "description": "Table name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accountIdentifier",
+                    "userId"
+                ]
+            },
+            "RabbitMqConfigIn": {
+                "description": "Configuration for a RabbitMq sink.",
+                "type": "object",
+                "properties": {
+                    "uri": {
+                        "type": "string"
+                    },
+                    "routingKey": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "routingKey",
+                    "uri"
+                ]
+            },
+            "RedshiftConfigIn": {
+                "description": "Configuration parameters for defining a Redshift sink.\n\nFor provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.",
+                "type": "object",
+                "properties": {
+                    "accessKeyId": {
+                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "secretAccessKey": {
+                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "region": {
+                        "description": "The region of the Redshift DB.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "clusterIdentifier": {
+                        "description": "Required for provisioned clusters.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dbUser": {
+                        "description": "Required for provisioned clusters.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "workgroupName": {
+                        "description": "Required for Redshift Serverless.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "dbName": {
+                        "description": "Database name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    },
+                    "schemaName": {
+                        "description": "Schema name.\n\nOnly used if not using transformations.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "tableName": {
+                        "description": "Table name.\n\nOnly required if not using transformations.",
+                        "type": "string"
+                    }
+                }
+            },
+            "PostgresConfigIn": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "description": "PostgreSQL connection URL, e.g. `postgres://user@host:5432/dbname?sslmode=require`.\n\nDo NOT embed a password here; use the `password` field instead.",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "Password for the connection.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "tableName": {
+                        "description": "Table to insert into. May be schema-qualified (e.g. `public.events`).\n\nQuote characters are not supported. Each dot-separated segment is automatically double-quoted when the query is built, so `public.events` becomes `\"public\".\"events\"`.",
+                        "type": "string"
+                    },
+                    "sslRootCert": {
+                        "description": "PEM-encoded CA certificate used to verify the Postgres server's TLS certificate.\n\nSupply this to trust a private or self-signed CA when connecting with `sslmode=verify-ca` or `sslmode=verify-full`. Without it, only the built-in public roots are trusted.",
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "tableName",
+                    "url"
                 ]
             },
             "DestinationOut": {
@@ -52473,790 +53650,33 @@
                     "url"
                 ]
             },
-            "DestinationIn": {
-                "description": "The destination's type and type-specific configuration.",
+            "ListResponse_DestinationOut_": {
                 "type": "object",
                 "properties": {
-                    "uid": {
-                        "description": "An optional unique identifier for the destination.",
-                        "type": "string",
-                        "maxLength": 60,
-                        "minLength": 1,
-                        "pattern": "^(?!sink_)[a-zA-Z0-9_-]+$",
-                        "example": "unique-identifier",
-                        "nullable": true
-                    },
-                    "status": {
-                        "description": "Whether the destination will receive events.\n\nIf the destination is `enabled`, events sent to the application will be dispatched to the destination in order.\n\nIf the destination is `disabled`, events will not be dispatched until the destination is reenabled.",
-                        "default": "enabled",
-                        "$ref": "#/components/schemas/SinkStatusIn"
-                    },
-                    "batchSize": {
-                        "description": "How many events will be batched in a request to the destination.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "default": 100,
-                        "minimum": 1,
-                        "maximum": 1000,
-                        "example": 100
-                    },
-                    "maxWaitSecs": {
-                        "description": "How long to wait before a batch of events is sent, if the `batchSize` is not reached.\n\nFor example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after 10 seconds or 100 events, whichever comes first.\n\nNote that an empty batch is never sent to the destination.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "default": 0,
-                        "maximum": 300,
-                        "minimum": 0.0
-                    },
-                    "eventTypes": {
-                        "description": "A list of event types that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events.",
-                        "type": "array",
-                        "default": [],
-                        "items": {
-                            "description": "The event type's name",
-                            "type": "string",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "user.signup"
-                        }
-                    },
-                    "channels": {
+                    "data": {
                         "type": "array",
                         "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.:+]+$",
-                            "example": "project_1337"
+                            "$ref": "#/components/schemas/DestinationOut"
                         }
                     },
-                    "metadata": {
-                        "type": "object",
-                        "default": {},
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "oneOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "pollingEndpoint"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "azureBlobStorage"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/AzureBlobStorageConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "otelTracing"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/OtelTracingConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "fifoEndpoint"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/FifoEndpointConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "amazonS3"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/S3ConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "googleCloudStorage"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/GoogleCloudStorageConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "googleCloudPubSub"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/GoogleCloudPubSubConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "sqs"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/SqsConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "sns"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/SnsConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "bigQuery"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/BigQueryConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "clickhouse"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/ClickhouseConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "eventBridge"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/EventBridgeConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "snowflake"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/SnowflakeConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "rabbitMq"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/RabbitMqConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "redshift"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/RedshiftConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "postgres"
-                                ]
-                            },
-                            "config": {
-                                "$ref": "#/components/schemas/PostgresConfigIn"
-                            }
-                        },
-                        "required": [
-                            "config",
-                            "type"
-                        ]
-                    }
-                ],
-                "required": [
-                    "channels"
-                ]
-            },
-            "SinkStatusIn": {
-                "type": "string",
-                "enum": [
-                    "enabled",
-                    "disabled"
-                ]
-            },
-            "AzureBlobStorageConfigIn": {
-                "type": "object",
-                "properties": {
-                    "container": {
-                        "type": "string"
-                    },
-                    "account": {
-                        "type": "string"
-                    },
-                    "accessKey": {
-                        "description": "Access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
+                    "iterator": {
                         "type": "string",
-                        "nullable": true
+                        "nullable": true,
+                        "example": "iterator"
+                    },
+                    "prevIterator": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "-iterator"
+                    },
+                    "done": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
-                    "account",
-                    "container"
-                ]
-            },
-            "OtelTracingConfigIn": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "headers": {
-                        "type": "object",
-                        "default": {},
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "required": [
-                    "url"
-                ]
-            },
-            "FifoEndpointConfigIn": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "headers": {
-                        "type": "object",
-                        "default": {},
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    },
-                    "key": {
-                        "type": "string",
-                        "default": null,
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "url"
-                ]
-            },
-            "S3ConfigIn": {
-                "type": "object",
-                "properties": {
-                    "bucket": {
-                        "type": "string"
-                    },
-                    "accessKeyId": {
-                        "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is null",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "secretAccessKey": {
-                        "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is null",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "region": {
-                        "description": "The region of the S3 bucket\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "endpointUrl": {
-                        "type": "string",
-                        "format": "uri",
-                        "nullable": true
-                    },
-                    "roleArn": {
-                        "description": "Role ARN for delegated authentication",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "externalId": {
-                        "description": "Shared secret passed as the STS ExternalId.\n\nRequired if `role_arn` is not null.",
-                        "type": "string",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "bucket"
-                ]
-            },
-            "GoogleCloudStorageConfigIn": {
-                "description": "Configuration for a Google Cloud Storage sink.\n\nWrite stream events into the named bucket using the supplied Google Cloud credentials.",
-                "type": "object",
-                "properties": {
-                    "bucket": {
-                        "type": "string"
-                    },
-                    "credentials": {
-                        "description": "Google Cloud Credentials JSON Object as a string.",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "bucket",
-                    "credentials"
-                ]
-            },
-            "GoogleCloudPubSubConfigIn": {
-                "type": "object",
-                "properties": {
-                    "projectId": {
-                        "type": "string"
-                    },
-                    "topicId": {
-                        "type": "string"
-                    },
-                    "credentials": {
-                        "description": "Google Cloud Credentials JSON Object as a string.",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "credentials",
-                    "projectId",
-                    "topicId"
-                ]
-            },
-            "SqsConfigIn": {
-                "description": "Configuration for an SQS sink.",
-                "type": "object",
-                "properties": {
-                    "queueUrl": {
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "region": {
-                        "description": "The region of the SQS queue.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "accessKeyId": {
-                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "secretAccessKey": {
-                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "endpointUrl": {
-                        "type": "string",
-                        "format": "uri",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "queueUrl"
-                ]
-            },
-            "SnsConfigIn": {
-                "description": "Configuration for a SNS sink.",
-                "type": "object",
-                "properties": {
-                    "topicArn": {
-                        "type": "string"
-                    },
-                    "region": {
-                        "description": "The region of the SNS instance.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "accessKeyId": {
-                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "secretAccessKey": {
-                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "endpointUrl": {
-                        "type": "string",
-                        "format": "uri",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "topicArn"
-                ]
-            },
-            "BigQueryConfigIn": {
-                "description": "Configuration for a Google Cloud BigQuery sink.",
-                "type": "object",
-                "properties": {
-                    "projectId": {
-                        "type": "string"
-                    },
-                    "datasetId": {
-                        "type": "string"
-                    },
-                    "tableId": {
-                        "type": "string"
-                    },
-                    "credentials": {
-                        "description": "Google Cloud Credentials JSON Object as a string.",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "credentials",
-                    "datasetId",
-                    "projectId",
-                    "tableId"
-                ]
-            },
-            "ClickhouseConfigIn": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "description": "The HTTP URL of the ClickHouse server (e.g. `https://my_clickhouse:8443`).",
-                        "type": "string",
-                        "format": "uri"
-                    },
-                    "username": {
-                        "description": "Username to access Clickhouse.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "password": {
-                        "description": "Password to access Clickhouse.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "database": {
-                        "description": "The Clickhouse database to connect to.",
-                        "type": "string",
-                        "default": "default"
-                    },
-                    "tableName": {
-                        "description": "The Clickhouse table to write to.",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "tableName",
-                    "url"
-                ]
-            },
-            "EventBridgeConfigIn": {
-                "type": "object",
-                "properties": {
-                    "eventBusName": {
-                        "description": "The name or ARN of the event bus to receive the event",
-                        "type": "string"
-                    },
-                    "detailType": {
-                        "description": "Free-form string, with a maximum of 128 characters",
-                        "type": "string",
-                        "default": "application/json",
-                        "maxLength": 128,
-                        "example": "ResourceGroups Resource State Change"
-                    },
-                    "accessKeyId": {
-                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "secretAccessKey": {
-                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "region": {
-                        "description": "The region of the EventBridge bus.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
-                        "type": "string",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "eventBusName"
-                ]
-            },
-            "SnowflakeConfigIn": {
-                "description": "Configuration parameters for defining a Snowflake sink.",
-                "type": "object",
-                "properties": {
-                    "privateKey": {
-                        "description": "PEM-encoded private key used for signing token-based requests to the Snowflake API.\n\nBeginning/end delimiters are not required.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "accountIdentifier": {
-                        "description": "Snowflake account identifier, which includes both the organization and account IDs separated by a hyphen.",
-                        "type": "string"
-                    },
-                    "userId": {
-                        "description": "The Snowflake user id.",
-                        "type": "string"
-                    },
-                    "dbName": {
-                        "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
-                    },
-                    "schemaName": {
-                        "description": "Schema name.\n\nOnly required if not using transformations.",
-                        "type": "string"
-                    },
-                    "tableName": {
-                        "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "accountIdentifier",
-                    "userId"
-                ]
-            },
-            "RabbitMqConfigIn": {
-                "description": "Configuration for a RabbitMq sink.",
-                "type": "object",
-                "properties": {
-                    "uri": {
-                        "type": "string"
-                    },
-                    "routingKey": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "routingKey",
-                    "uri"
-                ]
-            },
-            "RedshiftConfigIn": {
-                "description": "Configuration parameters for defining a Redshift sink.\n\nFor provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.",
-                "type": "object",
-                "properties": {
-                    "accessKeyId": {
-                        "description": "Access key ID.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "secretAccessKey": {
-                        "description": "Secret access key.\n\nCurrently a required field, but marked as optional because we may add different authentication in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "region": {
-                        "description": "The region of the Redshift DB.\n\nCurrently a required field, but marked as optional because we may infer it from other fields in the future.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "clusterIdentifier": {
-                        "description": "Required for provisioned clusters.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "dbUser": {
-                        "description": "Required for provisioned clusters.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "workgroupName": {
-                        "description": "Required for Redshift Serverless.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "dbName": {
-                        "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
-                    },
-                    "schemaName": {
-                        "description": "Schema name.\n\nOnly used if not using transformations.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "tableName": {
-                        "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
-                    }
-                }
-            },
-            "PostgresConfigIn": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "description": "PostgreSQL connection URL, e.g. `postgres://user@host:5432/dbname?sslmode=require`.\n\nDo NOT embed a password here; use the `password` field instead.",
-                        "type": "string"
-                    },
-                    "password": {
-                        "description": "Password for the connection.",
-                        "type": "string",
-                        "nullable": true
-                    },
-                    "tableName": {
-                        "description": "Table to insert into. May be schema-qualified (e.g. `public.events`).\n\nQuote characters are not supported. Each dot-separated segment is automatically double-quoted when the query is built, so `public.events` becomes `\"public\".\"events\"`.",
-                        "type": "string"
-                    },
-                    "sslRootCert": {
-                        "description": "PEM-encoded CA certificate used to verify the Postgres server's TLS certificate.\n\nSupply this to trust a private or self-signed CA when connecting with `sslmode=verify-ca` or `sslmode=verify-full`. Without it, only the built-in public roots are trusted.",
-                        "type": "string",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "tableName",
-                    "url"
+                    "data",
+                    "done",
+                    "iterator"
                 ]
             },
             "DestinationPatch": {
@@ -53604,9 +54024,6 @@
                             "type"
                         ]
                     }
-                ],
-                "required": [
-                    "channels"
                 ]
             },
             "AzureBlobStorageConfigPatch": {

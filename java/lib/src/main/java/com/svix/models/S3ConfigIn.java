@@ -157,7 +157,7 @@ public class S3ConfigIn {
     /**
      * Shared secret passed as the STS ExternalId.
      *
-     * <p>Required if `role_arn` is not null.
+     * <p>Recommended if `role_arn` is not null.
      *
      * @return externalId
      */

@@ -3,16 +3,24 @@ from deprecated import deprecated
 
 from ..models import EndpointTransformationIn
 from .common import ApiBaseAsync, ApiBaseSync
-from .endpoint_auto_config import (
-    EndpointAutoConfig,
-    EndpointAutoConfigAsync,
+from .endpoint_auto_config_deprecated import (
+    EndpointAutoConfigDeprecated,
+    EndpointAutoConfigDeprecatedAsync,
+)
+from .endpoint_autoconfig import (
+    EndpointAutoconfig,
+    EndpointAutoconfigAsync,
 )
 
 
 class EndpointAsync(ApiBaseAsync):
     @property
-    def auto_config(self) -> EndpointAutoConfigAsync:
-        return EndpointAutoConfigAsync(self._client, self._httpx_client)
+    def auto_config_deprecated(self) -> EndpointAutoConfigDeprecatedAsync:
+        return EndpointAutoConfigDeprecatedAsync(self._client, self._httpx_client)
+
+    @property
+    def autoconfig(self) -> EndpointAutoconfigAsync:
+        return EndpointAutoconfigAsync(self._client, self._httpx_client)
 
     @deprecated
     async def transformation_partial_update(
@@ -37,8 +45,12 @@ class EndpointAsync(ApiBaseAsync):
 
 class Endpoint(ApiBaseSync):
     @property
-    def auto_config(self) -> EndpointAutoConfig:
-        return EndpointAutoConfig(self._client, self._httpx_client)
+    def auto_config_deprecated(self) -> EndpointAutoConfigDeprecated:
+        return EndpointAutoConfigDeprecated(self._client, self._httpx_client)
+
+    @property
+    def autoconfig(self) -> EndpointAutoconfig:
+        return EndpointAutoconfig(self._client, self._httpx_client)
 
     @deprecated
     def transformation_partial_update(

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Svix;
 
 use GuzzleHttp\Client;
-use Svix\ApiInternal\EndpointAutoConfig;
+use Svix\ApiInternal\EndpointAutoConfigDeprecated;
 use Svix\Exception\ApiException;
 use Svix\Models\EndpointIn;
 use Svix\Models\EndpointOut;
@@ -59,7 +59,7 @@ final class AutoConfig
      */
     public function subscribe(): EndpointOut
     {
-        return (new EndpointAutoConfig($this->client))->update(
+        return (new EndpointAutoConfigDeprecated($this->client))->update(
             $this->appId,
             $this->endpointId,
             SubscribeIn::create($this->endpoint),

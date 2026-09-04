@@ -42,6 +42,8 @@ from .connector_upsert_in import ConnectorUpsertIn
 from .create_stream_events_in import CreateStreamEventsIn
 from .create_stream_events_out import CreateStreamEventsOut
 from .cron_config import CronConfig
+from .destination_in import DestinationIn
+from .destination_out import DestinationOut
 from .docusign_config import DocusignConfig
 from .docusign_config_out import DocusignConfigOut
 from .easypost_config import EasypostConfig
@@ -79,6 +81,7 @@ from .event_type_out import EventTypeOut
 from .event_type_patch import EventTypePatch
 from .event_type_upsert_in import EventTypeUpsertIn
 from .expunge_all_contents_out import ExpungeAllContentsOut
+from .fifo_endpoint_config_in import FifoEndpointConfigIn
 from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
@@ -284,6 +287,8 @@ __all__ = [
     "CreateStreamEventsIn",
     "CreateStreamEventsOut",
     "CronConfig",
+    "DestinationIn",
+    "DestinationOut",
     "DocusignConfig",
     "DocusignConfigOut",
     "EasypostConfig",
@@ -321,6 +326,7 @@ __all__ = [
     "EventTypePatch",
     "EventTypeUpsertIn",
     "ExpungeAllContentsOut",
+    "FifoEndpointConfigIn",
     "GithubConfig",
     "GithubConfigOut",
     "GoogleCloudPubSubConfigIn",

@@ -19,6 +19,6 @@ type S3ConfigIn struct {
 	RoleArn     *string `json:"roleArn,omitempty"` // Role ARN for delegated authentication
 	// Shared secret passed as the STS ExternalId.
 	//
-	// Required if `role_arn` is not null.
+	// Recommended if `role_arn` is not null.
 	ExternalId *string `json:"externalId,omitempty"`
 }

@@ -5,7 +5,7 @@ require "base64"
 require "uri"
 
 require "svix/models/subscribe_in"
-require "svix/api_internal/endpoint_auto_config"
+require "svix/api_internal/endpoint_auto_config_deprecated"
 
 module Svix
   class AutoConfig
@@ -29,7 +29,7 @@ module Svix
     end
 
     def subscribe
-      EndpointAutoConfig.new(@client).update(
+      EndpointAutoConfigDeprecated.new(@client).update(
         @app_id,
         @endpoint_id,
         SubscribeIn.new("endpoint" => @endpoint)

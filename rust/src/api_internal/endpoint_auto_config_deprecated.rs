@@ -1,11 +1,11 @@
 // this file is @generated
 use crate::{error::Result, models::*, Configuration};
 
-pub struct EndpointAutoConfig<'a> {
+pub struct EndpointAutoConfigDeprecated<'a> {
     cfg: &'a Configuration,
 }
 
-impl<'a> EndpointAutoConfig<'a> {
+impl<'a> EndpointAutoConfigDeprecated<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
     }

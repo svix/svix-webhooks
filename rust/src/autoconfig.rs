@@ -89,7 +89,7 @@ impl AutoConfig {
         let mut subscribe_in = SubscribeIn::new();
         subscribe_in.endpoint = Some(self.endpoint.clone());
 
-        api_internal::endpoint_auto_config(self.svix.cfg())
+        api_internal::endpoint_auto_config_deprecated(self.svix.cfg())
             .update(self.app_id.clone(), self.endpoint_id.clone(), subscribe_in)
             .await
     }

@@ -2,7 +2,7 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.exceptions.WebhookVerificationException
-import com.svix.kotlin.internal.EndpointAutoConfig
+import com.svix.kotlin.internal.EndpointAutoConfigDeprecated
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.SubscribeIn
@@ -50,7 +50,7 @@ constructor(token: String, endpoint: EndpointIn) {
     /** Registers or updates the endpoint via the auto-config API. */
     @Throws(ApiException::class)
     suspend fun subscribe(): EndpointOut {
-        return EndpointAutoConfig(httpClient).update(appId, endpointId, SubscribeIn(endpoint))
+        return EndpointAutoConfigDeprecated(httpClient).update(appId, endpointId, SubscribeIn(endpoint))
     }
 
     /** Validates the webhook payload using the endpoint signing secret from the token. */

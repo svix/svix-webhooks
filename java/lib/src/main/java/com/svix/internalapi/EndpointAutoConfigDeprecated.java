@@ -10,10 +10,10 @@ import okhttp3.HttpUrl;
 
 import java.io.IOException;
 
-public class EndpointAutoConfig {
+public class EndpointAutoConfigDeprecated {
     private final SvixHttpClient client;
 
-    public EndpointAutoConfig(SvixHttpClient client) {
+    public EndpointAutoConfigDeprecated(SvixHttpClient client) {
         this.client = client;
     }
 

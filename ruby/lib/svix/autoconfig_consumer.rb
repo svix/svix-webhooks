@@ -4,7 +4,7 @@ require "svix/models/auto_config_sink_type"
 require "svix/models/poller_v2_commit_in"
 require "svix/models/sink_in_common"
 require "svix/models/subscribe_in"
-require "svix/api_internal/endpoint_auto_config"
+require "svix/api_internal/endpoint_auto_config_deprecated"
 require "svix/api_internal/message_pollerv2"
 
 module Svix
@@ -25,7 +25,7 @@ module Svix
       subscribe_in = SubscribeIn.new(
         "sink" => AutoConfigSinkType.new("config" => poller)
       )
-      EndpointAutoConfig.new(@client).update(@app_id, @sink_id, subscribe_in)
+      EndpointAutoConfigDeprecated.new(@client).update(@app_id, @sink_id, subscribe_in)
     end
 
     def receive(consumer_id, options = {})

@@ -44,6 +44,8 @@ mod connector_upsert_in;
 mod create_stream_events_in;
 mod create_stream_events_out;
 mod cron_config;
+mod destination_in;
+mod destination_out;
 mod docusign_config;
 mod docusign_config_out;
 mod easypost_config;
@@ -81,6 +83,7 @@ mod event_type_out;
 mod event_type_patch;
 mod event_type_upsert_in;
 mod expunge_all_contents_out;
+mod fifo_endpoint_config_in;
 mod github_config;
 mod github_config_out;
 mod google_cloud_pub_sub_config_in;
@@ -290,6 +293,8 @@ pub use self::{
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
     cron_config::CronConfig,
+    destination_in::{DestinationIn, DestinationInConfig},
+    destination_out::{DestinationOut, DestinationOutConfig},
     docusign_config::DocusignConfig,
     docusign_config_out::DocusignConfigOut,
     easypost_config::EasypostConfig,
@@ -327,6 +332,7 @@ pub use self::{
     event_type_patch::EventTypePatch,
     event_type_upsert_in::EventTypeUpsertIn,
     expunge_all_contents_out::ExpungeAllContentsOut,
+    fifo_endpoint_config_in::FifoEndpointConfigIn,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,

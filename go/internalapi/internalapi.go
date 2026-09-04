@@ -16,6 +16,10 @@ type (
 	}
 )
 
+func (svix InternalSvix) Destination() Destination {
+	return newDestination(svix.client)
+}
+
 func (svix InternalSvix) Endpoint() Endpoint {
 	return newEndpoint(svix.client)
 }

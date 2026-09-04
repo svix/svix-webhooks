@@ -1,7 +1,7 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
-import com.svix.internalapi.EndpointAutoConfig;
+import com.svix.internalapi.EndpointAutoConfigDeprecated;
 import com.svix.internalapi.MessagePollerv2;
 import com.svix.internalapi.MessagePollerv2ConsumerCommitOptions;
 import com.svix.internalapi.MessagePollerv2ConsumerPollOptions;
@@ -38,7 +38,7 @@ public final class AutoConfigConsumer {
 
   /** Registers this polling sink with Svix using the auto-config API. */
   public EndpointOut subscribe() throws IOException, ApiException {
-    return new EndpointAutoConfig(svix.getHttpClient()).update(appId, sinkId, new SubscribeIn()
+    return new EndpointAutoConfigDeprecated(svix.getHttpClient()).update(appId, sinkId, new SubscribeIn()
         .sink(new AutoConfigSinkType(new AutoConfigSinkTypeConfig.Poller(sinkIn))));
   }
 
