@@ -142,7 +142,9 @@ async fn new_pair_inner(
     // This fn is only called from
     // - `queue::new_pair` if the queue type is redis and a DSN is set
     // - redis tests that only makes sense to run with the DSN set
-    let dsn = cfg.redis_dsn.as_deref().unwrap();
+    let dsn = cfg
+        .queue_dsn()
+        .expect("Redis queue must have a configured DSN");
     let pool =
         RedisManager::from_queue_backend(&cfg.queue_backend(), cfg.redis_pool_max_size).await;
 
@@ -416,7 +418,7 @@ async fn migrate_sset(
 
 #[cfg(test)]
 pub mod tests {
-    use std::time::Duration;
+    use std::{sync::Arc, time::Duration};
 
     use chrono::Utc;
     use redis::{AsyncCommands as _, Direction, streams::StreamReadReply};
@@ -509,6 +511,74 @@ pub mod tests {
             .await
             .expect("Error retrieving connection from Redis pool");
         let _: () = conn.del(&[q1, q2, q3]).await.unwrap();
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_queue_dsn_without_redis_dsn() {
+        let mut cfg = crate::cfg::load().unwrap();
+        let queue_dsn = cfg
+            .queue_dsn()
+            .expect("Redis must be configured to run this test")
+            .to_owned();
+        let cfg_inner = Arc::make_mut(&mut cfg);
+        cfg_inner.queue_dsn = Some(queue_dsn);
+        cfg_inner.redis_dsn = None;
+        cfg_inner.enable_redis_v1_v2_queue_migration = false;
+
+        let queue_prefix = format!("{{queue_dsn_test_{}}}", rand::random::<u64>());
+        let main_queue = "_main";
+        let delayed_queue = "_delayed";
+        let delayed_lock = "_delayed_lock";
+        let dlq = "_dlq";
+        let effective_main_queue = format!("{queue_prefix}{main_queue}");
+        let effective_delayed_queue = format!("{queue_prefix}{delayed_queue}");
+        let effective_delayed_lock = format!("{queue_prefix}{delayed_lock}");
+        let effective_dlq = format!("{queue_prefix}{dlq}");
+
+        let pool = get_pool(&cfg).await;
+        let (producer, mut consumer) = new_pair_inner(
+            &cfg,
+            Duration::from_secs(cfg.redis_pending_duration_secs.max(45)),
+            &queue_prefix,
+            main_queue,
+            delayed_queue,
+            delayed_lock,
+            dlq,
+        )
+        .await;
+
+        let task = QueueTask::HealthCheck;
+        producer.send(&task, None).await.unwrap();
+        let delivery = timeout(TEST_RECV_DEADLINE, consumer.receive_all(TEST_RECV_DEADLINE))
+            .await
+            .expect("QueueTask receive timed out")
+            .unwrap()
+            .pop()
+            .expect("Expected QueueTask");
+        assert_eq!(*delivery.task, task);
+        delivery.ack().await.unwrap();
+
+        let mut conn = pool
+            .get()
+            .await
+            .expect("Error retrieving connection from Redis pool");
+        assert!(
+            conn.xread::<_, _, StreamReadReply>(std::slice::from_ref(&effective_main_queue), &[0])
+                .await
+                .unwrap()
+                .keys
+                .is_empty()
+        );
+        let _: () = conn
+            .del(&[
+                effective_main_queue,
+                effective_delayed_queue,
+                effective_delayed_lock,
+                effective_dlq,
+            ])
+            .await
+            .unwrap();
     }
 
     #[tokio::test]
