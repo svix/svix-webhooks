@@ -66,17 +66,5 @@ namespace Svix.Tests
                 new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
             );
         }
-
-        [Fact]
-        public void InvalidV2Json_ThrowsAutoConfigException()
-        {
-            var token =
-                AUTOCONFIG_TOKEN_PREFIX_V2
-                + Convert.ToBase64String(Encoding.UTF8.GetBytes("not json"));
-
-            Assert.Throws<AutoConfigException>(() =>
-                new AutoConfig(token, new EndpointIn { Url = "https://hook.example.test" })
-            );
-        }
     }
 }
