@@ -3,6 +3,8 @@
 require "uri"
 
 require "svix/models/auto_config_sink_type"
+require "svix/models/auto_config_subscription_out"
+require "svix/models/status"
 require "svix/models/destination_in"
 require "svix/models/destination_out"
 require "svix/models/poller_v2_commit_in"
@@ -10,6 +12,7 @@ require "svix/models/sink_in_common"
 require "svix/models/sink_status"
 require "svix/models/subscribe_in"
 require "svix/api_internal/endpoint_auto_config_deprecated"
+require "svix/api_internal/endpoint_autoconfig"
 require "svix/api_internal/destination_autoconfig"
 require "svix/api_internal/message_pollerv2"
 
@@ -47,20 +50,18 @@ module Svix
     end
 
     def receive(consumer_id, options = {})
-      @sink_id ||= subscribe.id
       MessagePollerv2.new(@client).consumer_poll(
         @app_id,
-        @sink_id,
+        sink_id,
         consumer_id,
         options
       )
     end
 
     def commit(consumer_id, offset, options = {})
-      @sink_id ||= subscribe.id
       MessagePollerv2.new(@client).consumer_commit(
         @app_id,
-        @sink_id,
+        sink_id,
         consumer_id,
         PollerV2CommitIn.new("offset" => offset),
         options
@@ -68,6 +69,16 @@ module Svix
     end
 
     private
+
+    def sink_id
+      return @sink_id if @sink_id
+
+      # Get the sink id from the autoconfig id (v2)
+      dest_id = EndpointAutoconfig.new(@client).get(@app_id, @autoconfig_id).dest_id
+      raise "autoconfig subscription is pending. Have you called subscribe()?" if dest_id.nil? || dest_id.empty?
+
+      dest_id
+    end
 
     def destination_out_from_v1_endpoint(endpoint)
       DestinationOut.new(
