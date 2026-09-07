@@ -2,6 +2,7 @@ package svix
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/svix/svix-webhooks/go/internalapi"
 	"github.com/svix/svix-webhooks/go/models"
@@ -102,16 +103,21 @@ func destinationOutFromV1Endpoint(endpoint *models.EndpointOut) *models.Destinat
 	}
 }
 
-func (a *AutoConfigConsumer) ensureSinkID(ctx context.Context) error {
+func (a *AutoConfigConsumer) getSinkID(ctx context.Context) (string, error) {
 	if a.sinkID != "" {
-		return nil
+		// Already have the sink id from subscribe() or the v1 token
+		return a.sinkID, nil
 	}
-	dest, err := a.Subscribe(ctx)
+
+	// Get the sink id from the autoconfig id (v2)
+	sub, err := a.svix.Endpoint().Autoconfig().Get(ctx, a.appID, a.autoconfigID)
 	if err != nil {
-		return err
+		return "", err
 	}
-	a.sinkID = dest.Id
-	return nil
+	if sub.DestId == nil || *sub.DestId == "" {
+		return "", fmt.Errorf("autoconfig subscription is pending. Have you called subscribe()?")
+	}
+	return *sub.DestId, nil
 }
 
 // Receive polls messages from the sink for the given consumer.
@@ -120,13 +126,14 @@ func (a *AutoConfigConsumer) Receive(
 	consumerID string,
 	options *internalapi.MessagePollerv2ConsumerPollOptions,
 ) (*models.PollerV2PollOut, error) {
-	if err := a.ensureSinkID(ctx); err != nil {
+	sinkID, err := a.getSinkID(ctx)
+	if err != nil {
 		return nil, err
 	}
 	return a.svix.Message().Pollerv2().ConsumerPoll(
 		ctx,
 		a.appID,
-		a.sinkID,
+		sinkID,
 		consumerID,
 		options,
 	)
@@ -139,13 +146,14 @@ func (a *AutoConfigConsumer) Commit(
 	offset uint64,
 	options *internalapi.MessagePollerv2ConsumerCommitOptions,
 ) error {
-	if err := a.ensureSinkID(ctx); err != nil {
+	sinkID, err := a.getSinkID(ctx)
+	if err != nil {
 		return err
 	}
 	return a.svix.Message().Pollerv2().ConsumerCommit(
 		ctx,
 		a.appID,
-		a.sinkID,
+		sinkID,
 		consumerID,
 		models.PollerV2CommitIn{Offset: offset},
 		options,
