@@ -193,10 +193,11 @@ test("subscribe", async (t) => {
     );
   });
 
-  await t.test("v2 receive subscribes", async () => {
+  await t.test("v2 receive gets subscription", async () => {
+    const subscriptionOut = `{"id":"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2","tokenCensored":"***","createdAt":"2019-08-24T14:15:22Z","status":"active","destId":"dst_123"}`;
     await mockServer
-      .forPut("/api/v1/app/app_1/autoconfig/acfg_2/destination")
-      .thenReply(200, destinationOut);
+      .forGet("/api/v1/app/app_1/autoconfig/acfg_2")
+      .thenReply(200, subscriptionOut);
     const pollMock = await mockServer
       .forGet("/api/v1/app/app_1/polling-endpoint/dst_123/consumer/c1")
       .thenReply(200, pollOut);
