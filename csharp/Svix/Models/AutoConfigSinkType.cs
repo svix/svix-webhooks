@@ -93,15 +93,21 @@ namespace Svix.Models
             };
         }
 
-        public void Switch(Action<SinkInCommon> onPoller, Action<EndpointIn> onHttp)
+        public void Switch(Action<SinkInCommon>? onPoller = null, Action<EndpointIn>? onHttp = null)
         {
             switch (_type)
             {
                 case ConfigType.Poller:
-                    onPoller((SinkInCommon)_value);
+                    if (onPoller != null)
+                    {
+                        onPoller((SinkInCommon)_value);
+                    }
                     break;
                 case ConfigType.Http:
-                    onHttp((EndpointIn)_value);
+                    if (onHttp != null)
+                    {
+                        onHttp((EndpointIn)_value);
+                    }
                     break;
                 default:
                     // unreachable
@@ -115,8 +121,8 @@ namespace Svix.Models
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
 
-        [JsonProperty("config", Required = Required.Always)]
-        public required JObject Config { get; set; }
+        [JsonProperty("config")]
+        public JObject? Config { get; set; }
     }
 
     public class AutoConfigSinkTypeConverter : JsonConverter

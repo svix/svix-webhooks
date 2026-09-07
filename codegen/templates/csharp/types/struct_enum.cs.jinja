@@ -121,16 +121,16 @@ namespace Svix.Models {
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type")
             };
-
         }
+
         public void Switch(
             {% set func_args -%}
                 {%- for v in type.variants -%}
-                    {%- if v.schema_ref is defined -%}
-                    Action<{{ v.schema_ref | to_upper_camel_case }}> on{{ v.name | to_upper_camel_case }},
-                    {%- else -%}
-                    Action on{{ v.name | to_upper_camel_case }},
+                    Action
+                    {%- if v.schema_ref is defined %}
+                    <{{ v.schema_ref | to_upper_camel_case }}>
                     {%- endif -%}
+                    ? on{{ v.name | to_upper_camel_case }} = null,
                 {%- endfor -%}
             {% endset -%}
             {{ func_args | strip_trailing_comma }}
@@ -140,20 +140,21 @@ namespace Svix.Models {
             {
                 {% for v in type.variants -%}
                 case {{ content_field_name }}Type.{{ v.name | to_upper_camel_case }}:
-                    on{{ v.name | to_upper_camel_case }}(
-                        {%- if v.schema_ref is defined -%}
-                        ({{ v.schema_ref | to_upper_camel_case }})_value
-                        {%- endif -%}
-                    );
+                    if (on{{ v.name | to_upper_camel_case }} != null)
+                    {
+                        on{{ v.name | to_upper_camel_case }}(
+                            {%- if v.schema_ref is defined -%}
+                            ({{ v.schema_ref | to_upper_camel_case }})_value
+                            {%- endif -%}
+                        );
+                    }
                     break;
                 {% endfor -%}
                 default:
                     // unreachable
                     throw new InvalidOperationException("Unknown config type");
             }
-
         }
-
     }
 
     internal class {{ type_name }}Surrogate
@@ -162,9 +163,8 @@ namespace Svix.Models {
         [JsonProperty("{{ type.discriminator_field }}", Required = Required.Always)]
         public required string {{ discriminator_field_name }} { get; set; }
 
-        [JsonProperty("{{ type.content_field }}", Required = Required.Always)]
-        public required JObject {{ content_field_name }} { get; set; }
-
+        [JsonProperty("{{ type.content_field }}")]
+        public JObject? {{ content_field_name }} { get; set; }
     }
 
     public class {{ type_name }}Converter : JsonConverter
