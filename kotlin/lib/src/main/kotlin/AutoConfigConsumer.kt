@@ -2,7 +2,8 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.internal.EndpointAutoConfigDeprecated
-import com.svix.kotlin.internal.DestinationAutoconfig
+import com.svix.kotlin.internal.EndpointAutoconfig
+import com.svix.kotlin.internal.DestinationAutoconfig;
 import com.svix.kotlin.internal.MessagePollerv2
 import com.svix.kotlin.internal.MessagePollerv2ConsumerCommitOptions
 import com.svix.kotlin.internal.MessagePollerv2ConsumerPollOptions
@@ -73,13 +74,23 @@ constructor(token: String, sinkIn: SinkInCommon) {
         return destinationOutFromV1Endpoint(endpoint)
     }
 
+    private suspend fun getSinkId(): String {
+        sinkId?.let {
+            // Already have the sink id from subscribe() or the v1 token
+            return it
+        }
+
+        // Get the sink id from the autoconfig id (v2)
+        return EndpointAutoconfig(httpClient).get(appId, autoconfigId as String).destId
+            ?: error("autoconfig subscription is pending. Have you called subscribe()?")
+    }
+
     @Throws(ApiException::class)
     suspend fun receive(
         consumerId: String,
         options: MessagePollerv2ConsumerPollOptions = MessagePollerv2ConsumerPollOptions(),
     ): PollerV2PollOut {
-        sinkId = sinkId ?: subscribe().id
-        return MessagePollerv2(httpClient).consumerPoll(appId, sinkId as String, consumerId, options)
+        return MessagePollerv2(httpClient).consumerPoll(appId, getSinkId(), consumerId, options)
     }
 
     @Throws(ApiException::class)
@@ -88,11 +99,10 @@ constructor(token: String, sinkIn: SinkInCommon) {
         offset: ULong,
         options: MessagePollerv2ConsumerCommitOptions = MessagePollerv2ConsumerCommitOptions(),
     ) {
-        sinkId = sinkId ?: subscribe().id
         MessagePollerv2(httpClient)
             .consumerCommit(
                 appId,
-                sinkId as String,
+                getSinkId(),
                 consumerId,
                 PollerV2CommitIn(offset),
                 options,
