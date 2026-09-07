@@ -16,6 +16,28 @@ func newEndpointAutoconfig(client *internal.SvixHttpClient) EndpointAutoconfig {
 	return EndpointAutoconfig{client}
 }
 
+// Get an AutoConfig subscription, including the bound endpoint or destination if any.
+func (endpointAutoconfig EndpointAutoconfig) Get(
+	ctx context.Context,
+	appId string,
+	autoconfigId string,
+) (*models.AutoConfigSubscriptionOut, error) {
+	pathMap := map[string]string{
+		"app_id":        appId,
+		"autoconfig_id": autoconfigId,
+	}
+	return internal.ExecuteRequest[any, models.AutoConfigSubscriptionOut](
+		ctx,
+		endpointAutoconfig.client,
+		"GET",
+		"/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
 // Create or update the HTTP endpoint for an AutoConfig subscription.
 func (endpointAutoconfig EndpointAutoconfig) Subscribe(
 	ctx context.Context,

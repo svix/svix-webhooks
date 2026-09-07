@@ -232,6 +232,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("merge")
+    public static class Merge extends IngestSourceOutConfig {
+        private final MergeConfigOut merge;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(merge);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("meta")
     public static class Meta extends IngestSourceOutConfig {
         private final MetaConfigOut meta;
@@ -685,6 +700,7 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("hubspot", c -> new Hubspot(m.convertValue(c, HubspotConfigOut.class)));
         TY_M.put("incident-io", c -> new IncidentIo(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("lithic", c -> new Lithic(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("merge", c -> new Merge(m.convertValue(c, MergeConfigOut.class)));
         TY_M.put("meta", c -> new Meta(m.convertValue(c, MetaConfigOut.class)));
         TY_M.put("nango", c -> new Nango(m.convertValue(c, NangoConfigOut.class)));
         TY_M.put("nash", c -> new Nash(m.convertValue(c, SvixConfigOut.class)));

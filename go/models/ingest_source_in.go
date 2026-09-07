@@ -16,6 +16,7 @@ import (
 //   - "easypost": Use EasypostConfig
 //   - "github": Use GithubConfig
 //   - "hubspot": Use HubspotConfig
+//   - "merge": Use MergeConfig
 //   - "meta": Use MetaConfig
 //   - "nango": Use NangoConfig
 //   - "openclaw": Use OpenClawConfig
@@ -59,6 +60,7 @@ const (
 	IngestSourceInTypeHubspot        IngestSourceInType = "hubspot"
 	IngestSourceInTypeIncidentIo     IngestSourceInType = "incident-io"
 	IngestSourceInTypeLithic         IngestSourceInType = "lithic"
+	IngestSourceInTypeMerge          IngestSourceInType = "merge"
 	IngestSourceInTypeMeta           IngestSourceInType = "meta"
 	IngestSourceInTypeNango          IngestSourceInType = "nango"
 	IngestSourceInTypeNash           IngestSourceInType = "nash"
@@ -103,6 +105,7 @@ func (DocusignConfig) isIngestSourceInConfig()  {}
 func (EasypostConfig) isIngestSourceInConfig()  {}
 func (GithubConfig) isIngestSourceInConfig()    {}
 func (HubspotConfig) isIngestSourceInConfig()   {}
+func (MergeConfig) isIngestSourceInConfig()     {}
 func (MetaConfig) isIngestSourceInConfig()      {}
 func (NangoConfig) isIngestSourceInConfig()     {}
 func (OpenClawConfig) isIngestSourceInConfig()  {}
@@ -166,6 +169,10 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "hubspot":
 		var c HubspotConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "merge":
+		var c MergeConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "meta":
@@ -274,6 +281,7 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"hubspot":         IngestSourceInTypeHubspot,
 	"incident-io":     IngestSourceInTypeIncidentIo,
 	"lithic":          IngestSourceInTypeLithic,
+	"merge":           IngestSourceInTypeMerge,
 	"meta":            IngestSourceInTypeMeta,
 	"nango":           IngestSourceInTypeNango,
 	"nash":            IngestSourceInTypeNash,

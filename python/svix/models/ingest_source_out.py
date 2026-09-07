@@ -14,6 +14,7 @@ from .docusign_config_out import DocusignConfigOut
 from .easypost_config_out import EasypostConfigOut
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
+from .merge_config_out import MergeConfigOut
 from .meta_config_out import MetaConfigOut
 from .nango_config_out import NangoConfigOut
 from .open_claw_config_out import OpenClawConfigOut
@@ -66,6 +67,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["hubspot"],
         t.Literal["incident-io"],
         t.Literal["lithic"],
+        t.Literal["merge"],
         t.Literal["meta"],
         t.Literal["nango"],
         t.Literal["nash"],
@@ -106,6 +108,7 @@ class IngestSourceOut(BaseModel):
         EasypostConfigOut,
         GithubConfigOut,
         HubspotConfigOut,
+        MergeConfigOut,
         MetaConfigOut,
         NangoConfigOut,
         OpenClawConfigOut,
@@ -164,6 +167,8 @@ class IngestSourceOut(BaseModel):
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "lithic":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "merge":
+            output.config = MergeConfigOut.model_validate(data.get("config", {}))
         elif output.type == "meta":
             output.config = MetaConfigOut.model_validate(data.get("config", {}))
         elif output.type == "nango":

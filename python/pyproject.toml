@@ -104,6 +104,7 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "svix/api/**.py" = ["I001", "E501"]  # ignore style in generated code
+"svix/api_internal/**.py" = ["I001", "E501"]  # ignore style in generated code
 "svix/models/**.py" = ["I001", "E501"]  # ignore in generated code
 
 [tool.ty.environment]

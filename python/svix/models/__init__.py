@@ -15,6 +15,7 @@ from .application_out import ApplicationOut
 from .application_patch import ApplicationPatch
 from .application_token_expire_in import ApplicationTokenExpireIn
 from .auto_config_sink_type import AutoConfigSinkType
+from .auto_config_subscription_out import AutoConfigSubscriptionOut
 from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
 from .azure_blob_storage_config_out import AzureBlobStorageConfigOut
 from .azure_blob_storage_config_patch import AzureBlobStorageConfigPatch
@@ -127,6 +128,8 @@ from .list_response_operational_webhook_endpoint_out import (
 from .list_response_stream_event_type_out import ListResponseStreamEventTypeOut
 from .list_response_stream_out import ListResponseStreamOut
 from .list_response_stream_sink_out import ListResponseStreamSinkOut
+from .merge_config import MergeConfig
+from .merge_config_out import MergeConfigOut
 from .message_attempt_out import MessageAttemptOut
 from .message_attempt_trigger_type import MessageAttemptTriggerType
 from .message_endpoint_out import MessageEndpointOut
@@ -213,6 +216,7 @@ from .sqs_config_in import SqsConfigIn
 from .sqs_config_out import SqsConfigOut
 from .sqs_config_patch import SqsConfigPatch
 from .starting_position import StartingPosition
+from .status import Status
 from .status_code_class import StatusCodeClass
 from .stream_event_type_in import StreamEventTypeIn
 from .stream_event_type_out import StreamEventTypeOut
@@ -260,6 +264,7 @@ __all__ = [
     "ApplicationPatch",
     "ApplicationTokenExpireIn",
     "AutoConfigSinkType",
+    "AutoConfigSubscriptionOut",
     "AzureBlobStorageConfigIn",
     "AzureBlobStorageConfigOut",
     "AzureBlobStorageConfigPatch",
@@ -370,6 +375,8 @@ __all__ = [
     "ListResponseStreamEventTypeOut",
     "ListResponseStreamOut",
     "ListResponseStreamSinkOut",
+    "MergeConfig",
+    "MergeConfigOut",
     "MessageAttemptOut",
     "MessageAttemptTriggerType",
     "MessageEndpointOut",
@@ -454,6 +461,7 @@ __all__ = [
     "SqsConfigOut",
     "SqsConfigPatch",
     "StartingPosition",
+    "Status",
     "StatusCodeClass",
     "StreamEventTypeIn",
     "StreamEventTypeOut",
