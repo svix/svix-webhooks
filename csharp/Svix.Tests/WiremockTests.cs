@@ -71,6 +71,27 @@ namespace Svix.Tests
             );
         }
 
+        [Theory]
+        [InlineData("", "/api/v1/app/app1")]
+        [InlineData("/", "/api/v1/app/app1")]
+        [InlineData("///", "/api/v1/app/app1")]
+        [InlineData("/proxy", "/proxy/api/v1/app/app1")]
+        [InlineData("/proxy/", "/proxy/api/v1/app/app1")]
+        [InlineData("/proxy///", "/proxy/api/v1/app/app1")]
+        [InlineData("/proxy//nested/", "/proxy//nested/api/v1/app/app1")]
+        public void ServerUrlTrailingSlashesAreIgnored(string suffix, string expectedPath)
+        {
+            stub.Given(Request.Create().WithPath(expectedPath).UsingGet())
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
+
+            var svx = new SvixClient("", new SvixOptions(baseUrl + suffix));
+            var application = svx.Application.Get("app1");
+
+            Assert.Equal("app_2raC7cFHmm6rLPcBjbVgeGQOnzr", application.Id);
+            Assert.Single(stub.LogEntries);
+            Assert.Equal(expectedPath, stub.LogEntries[0].RequestMessage.Path);
+        }
+
         [Fact]
         public void NonCamelCaseIsCorrectlySerialized()
         {

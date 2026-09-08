@@ -14,7 +14,7 @@ namespace Svix
     )
     {
         private readonly List<int> retryScheduleMilliseconds = retryScheduleMilliseconds;
-        private readonly string serverUrl = serverUrl;
+        private readonly string serverUrl = serverUrl.TrimEnd('/');
         private readonly HttpClient _httpClient = new();
         private readonly string _token = token;
         private readonly JsonSerializerSettings patchJsonOptions = new();
