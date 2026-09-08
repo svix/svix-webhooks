@@ -30,6 +30,7 @@ WORKDIR /app/svix-cli
 COPY rust /app/rust
 COPY svix-cli /app/svix-cli
 
+ARG WRITE_EXECUTABLE_METADATA="1"
 RUN <<EOF
     cargo build --release
     cargo sbom > /app/svix-cli.spdx

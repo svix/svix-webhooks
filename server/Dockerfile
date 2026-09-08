@@ -46,6 +46,8 @@ RUN cargo chef cook --release --package svix-server --bin svix-server --recipe-p
 
 # Build the server
 COPY . .
+
+ARG WRITE_EXECUTABLE_METADATA="1"
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
