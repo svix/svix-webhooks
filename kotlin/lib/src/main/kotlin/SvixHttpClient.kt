@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.UUID
 
@@ -54,7 +55,10 @@ internal constructor(
     ): Res {
         val reqBuilder = Request.Builder().url(url)
         if (reqBody != null) {
-            reqBuilder.method(method, Json.encodeToString(reqBody).toRequestBody())
+            reqBuilder.method(
+                method,
+                Json.encodeToString(reqBody).toRequestBody("application/json".toMediaType()),
+            )
         } else {
             reqBuilder.method(method, null)
         }
