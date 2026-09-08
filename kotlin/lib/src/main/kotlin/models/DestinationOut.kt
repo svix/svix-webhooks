@@ -251,7 +251,7 @@ class DestinationOutSerializer : KSerializer<DestinationOut> {
         val nextRetryAt: Instant? = null,
         val metadata: Map<String, String>,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = DestinationOutSurrogate.serializer().descriptor

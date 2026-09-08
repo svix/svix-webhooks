@@ -448,7 +448,7 @@ class IngestSourceInSerializer : KSerializer<IngestSourceIn> {
         val uid: String? = null,
         val metadata: Map<String, String>? = null,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = IngestSourceInSurrogate.serializer().descriptor

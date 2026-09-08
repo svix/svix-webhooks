@@ -1,6 +1,8 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.models.CronConfig
+import com.svix.kotlin.models.DestinationIn
+import com.svix.kotlin.models.DestinationInConfig
 import com.svix.kotlin.models.IngestSourceIn
 import com.svix.kotlin.models.IngestSourceInConfig
 import com.svix.kotlin.models.IngestSourceInConfig.Cron
@@ -33,8 +35,15 @@ class SerializationTests {
     }
 
     @Test
+    fun structEnumWhenConfigIsOmitted() {
+        val dest = Json.decodeFromString<DestinationIn>("""{"type":"pollingEndpoint"}""")
+        assertEquals(DestinationInConfig.PollingEndpoint, dest.config)
+    }
+
+    @Test
     fun structEnumWithNoExtraFields() {
-        val jsonSource =
+        val jsonSource = """{"name":"mendy is","uid":"very unique","type":"generic-webhook"}"""
+        val jsonSourceWithEmptyConfig =
             """{"name":"mendy is","uid":"very unique","type":"generic-webhook","config":{}}"""
         val sourceIn =
             IngestSourceIn(
@@ -45,6 +54,7 @@ class SerializationTests {
         // de/serialization works both ways
         assertEquals(jsonSource, Json.encodeToString(sourceIn))
         assertEquals(sourceIn, Json.decodeFromString(jsonSource))
+        assertEquals(sourceIn, Json.decodeFromString(jsonSourceWithEmptyConfig))
     }
 
     @Test

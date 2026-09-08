@@ -277,7 +277,7 @@ class StreamSinkInSerializer : KSerializer<StreamSinkIn> {
         val channels: List<String>? = null,
         val metadata: Map<String, String>? = null,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = StreamSinkInSurrogate.serializer().descriptor
