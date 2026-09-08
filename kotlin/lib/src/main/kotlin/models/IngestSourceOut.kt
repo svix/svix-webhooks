@@ -110,6 +110,11 @@ sealed class IngestSourceOutConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), lithic)
     }
 
+    @VariantName("merge")
+    data class Merge(val merge: MergeConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(MergeConfigOut.serializer(), merge)
+    }
+
     @VariantName("meta")
     data class Meta(val meta: MetaConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(MetaConfigOut.serializer(), meta)
@@ -328,6 +333,10 @@ sealed class IngestSourceOutConfig {
                 "lithic" to
                     { config ->
                         Lithic(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
+                    },
+                "merge" to
+                    { config ->
+                        Merge(Json.decodeFromJsonElement(MergeConfigOut.serializer(), config))
                     },
                 "meta" to
                     { config ->

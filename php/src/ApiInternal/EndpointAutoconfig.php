@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Svix\ApiInternal;
 
 use Svix\Exception\ApiException;
+use Svix\Models\AutoConfigSubscriptionOut;
 use Svix\Models\EndpointIn;
 use Svix\Models\EndpointOut;
 use Svix\Request\SvixHttpClient;
@@ -15,6 +16,21 @@ class EndpointAutoconfig
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+    }
+
+    /**
+     * Get an AutoConfig subscription, including the bound endpoint or destination if any.
+     *
+     * @throws ApiException
+     */
+    public function get(
+        string $appId,
+        string $autoconfigId,
+    ): AutoConfigSubscriptionOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/autoconfig/{$autoconfigId}");
+        $res = $this->client->send($request);
+
+        return AutoConfigSubscriptionOut::fromJson($res);
     }
 
     /**

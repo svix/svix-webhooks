@@ -2,7 +2,7 @@ use crate::{
     api::{Svix, SvixOptions},
     api_internal,
     autoconfig::{decode_autoconfig_token, AutoConfigError, AutoConfigToken},
-    error::Result,
+    error::{Error, Result},
     models::{
         AutoConfigSinkType, DestinationIn, DestinationInConfig, DestinationOut,
         DestinationOutConfig, EndpointOut, PollerV2CommitIn, PollerV2PollOut, SinkInCommon,
@@ -91,15 +91,35 @@ impl AutoConfigConsumer {
         Ok(destination_out_from_v1_endpoint(endpoint))
     }
 
+    async fn get_sink_id(&mut self) -> Result<String> {
+        if let Some(sink_id) = self.sink_id.clone() {
+            // Already have the sink id from subscribe() or the v1 token
+            return Ok(sink_id);
+        }
+
+        // Get the sink id from the autoconfig id (v2)
+        api_internal::endpoint_autoconfig(self.svix.cfg())
+            .get(
+                self.app_id.clone(),
+                self.autoconfig_id
+                    .clone()
+                    .expect("v2 tokens set autoconfig_id"),
+            )
+            .await?
+            .dest_id
+            .ok_or_else(|| {
+                Error::Generic(
+                    "autoconfig subscription is pending. Have you called subscribe()?".to_owned(),
+                )
+            })
+    }
+
     pub async fn receive(
         &mut self,
         consumer_id: String,
         options: Option<api_internal::message_pollerv2::MessagePollerv2ConsumerPollOptions>,
     ) -> Result<PollerV2PollOut> {
-        if self.sink_id.is_none() {
-            self.subscribe().await?;
-        }
-        let sink_id = self.sink_id.clone().expect("subscribe sets sink_id");
+        let sink_id = self.get_sink_id().await?;
 
         api_internal::message_pollerv2(self.svix.cfg())
             .consumer_poll(self.app_id.clone(), sink_id, consumer_id, options)
@@ -112,10 +132,7 @@ impl AutoConfigConsumer {
         offset: u64,
         options: Option<api_internal::message_pollerv2::MessagePollerv2ConsumerCommitOptions>,
     ) -> Result<()> {
-        if self.sink_id.is_none() {
-            self.subscribe().await?;
-        }
-        let sink_id = self.sink_id.clone().expect("subscribe sets sink_id");
+        let sink_id = self.get_sink_id().await?;
 
         api_internal::message_pollerv2(self.svix.cfg())
             .consumer_commit(

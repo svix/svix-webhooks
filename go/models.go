@@ -126,6 +126,8 @@ type (
 	ListResponseStreamEventTypeOut            = models.ListResponseStreamEventTypeOut
 	ListResponseStreamOut                     = models.ListResponseStreamOut
 	ListResponseStreamSinkOut                 = models.ListResponseStreamSinkOut
+	MergeConfig                               = models.MergeConfig
+	MergeConfigOut                            = models.MergeConfigOut
 	MessageAttemptOut                         = models.MessageAttemptOut
 	MessageAttemptTriggerType                 = models.MessageAttemptTriggerType
 	MessageEndpointOut                        = models.MessageEndpointOut

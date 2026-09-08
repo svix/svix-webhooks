@@ -22633,6 +22633,160 @@
             }
         },
         "/api/v1/app/{app_id}/autoconfig": {
+            "get": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Find Subscriptions",
+                "description": "List AutoConfig subscriptions for an application.",
+                "operationId": "v1.endpoint.autoconfig.find",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "query",
+                        "name": "status",
+                        "description": "Filter the response based on the status.",
+                        "schema": {
+                            "description": "Filter the response based on the status.",
+                            "$ref": "#/components/schemas/Status",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "endpId",
+                        "description": "Filter the response based on the bound endpoint.",
+                        "schema": {
+                            "description": "Filter the response based on the bound endpoint.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "nullable": true,
+                            "example": "unique-identifier"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "destId",
+                        "description": "Filter the response based on the bound destination.",
+                        "schema": {
+                            "description": "Filter the response based on the bound destination.",
+                            "type": "string",
+                            "maxLength": 27,
+                            "minLength": 26,
+                            "pattern": "^sink_[A-Za-z0-9]{21,22}$",
+                            "nullable": true,
+                            "example": "sink_2yZwUhtgs5Ai8T9yRQJXA"
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_AutoConfigSubscriptionOut_"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            },
             "post": {
                 "tags": [
                     "Webhooks AutoConfig"
@@ -22668,6 +22822,406 @@
                 ],
                 "responses": {
                     "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutoConfigOut2"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}": {
+            "get": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Get Subscription",
+                "description": "Get an AutoConfig subscription, including the bound endpoint or destination if any.",
+                "operationId": "v1.endpoint.autoconfig.get",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "autoconfig_id",
+                        "description": "The AutoConfigSubscription's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The AutoConfigSubscription's ID.",
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 32,
+                            "pattern": "^auto_[A-Za-z0-9]{27}$",
+                            "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AutoConfigSubscriptionOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            },
+            "delete": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Delete Subscription",
+                "description": "Delete an AutoConfig subscription. This will also invalidate the autoconfig token.",
+                "operationId": "v1.endpoint.autoconfig.delete",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "autoconfig_id",
+                        "description": "The AutoConfigSubscription's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The AutoConfigSubscription's ID.",
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 32,
+                            "pattern": "^auto_[A-Za-z0-9]{27}$",
+                            "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}/rotate": {
+            "post": {
+                "tags": [
+                    "Webhooks AutoConfig"
+                ],
+                "summary": "Rotate Token",
+                "description": "Rotate the auth token and signing secret for an AutoConfig subscription.",
+                "operationId": "v1.endpoint.autoconfig.rotate",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "autoconfig_id",
+                        "description": "The AutoConfigSubscription's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The AutoConfigSubscription's ID.",
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 32,
+                            "pattern": "^auto_[A-Za-z0-9]{27}$",
+                            "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RotateSubscriptionIn2"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
                         "description": "",
                         "content": {
                             "application/json": {
@@ -52158,12 +52712,114 @@
                     },
                     "token": {
                         "type": "string"
+                    },
+                    "id": {
+                        "description": "The AutoConfigSubscription's ID.",
+                        "type": "string",
+                        "maxLength": 32,
+                        "minLength": 32,
+                        "pattern": "^auto_[A-Za-z0-9]{27}$",
+                        "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     }
                 },
                 "required": [
                     "createdAt",
+                    "id",
                     "token"
                 ]
+            },
+            "Status": {
+                "type": "string",
+                "enum": [
+                    "pending",
+                    "active"
+                ]
+            },
+            "ListResponse_AutoConfigSubscriptionOut_": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/AutoConfigSubscriptionOut"
+                        }
+                    },
+                    "iterator": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "iterator"
+                    },
+                    "prevIterator": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "-iterator"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ]
+            },
+            "AutoConfigSubscriptionOut": {
+                "type": "object",
+                "properties": {
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "tokenCensored": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "description": "The AutoConfigSubscription's ID.",
+                        "type": "string",
+                        "maxLength": 32,
+                        "minLength": 32,
+                        "pattern": "^auto_[A-Za-z0-9]{27}$",
+                        "example": "auto_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "endpId": {
+                        "description": "The Endpoint's ID.",
+                        "type": "string",
+                        "maxLength": 30,
+                        "minLength": 30,
+                        "pattern": "^ep_[A-Za-z0-9]{27}$",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                        "nullable": true
+                    },
+                    "destId": {
+                        "description": "The StreamSink's ID.",
+                        "type": "string",
+                        "maxLength": 27,
+                        "minLength": 26,
+                        "pattern": "^sink_[A-Za-z0-9]{21,22}$",
+                        "example": "sink_2yZwUhtgs5Ai8T9yRQJXA",
+                        "nullable": true
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/Status"
+                    }
+                },
+                "required": [
+                    "createdAt",
+                    "id",
+                    "status",
+                    "tokenCensored"
+                ]
+            },
+            "RotateSubscriptionIn2": {
+                "type": "object",
+                "properties": {
+                    "signingSecret": {
+                        "default": null,
+                        "$ref": "#/components/schemas/EndpointSecretRotateIn",
+                        "nullable": true
+                    }
+                }
             },
             "DestinationIn": {
                 "description": "The destination's type and type-specific configuration.",
@@ -57826,6 +58482,24 @@
                             "type": {
                                 "type": "string",
                                 "enum": [
+                                    "merge"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/MergeConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
                                     "meta"
                                 ]
                             },
@@ -58392,6 +59066,9 @@
             "HubspotConfigOut": {
                 "type": "object"
             },
+            "MergeConfigOut": {
+                "type": "object"
+            },
             "MetaConfigOut": {
                 "type": "object"
             },
@@ -58730,6 +59407,24 @@
                             },
                             "config": {
                                 "$ref": "#/components/schemas/SvixConfig"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "merge"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/MergeConfig"
                             }
                         },
                         "required": [
@@ -59332,6 +60027,17 @@
                         "nullable": true
                     }
                 }
+            },
+            "MergeConfig": {
+                "type": "object",
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ]
             },
             "MetaConfig": {
                 "type": "object",

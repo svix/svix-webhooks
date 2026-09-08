@@ -121,6 +121,8 @@ export { type ListResponseOperationalWebhookEndpointOut } from "./listResponseOp
 export { type ListResponseStreamEventTypeOut } from "./listResponseStreamEventTypeOut";
 export { type ListResponseStreamOut } from "./listResponseStreamOut";
 export { type ListResponseStreamSinkOut } from "./listResponseStreamSinkOut";
+export { type MergeConfig } from "./mergeConfig";
+export { type MergeConfigOut } from "./mergeConfigOut";
 export { type MessageAttemptOut } from "./messageAttemptOut";
 export { MessageAttemptTriggerType } from "./messageAttemptTriggerType";
 export { type MessageEndpointOut } from "./messageEndpointOut";

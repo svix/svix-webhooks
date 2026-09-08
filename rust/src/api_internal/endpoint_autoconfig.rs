@@ -10,6 +10,23 @@ impl<'a> EndpointAutoconfig<'a> {
         Self { cfg }
     }
 
+    /// Get an AutoConfig subscription, including the bound endpoint or
+    /// destination if any.
+    pub async fn get(
+        &self,
+        app_id: String,
+        autoconfig_id: String,
+    ) -> Result<AutoConfigSubscriptionOut> {
+        crate::request::Request::new(
+            http::Method::GET,
+            "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("autoconfig_id", autoconfig_id)
+        .execute(self.cfg)
+        .await
+    }
+
     /// Create or update the HTTP endpoint for an AutoConfig subscription.
     pub async fn subscribe(
         &self,

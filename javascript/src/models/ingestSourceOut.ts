@@ -16,6 +16,7 @@ import { type DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignC
 import { type EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
 import { type GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { type HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
+import { type MergeConfigOut, MergeConfigOutSerializer } from "./mergeConfigOut";
 import { type MetaConfigOut, MetaConfigOutSerializer } from "./metaConfigOut";
 import { type NangoConfigOut, NangoConfigOutSerializer } from "./nangoConfigOut";
 import { type OpenClawConfigOut, OpenClawConfigOutSerializer } from "./openClawConfigOut";
@@ -121,6 +122,11 @@ interface IngestSourceOutIncidentIo {
 interface IngestSourceOutLithic {
   type: "lithic";
   config: SvixConfigOut;
+}
+
+interface IngestSourceOutMerge {
+  type: "merge";
+  config: MergeConfigOut;
 }
 
 interface IngestSourceOutMeta {
@@ -284,6 +290,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutHubspot
     | IngestSourceOutIncidentIo
     | IngestSourceOutLithic
+    | IngestSourceOutMerge
     | IngestSourceOutMeta
     | IngestSourceOutNango
     | IngestSourceOutNash
@@ -349,6 +356,8 @@ export const IngestSourceOutSerializer = {
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "lithic":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "merge":
+          return MergeConfigOutSerializer._fromJsonObject(object["config"]);
         case "meta":
           return MetaConfigOutSerializer._fromJsonObject(object["config"]);
         case "nango":
@@ -470,6 +479,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "lithic":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "merge":
+        config = MergeConfigOutSerializer._toJsonObject(self.config);
         break;
       case "meta":
         config = MetaConfigOutSerializer._toJsonObject(self.config);

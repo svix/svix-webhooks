@@ -2,6 +2,7 @@ package com.svix;
 
 import com.svix.exceptions.ApiException;
 import com.svix.internalapi.EndpointAutoConfigDeprecated;
+import com.svix.internalapi.EndpointAutoconfig;
 import com.svix.internalapi.DestinationAutoconfig;
 import com.svix.internalapi.MessagePollerv2;
 import com.svix.internalapi.MessagePollerv2ConsumerCommitOptions;
@@ -61,12 +62,25 @@ public final class AutoConfigConsumer {
     return destinationOutFromV1Endpoint(endpoint);
   }
 
+  private String getSinkId() throws IOException, ApiException {
+    if (sinkId != null) {
+      // Already have the sink id from subscribe() or the v1 token
+      return sinkId;
+    }
+
+    // Get the sink id from the autoconfig id (v2)
+    String destId = new EndpointAutoconfig(svix.getHttpClient()).get(appId, autoconfigId).getDestId();
+    if (destId == null || destId.isEmpty()) {
+      throw new IllegalStateException(
+          "autoconfig subscription is pending. Have you called subscribe()?");
+    }
+    return destId;
+  }
+
   public PollerV2PollOut receive(final String consumerId,
       final MessagePollerv2ConsumerPollOptions options) throws IOException, ApiException {
-    if (sinkId == null) {
-      sinkId = subscribe().getId();
-    }
-    return new MessagePollerv2(svix.getHttpClient()).consumerPoll(appId, sinkId, consumerId,
+    String resolvedSinkId = getSinkId();
+    return new MessagePollerv2(svix.getHttpClient()).consumerPoll(appId, resolvedSinkId, consumerId,
         options);
   }
 
@@ -76,13 +90,11 @@ public final class AutoConfigConsumer {
 
   public void commit(final String consumerId, final long offset,
       final MessagePollerv2ConsumerCommitOptions options) throws IOException, ApiException {
-    if (sinkId == null) {
-      sinkId = subscribe().getId();
-    }
+    String resolvedSinkId = getSinkId();
     PollerV2CommitIn commitIn = new PollerV2CommitIn();
     commitIn.setOffset(offset);
-    new MessagePollerv2(svix.getHttpClient()).consumerCommit(appId, sinkId, consumerId, commitIn,
-        options);
+    new MessagePollerv2(svix.getHttpClient()).consumerCommit(appId, resolvedSinkId, consumerId,
+        commitIn, options);
   }
 
   public void commit(final String consumerId, final long offset) throws IOException, ApiException {

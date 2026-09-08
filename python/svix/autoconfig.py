@@ -296,6 +296,54 @@ class AutoConfigConsumer:
             )
         )
 
+    def _get_sink_id(self) -> str:
+        if self._sink_id is not None:
+            # Already have the sink id from subscribe() or the v1 token
+            return self._sink_id
+
+        if self._httpx_client is None:
+            self._httpx_client = _make_httpx_client(self._client)
+
+        # Get the sink id from the autoconfig id (v2)
+        if self._autoconfig_id is None:
+            raise AutoConfigError("v2 tokens set autoconfig_id")
+        dest_id = (
+            EndpointAutoconfig(self._client, self._httpx_client)
+            .get(
+                self._app_id,
+                self._autoconfig_id,
+            )
+            .dest_id
+        )
+        if dest_id is None:
+            raise AutoConfigError(
+                "autoconfig subscription is pending. Have you called subscribe()?"
+            )
+        return dest_id
+
+    async def _get_sink_id_async(self) -> str:
+        if self._sink_id is not None:
+            # Already have the sink id from subscribe() or the v1 token
+            return self._sink_id
+
+        if self._httpx_async_client is None:
+            self._httpx_async_client = _make_httpx_async_client(self._client)
+
+        # Get the sink id from the autoconfig id (v2)
+        if self._autoconfig_id is None:
+            raise AutoConfigError("v2 tokens set autoconfig_id")
+        dest_id = (
+            await EndpointAutoconfigAsync(self._client, self._httpx_async_client).get(
+                self._app_id,
+                self._autoconfig_id,
+            )
+        ).dest_id
+        if dest_id is None:
+            raise AutoConfigError(
+                "autoconfig subscription is pending. Have you called subscribe()?"
+            )
+        return dest_id
+
     def receive(
         self,
         consumer_id: str,
@@ -303,14 +351,13 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerPollOptions()
         ),
     ) -> PollerV2PollOut:
-        if self._sink_id is None:
-            self._sink_id = self.subscribe().id
+        sink_id = self._get_sink_id()
         if self._httpx_client is None:
             self._httpx_client = _make_httpx_client(self._client)
 
         return MessagePollerv2(self._client, self._httpx_client).consumer_poll(
             self._app_id,
-            self._sink_id,
+            sink_id,
             consumer_id,
             options,
         )
@@ -322,8 +369,7 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerPollOptions()
         ),
     ) -> PollerV2PollOut:
-        if self._sink_id is None:
-            self._sink_id = (await self.subscribe_async()).id
+        sink_id = await self._get_sink_id_async()
         if self._httpx_async_client is None:
             self._httpx_async_client = _make_httpx_async_client(self._client)
 
@@ -331,7 +377,7 @@ class AutoConfigConsumer:
             self._client, self._httpx_async_client
         ).consumer_poll(
             self._app_id,
-            self._sink_id,
+            sink_id,
             consumer_id,
             options,
         )
@@ -344,14 +390,13 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerCommitOptions()
         ),
     ) -> None:
-        if self._sink_id is None:
-            self._sink_id = self.subscribe().id
+        sink_id = self._get_sink_id()
         if self._httpx_client is None:
             self._httpx_client = _make_httpx_client(self._client)
 
         MessagePollerv2(self._client, self._httpx_client).consumer_commit(
             self._app_id,
-            self._sink_id,
+            sink_id,
             consumer_id,
             PollerV2CommitIn(offset=offset),
             options,
@@ -365,8 +410,7 @@ class AutoConfigConsumer:
             MessagePollerv2ConsumerCommitOptions()
         ),
     ) -> None:
-        if self._sink_id is None:
-            self._sink_id = (await self.subscribe_async()).id
+        sink_id = await self._get_sink_id_async()
         if self._httpx_async_client is None:
             self._httpx_async_client = _make_httpx_async_client(self._client)
 
@@ -374,7 +418,7 @@ class AutoConfigConsumer:
             self._client, self._httpx_async_client
         ).consumer_commit(
             self._app_id,
-            self._sink_id,
+            sink_id,
             consumer_id,
             PollerV2CommitIn(offset=offset),
             options,

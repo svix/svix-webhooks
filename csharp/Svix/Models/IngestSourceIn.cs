@@ -118,6 +118,9 @@ namespace Svix.Models
         public static IngestSourceInConfig Lithic(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Lithic);
 
+        public static IngestSourceInConfig Merge(MergeConfig mergeConfig) =>
+            new(mergeConfig, ConfigType.Merge);
+
         public static IngestSourceInConfig Meta(MetaConfig metaConfig) =>
             new(metaConfig, ConfigType.Meta);
 
@@ -249,6 +252,9 @@ namespace Svix.Models
             [EnumMember(Value = "lithic")]
             Lithic,
 
+            [EnumMember(Value = "merge")]
+            Merge,
+
             [EnumMember(Value = "meta")]
             Meta,
 
@@ -352,6 +358,7 @@ namespace Svix.Models
             Func<HubspotConfig, TResult> onHubspot,
             Func<SvixConfig, TResult> onIncidentIo,
             Func<SvixConfig, TResult> onLithic,
+            Func<MergeConfig, TResult> onMerge,
             Func<MetaConfig, TResult> onMeta,
             Func<NangoConfig, TResult> onNango,
             Func<SvixConfig, TResult> onNash,
@@ -399,6 +406,7 @@ namespace Svix.Models
                 ConfigType.Hubspot => onHubspot((HubspotConfig)_value),
                 ConfigType.IncidentIo => onIncidentIo((SvixConfig)_value),
                 ConfigType.Lithic => onLithic((SvixConfig)_value),
+                ConfigType.Merge => onMerge((MergeConfig)_value),
                 ConfigType.Meta => onMeta((MetaConfig)_value),
                 ConfigType.Nango => onNango((NangoConfig)_value),
                 ConfigType.Nash => onNash((SvixConfig)_value),
@@ -448,6 +456,7 @@ namespace Svix.Models
             Action<HubspotConfig>? onHubspot = null,
             Action<SvixConfig>? onIncidentIo = null,
             Action<SvixConfig>? onLithic = null,
+            Action<MergeConfig>? onMerge = null,
             Action<MetaConfig>? onMeta = null,
             Action<NangoConfig>? onNango = null,
             Action<SvixConfig>? onNash = null,
@@ -563,6 +572,12 @@ namespace Svix.Models
                     if (onLithic != null)
                     {
                         onLithic((SvixConfig)_value);
+                    }
+                    break;
+                case ConfigType.Merge:
+                    if (onMerge != null)
+                    {
+                        onMerge((MergeConfig)_value);
                     }
                     break;
                 case ConfigType.Meta:
@@ -844,6 +859,7 @@ namespace Svix.Models
                 ["hubspot"] = c => IngestSourceInConfig.Hubspot(ToObj<HubspotConfig>(c)),
                 ["incident-io"] = c => IngestSourceInConfig.IncidentIo(ToObj<SvixConfig>(c)),
                 ["lithic"] = c => IngestSourceInConfig.Lithic(ToObj<SvixConfig>(c)),
+                ["merge"] = c => IngestSourceInConfig.Merge(ToObj<MergeConfig>(c)),
                 ["meta"] = c => IngestSourceInConfig.Meta(ToObj<MetaConfig>(c)),
                 ["nango"] = c => IngestSourceInConfig.Nango(ToObj<NangoConfig>(c)),
                 ["nash"] = c => IngestSourceInConfig.Nash(ToObj<SvixConfig>(c)),

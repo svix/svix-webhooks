@@ -17,6 +17,7 @@ mod application_patch;
 mod application_token_expire_in;
 mod authentication_source;
 mod auto_config_sink_type;
+mod auto_config_subscription_out;
 mod azure_blob_storage_config_in;
 mod azure_blob_storage_config_out;
 mod azure_blob_storage_config_patch;
@@ -127,6 +128,8 @@ mod list_response_operational_webhook_endpoint_out;
 mod list_response_stream_event_type_out;
 mod list_response_stream_out;
 mod list_response_stream_sink_out;
+mod merge_config;
+mod merge_config_out;
 mod message_attempt_out;
 mod message_attempt_trigger_type;
 mod message_endpoint_out;
@@ -211,6 +214,7 @@ mod sqs_config_in;
 mod sqs_config_out;
 mod sqs_config_patch;
 mod starting_position;
+mod status;
 mod status_code_class;
 mod stream_event_type_in;
 mod stream_event_type_out;
@@ -266,6 +270,7 @@ pub use self::{
     application_token_expire_in::ApplicationTokenExpireIn,
     authentication_source::AuthenticationSource,
     auto_config_sink_type::AutoConfigSinkType,
+    auto_config_subscription_out::AutoConfigSubscriptionOut,
     azure_blob_storage_config_in::AzureBlobStorageConfigIn,
     azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     azure_blob_storage_config_patch::AzureBlobStorageConfigPatch,
@@ -376,6 +381,8 @@ pub use self::{
     list_response_stream_event_type_out::ListResponseStreamEventTypeOut,
     list_response_stream_out::ListResponseStreamOut,
     list_response_stream_sink_out::ListResponseStreamSinkOut,
+    merge_config::MergeConfig,
+    merge_config_out::MergeConfigOut,
     message_attempt_out::MessageAttemptOut,
     message_attempt_trigger_type::MessageAttemptTriggerType,
     message_endpoint_out::MessageEndpointOut,
@@ -460,6 +467,7 @@ pub use self::{
     sqs_config_out::SqsConfigOut,
     sqs_config_patch::SqsConfigPatch,
     starting_position::StartingPosition,
+    status::Status,
     status_code_class::StatusCodeClass,
     stream_event_type_in::StreamEventTypeIn,
     stream_event_type_out::StreamEventTypeOut,

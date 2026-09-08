@@ -66,14 +66,33 @@ export class AutoConfigConsumer {
     );
   }
 
+  private async getSinkId(): Promise<string> {
+    if (this.sinkId != null) {
+      // Already have the sink id from subscribe() or the v1 token
+      return this.sinkId;
+    }
+
+    // Get the sink id from the autoconfig id (v2)
+    const destId = (
+      await new InternalEndpoint(this.requestCtx).autoconfig.get(
+        this.appId,
+        this.autoconfigId as string
+      )
+    ).destId;
+    if (destId == null) {
+      throw new Error("autoconfig subscription is pending. Have you called subscribe()?");
+    }
+    return destId;
+  }
+
   public async receive(
     consumerId: string,
     options?: MessagePollerv2ConsumerPollOptions
   ): Promise<PollerV2PollOut> {
-    this.sinkId = this.sinkId ?? (await this.subscribe()).id;
+    const sinkId = await this.getSinkId();
     return new InternalMessagePollerv2(this.requestCtx).consumerPoll(
       this.appId,
-      this.sinkId,
+      sinkId,
       consumerId,
       options
     );
@@ -84,10 +103,10 @@ export class AutoConfigConsumer {
     offset: number,
     options?: MessagePollerv2ConsumerCommitOptions
   ): Promise<void> {
-    this.sinkId = this.sinkId ?? (await this.subscribe()).id;
+    const sinkId = await this.getSinkId();
     return new InternalMessagePollerv2(this.requestCtx).consumerCommit(
       this.appId,
-      this.sinkId,
+      sinkId,
       consumerId,
       {
         offset,

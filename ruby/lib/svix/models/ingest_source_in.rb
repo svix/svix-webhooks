@@ -10,6 +10,7 @@ require_relative "./docusign_config"
 require_relative "./easypost_config"
 require_relative "./github_config"
 require_relative "./hubspot_config"
+require_relative "./merge_config"
 require_relative "./meta_config"
 require_relative "./nango_config"
 require_relative "./open_claw_config"
@@ -84,6 +85,9 @@ module Svix
     end
 
     class Lithic < SvixConfig
+    end
+
+    class Merge < MergeConfig
     end
 
     class Meta < MetaConfig
@@ -198,6 +202,7 @@ module Svix
       IngestSourceInConfig::Hubspot => "hubspot",
       IngestSourceInConfig::IncidentIo => "incident-io",
       IngestSourceInConfig::Lithic => "lithic",
+      IngestSourceInConfig::Merge => "merge",
       IngestSourceInConfig::Meta => "meta",
       IngestSourceInConfig::Nango => "nango",
       IngestSourceInConfig::Nash => "nash",

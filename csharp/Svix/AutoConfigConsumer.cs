@@ -85,16 +85,51 @@ namespace Svix
             return DestinationOutFromV1Endpoint(endpoint);
         }
 
+        private async Task<string> GetSinkIdAsync(CancellationToken cancellationToken = default)
+        {
+            if (sinkId != null)
+            {
+                // Already have the sink id from subscribe() or the v1 token
+                return sinkId;
+            }
+
+            // Get the sink id from the autoconfig id (v2)
+            var subscription = await new EndpointAutoconfig(client).GetAsync(
+                appId,
+                autoconfigId!,
+                cancellationToken
+            );
+            return subscription.DestId
+                ?? throw new InvalidOperationException(
+                    "autoconfig subscription is pending. Have you called subscribe()?"
+                );
+        }
+
+        private string GetSinkId()
+        {
+            if (sinkId != null)
+            {
+                // Already have the sink id from subscribe() or the v1 token
+                return sinkId;
+            }
+
+            // Get the sink id from the autoconfig id (v2)
+            return new EndpointAutoconfig(client).Get(appId, autoconfigId!).DestId
+                ?? throw new InvalidOperationException(
+                    "autoconfig subscription is pending. Have you called subscribe()?"
+                );
+        }
+
         public async Task<PollerV2PollOut> ReceiveAsync(
             string consumerId,
             MessagePollerv2ConsumerPollOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
-            sinkId ??= (await SubscribeAsync(cancellationToken)).Id;
+            var resolvedSinkId = await GetSinkIdAsync(cancellationToken);
             return await new MessagePollerv2(client).ConsumerPollAsync(
                 appId,
-                sinkId,
+                resolvedSinkId,
                 consumerId,
                 options,
                 cancellationToken
@@ -106,8 +141,12 @@ namespace Svix
             MessagePollerv2ConsumerPollOptions? options = null
         )
         {
-            sinkId ??= Subscribe().Id;
-            return new MessagePollerv2(client).ConsumerPoll(appId, sinkId, consumerId, options);
+            return new MessagePollerv2(client).ConsumerPoll(
+                appId,
+                GetSinkId(),
+                consumerId,
+                options
+            );
         }
 
         public async Task CommitAsync(
@@ -117,10 +156,10 @@ namespace Svix
             CancellationToken cancellationToken = default
         )
         {
-            sinkId ??= (await SubscribeAsync(cancellationToken)).Id;
+            var resolvedSinkId = await GetSinkIdAsync(cancellationToken);
             await new MessagePollerv2(client).ConsumerCommitAsync(
                 appId,
-                sinkId,
+                resolvedSinkId,
                 consumerId,
                 new PollerV2CommitIn { Offset = offset },
                 options,
@@ -134,10 +173,9 @@ namespace Svix
             MessagePollerv2ConsumerCommitOptions? options = null
         )
         {
-            sinkId ??= Subscribe().Id;
             new MessagePollerv2(client).ConsumerCommit(
                 appId,
-                sinkId,
+                GetSinkId(),
                 consumerId,
                 new PollerV2CommitIn { Offset = offset },
                 options
