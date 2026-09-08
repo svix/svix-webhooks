@@ -442,6 +442,11 @@ describe "API Client" do
     expect(loaded_from_json.config.schedule).to eql(source_in.config.schedule)
   end
 
+  it "deserializes struct enum when config is omitted" do
+    loaded = Svix::DestinationIn.deserialize(JSON.parse('{"type":"pollingEndpoint"}'))
+    expect(loaded.config).to be_a(Svix::DestinationInConfig::PollingEndpoint)
+  end
+
   it "struct enum without any fields" do
     json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"generic-webhook","config":{}}'
     source_in = Svix::IngestSourceIn.new(

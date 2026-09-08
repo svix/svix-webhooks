@@ -92,10 +92,7 @@ module Svix
       unless NAME_TO_TYPE.key?(attributes["{{ type.discriminator_field }}"])
         fail(ArgumentError, "Invalid {{ type.discriminator_field | to_snake_case }} `#{attributes["{{ type.discriminator_field }}"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
-      unless attributes.key? "{{ type.content_field }}"
-        fail(ArgumentError, "Missing required field {{ type.content_field }}")
-      end
-      attrs["{{ type.content_field }}"] = NAME_TO_TYPE[attributes["{{ type.discriminator_field }}"]].deserialize(attributes["{{ type.content_field }}"])
+      attrs["{{ type.content_field }}"] = NAME_TO_TYPE[attributes["{{ type.discriminator_field }}"]].deserialize(attributes["{{ type.content_field }}"] || {})
       new(attrs)
     end
 
