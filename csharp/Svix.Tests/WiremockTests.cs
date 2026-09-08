@@ -422,5 +422,48 @@ namespace Svix.Tests
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal("?with_content=false", stub.LogEntries[0].RequestMessage.RawQuery);
         }
+
+        [Fact]
+        public void AbsentContentFieldInResponseStructEnum()
+        {
+            var strmId = "strm_31Dc0DD72P5AddYUguyBd";
+            var sinkId = "sink_31Dc11sPYY9aLDkwPuGMa";
+            var responseJson = """
+                    {
+                        "batchSize": 1,
+                        "channels": [],
+                        "createdAt": "2026-09-07T16:32:02.696Z",
+                        "currentIterator": "string",
+                        "eventTypes": [],
+                        "failureReason": null,
+                        "id": "sink_2yZwUhtgs5Ai8T9yRQJXA",
+                        "maxWaitSecs": 1,
+                        "metadata": {
+                            "additionalProperty": "string"
+                        },
+                        "nextRetryAt": "2026-09-07T16:32:02.696Z",
+                        "status": "enabled",
+                        "uid": "unique-identifier",
+                        "updatedAt": "2026-09-07T16:32:02.696Z",
+                        "type": "poller"
+                    }
+                """;
+            stub.Given(
+                    Request.Create().WithPath($"/api/v1/stream/{strmId}/sink/{sinkId}").UsingGet()
+                )
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(responseJson));
+
+            var response = client.Streaming.Sink.Get(strmId, sinkId);
+
+            Assert.Equal(response.Uid, "unique-identifier");
+
+            var isPoller = false;
+            response.Config.Switch(onPoller: () =>
+            {
+                isPoller = true;
+            });
+
+            Assert.True(isPoller);
+        }
     }
 }

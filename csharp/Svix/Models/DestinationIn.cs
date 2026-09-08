@@ -244,73 +244,121 @@ namespace Svix.Models
         }
 
         public void Switch(
-            Action onPollingEndpoint,
-            Action<AzureBlobStorageConfigIn> onAzureBlobStorage,
-            Action<OtelTracingConfigIn> onOtelTracing,
-            Action<FifoEndpointConfigIn> onFifoEndpoint,
-            Action<S3ConfigIn> onAmazonS3,
-            Action<GoogleCloudStorageConfigIn> onGoogleCloudStorage,
-            Action<GoogleCloudPubSubConfigIn> onGoogleCloudPubSub,
-            Action<SqsConfigIn> onSqs,
-            Action<SnsConfigIn> onSns,
-            Action<BigQueryConfigIn> onBigQuery,
-            Action<ClickhouseConfigIn> onClickhouse,
-            Action<EventBridgeConfigIn> onEventBridge,
-            Action<SnowflakeConfigIn> onSnowflake,
-            Action<RabbitMqConfigIn> onRabbitMq,
-            Action<RedshiftConfigIn> onRedshift,
-            Action<PostgresConfigIn> onPostgres
+            Action? onPollingEndpoint = null,
+            Action<AzureBlobStorageConfigIn>? onAzureBlobStorage = null,
+            Action<OtelTracingConfigIn>? onOtelTracing = null,
+            Action<FifoEndpointConfigIn>? onFifoEndpoint = null,
+            Action<S3ConfigIn>? onAmazonS3 = null,
+            Action<GoogleCloudStorageConfigIn>? onGoogleCloudStorage = null,
+            Action<GoogleCloudPubSubConfigIn>? onGoogleCloudPubSub = null,
+            Action<SqsConfigIn>? onSqs = null,
+            Action<SnsConfigIn>? onSns = null,
+            Action<BigQueryConfigIn>? onBigQuery = null,
+            Action<ClickhouseConfigIn>? onClickhouse = null,
+            Action<EventBridgeConfigIn>? onEventBridge = null,
+            Action<SnowflakeConfigIn>? onSnowflake = null,
+            Action<RabbitMqConfigIn>? onRabbitMq = null,
+            Action<RedshiftConfigIn>? onRedshift = null,
+            Action<PostgresConfigIn>? onPostgres = null
         )
         {
             switch (_type)
             {
                 case ConfigType.PollingEndpoint:
-                    onPollingEndpoint();
+                    if (onPollingEndpoint != null)
+                    {
+                        onPollingEndpoint();
+                    }
                     break;
                 case ConfigType.AzureBlobStorage:
-                    onAzureBlobStorage((AzureBlobStorageConfigIn)_value);
+                    if (onAzureBlobStorage != null)
+                    {
+                        onAzureBlobStorage((AzureBlobStorageConfigIn)_value);
+                    }
                     break;
                 case ConfigType.OtelTracing:
-                    onOtelTracing((OtelTracingConfigIn)_value);
+                    if (onOtelTracing != null)
+                    {
+                        onOtelTracing((OtelTracingConfigIn)_value);
+                    }
                     break;
                 case ConfigType.FifoEndpoint:
-                    onFifoEndpoint((FifoEndpointConfigIn)_value);
+                    if (onFifoEndpoint != null)
+                    {
+                        onFifoEndpoint((FifoEndpointConfigIn)_value);
+                    }
                     break;
                 case ConfigType.AmazonS3:
-                    onAmazonS3((S3ConfigIn)_value);
+                    if (onAmazonS3 != null)
+                    {
+                        onAmazonS3((S3ConfigIn)_value);
+                    }
                     break;
                 case ConfigType.GoogleCloudStorage:
-                    onGoogleCloudStorage((GoogleCloudStorageConfigIn)_value);
+                    if (onGoogleCloudStorage != null)
+                    {
+                        onGoogleCloudStorage((GoogleCloudStorageConfigIn)_value);
+                    }
                     break;
                 case ConfigType.GoogleCloudPubSub:
-                    onGoogleCloudPubSub((GoogleCloudPubSubConfigIn)_value);
+                    if (onGoogleCloudPubSub != null)
+                    {
+                        onGoogleCloudPubSub((GoogleCloudPubSubConfigIn)_value);
+                    }
                     break;
                 case ConfigType.Sqs:
-                    onSqs((SqsConfigIn)_value);
+                    if (onSqs != null)
+                    {
+                        onSqs((SqsConfigIn)_value);
+                    }
                     break;
                 case ConfigType.Sns:
-                    onSns((SnsConfigIn)_value);
+                    if (onSns != null)
+                    {
+                        onSns((SnsConfigIn)_value);
+                    }
                     break;
                 case ConfigType.BigQuery:
-                    onBigQuery((BigQueryConfigIn)_value);
+                    if (onBigQuery != null)
+                    {
+                        onBigQuery((BigQueryConfigIn)_value);
+                    }
                     break;
                 case ConfigType.Clickhouse:
-                    onClickhouse((ClickhouseConfigIn)_value);
+                    if (onClickhouse != null)
+                    {
+                        onClickhouse((ClickhouseConfigIn)_value);
+                    }
                     break;
                 case ConfigType.EventBridge:
-                    onEventBridge((EventBridgeConfigIn)_value);
+                    if (onEventBridge != null)
+                    {
+                        onEventBridge((EventBridgeConfigIn)_value);
+                    }
                     break;
                 case ConfigType.Snowflake:
-                    onSnowflake((SnowflakeConfigIn)_value);
+                    if (onSnowflake != null)
+                    {
+                        onSnowflake((SnowflakeConfigIn)_value);
+                    }
                     break;
                 case ConfigType.RabbitMq:
-                    onRabbitMq((RabbitMqConfigIn)_value);
+                    if (onRabbitMq != null)
+                    {
+                        onRabbitMq((RabbitMqConfigIn)_value);
+                    }
                     break;
                 case ConfigType.Redshift:
-                    onRedshift((RedshiftConfigIn)_value);
+                    if (onRedshift != null)
+                    {
+                        onRedshift((RedshiftConfigIn)_value);
+                    }
                     break;
                 case ConfigType.Postgres:
-                    onPostgres((PostgresConfigIn)_value);
+                    if (onPostgres != null)
+                    {
+                        onPostgres((PostgresConfigIn)_value);
+                    }
                     break;
                 default:
                     // unreachable
@@ -345,8 +393,8 @@ namespace Svix.Models
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
 
-        [JsonProperty("config", Required = Required.Always)]
-        public required JObject Config { get; set; }
+        [JsonProperty("config")]
+        public JObject? Config { get; set; }
     }
 
     public class DestinationInConverter : JsonConverter
