@@ -9,6 +9,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/All: AutoConfig v2. Add support for updated AutoConfig token format (`auto_v2` prefix)
 * Libs/All **(Breaking)**: `AutoConfigConsumer.subscribe()` return type changed from `EndpointOut` to `DestinationOut`
 * Libs/PHP **(Breaking)**: Remove `AutoConfigConsumer` class
+* CLI: In `listen` mode, don't follow redirects returned by the local service
 
 ## Version 2.3.0
 * Libs/All: Add new streaming sink types
