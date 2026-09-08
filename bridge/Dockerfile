@@ -57,6 +57,9 @@ RUN <<EOF
 EOF
 
 COPY bridge /app/bridge
+
+ARG WRITE_EXECUTABLE_METADATA="1"
+
 # touching the lib.rs/main.rs ensures cargo rebuilds them instead of considering them already built.
 RUN touch ./*/src/lib.rs && touch ./*/src/main.rs
 RUN cargo build --release --frozen
