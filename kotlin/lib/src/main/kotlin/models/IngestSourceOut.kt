@@ -480,7 +480,7 @@ class IngestSourceOutSerializer : KSerializer<IngestSourceOut> {
         val updatedAt: Instant,
         val metadata: Map<String, String>,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = IngestSourceOutSurrogate.serializer().descriptor
