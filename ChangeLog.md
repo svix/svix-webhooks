@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs **(New)**: Add `destination` API support
 * Libs/All: AutoConfig v2. Add support for updated AutoConfig token format (`auto_v2` prefix)
 * Libs/All **(Breaking)**: `AutoConfigConsumer.subscribe()` return type changed from `EndpointOut` to `DestinationOut`
 * Libs/PHP **(Breaking)**: Remove `AutoConfigConsumer` class
