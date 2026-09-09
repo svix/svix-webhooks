@@ -33,7 +33,7 @@ jobs:
         name: Checkout
 
       - name: Install cargo sort
-        uses: taiki-e/install-action@1ed6d7be6168f6c9046541087ff549b6bc581fdf # v2.87.2
+        uses: taiki-e/install-action@84f5ac3124727fb3d284d4d22ee9ab3654fd09a6 # v2.87.7
         with:
           tool: cargo-sort
 
@@ -73,7 +73,7 @@ jobs:
           # include relevant information in the cache name
           prefix-key: "cli-${{ matrix.rust }}"
 
-      - uses: taiki-e/install-action@1ed6d7be6168f6c9046541087ff549b6bc581fdf # v2.87.2
+      - uses: taiki-e/install-action@84f5ac3124727fb3d284d4d22ee9ab3654fd09a6 # v2.87.7
         with:
           tool: nextest
 
