@@ -3,7 +3,8 @@
 use futures::future::join_all;
 use sqlx::PgPool;
 use svix_server::db::background_migrations::{
-    BackgroundMigration, ensure_table, run_migrations, run_with_pool, try_revert,
+    BackgroundMigration, create_table_if_not_exists, ensure_table, run_migrations, run_with_pool,
+    try_revert,
 };
 
 use crate::utils::get_default_test_config;
@@ -295,6 +296,49 @@ async fn test_revert_unapplied_migration_errors() {
 
     let result = try_revert(&pool, &[migration], migration.id).await;
     assert!(result.is_err());
+}
+
+#[tokio::test]
+async fn test_ensure_table_concurrent_create_from_absent() {
+    let pool = test_pool_with_conns(20).await;
+    let schema = format!("svix_ensure_race_{}", std::process::id());
+    sqlx::query(&format!("DROP SCHEMA IF EXISTS {schema} CASCADE"))
+        .execute(&pool)
+        .await
+        .unwrap();
+    sqlx::query(&format!("CREATE SCHEMA {schema}"))
+        .execute(&pool)
+        .await
+        .unwrap();
+
+    let sql = format!("CREATE TABLE IF NOT EXISTS {schema}.race (id TEXT PRIMARY KEY)");
+    let results = join_all((0..16).map(|_| {
+        let pool = pool.clone();
+        let sql = sql.clone();
+        async move { create_table_if_not_exists(&pool, &sql).await }
+    }))
+    .await;
+
+    for result in results {
+        result.expect("concurrent CREATE TABLE IF NOT EXISTS should succeed");
+    }
+
+    let exists: bool = sqlx::query_scalar(
+        "SELECT EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = $1 AND table_name = 'race'
+        )",
+    )
+    .bind(&schema)
+    .fetch_one(&pool)
+    .await
+    .unwrap();
+    assert!(exists);
+
+    sqlx::query(&format!("DROP SCHEMA {schema} CASCADE"))
+        .execute(&pool)
+        .await
+        .unwrap();
 }
 
 #[tokio::test]
