@@ -17,7 +17,7 @@ import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.PollerV2CommitIn
 import com.svix.kotlin.models.PollerV2PollOut
 import com.svix.kotlin.models.SinkInCommon
-import com.svix.kotlin.models.SinkStatus
+import com.svix.kotlin.models.DestinationStatus
 import com.svix.kotlin.models.SubscribeIn
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
@@ -116,9 +116,9 @@ private fun destinationOutFromV1Endpoint(endpoint: EndpointOut): DestinationOut 
         uid = endpoint.uid,
         status =
             if (endpoint.disabled == true) {
-                SinkStatus.DISABLED
+                DestinationStatus.DISABLED
             } else {
-                SinkStatus.ENABLED
+                DestinationStatus.ENABLED
             },
         currentIterator = "",
         createdAt = endpoint.createdAt,

@@ -17,6 +17,7 @@ module Svix
     attr_accessor :authentication
     attr_accessor :background_task
     attr_accessor :connector
+    attr_accessor :destination
     attr_accessor :endpoint
     attr_accessor :environment
     attr_accessor :event_type
@@ -52,6 +53,7 @@ module Svix
       @authentication = Authentication.new(api_client)
       @background_task = BackgroundTask.new(api_client)
       @connector = Connector.new(api_client)
+      @destination = Destination.new(api_client)
       @endpoint = Endpoint.new(api_client)
       @environment = Environment.new(api_client)
       @event_type = EventType.new(api_client)

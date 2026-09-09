@@ -9,6 +9,8 @@ mod application;
 mod authentication;
 mod background_task;
 mod connector;
+mod destination;
+mod destination_transformation;
 mod endpoint;
 mod endpoint_transformation;
 mod environment;
@@ -45,6 +47,8 @@ pub use self::{
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
+    destination::{Destination, DestinationCreateOptions, DestinationListOptions},
+    destination_transformation::DestinationTransformation,
     endpoint::{
         Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
         EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
@@ -119,6 +123,9 @@ impl Svix {
     }
     pub fn connector(&self) -> Connector<'_> {
         Connector::new(&self.cfg)
+    }
+    pub fn destination(&self) -> Destination<'_> {
+        Destination::new(&self.cfg)
     }
     pub fn endpoint(&self) -> Endpoint<'_> {
         Endpoint::new(&self.cfg)

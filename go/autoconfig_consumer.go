@@ -86,9 +86,9 @@ func (a *AutoConfigConsumer) Subscribe(ctx context.Context) (*models.Destination
 }
 
 func destinationOutFromV1Endpoint(endpoint *models.EndpointOut) *models.DestinationOut {
-	status := models.SINKSTATUS_ENABLED
+	status := models.DESTINATIONSTATUS_ENABLED
 	if endpoint.Disabled != nil && *endpoint.Disabled {
-		status = models.SINKSTATUS_DISABLED
+		status = models.DESTINATIONSTATUS_DISABLED
 	}
 	return &models.DestinationOut{
 		Id:         endpoint.Id,

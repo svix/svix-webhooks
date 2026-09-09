@@ -8,7 +8,7 @@ import (
 )
 
 // When creating an StreamSinkOut, use the appropriate config structure based on the Type:
-//   - "poller": No config needed (nil or just ignore the config field)
+//   - "poller","pollingEndpoint": No config needed (nil or just ignore the config field)
 //   - "azureBlobStorage": Use AzureBlobStorageConfigOut
 //   - "bigQuery": Use BigQueryConfigOut
 //   - "clickhouse": Use ClickhouseConfigOut
@@ -46,6 +46,7 @@ type StreamSinkOutType string
 
 const (
 	StreamSinkOutTypePoller             StreamSinkOutType = "poller"
+	StreamSinkOutTypePollingEndpoint    StreamSinkOutType = "pollingEndpoint"
 	StreamSinkOutTypeAzureBlobStorage   StreamSinkOutType = "azureBlobStorage"
 	StreamSinkOutTypeOtelTracing        StreamSinkOutType = "otelTracing"
 	StreamSinkOutTypeHttp               StreamSinkOutType = "http"
@@ -97,7 +98,7 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 
 	var err error
 	switch i.Type {
-	case "poller":
+	case "poller", "pollingEndpoint":
 	case "azureBlobStorage":
 		var c AzureBlobStorageConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -166,7 +167,8 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 }
 
 var StreamSinkOutTypeWithNoConfig = map[string]bool{
-	"poller": true,
+	"poller":          true,
+	"pollingEndpoint": true,
 }
 
 func (i StreamSinkOut) MarshalJSON() ([]byte, error) {
@@ -179,6 +181,7 @@ func (i StreamSinkOut) MarshalJSON() ([]byte, error) {
 
 var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"poller":             StreamSinkOutTypePoller,
+	"pollingEndpoint":    StreamSinkOutTypePollingEndpoint,
 	"azureBlobStorage":   StreamSinkOutTypeAzureBlobStorage,
 	"otelTracing":        StreamSinkOutTypeOtelTracing,
 	"http":               StreamSinkOutTypeHttp,

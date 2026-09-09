@@ -8,6 +8,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val authentication: Authentication
     val backgroundTask: BackgroundTask
     val connector: Connector
+    val destination: Destination
     val endpoint: Endpoint
     val environment: Environment
     val eventType: EventType
@@ -29,6 +30,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
         authentication = Authentication(httpClient)
         backgroundTask = BackgroundTask(httpClient)
         connector = Connector(httpClient)
+        destination = Destination(httpClient)
         endpoint = Endpoint(httpClient)
         environment = Environment(httpClient)
         eventType = EventType(httpClient)

@@ -58,9 +58,17 @@ interface _StreamSinkOutFields {
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface StreamSinkOutPollerConfig {}
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
+interface StreamSinkOutPollingEndpointConfig {}
+
 interface StreamSinkOutPoller {
   type: "poller";
   config?: StreamSinkOutPollerConfig;
+}
+
+interface StreamSinkOutPollingEndpoint {
+  type: "pollingEndpoint";
+  config?: StreamSinkOutPollingEndpointConfig;
 }
 
 interface StreamSinkOutAzureBlobStorage {
@@ -141,6 +149,7 @@ interface StreamSinkOutPostgres {
 export type StreamSinkOut = _StreamSinkOutFields &
   (
     | StreamSinkOutPoller
+    | StreamSinkOutPollingEndpoint
     | StreamSinkOutAzureBlobStorage
     | StreamSinkOutOtelTracing
     | StreamSinkOutHttp
@@ -165,6 +174,9 @@ export const StreamSinkOutSerializer = {
     function getConfig(type: string): any {
       switch (type) {
         case "poller":
+          return {};
+
+        case "pollingEndpoint":
           return {};
         case "azureBlobStorage":
           return AzureBlobStorageConfigOutSerializer._fromJsonObject(object["config"]);
@@ -225,6 +237,9 @@ export const StreamSinkOutSerializer = {
     let config;
     switch (self.type) {
       case "poller":
+        config = {};
+        break;
+      case "pollingEndpoint":
         config = {};
         break;
       case "azureBlobStorage":

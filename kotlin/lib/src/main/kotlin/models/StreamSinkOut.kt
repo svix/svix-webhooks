@@ -44,6 +44,11 @@ sealed class StreamSinkOutConfig {
         override fun toJsonElement() = buildJsonObject {}
     }
 
+    @VariantName("pollingEndpoint")
+    data object PollingEndpoint : StreamSinkOutConfig() {
+        override fun toJsonElement() = buildJsonObject {}
+    }
+
     @VariantName("azureBlobStorage")
     data class AzureBlobStorage(val azureBlobStorage: AzureBlobStorageConfigOut) :
         StreamSinkOutConfig() {
@@ -138,6 +143,7 @@ sealed class StreamSinkOutConfig {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkOutConfig>(
                 "poller" to { _ -> Poller },
+                "pollingEndpoint" to { _ -> PollingEndpoint },
                 "azureBlobStorage" to
                     { config ->
                         AzureBlobStorage(

@@ -29,12 +29,12 @@ from .models import (
     AutoConfigSinkType,
     DestinationIn,
     DestinationOut,
+    DestinationStatus,
     EndpointIn,
     EndpointOut,
     PollerV2CommitIn,
     PollerV2PollOut,
     SinkInCommon,
-    SinkStatus,
     SubscribeIn,
 )
 from .webhooks import Webhook
@@ -118,7 +118,11 @@ def _destination_out_from_v1_endpoint(endpoint: EndpointOut) -> DestinationOut:
     return DestinationOut(
         id=endpoint.id,
         uid=endpoint.uid,
-        status=SinkStatus.DISABLED if endpoint.disabled else SinkStatus.ENABLED,
+        status=(
+            DestinationStatus.DISABLED
+            if endpoint.disabled
+            else DestinationStatus.ENABLED
+        ),
         current_iterator="",
         created_at=endpoint.created_at,
         updated_at=endpoint.updated_at,

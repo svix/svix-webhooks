@@ -10,6 +10,7 @@ use Svix\Api\Application;
 use Svix\Api\Authentication;
 use Svix\Api\BackgroundTask;
 use Svix\Api\Connector;
+use Svix\Api\Destination;
 use Svix\Api\Endpoint;
 use Svix\Api\Environment;
 use Svix\Api\EventType;
@@ -29,6 +30,7 @@ class Svix
     public Authentication $authentication;
     public BackgroundTask $backgroundTask;
     public Connector $connector;
+    public Destination $destination;
     public Endpoint $endpoint;
     public Environment $environment;
     public EventType $eventType;
@@ -59,6 +61,7 @@ class Svix
         $this->authentication = new Authentication($svixHttpClient);
         $this->backgroundTask = new BackgroundTask($svixHttpClient);
         $this->connector = new Connector($svixHttpClient);
+        $this->destination = new Destination($svixHttpClient);
         $this->endpoint = new Endpoint($svixHttpClient);
         $this->environment = new Environment($svixHttpClient);
         $this->eventType = new EventType($svixHttpClient);

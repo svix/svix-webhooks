@@ -31,8 +31,8 @@ type DestinationIn struct {
 	// If the destination is `enabled`, events sent to the application will be dispatched to the destination in order.
 	//
 	// If the destination is `disabled`, events will not be dispatched until the destination is reenabled.
-	Status    *SinkStatusIn `json:"status,omitempty"`
-	BatchSize *uint16       `json:"batchSize,omitempty"` // How many events will be batched in a request to the destination.
+	Status    *DestinationStatusIn `json:"status,omitempty"`
+	BatchSize *uint16              `json:"batchSize,omitempty"` // How many events will be batched in a request to the destination.
 	// How long to wait before a batch of events is sent, if the `batchSize` is not reached.
 	//
 	// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after 10 seconds or 100 events, whichever comes first.

@@ -77,6 +77,10 @@ func (svix Svix) Connector() Connector {
 	return newConnector(svix.client)
 }
 
+func (svix Svix) Destination() Destination {
+	return newDestination(svix.client)
+}
+
 func (svix Svix) Endpoint() Endpoint {
 	return newEndpoint(svix.client)
 }

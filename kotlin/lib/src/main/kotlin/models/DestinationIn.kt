@@ -24,7 +24,7 @@ data class DestinationIn(
      * If the destination is `disabled`, events will not be dispatched until the destination is
      * reenabled.
      */
-    val status: SinkStatusIn? = null,
+    val status: DestinationStatusIn? = null,
     /** How many events will be batched in a request to the destination. */
     val batchSize: UShort? = null,
     /**
@@ -264,7 +264,7 @@ class DestinationInSerializer : KSerializer<DestinationIn> {
          * If the destination is `disabled`, events will not be dispatched until the destination is
          * reenabled.
          */
-        val status: SinkStatusIn? = null,
+        val status: DestinationStatusIn? = null,
         /** How many events will be batched in a request to the destination. */
         val batchSize: UShort? = null,
         /**

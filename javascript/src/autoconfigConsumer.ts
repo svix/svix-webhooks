@@ -12,7 +12,7 @@ import type { DestinationOut } from "./models/destinationOut";
 import type { EndpointOut } from "./models/endpointOut";
 import type { PollerV2PollOut } from "./models/pollerV2PollOut";
 import type { SinkInCommon } from "./models/sinkInCommon";
-import { SinkStatus } from "./models/sinkStatus";
+import { DestinationStatus } from "./models/destinationStatus";
 import type { SvixRequestContext } from "./request";
 
 export class AutoConfigConsumer {
@@ -130,7 +130,7 @@ function destinationOutFromV1Endpoint(endpoint: EndpointOut): DestinationOut {
   return {
     id: endpoint.id,
     uid: endpoint.uid,
-    status: endpoint.disabled ? SinkStatus.Disabled : SinkStatus.Enabled,
+    status: endpoint.disabled ? DestinationStatus.Disabled : DestinationStatus.Enabled,
     currentIterator: "",
     createdAt: endpoint.createdAt,
     updatedAt: endpoint.updatedAt,

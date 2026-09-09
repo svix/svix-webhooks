@@ -5,6 +5,7 @@ require "json"
 require_relative "./azure_blob_storage_config_out"
 require_relative "./big_query_config_out"
 require_relative "./clickhouse_config_out"
+require_relative "./destination_status"
 require_relative "./event_bridge_config_out"
 require_relative "./google_cloud_pub_sub_config_out"
 require_relative "./google_cloud_storage_config_out"
@@ -14,7 +15,6 @@ require_relative "./rabbit_mq_config_out"
 require_relative "./redshift_config_out"
 require_relative "./s3_config_out"
 require_relative "./sink_http_config_out"
-require_relative "./sink_status"
 require_relative "./snowflake_config_out"
 require_relative "./sns_config_out"
 require_relative "./sqs_config_out"
@@ -83,11 +83,10 @@ module Svix
     end
   end
 
-  # Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.
   class DestinationOut
-    # The destination's ID.
+    # The Destination's ID.
     attr_accessor :id
-    # The destination's UID.
+    # The Destination's UID.
     attr_accessor :uid
     attr_accessor :status
     attr_accessor :current_iterator
@@ -176,7 +175,7 @@ module Svix
       attrs = Hash.new
       attrs["id"] = attributes["id"]
       attrs["uid"] = attributes["uid"]
-      attrs["status"] = Svix::SinkStatus.deserialize(attributes["status"])
+      attrs["status"] = Svix::DestinationStatus.deserialize(attributes["status"])
       attrs["current_iterator"] = attributes["currentIterator"]
       attrs["failure_reason"] = attributes["failureReason"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time

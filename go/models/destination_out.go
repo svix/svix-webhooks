@@ -7,7 +7,6 @@ import (
 	"time"
 )
 
-// Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.
 // When creating an DestinationOut, use the appropriate config structure based on the Type:
 //   - "pollingEndpoint": No config needed (nil or just ignore the config field)
 //   - "azureBlobStorage": Use AzureBlobStorageConfigOut
@@ -26,9 +25,9 @@ import (
 //   - "sns": Use SnsConfigOut
 //   - "sqs": Use SqsConfigOut
 type DestinationOut struct {
-	Id              string               `json:"id"`            // The destination's ID.
-	Uid             *string              `json:"uid,omitempty"` // The destination's UID.
-	Status          SinkStatus           `json:"status"`
+	Id              string               `json:"id"`            // The Destination's ID.
+	Uid             *string              `json:"uid,omitempty"` // The Destination's UID.
+	Status          DestinationStatus    `json:"status"`
 	CurrentIterator string               `json:"currentIterator"`
 	FailureReason   *string              `json:"failureReason,omitempty"`
 	CreatedAt       time.Time            `json:"createdAt"`

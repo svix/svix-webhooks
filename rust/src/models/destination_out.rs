@@ -4,27 +4,26 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     big_query_config_out::BigQueryConfigOut, clickhouse_config_out::ClickhouseConfigOut,
-    event_bridge_config_out::EventBridgeConfigOut,
+    destination_status::DestinationStatus, event_bridge_config_out::EventBridgeConfigOut,
     google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
     otel_tracing_config_out::OtelTracingConfigOut, postgres_config_out::PostgresConfigOut,
     rabbit_mq_config_out::RabbitMqConfigOut, redshift_config_out::RedshiftConfigOut,
-    s3_config_out::S3ConfigOut, sink_http_config_out::SinkHttpConfigOut, sink_status::SinkStatus,
+    s3_config_out::S3ConfigOut, sink_http_config_out::SinkHttpConfigOut,
     snowflake_config_out::SnowflakeConfigOut, sns_config_out::SnsConfigOut,
     sqs_config_out::SqsConfigOut,
 };
 
-/// Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct DestinationOut {
-    /// The destination's ID.
+    /// The Destination's ID.
     pub id: String,
 
-    /// The destination's UID.
+    /// The Destination's UID.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uid: Option<String>,
 
-    pub status: SinkStatus,
+    pub status: DestinationStatus,
 
     #[serde(rename = "currentIterator")]
     pub current_iterator: String,

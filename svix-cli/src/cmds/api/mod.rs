@@ -3,6 +3,8 @@
 pub(crate) mod application;
 pub(crate) mod authentication;
 pub(crate) mod connector;
+pub(crate) mod destination;
+pub(crate) mod destination_transformation;
 pub(crate) mod endpoint;
 pub(crate) mod endpoint_transformation;
 pub(crate) mod environment;

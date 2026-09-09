@@ -200,7 +200,10 @@ namespace Svix
             {
                 Id = endpoint.Id,
                 Uid = endpoint.Uid,
-                Status = endpoint.Disabled == true ? SinkStatus.Disabled : SinkStatus.Enabled,
+                Status =
+                    endpoint.Disabled == true
+                        ? DestinationStatus.Disabled
+                        : DestinationStatus.Enabled,
                 CurrentIterator = "",
                 CreatedAt = endpoint.CreatedAt,
                 UpdatedAt = endpoint.UpdatedAt,

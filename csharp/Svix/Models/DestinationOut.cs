@@ -6,9 +6,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Svix.Models
 {
-    /// <summary>
-    /// Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.
-    /// <summary>
     [JsonConverter(typeof(DestinationOutConverter))]
     public class DestinationOut
     {
@@ -19,7 +16,7 @@ namespace Svix.Models
         public string? Uid { get; set; } = null;
 
         [JsonProperty("status", Required = Required.Always)]
-        public required SinkStatus Status { get; set; }
+        public required DestinationStatus Status { get; set; }
 
         [JsonProperty("currentIterator", Required = Required.Always)]
         public required string CurrentIterator { get; set; }
@@ -402,7 +399,7 @@ namespace Svix.Models
         public string? Uid { get; set; } = null;
 
         [JsonProperty("status", Required = Required.Always)]
-        public required SinkStatus Status { get; set; }
+        public required DestinationStatus Status { get; set; }
 
         [JsonProperty("currentIterator", Required = Required.Always)]
         public required string CurrentIterator { get; set; }

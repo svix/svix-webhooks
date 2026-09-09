@@ -8,6 +8,7 @@ import {
   type ClickhouseConfigOut,
   ClickhouseConfigOutSerializer,
 } from "./clickhouseConfigOut";
+import { type DestinationStatus, DestinationStatusSerializer } from "./destinationStatus";
 import {
   type EventBridgeConfigOut,
   EventBridgeConfigOutSerializer,
@@ -29,7 +30,6 @@ import { type RabbitMqConfigOut, RabbitMqConfigOutSerializer } from "./rabbitMqC
 import { type RedshiftConfigOut, RedshiftConfigOutSerializer } from "./redshiftConfigOut";
 import { type S3ConfigOut, S3ConfigOutSerializer } from "./s3ConfigOut";
 import { type SinkHttpConfigOut, SinkHttpConfigOutSerializer } from "./sinkHttpConfigOut";
-import { type SinkStatus, SinkStatusSerializer } from "./sinkStatus";
 import {
   type SnowflakeConfigOut,
   SnowflakeConfigOutSerializer,
@@ -38,11 +38,11 @@ import { type SnsConfigOut, SnsConfigOutSerializer } from "./snsConfigOut";
 import { type SqsConfigOut, SqsConfigOutSerializer } from "./sqsConfigOut";
 
 interface _DestinationOutFields {
-  /** The destination's ID. */
+  /** The Destination's ID. */
   id: string;
-  /** The destination's UID. */
+  /** The Destination's UID. */
   uid?: string | null;
-  status: SinkStatus;
+  status: DestinationStatus;
   currentIterator: string;
   failureReason?: string | null;
   createdAt: Date;
@@ -138,7 +138,6 @@ interface DestinationOutPostgres {
   config: PostgresConfigOut;
 }
 
-/** Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`. */
 export type DestinationOut = _DestinationOutFields &
   (
     | DestinationOutPollingEndpoint
@@ -207,7 +206,7 @@ export const DestinationOutSerializer = {
       config: getConfig(type),
       id: object["id"],
       uid: object["uid"],
-      status: SinkStatusSerializer._fromJsonObject(object["status"]),
+      status: DestinationStatusSerializer._fromJsonObject(object["status"]),
       currentIterator: object["currentIterator"],
       failureReason: object["failureReason"],
       createdAt: new Date(object["createdAt"]),
@@ -280,7 +279,7 @@ export const DestinationOutSerializer = {
       config: config,
       id: self.id,
       uid: self.uid,
-      status: SinkStatusSerializer._toJsonObject(self.status),
+      status: DestinationStatusSerializer._toJsonObject(self.status),
       currentIterator: self.currentIterator,
       failureReason: self.failureReason,
       createdAt: self.createdAt,
