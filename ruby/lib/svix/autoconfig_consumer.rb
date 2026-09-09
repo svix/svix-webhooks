@@ -9,7 +9,7 @@ require "svix/models/destination_in"
 require "svix/models/destination_out"
 require "svix/models/poller_v2_commit_in"
 require "svix/models/sink_in_common"
-require "svix/models/sink_status"
+require "svix/models/destination_status"
 require "svix/models/subscribe_in"
 require "svix/api_internal/endpoint_auto_config_deprecated"
 require "svix/api_internal/endpoint_autoconfig"
@@ -84,7 +84,7 @@ module Svix
       DestinationOut.new(
         "id" => endpoint.id,
         "uid" => endpoint.uid,
-        "status" => endpoint.disabled ? SinkStatus::DISABLED : SinkStatus::ENABLED,
+        "status" => endpoint.disabled ? DestinationStatus::DISABLED : DestinationStatus::ENABLED,
         "current_iterator" => "",
         "created_at" => endpoint.created_at,
         "updated_at" => endpoint.updated_at,

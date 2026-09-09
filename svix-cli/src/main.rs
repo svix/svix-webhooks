@@ -9,10 +9,10 @@ use self::{
     cmds::{
         api::{
             application::ApplicationArgs, authentication::AuthenticationArgs,
-            endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
-            ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
-            message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
-            streaming::StreamingArgs,
+            destination::DestinationArgs, endpoint::EndpointArgs, environment::EnvironmentArgs,
+            event_type::EventTypeArgs, ingest::IngestArgs, integration::IntegrationArgs,
+            message::MessageArgs, message_attempt::MessageAttemptArgs,
+            operational_webhook::OperationalWebhookArgs, streaming::StreamingArgs,
         },
         listen::ListenArgs,
         open::OpenArgs,
@@ -83,6 +83,8 @@ enum RootCommands {
     Completion { shell: Shell },
     /// List, create & modify connectors
     Connector(ConnectorArgs),
+    /// List, create & modify destinations
+    Destination(DestinationArgs),
     /// List, create & modify endpoints
     Endpoint(EndpointArgs),
     /// Import or export environments
@@ -158,6 +160,10 @@ async fn main() -> Result<()> {
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::Connector(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::Destination(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }

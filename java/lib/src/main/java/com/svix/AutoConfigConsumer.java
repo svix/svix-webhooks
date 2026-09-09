@@ -17,7 +17,7 @@ import com.svix.models.EndpointOut;
 import com.svix.models.PollerV2CommitIn;
 import com.svix.models.PollerV2PollOut;
 import com.svix.models.SinkInCommon;
-import com.svix.models.SinkStatus;
+import com.svix.models.DestinationStatus;
 import com.svix.models.SubscribeIn;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,7 +106,7 @@ public final class AutoConfigConsumer {
     destination.setId(endpoint.getId());
     destination.setUid(endpoint.getUid());
     destination.setStatus(
-        Boolean.TRUE.equals(endpoint.getDisabled()) ? SinkStatus.DISABLED : SinkStatus.ENABLED);
+        Boolean.TRUE.equals(endpoint.getDisabled()) ? DestinationStatus.DISABLED : DestinationStatus.ENABLED);
     destination.setCurrentIterator("");
     destination.setCreatedAt(endpoint.getCreatedAt());
     destination.setUpdatedAt(endpoint.getUpdatedAt());

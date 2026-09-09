@@ -5,8 +5,8 @@ use crate::{
     error::{Error, Result},
     models::{
         AutoConfigSinkType, DestinationIn, DestinationInConfig, DestinationOut,
-        DestinationOutConfig, EndpointOut, PollerV2CommitIn, PollerV2PollOut, SinkInCommon,
-        SinkStatus, SubscribeIn,
+        DestinationOutConfig, DestinationStatus, EndpointOut, PollerV2CommitIn, PollerV2PollOut,
+        SinkInCommon, SubscribeIn,
     },
 };
 
@@ -173,9 +173,9 @@ fn destination_out_from_v1_endpoint(endpoint: EndpointOut) -> DestinationOut {
         id: endpoint.id,
         uid: endpoint.uid,
         status: if endpoint.disabled == Some(true) {
-            SinkStatus::Disabled
+            DestinationStatus::Disabled
         } else {
-            SinkStatus::Enabled
+            DestinationStatus::Enabled
         },
         current_iterator: String::new(),
         failure_reason: None,
