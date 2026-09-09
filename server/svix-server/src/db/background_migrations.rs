@@ -66,8 +66,30 @@ fn lock_key(id: &str) -> i64 {
     0x7a9f2c51 * (CRC_IEEE.checksum(id.as_bytes()) as i64)
 }
 
+/// PostgreSQL `CREATE TABLE IF NOT EXISTS` is not atomic against a concurrent
+/// `CREATE TABLE`. Two sessions can both pass the existence check; the loser
+/// then fails while inserting the new type into `pg_type` (`23505`) or with
+/// `duplicate_table` (`42P07`). Either error means the table now exists.
+fn is_concurrent_create_table_error(err: &sqlx::Error) -> bool {
+    match err {
+        sqlx::Error::Database(db) => matches!(db.code().as_deref(), Some("23505") | Some("42P07")),
+        _ => false,
+    }
+}
+
+/// Run `CREATE TABLE IF NOT EXISTS`, treating a concurrent-create race as success.
+#[doc(hidden)]
+pub async fn create_table_if_not_exists(pool: &PgPool, sql: &str) -> Result<(), sqlx::Error> {
+    match sqlx::query(sql).execute(pool).await {
+        Ok(_) => Ok(()),
+        Err(e) if is_concurrent_create_table_error(&e) => Ok(()),
+        Err(e) => Err(e),
+    }
+}
+
 pub async fn ensure_table(pool: &PgPool) -> Result<(), sqlx::Error> {
-    sqlx::query(
+    create_table_if_not_exists(
+        pool,
         "CREATE TABLE IF NOT EXISTS _svix_background_migrations (
             id          TEXT        PRIMARY KEY,
             started_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -77,9 +99,7 @@ pub async fn ensure_table(pool: &PgPool) -> Result<(), sqlx::Error> {
             last_error  TEXT
         )",
     )
-    .execute(pool)
-    .await?;
-    Ok(())
+    .await
 }
 
 pub async fn run_migrations(
