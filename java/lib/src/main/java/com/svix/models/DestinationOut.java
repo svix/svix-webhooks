@@ -37,7 +37,7 @@ import java.util.Map;
 public class DestinationOut {
     private String id;
     private String uid;
-    private SinkStatus status;
+    private DestinationStatus status;
     private String currentIterator;
     private String failureReason;
     private OffsetDateTime createdAt;
@@ -60,7 +60,7 @@ public class DestinationOut {
         return this;
     }
 
-    public DestinationOut status(SinkStatus status) {
+    public DestinationOut status(DestinationStatus status) {
         this.status = status;
         return this;
     }
@@ -139,7 +139,7 @@ class DestinationOutSurrogate {
     String uid;
 
     @JsonProperty("status")
-    SinkStatus status;
+    DestinationStatus status;
 
     @JsonProperty("currentIterator")
     String currentIterator;
@@ -231,7 +231,7 @@ class DestinationOutDeserializer extends StdDeserializer<DestinationOut> {
                 p.getCodec().readValue(p, DestinationOutSurrogate.class);
         String id = surrogate.getId();
         String uid = surrogate.getUid();
-        SinkStatus status = surrogate.getStatus();
+        DestinationStatus status = surrogate.getStatus();
         String currentIterator = surrogate.getCurrentIterator();
         String failureReason = surrogate.getFailureReason();
         OffsetDateTime createdAt = surrogate.getCreatedAt();

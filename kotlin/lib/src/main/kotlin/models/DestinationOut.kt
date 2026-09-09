@@ -14,11 +14,11 @@ import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = DestinationOutSerializer::class)
 data class DestinationOut(
-    /** The destination's ID. */
+    /** The Destination's ID. */
     val id: String,
-    /** The destination's UID. */
+    /** The Destination's UID. */
     val uid: String? = null,
-    val status: SinkStatus,
+    val status: DestinationStatus,
     val currentIterator: String,
     val failureReason: String? = null,
     val createdAt: Instant,
@@ -235,11 +235,11 @@ sealed class DestinationOutConfig {
 class DestinationOutSerializer : KSerializer<DestinationOut> {
     @Serializable
     private data class DestinationOutSurrogate(
-        /** The destination's ID. */
+        /** The Destination's ID. */
         val id: String,
-        /** The destination's UID. */
+        /** The Destination's UID. */
         val uid: String? = null,
-        val status: SinkStatus,
+        val status: DestinationStatus,
         val currentIterator: String,
         val failureReason: String? = null,
         val createdAt: Instant,

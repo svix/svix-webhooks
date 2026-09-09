@@ -9,6 +9,10 @@ import {
   ClickhouseConfigInSerializer,
 } from "./clickhouseConfigIn";
 import {
+  type DestinationStatusIn,
+  DestinationStatusInSerializer,
+} from "./destinationStatusIn";
+import {
   type EventBridgeConfigIn,
   EventBridgeConfigInSerializer,
 } from "./eventBridgeConfigIn";
@@ -32,7 +36,6 @@ import { type PostgresConfigIn, PostgresConfigInSerializer } from "./postgresCon
 import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
 import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
 import { type S3ConfigIn, S3ConfigInSerializer } from "./s3ConfigIn";
-import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import { type SnowflakeConfigIn, SnowflakeConfigInSerializer } from "./snowflakeConfigIn";
 import { type SnsConfigIn, SnsConfigInSerializer } from "./snsConfigIn";
 import { type SqsConfigIn, SqsConfigInSerializer } from "./sqsConfigIn";
@@ -47,7 +50,7 @@ interface _DestinationInFields {
    *
    * If the destination is `disabled`, events will not be dispatched until the destination is reenabled.
    */
-  status?: SinkStatusIn;
+  status?: DestinationStatusIn;
   /** How many events will be batched in a request to the destination. */
   batchSize?: number;
   /**
@@ -218,7 +221,7 @@ export const DestinationInSerializer = {
       uid: object["uid"],
       status:
         object["status"] != null
-          ? SinkStatusInSerializer._fromJsonObject(object["status"])
+          ? DestinationStatusInSerializer._fromJsonObject(object["status"])
           : undefined,
       batchSize: object["batchSize"],
       maxWaitSecs: object["maxWaitSecs"],
@@ -288,7 +291,7 @@ export const DestinationInSerializer = {
       uid: self.uid,
       status:
         self.status != null
-          ? SinkStatusInSerializer._toJsonObject(self.status)
+          ? DestinationStatusInSerializer._toJsonObject(self.status)
           : undefined,
       batchSize: self.batchSize,
       maxWaitSecs: self.maxWaitSecs,

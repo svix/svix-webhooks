@@ -9,6 +9,7 @@ from .azure_blob_storage_config_out import AzureBlobStorageConfigOut
 from .big_query_config_out import BigQueryConfigOut
 from .clickhouse_config_out import ClickhouseConfigOut
 from .common import BaseModel
+from .destination_status import DestinationStatus
 from .event_bridge_config_out import EventBridgeConfigOut
 from .google_cloud_pub_sub_config_out import GoogleCloudPubSubConfigOut
 from .google_cloud_storage_config_out import GoogleCloudStorageConfigOut
@@ -18,7 +19,6 @@ from .rabbit_mq_config_out import RabbitMqConfigOut
 from .redshift_config_out import RedshiftConfigOut
 from .s3_config_out import S3ConfigOut
 from .sink_http_config_out import SinkHttpConfigOut
-from .sink_status import SinkStatus
 from .snowflake_config_out import SnowflakeConfigOut
 from .sns_config_out import SnsConfigOut
 from .sqs_config_out import SqsConfigOut
@@ -26,12 +26,12 @@ from .sqs_config_out import SqsConfigOut
 
 class DestinationOut(BaseModel):
     id: str
-    """The destination's ID."""
+    """The Destination's ID."""
 
     uid: t.Optional[str] = None
-    """The destination's UID."""
+    """The Destination's UID."""
 
-    status: SinkStatus
+    status: DestinationStatus
 
     current_iterator: str
 

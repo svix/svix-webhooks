@@ -32,6 +32,16 @@ public abstract class StreamSinkOutConfig {
         }
     }
 
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("pollingEndpoint")
+    public static class PollingEndpoint extends StreamSinkOutConfig {
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().createObjectNode();
+        }
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -267,6 +277,7 @@ public abstract class StreamSinkOutConfig {
 
     static {
         TY_M.put("poller", c -> new Poller());
+        TY_M.put("pollingEndpoint", c -> new PollingEndpoint());
         TY_M.put(
                 "azureBlobStorage",
                 c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfigOut.class)));

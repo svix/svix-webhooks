@@ -3,6 +3,7 @@ import { Application } from "./api/application";
 import { Authentication } from "./api/authentication";
 import { BackgroundTask } from "./api/backgroundTask";
 import { Connector } from "./api/connector";
+import { Destination } from "./api/destination";
 import { Endpoint } from "./api/endpoint";
 import { Environment } from "./api/environment";
 import { EventType } from "./api/eventType";
@@ -75,6 +76,10 @@ export class Svix {
 
   public get connector() {
     return new Connector(this.requestCtx);
+  }
+
+  public get destination() {
+    return new Destination(this.requestCtx);
   }
 
   public get endpoint() {

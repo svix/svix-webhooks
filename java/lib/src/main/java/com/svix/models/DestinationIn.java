@@ -35,7 +35,7 @@ import java.util.Map;
 @JsonDeserialize(using = DestinationInDeserializer.class)
 public class DestinationIn {
     private String uid;
-    private SinkStatusIn status;
+    private DestinationStatusIn status;
     private Short batchSize;
     private Short maxWaitSecs;
     private List<String> eventTypes;
@@ -48,7 +48,7 @@ public class DestinationIn {
         return this;
     }
 
-    public DestinationIn status(SinkStatusIn status) {
+    public DestinationIn status(DestinationStatusIn status) {
         this.status = status;
         return this;
     }
@@ -99,7 +99,7 @@ class DestinationInSurrogate {
     String uid;
 
     @JsonProperty("status")
-    SinkStatusIn status;
+    DestinationStatusIn status;
 
     @JsonProperty("batchSize")
     Short batchSize;
@@ -167,7 +167,7 @@ class DestinationInDeserializer extends StdDeserializer<DestinationIn> {
     public DestinationIn deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         DestinationInSurrogate surrogate = p.getCodec().readValue(p, DestinationInSurrogate.class);
         String uid = surrogate.getUid();
-        SinkStatusIn status = surrogate.getStatus();
+        DestinationStatusIn status = surrogate.getStatus();
         Short batchSize = surrogate.getBatchSize();
         Short maxWaitSecs = surrogate.getMaxWaitSecs();
         List<String> eventTypes = surrogate.getEventTypes();

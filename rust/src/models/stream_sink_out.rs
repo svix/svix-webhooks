@@ -66,6 +66,8 @@ pub struct StreamSinkOut {
 pub enum StreamSinkOutConfig {
     #[serde(rename = "poller")]
     Poller,
+    #[serde(rename = "pollingEndpoint")]
+    PollingEndpoint,
     #[serde(rename = "azureBlobStorage")]
     AzureBlobStorage(AzureBlobStorageConfigOut),
     #[serde(rename = "otelTracing")]

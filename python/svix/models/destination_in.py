@@ -8,6 +8,7 @@ from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
 from .big_query_config_in import BigQueryConfigIn
 from .clickhouse_config_in import ClickhouseConfigIn
 from .common import BaseModel
+from .destination_status_in import DestinationStatusIn
 from .event_bridge_config_in import EventBridgeConfigIn
 from .fifo_endpoint_config_in import FifoEndpointConfigIn
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
@@ -17,7 +18,6 @@ from .postgres_config_in import PostgresConfigIn
 from .rabbit_mq_config_in import RabbitMqConfigIn
 from .redshift_config_in import RedshiftConfigIn
 from .s3_config_in import S3ConfigIn
-from .sink_status_in import SinkStatusIn
 from .snowflake_config_in import SnowflakeConfigIn
 from .sns_config_in import SnsConfigIn
 from .sqs_config_in import SqsConfigIn
@@ -27,7 +27,7 @@ class DestinationIn(BaseModel):
     uid: t.Optional[str] = None
     """An optional unique identifier for the destination."""
 
-    status: t.Optional[SinkStatusIn] = None
+    status: t.Optional[DestinationStatusIn] = None
     """Whether the destination will receive events.
 
     If the destination is `enabled`, events sent to the application will be dispatched to the destination in order.

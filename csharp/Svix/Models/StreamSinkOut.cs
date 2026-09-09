@@ -119,6 +119,9 @@ namespace Svix.Models
         public static StreamSinkOutConfig Poller() =>
             new(new Dictionary<string, string>(), ConfigType.Poller);
 
+        public static StreamSinkOutConfig PollingEndpoint() =>
+            new(new Dictionary<string, string>(), ConfigType.PollingEndpoint);
+
         public static StreamSinkOutConfig AzureBlobStorage(
             AzureBlobStorageConfigOut azureBlobStorageConfigOut
         ) => new(azureBlobStorageConfigOut, ConfigType.AzureBlobStorage);
@@ -172,6 +175,9 @@ namespace Svix.Models
             [EnumMember(Value = "poller")]
             Poller,
 
+            [EnumMember(Value = "pollingEndpoint")]
+            PollingEndpoint,
+
             [EnumMember(Value = "azureBlobStorage")]
             AzureBlobStorage,
 
@@ -220,6 +226,7 @@ namespace Svix.Models
 
         public TResult Match<TResult>(
             Func<TResult> onPoller,
+            Func<TResult> onPollingEndpoint,
             Func<AzureBlobStorageConfigOut, TResult> onAzureBlobStorage,
             Func<OtelTracingConfigOut, TResult> onOtelTracing,
             Func<SinkHttpConfigOut, TResult> onHttp,
@@ -240,6 +247,7 @@ namespace Svix.Models
             return _type switch
             {
                 ConfigType.Poller => onPoller(),
+                ConfigType.PollingEndpoint => onPollingEndpoint(),
                 ConfigType.AzureBlobStorage => onAzureBlobStorage(
                     (AzureBlobStorageConfigOut)_value
                 ),
@@ -268,6 +276,7 @@ namespace Svix.Models
 
         public void Switch(
             Action? onPoller = null,
+            Action? onPollingEndpoint = null,
             Action<AzureBlobStorageConfigOut>? onAzureBlobStorage = null,
             Action<OtelTracingConfigOut>? onOtelTracing = null,
             Action<SinkHttpConfigOut>? onHttp = null,
@@ -291,6 +300,12 @@ namespace Svix.Models
                     if (onPoller != null)
                     {
                         onPoller();
+                    }
+                    break;
+                case ConfigType.PollingEndpoint:
+                    if (onPollingEndpoint != null)
+                    {
+                        onPollingEndpoint();
                     }
                     break;
                 case ConfigType.AzureBlobStorage:
@@ -515,6 +530,7 @@ namespace Svix.Models
             new()
             {
                 ["poller"] = c => StreamSinkOutConfig.Poller(),
+                ["pollingEndpoint"] = c => StreamSinkOutConfig.PollingEndpoint(),
                 ["azureBlobStorage"] = c =>
                     StreamSinkOutConfig.AzureBlobStorage(ToObj<AzureBlobStorageConfigOut>(c)),
                 ["otelTracing"] = c =>

@@ -12,6 +12,7 @@ from .background_task import BackgroundTask, BackgroundTaskAsync
 from .client import AuthenticatedClient
 from .common import _make_httpx_async_client, _make_httpx_client
 from .connector import Connector, ConnectorAsync
+from .destination import Destination, DestinationAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
@@ -120,6 +121,10 @@ class SvixAsync(ClientBase):
         return ConnectorAsync(self._client, self._httpx_client)
 
     @property
+    def destination(self) -> DestinationAsync:
+        return DestinationAsync(self._client, self._httpx_client)
+
+    @property
     def endpoint(self) -> EndpointAsync:
         return EndpointAsync(self._client, self._httpx_client)
 
@@ -186,6 +191,10 @@ class Svix(ClientBase):
     @property
     def connector(self) -> Connector:
         return Connector(self._client, self._httpx_client)
+
+    @property
+    def destination(self) -> Destination:
+        return Destination(self._client, self._httpx_client)
 
     @property
     def endpoint(self) -> Endpoint:

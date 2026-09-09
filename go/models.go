@@ -46,6 +46,13 @@ type (
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
 	CronConfig                                = models.CronConfig
+	DestinationIn                             = models.DestinationIn
+	DestinationOut                            = models.DestinationOut
+	DestinationPatch                          = models.DestinationPatch
+	DestinationStatus                         = models.DestinationStatus
+	DestinationStatusIn                       = models.DestinationStatusIn
+	DestinationTransformIn                    = models.DestinationTransformIn
+	DestinationTransformationOut              = models.DestinationTransformationOut
 	DocusignConfig                            = models.DocusignConfig
 	DocusignConfigOut                         = models.DocusignConfigOut
 	EasypostConfig                            = models.EasypostConfig
@@ -83,6 +90,7 @@ type (
 	EventTypePatch                            = models.EventTypePatch
 	EventTypeUpsertIn                         = models.EventTypeUpsertIn
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
+	FifoEndpointConfigIn                      = models.FifoEndpointConfigIn
 	GithubConfig                              = models.GithubConfig
 	GithubConfigOut                           = models.GithubConfigOut
 	GoogleCloudPubSubConfigIn                 = models.GoogleCloudPubSubConfigIn
@@ -113,6 +121,7 @@ type (
 	ListResponseApplicationOut                = models.ListResponseApplicationOut
 	ListResponseBackgroundTaskOut             = models.ListResponseBackgroundTaskOut
 	ListResponseConnectorOut                  = models.ListResponseConnectorOut
+	ListResponseDestinationOut                = models.ListResponseDestinationOut
 	ListResponseEndpointMessageOut            = models.ListResponseEndpointMessageOut
 	ListResponseEndpointOut                   = models.ListResponseEndpointOut
 	ListResponseEventTypeOut                  = models.ListResponseEventTypeOut

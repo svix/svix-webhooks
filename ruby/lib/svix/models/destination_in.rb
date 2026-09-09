@@ -5,6 +5,7 @@ require "json"
 require_relative "./azure_blob_storage_config_in"
 require_relative "./big_query_config_in"
 require_relative "./clickhouse_config_in"
+require_relative "./destination_status_in"
 require_relative "./event_bridge_config_in"
 require_relative "./fifo_endpoint_config_in"
 require_relative "./google_cloud_pub_sub_config_in"
@@ -14,7 +15,6 @@ require_relative "./postgres_config_in"
 require_relative "./rabbit_mq_config_in"
 require_relative "./redshift_config_in"
 require_relative "./s3_config_in"
-require_relative "./sink_status_in"
 require_relative "./snowflake_config_in"
 require_relative "./sns_config_in"
 require_relative "./sqs_config_in"
@@ -166,7 +166,7 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["uid"] = attributes["uid"]
-      attrs["status"] = Svix::SinkStatusIn.deserialize(attributes["status"]) if attributes["status"]
+      attrs["status"] = Svix::DestinationStatusIn.deserialize(attributes["status"]) if attributes["status"]
       attrs["batch_size"] = attributes["batchSize"]
       attrs["max_wait_secs"] = attributes["maxWaitSecs"]
       attrs["event_types"] = attributes["eventTypes"]

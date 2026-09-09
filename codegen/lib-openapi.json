@@ -2251,6 +2251,487 @@
                 "x-internal": true
             }
         },
+        "/api/v1/auth/dashboard/mcp-oauth/client/{client_id}": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get Dashboard MCP OAuth Client",
+                "description": "Look up a registered client so the consent screen can name who is asking.",
+                "operationId": "v1.dashboard.mcp-oauth.get-client",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "client_id",
+                        "description": "The OAuthClient's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The OAuthClient's ID.",
+                            "type": "string",
+                            "maxLength": 28,
+                            "minLength": 27,
+                            "pattern": "^oaclt_[A-Za-z0-9]{21,22}$",
+                            "example": "oaclt_2yZwUhtgs5Ai8T9yRQJXA"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/McpOAuthClientOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/auth/dashboard/mcp-oauth/consent": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Approve Dashboard MCP OAuth Consent",
+                "description": "Approve an OAuth authorization request for the environment the caller's\ntoken is scoped to.",
+                "operationId": "v1.dashboard.mcp-oauth.approve-consent",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/McpOAuthConsentIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/McpOAuthConsentOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/auth/dashboard/mcp-oauth/grant": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "List Dashboard MCP OAuth Grants",
+                "description": "List the agents that hold OAuth access to this environment.",
+                "operationId": "v1.dashboard.mcp-oauth.list-grants",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "limit",
+                        "description": "Limit the number of returned items",
+                        "schema": {
+                            "description": "Limit the number of returned items",
+                            "type": "integer",
+                            "format": "uint64",
+                            "maximum": 250,
+                            "minimum": 1.0
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "iterator",
+                        "description": "The iterator returned from a prior invocation",
+                        "schema": {
+                            "description": "The iterator returned from a prior invocation",
+                            "type": "string",
+                            "maxLength": 29,
+                            "minLength": 28,
+                            "pattern": "^oagrnt_[A-Za-z0-9]{21,22}$",
+                            "nullable": true,
+                            "example": "oagrnt_2yZwUhtgs5Ai8T9yRQJXA"
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "order",
+                        "description": "The sorting order of the returned items",
+                        "schema": {
+                            "description": "The sorting order of the returned items",
+                            "$ref": "#/components/schemas/Ordering",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListResponse_McpOAuthGrantOut_"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/auth/dashboard/mcp-oauth/grant/{grant_id}": {
+            "delete": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Revoke Dashboard MCP OAuth Grant",
+                "description": "Revoke one agent's OAuth access to this environment. Already-minted access\ntokens keep working until they expire (at most an hour).",
+                "operationId": "v1.dashboard.mcp-oauth.revoke-grant",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "grant_id",
+                        "description": "The OAuthGrant's ID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The OAuthGrant's ID.",
+                            "type": "string",
+                            "maxLength": 29,
+                            "minLength": 28,
+                            "pattern": "^oagrnt_[A-Za-z0-9]{21,22}$",
+                            "example": "oagrnt_2yZwUhtgs5Ai8T9yRQJXA"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "no content"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
         "/api/v1/auth/app/{app_id}/create-message-token": {
             "post": {
                 "tags": [
@@ -22669,7 +23150,7 @@
                     },
                     {
                         "in": "query",
-                        "name": "endpId",
+                        "name": "endp_id",
                         "description": "Filter the response based on the bound endpoint.",
                         "schema": {
                             "description": "Filter the response based on the bound endpoint.",
@@ -22684,7 +23165,7 @@
                     },
                     {
                         "in": "query",
-                        "name": "destId",
+                        "name": "dest_id",
                         "description": "Filter the response based on the bound destination.",
                         "schema": {
                             "description": "Filter the response based on the bound destination.",
@@ -23503,7 +23984,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -23742,7 +24223,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.list(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.list(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.list(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.list(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.List(ctx, \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", nil)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response = svix.destination.list(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination().list(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.destination.list(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .list(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(), None)\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.List(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->list(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination list \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "post": {
                 "tags": [
@@ -23790,7 +24337,7 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -23875,7 +24422,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  uid: \"unique-identifier\",\n  status: DestinationStatusIn.Enabled,\n  batchSize: 100,\n  maxWaitSecs: 1,\n  eventTypes: [],\n  channels: [],\n  metadata: {},\n  type: \"azureBlobStorage\",\n  config: {\n    container: \"sample string\",\n    account: \"sample string\",\n    accessKey: \"sample string\",\n  },\n});"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  uid: \"unique-identifier\",\n  status: DestinationStatusIn.Enabled,\n  batchSize: 100,\n  maxWaitSecs: 1,\n  eventTypes: [],\n  channels: [],\n  metadata: {},\n  type: \"azureBlobStorage\",\n  config: {\n    container: \"sample string\",\n    account: \"sample string\",\n    accessKey: \"sample string\",\n  },\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    DestinationIn(\n        uid=\"unique-identifier\",\n        status=DestinationStatusIn.ENABLED,\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        channels=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfigIn(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    DestinationIn(\n        uid=\"unique-identifier\",\n        status=DestinationStatusIn.ENABLED,\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        channels=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfigIn(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tDestinationIn{\n\t\tUid:         new(\"unique-identifier\"),\n\t\tStatus:      new(DESTINATIONSTATUSIN_ENABLED),\n\t\tBatchSize:   new(uint16(100)),\n\t\tMaxWaitSecs: new(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tChannels:    []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfigIn{Container: \"sample string\", Account: \"sample string\", AccessKey: new(\"sample string\")}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n\tnil,\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.destination.create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        DestinationIn(\n            uid = \"unique-identifier\",\n            status = DestinationStatusIn.ENABLED,\n            batchSize = 100u,\n            maxWaitSecs = 1u,\n            eventTypes = listOf(),\n            channels = listOf(),\n            metadata = mapOf(),\n            config =\n                DestinationInConfig.AzureBlobStorage(\n                    AzureBlobStorageConfigIn(\n                        container = \"sample string\",\n                        account = \"sample string\",\n                        accessKey = \"sample string\",\n                    )\n                ),\n        ),\n    )"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new DestinationIn()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new DestinationInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix\n  .destination\n  .create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {\n      uid: \"unique-identifier\",\n      status: DestinationStatusIn::ENABLED,\n      batchSize: 100,\n      maxWaitSecs: 1,\n      eventTypes: [],\n      channels: [],\n      metadata: {},\n      config: {container: \"sample string\", account: \"sample string\", accessKey: \"sample string\"},\n      type: \"azureBlobStorage\"\n    }\n  )"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        DestinationIn {\n            uid: Some(\"unique-identifier\".to_string()),\n            status: Some(DestinationStatusIn::Enabled),\n            batch_size: Some(100),\n            max_wait_secs: Some(1),\n            event_types: Some(vec![]),\n            channels: Some(vec![]),\n            metadata: Some(HashMap::new()),\n            config: DestinationInConfig::AzureBlobStorage(AzureBlobStorageConfigIn {\n                container: \"sample string\".to_string(),\n                account: \"sample string\".to_string(),\n                access_key: Some(\"sample string\".to_string()),\n            }),\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new DestinationIn\n    {\n        Uid = \"unique-identifier\",\n        Status = DestinationStatusIn.Enabled,\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Channels = [],\n        Metadata = [],\n        Config = DestinationInConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfigIn\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    DestinationIn::create()\n    ->withUid(\"unique-identifier\")\n    ->withStatus(DestinationStatusIn::ENABLED)\n    ->withBatchSize(100)\n    ->withMaxWaitSecs(1)\n    ->withEventTypes([])\n    ->withChannels([])\n    ->withMetadata([])\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"uid\": \"unique-identifier\",\n    \"status\": \"enabled\",\n    \"batchSize\": 100,\n    \"maxWaitSecs\": 1,\n    \"eventTypes\": [],\n    \"channels\": [],\n    \"metadata\": {},\n    \"type\": \"azureBlobStorage\",\n    \"config\": {\n      \"container\": \"sample string\",\n      \"account\": \"sample string\",\n      \"accessKey\": \"sample string\"\n    }\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-identifier\",\n    \"status\": \"enabled\",\n    \"batchSize\": 100,\n    \"maxWaitSecs\": 1,\n    \"eventTypes\": [],\n    \"channels\": [],\n    \"metadata\": {},\n    \"type\": \"azureBlobStorage\",\n    \"config\": {\n      \"container\": \"sample string\",\n      \"account\": \"sample string\",\n      \"accessKey\": \"sample string\"\n    }\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/app/{app_id}/destination/{destination_id}": {
@@ -23905,10 +24518,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -23919,7 +24532,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -24004,7 +24617,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.get(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.get(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.Get(ctx, \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response = svix.destination.get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination().get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.destination.get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(), \"destination_id\".to_string())\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination get \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"destination_id\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination/destination_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -24032,10 +24711,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24057,7 +24736,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -24067,7 +24746,7 @@
                         }
                     },
                     "201": {
-                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -24152,7 +24831,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.upsert(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\",\n  {\n    uid: \"unique-identifier\",\n    status: DestinationStatusIn.Enabled,\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    channels: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.upsert(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\",\n  {\n    uid: \"unique-identifier\",\n    status: DestinationStatusIn.Enabled,\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    channels: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationIn(\n        uid=\"unique-identifier\",\n        status=DestinationStatusIn.ENABLED,\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        channels=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfigIn(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationIn(\n        uid=\"unique-identifier\",\n        status=DestinationStatusIn.ENABLED,\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        channels=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfigIn(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.Upsert(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"destination_id\",\n\tDestinationIn{\n\t\tUid:         new(\"unique-identifier\"),\n\t\tStatus:      new(DESTINATIONSTATUSIN_ENABLED),\n\t\tBatchSize:   new(uint16(100)),\n\t\tMaxWaitSecs: new(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tChannels:    []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfigIn{Container: \"sample string\", Account: \"sample string\", AccessKey: new(\"sample string\")}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.destination.upsert(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"destination_id\",\n        DestinationIn(\n            uid = \"unique-identifier\",\n            status = DestinationStatusIn.ENABLED,\n            batchSize = 100u,\n            maxWaitSecs = 1u,\n            eventTypes = listOf(),\n            channels = listOf(),\n            metadata = mapOf(),\n            config =\n                DestinationInConfig.AzureBlobStorage(\n                    AzureBlobStorageConfigIn(\n                        container = \"sample string\",\n                        account = \"sample string\",\n                        accessKey = \"sample string\",\n                    )\n                ),\n        ),\n    )"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationIn()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new DestinationInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix\n  .destination\n  .upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    {\n      uid: \"unique-identifier\",\n      status: DestinationStatusIn::ENABLED,\n      batchSize: 100,\n      maxWaitSecs: 1,\n      eventTypes: [],\n      channels: [],\n      metadata: {},\n      config: {container: \"sample string\", account: \"sample string\", accessKey: \"sample string\"},\n      type: \"azureBlobStorage\"\n    }\n  )"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .upsert(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"destination_id\".to_string(),\n        DestinationIn {\n            uid: Some(\"unique-identifier\".to_string()),\n            status: Some(DestinationStatusIn::Enabled),\n            batch_size: Some(100),\n            max_wait_secs: Some(1),\n            event_types: Some(vec![]),\n            channels: Some(vec![]),\n            metadata: Some(HashMap::new()),\n            config: DestinationInConfig::AzureBlobStorage(AzureBlobStorageConfigIn {\n                container: \"sample string\".to_string(),\n                account: \"sample string\".to_string(),\n                access_key: Some(\"sample string\".to_string()),\n            }),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    new DestinationIn\n    {\n        Uid = \"unique-identifier\",\n        Status = DestinationStatusIn.Enabled,\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Channels = [],\n        Metadata = [],\n        Config = DestinationInConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfigIn\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->upsert(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationIn::create()\n    ->withUid(\"unique-identifier\")\n    ->withStatus(DestinationStatusIn::ENABLED)\n    ->withBatchSize(100)\n    ->withMaxWaitSecs(1)\n    ->withEventTypes([])\n    ->withChannels([])\n    ->withMetadata([])\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination upsert \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"destination_id\" '{\n    \"uid\": \"unique-identifier\",\n    \"status\": \"enabled\",\n    \"batchSize\": 100,\n    \"maxWaitSecs\": 1,\n    \"eventTypes\": [],\n    \"channels\": [],\n    \"metadata\": {},\n    \"type\": \"azureBlobStorage\",\n    \"config\": {\n      \"container\": \"sample string\",\n      \"account\": \"sample string\",\n      \"accessKey\": \"sample string\"\n    }\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination/destination_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-identifier\",\n    \"status\": \"enabled\",\n    \"batchSize\": 100,\n    \"maxWaitSecs\": 1,\n    \"eventTypes\": [],\n    \"channels\": [],\n    \"metadata\": {},\n    \"type\": \"azureBlobStorage\",\n    \"config\": {\n      \"container\": \"sample string\",\n      \"account\": \"sample string\",\n      \"accessKey\": \"sample string\"\n    }\n  }'"
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -24180,10 +24925,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24272,7 +25017,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "await svix.destination.delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "await svix.destination.delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.destination.delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "await svix.destination.delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svix.Destination.Delete(ctx, \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.destination.delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getDestination().delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.destination.delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "svix.destination()\n    .delete(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"destination_id\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$svix->destination->delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination delete \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"destination_id\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination/destination_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
+                    }
+                ]
             },
             "patch": {
                 "tags": [
@@ -24300,10 +25111,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24324,7 +25135,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
+                        "description": "",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -24409,7 +25220,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\",\n  {\n    uid: \"unique-identifier\",\n    status: DestinationStatusIn.Enabled,\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    channels: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\",\n  {\n    uid: \"unique-identifier\",\n    status: DestinationStatusIn.Enabled,\n    batchSize: 100,\n    maxWaitSecs: 1,\n    eventTypes: [],\n    channels: [],\n    metadata: {},\n    type: \"azureBlobStorage\",\n    config: {\n      container: \"sample string\",\n      account: \"sample string\",\n      accessKey: \"sample string\",\n    },\n  }\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationPatch(\n        uid=\"unique-identifier\",\n        status=DestinationStatusIn.ENABLED,\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        channels=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfigPatch(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationPatch(\n        uid=\"unique-identifier\",\n        status=DestinationStatusIn.ENABLED,\n        batch_size=100,\n        max_wait_secs=1,\n        event_types=[],\n        channels=[],\n        metadata={},\n        type=\"azureBlobStorage\",\n        config=AzureBlobStorageConfigPatch(\n            container=\"sample string\",\n            account=\"sample string\",\n            access_key=\"sample string\",\n        ),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"destination_id\",\n\tDestinationPatch{\n\t\tUid:         NewNullable(\"unique-identifier\"),\n\t\tStatus:      NewNullable(DESTINATIONSTATUSIN_ENABLED),\n\t\tBatchSize:   NewNullable(uint16(100)),\n\t\tMaxWaitSecs: NewNullable(uint16(1)),\n\t\tEventTypes:  []string{},\n\t\tChannels:    []string{},\n\t\tMetadata:    nil,\n\t\tConfig:      (AzureBlobStorageConfigPatch{Container: new(\"sample string\"), Account: new(\"sample string\"), AccessKey: new(\"sample string\")}),\n\t\tType:        \"azureBlobStorage\",\n\t},\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.destination.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"destination_id\",\n        DestinationPatch(\n            uid = MaybeUnset.Present(\"unique-identifier\"),\n            status = MaybeUnset.Present(DestinationStatusIn.ENABLED),\n            batchSize = MaybeUnset.Present(100u),\n            maxWaitSecs = MaybeUnset.Present(1u),\n            eventTypes = listOf(),\n            channels = listOf(),\n            metadata = mapOf(),\n            config =\n                DestinationPatchConfig.AzureBlobStorage(\n                    AzureBlobStorageConfigPatch(\n                        container = \"sample string\",\n                        account = \"sample string\",\n                        accessKey = \"sample string\",\n                    )\n                ),\n        ),\n    )"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationPatch()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(\n                    new DestinationPatchConfig.AzureBlobStorage(new AzureBlobStorageConfigPatch()\n                        .container(\"sample string\")\n                        .account(\"sample string\")\n                        .accessKey(\"sample string\"))));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix\n  .destination\n  .patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    {\n      uid: \"unique-identifier\",\n      status: DestinationStatusIn::ENABLED,\n      batchSize: 100,\n      maxWaitSecs: 1,\n      eventTypes: [],\n      channels: [],\n      metadata: {},\n      config: {container: \"sample string\", account: \"sample string\", accessKey: \"sample string\"},\n      type: \"azureBlobStorage\"\n    }\n  )"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"destination_id\".to_string(),\n        DestinationPatch {\n            uid: js_option::JsOption::Some(\"unique-identifier\".to_string()),\n            status: js_option::JsOption::Some(DestinationStatusIn::Enabled),\n            batch_size: js_option::JsOption::Some(100),\n            max_wait_secs: js_option::JsOption::Some(1),\n            event_types: Some(vec![]),\n            channels: Some(vec![]),\n            metadata: Some(HashMap::new()),\n            config: DestinationPatchConfig::AzureBlobStorage(AzureBlobStorageConfigPatch {\n                container: Some(\"sample string\".to_string()),\n                account: Some(\"sample string\".to_string()),\n                access_key: Some(\"sample string\".to_string()),\n            }),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    new DestinationPatch\n    {\n        Uid = \"unique-identifier\",\n        Status = DestinationStatusIn.Enabled,\n        BatchSize = 100,\n        MaxWaitSecs = 1,\n        EventTypes = [],\n        Channels = [],\n        Metadata = [],\n        Config = DestinationPatchConfig.AzureBlobStorage(\n            (\n                new AzureBlobStorageConfigPatch\n                {\n                    Container = \"sample string\",\n                    Account = \"sample string\",\n                    AccessKey = \"sample string\",\n                }\n            )\n        ),\n    }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationPatch::create()\n    ->withUid(\"unique-identifier\")\n    ->withStatus(DestinationStatusIn::ENABLED)\n    ->withBatchSize(100)\n    ->withMaxWaitSecs(1)\n    ->withEventTypes([])\n    ->withChannels([])\n    ->withMetadata([])\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"destination_id\" '{\n    \"uid\": \"unique-identifier\",\n    \"status\": \"enabled\",\n    \"batchSize\": 100,\n    \"maxWaitSecs\": 1,\n    \"eventTypes\": [],\n    \"channels\": [],\n    \"metadata\": {},\n    \"type\": \"azureBlobStorage\",\n    \"config\": {\n      \"container\": \"sample string\",\n      \"account\": \"sample string\",\n      \"accessKey\": \"sample string\"\n    }\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination/destination_id' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"uid\": \"unique-identifier\",\n    \"status\": \"enabled\",\n    \"batchSize\": 100,\n    \"maxWaitSecs\": 1,\n    \"eventTypes\": [],\n    \"channels\": [],\n    \"metadata\": {},\n    \"type\": \"azureBlobStorage\",\n    \"config\": {\n      \"container\": \"sample string\",\n      \"account\": \"sample string\",\n      \"accessKey\": \"sample string\"\n    }\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/app/{app_id}/destination/{destination_id}/transformation": {
@@ -24439,10 +25316,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24457,7 +25334,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SinkTransformationOut"
+                                    "$ref": "#/components/schemas/DestinationTransformationOut"
                                 }
                             }
                         }
@@ -24538,7 +25415,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.transformation.get(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.transformation.get(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.transformation.get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.transformation.get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.Transformation.Get(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"destination_id\",\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.destination.transformation.get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination()\n        .getTransformation()\n        .get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.destination.transformation.get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .transformation()\n    .get(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(), \"destination_id\".to_string())\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Transformation.Get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->transformation->get(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination transformation get \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"destination_id\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination/destination_id/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "patch": {
                 "tags": [
@@ -24566,10 +25509,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24582,7 +25525,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/SinkTransformIn"
+                                "$ref": "#/components/schemas/DestinationTransformIn"
                             }
                         }
                     },
@@ -24675,7 +25618,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.destination.transformation.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\",\n  {\n    code: \"sample string\",\n  }\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.destination.transformation.patch(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"destination_id\",\n  {\n    code: \"sample string\",\n  }\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.destination.transformation.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationTransformIn(\n        code=\"sample string\",\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.destination.transformation.patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationTransformIn(\n        code=\"sample string\",\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Destination.Transformation.Patch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"destination_id\",\n\tDestinationTransformIn{Code: new(\"sample string\")},\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.destination.transformation.patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"destination_id\",\n        DestinationTransformIn(code = \"sample string\"),\n    )"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getDestination()\n        .getTransformation()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationTransformIn().code(\"sample string\"));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix\n  .destination\n  .transformation\n  .patch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"destination_id\", {code: \"sample string\"})"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .destination()\n    .transformation()\n    .patch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"destination_id\".to_string(),\n        DestinationTransformIn {\n            code: Some(\"sample string\".to_string()),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Destination.Transformation.Patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    new DestinationTransformIn { Code = \"sample string\" }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->destination->transformation->patch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"destination_id\",\n    DestinationTransformIn::create()\n    ->withCode(\"sample string\")\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix destination transformation patch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"destination_id\" '{\n    \"code\": \"sample string\"\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/destination/destination_id/transformation' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"code\": \"sample string\"\n  }'"
+                    }
+                ]
             }
         },
         "/api/v1/app/{app_id}/destination/{destination_id}/secret": {
@@ -24684,7 +25693,7 @@
                     "Destination"
                 ],
                 "summary": "Get Destination Secret",
-                "description": "Get the destination's signing secret (only supported for http destinations).\n\nThis is used to verify the authenticity of the delivery.\n\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
+                "description": "Get the destination's signing secret (only supported for the `fifoEndpoint` destination).\n\nThis is used to verify the authenticity of the delivery.\n\nFor more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).",
                 "operationId": "v1.destination.get-secret",
                 "parameters": [
                     {
@@ -24705,10 +25714,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24723,7 +25732,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/SinkSecretOut"
+                                    "$ref": "#/components/schemas/DestinationSecretOut"
                                 }
                             }
                         }
@@ -24813,7 +25822,7 @@
                     "Destination"
                 ],
                 "summary": "Rotate Destination Secret",
-                "description": "Rotates the signing secret (only supported for http destinations).",
+                "description": "Rotates the signing secret (only supported for the `fifoEndpoint` destination).",
                 "operationId": "v1.destination.rotate-secret",
                 "parameters": [
                     {
@@ -24834,10 +25843,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -24961,7 +25970,7 @@
                     "Destination"
                 ],
                 "summary": "Get Destination Headers",
-                "description": "Get the HTTP destination headers.\n\nOnly valid for `http` or `otelTracing` destinations.",
+                "description": "Get the HTTP destination headers.\n\nOnly valid for `fifoEndpoint` or `otelTracing` destinations.",
                 "operationId": "v1.destination.headers-get",
                 "parameters": [
                     {
@@ -24982,10 +25991,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25088,7 +26097,7 @@
                     "Destination"
                 ],
                 "summary": "Patch Destination Headers",
-                "description": "Updates the destination's headers.\n\nOnly valid for `http` or `otelTracing` destinations.",
+                "description": "Updates the destination's headers.\n\nOnly valid for `fifoEndpoint` or `otelTracing` destinations.",
                 "operationId": "v1.destination.headers-patch",
                 "parameters": [
                     {
@@ -25109,10 +26118,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25125,7 +26134,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/HttpSinkHeadersPatchIn"
+                                "$ref": "#/components/schemas/DestinationHttpHeadersPatchIn"
                             }
                         }
                     },
@@ -25248,10 +26257,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25379,10 +26388,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25508,10 +26517,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25637,10 +26646,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25787,10 +26796,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -25991,10 +27000,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -26135,10 +27144,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -26264,10 +27273,10 @@
                     {
                         "in": "path",
                         "name": "destination_id",
-                        "description": "The StreamSink's ID or UID.",
+                        "description": "The Destination's ID or UID.",
                         "required": true,
                         "schema": {
-                            "description": "The StreamSink's ID or UID.",
+                            "description": "The Destination's ID or UID.",
                             "type": "string",
                             "maxLength": 60,
                             "minLength": 1,
@@ -44660,6 +45669,56 @@
                 }
             }
         },
+        "message.attempt.log": {
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "message.attempt.log",
+                "description": "Sent after message attempts are made. Contains metadata about message attempts and their results. In order to reduce the frequency of webhooks, these are sent in batches periodically.",
+                "operationId": "message.attempt.log",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageAttemptLogEvent"
+                            },
+                            "example": {
+                                "data": [
+                                    {
+                                        "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "appUid": "unique-app-identifier",
+                                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "msgEventId": "unique-msg-identifier",
+                                        "msgCreated": "2022-11-06T15:04:05Z",
+                                        "attemptStart": "2022-11-06T15:04:06Z",
+                                        "attemptEnd": "2022-11-06T15:04:07Z",
+                                        "attemptId": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "responseStatusCode": 200,
+                                        "attemptCount": 1,
+                                        "status": 0,
+                                        "eventType": "user.signup"
+                                    }
+                                ],
+                                "type": "message.attempt.log"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "x-svix-group-name": "dispatch",
+                "x-svix-feature-flags": [
+                    "attempt_log"
+                ],
+                "x-internal": true
+            }
+        },
         "ingest.endpoint.disabled": {
             "post": {
                 "tags": [
@@ -44806,56 +45865,6 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 }
-            }
-        },
-        "message.attempt.log": {
-            "post": {
-                "tags": [
-                    "Webhook"
-                ],
-                "summary": "message.attempt.log",
-                "description": "Sent after message attempts are made. Contains metadata about message attempts and their results. In order to reduce the frequency of webhooks, these are sent in batches periodically.",
-                "operationId": "message.attempt.log",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/MessageAttemptLogEvent"
-                            },
-                            "example": {
-                                "data": [
-                                    {
-                                        "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "appUid": "unique-app-identifier",
-                                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "msgEventId": "unique-msg-identifier",
-                                        "msgCreated": "2022-11-06T15:04:05Z",
-                                        "attemptStart": "2022-11-06T15:04:06Z",
-                                        "attemptEnd": "2022-11-06T15:04:07Z",
-                                        "attemptId": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "responseStatusCode": 200,
-                                        "attemptCount": 1,
-                                        "status": 0,
-                                        "eventType": "user.signup"
-                                    }
-                                ],
-                                "type": "message.attempt.log"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "2XX": {
-                        "description": "Return any 2XX status to indicate that the data was received successfully"
-                    }
-                },
-                "x-svix-group-name": "dispatch",
-                "x-svix-feature-flags": [
-                    "attempt_log"
-                ],
-                "x-internal": true
             }
         }
     },
@@ -45814,6 +46823,177 @@
                     "hasCatchAllEndpoint"
                 ]
             },
+            "MessageAttemptLogEvent": {
+                "description": "Sent after message attempts are made. Contains metadata about message attempts and their results. In order to reduce the frequency of webhooks, these are sent in batches periodically.",
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/MessageAttemptLog"
+                        }
+                    },
+                    "type": {
+                        "type": "string",
+                        "default": "message.attempt.log",
+                        "enum": [
+                            "message.attempt.log"
+                        ]
+                    }
+                },
+                "required": [
+                    "data",
+                    "type"
+                ]
+            },
+            "MessageAttemptLog": {
+                "type": "object",
+                "properties": {
+                    "orgId": {
+                        "description": "The Environment's ID.",
+                        "type": "string",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^org_[A-Za-z0-9]{27}$",
+                        "example": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "appId": {
+                        "description": "The Application's ID.",
+                        "type": "string",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^app_[A-Za-z0-9]{27}$",
+                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "appUid": {
+                        "description": "The Application's UID.",
+                        "type": "string",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "example": "unique-identifier",
+                        "nullable": true
+                    },
+                    "endpointId": {
+                        "description": "The Endpoint's ID.",
+                        "type": "string",
+                        "maxLength": 30,
+                        "minLength": 30,
+                        "pattern": "^ep_[A-Za-z0-9]{27}$",
+                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "msgId": {
+                        "description": "The Message's ID.",
+                        "type": "string",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^msg_[A-Za-z0-9]{27}$",
+                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "msgEventId": {
+                        "description": "The Message's UID.",
+                        "type": "string",
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "example": "unique-identifier",
+                        "nullable": true
+                    },
+                    "msgCreated": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "attemptStart": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "attemptEnd": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "attemptId": {
+                        "description": "The MessageAttempt's ID.",
+                        "type": "string",
+                        "maxLength": 33,
+                        "minLength": 33,
+                        "pattern": "^atmpt_[A-Za-z0-9]{27}$",
+                        "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "responseStatusCode": {
+                        "type": "integer",
+                        "format": "int16"
+                    },
+                    "attemptCount": {
+                        "type": "integer",
+                        "format": "uint16",
+                        "minimum": 0.0
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/MessageStatus"
+                    },
+                    "eventType": {
+                        "description": "The event type's name",
+                        "type": "string",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "example": "user.signup",
+                        "nullable": true
+                    },
+                    "httpTimes": {
+                        "$ref": "#/components/schemas/HttpAttemptTimes",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "appId",
+                    "attemptCount",
+                    "attemptEnd",
+                    "attemptId",
+                    "attemptStart",
+                    "endpointId",
+                    "msgCreated",
+                    "msgId",
+                    "orgId",
+                    "responseStatusCode",
+                    "status"
+                ]
+            },
+            "MessageStatus": {
+                "title": "MessageStatus",
+                "description": "The sending status of the message:\n\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3\n- Canceled = 4",
+                "type": "integer",
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "x-enum-varnames": [
+                    "Success",
+                    "Pending",
+                    "Fail",
+                    "Sending",
+                    "Canceled"
+                ]
+            },
+            "HttpAttemptTimes": {
+                "type": "object",
+                "properties": {
+                    "start": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "end": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "end",
+                    "start"
+                ]
+            },
             "IngestEndpointDisabledEvent": {
                 "description": "Sent when an ingest endpoint has been automatically disabled after continuous failures, or manually via an API call.",
                 "type": "object",
@@ -46080,177 +47260,6 @@
                     "lastAttempt",
                     "msgId",
                     "sourceId"
-                ]
-            },
-            "MessageAttemptLogEvent": {
-                "description": "Sent after message attempts are made. Contains metadata about message attempts and their results. In order to reduce the frequency of webhooks, these are sent in batches periodically.",
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/MessageAttemptLog"
-                        }
-                    },
-                    "type": {
-                        "type": "string",
-                        "default": "message.attempt.log",
-                        "enum": [
-                            "message.attempt.log"
-                        ]
-                    }
-                },
-                "required": [
-                    "data",
-                    "type"
-                ]
-            },
-            "MessageAttemptLog": {
-                "type": "object",
-                "properties": {
-                    "orgId": {
-                        "description": "The Environment's ID.",
-                        "type": "string",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^org_[A-Za-z0-9]{27}$",
-                        "example": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "appId": {
-                        "description": "The Application's ID.",
-                        "type": "string",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^app_[A-Za-z0-9]{27}$",
-                        "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "appUid": {
-                        "description": "The Application's UID.",
-                        "type": "string",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "unique-identifier",
-                        "nullable": true
-                    },
-                    "endpointId": {
-                        "description": "The Endpoint's ID.",
-                        "type": "string",
-                        "maxLength": 30,
-                        "minLength": 30,
-                        "pattern": "^ep_[A-Za-z0-9]{27}$",
-                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "msgId": {
-                        "description": "The Message's ID.",
-                        "type": "string",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^msg_[A-Za-z0-9]{27}$",
-                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "msgEventId": {
-                        "description": "The Message's UID.",
-                        "type": "string",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "unique-identifier",
-                        "nullable": true
-                    },
-                    "msgCreated": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "attemptStart": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "attemptEnd": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "attemptId": {
-                        "description": "The MessageAttempt's ID.",
-                        "type": "string",
-                        "maxLength": 33,
-                        "minLength": 33,
-                        "pattern": "^atmpt_[A-Za-z0-9]{27}$",
-                        "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "responseStatusCode": {
-                        "type": "integer",
-                        "format": "int16"
-                    },
-                    "attemptCount": {
-                        "type": "integer",
-                        "format": "uint16",
-                        "minimum": 0.0
-                    },
-                    "status": {
-                        "$ref": "#/components/schemas/MessageStatus"
-                    },
-                    "eventType": {
-                        "description": "The event type's name",
-                        "type": "string",
-                        "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "user.signup",
-                        "nullable": true
-                    },
-                    "httpTimes": {
-                        "$ref": "#/components/schemas/HttpAttemptTimes",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "appId",
-                    "attemptCount",
-                    "attemptEnd",
-                    "attemptId",
-                    "attemptStart",
-                    "endpointId",
-                    "msgCreated",
-                    "msgId",
-                    "orgId",
-                    "responseStatusCode",
-                    "status"
-                ]
-            },
-            "MessageStatus": {
-                "title": "MessageStatus",
-                "description": "The sending status of the message:\n\n- Success = 0\n- Pending = 1\n- Fail = 2\n- Sending = 3\n- Canceled = 4",
-                "type": "integer",
-                "enum": [
-                    0,
-                    1,
-                    2,
-                    3,
-                    4
-                ],
-                "x-enum-varnames": [
-                    "Success",
-                    "Pending",
-                    "Fail",
-                    "Sending",
-                    "Canceled"
-                ]
-            },
-            "HttpAttemptTimes": {
-                "type": "object",
-                "properties": {
-                    "start": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "end": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "required": [
-                    "end",
-                    "start"
                 ]
             },
             "AppPortalAccessIn": {
@@ -46779,6 +47788,159 @@
                 },
                 "required": [
                     "censoredToken",
+                    "createdAt",
+                    "expiresAt",
+                    "id"
+                ]
+            },
+            "McpOAuthClientOut": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "The OAuthClient's ID.",
+                        "type": "string",
+                        "maxLength": 28,
+                        "minLength": 27,
+                        "pattern": "^oaclt_[A-Za-z0-9]{21,22}$",
+                        "example": "oaclt_2yZwUhtgs5Ai8T9yRQJXA"
+                    },
+                    "clientName": {
+                        "type": "string"
+                    },
+                    "clientUri": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "redirectUris": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "required": [
+                    "clientName",
+                    "id",
+                    "redirectUris"
+                ]
+            },
+            "McpOAuthConsentIn": {
+                "type": "object",
+                "properties": {
+                    "clientId": {
+                        "description": "The OAuthClient's ID.",
+                        "type": "string",
+                        "maxLength": 28,
+                        "minLength": 27,
+                        "pattern": "^oaclt_[A-Za-z0-9]{21,22}$",
+                        "example": "oaclt_2yZwUhtgs5Ai8T9yRQJXA"
+                    },
+                    "redirectUri": {
+                        "type": "string"
+                    },
+                    "codeChallenge": {
+                        "type": "string"
+                    },
+                    "codeChallengeMethod": {
+                        "type": "string"
+                    },
+                    "state": {
+                        "type": "string",
+                        "default": null,
+                        "nullable": true
+                    },
+                    "resource": {
+                        "type": "string",
+                        "default": null,
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "clientId",
+                    "codeChallenge",
+                    "codeChallengeMethod",
+                    "redirectUri"
+                ]
+            },
+            "McpOAuthConsentOut": {
+                "type": "object",
+                "properties": {
+                    "redirectTo": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "redirectTo"
+                ]
+            },
+            "ListResponse_McpOAuthGrantOut_": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/McpOAuthGrantOut"
+                        }
+                    },
+                    "iterator": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "iterator"
+                    },
+                    "prevIterator": {
+                        "type": "string",
+                        "nullable": true,
+                        "example": "-iterator"
+                    },
+                    "done": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "data",
+                    "done",
+                    "iterator"
+                ]
+            },
+            "McpOAuthGrantOut": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "The OAuthGrant's ID.",
+                        "type": "string",
+                        "maxLength": 29,
+                        "minLength": 28,
+                        "pattern": "^oagrnt_[A-Za-z0-9]{21,22}$",
+                        "example": "oagrnt_2yZwUhtgs5Ai8T9yRQJXA"
+                    },
+                    "clientId": {
+                        "description": "The OAuthClient's ID.",
+                        "type": "string",
+                        "maxLength": 28,
+                        "minLength": 27,
+                        "pattern": "^oaclt_[A-Za-z0-9]{21,22}$",
+                        "example": "oaclt_2yZwUhtgs5Ai8T9yRQJXA"
+                    },
+                    "clientName": {
+                        "type": "string"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "expiresAt": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "lastUsedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "clientId",
+                    "clientName",
                     "createdAt",
                     "expiresAt",
                     "id"
@@ -47812,306 +48974,6 @@
                     "Stream"
                 ]
             },
-            "LegacySinkIn": {
-                "type": "object",
-                "properties": {
-                    "description": {
-                        "type": "string",
-                        "default": "",
-                        "example": "An example endpoint name"
-                    },
-                    "throttleRate": {
-                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "minimum": 1,
-                        "nullable": true
-                    },
-                    "uid": {
-                        "description": "Optional unique identifier for the sink.",
-                        "type": "string",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "unique-identifier",
-                        "nullable": true
-                    },
-                    "secret": {
-                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
-                        "type": "string",
-                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
-                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
-                        "nullable": true
-                    },
-                    "disabled": {
-                        "type": "boolean",
-                        "default": false,
-                        "example": false
-                    },
-                    "eventTypes": {
-                        "type": "array",
-                        "nullable": true,
-                        "items": {
-                            "description": "The event type's name",
-                            "type": "string",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "user.signup"
-                        },
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "example": [
-                            "user.signup",
-                            "user.deleted"
-                        ]
-                    },
-                    "channels": {
-                        "description": "List of message channels this sink listens to (omit for all).",
-                        "type": "array",
-                        "nullable": true,
-                        "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.:+]+$",
-                            "example": "project_1337"
-                        },
-                        "maxItems": 10,
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "example": [
-                            "project_123",
-                            "group_2"
-                        ]
-                    },
-                    "metadata": {
-                        "type": "object",
-                        "default": {},
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "oneOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "http"
-                                ]
-                            },
-                            "url": {
-                                "type": "string",
-                                "format": "uri"
-                            }
-                        },
-                        "required": [
-                            "type",
-                            "url"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "eventStream"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "autoConfig"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "type"
-                        ]
-                    }
-                ]
-            },
-            "LegacySinkOut": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "description": "The Endpoint's ID.",
-                        "type": "string",
-                        "maxLength": 30,
-                        "minLength": 30,
-                        "pattern": "^ep_[A-Za-z0-9]{27}$",
-                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "metadata": {
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    },
-                    "description": {
-                        "type": "string"
-                    },
-                    "throttleRate": {
-                        "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
-                        "type": "integer",
-                        "format": "uint16",
-                        "minimum": 0,
-                        "nullable": true
-                    },
-                    "uid": {
-                        "description": "Optional unique identifier for the endpoint.",
-                        "type": "string",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "unique-identifier",
-                        "nullable": true
-                    },
-                    "disabled": {
-                        "type": "boolean",
-                        "default": false,
-                        "example": false
-                    },
-                    "eventTypes": {
-                        "type": "array",
-                        "nullable": true,
-                        "items": {
-                            "description": "The event type's name",
-                            "type": "string",
-                            "maxLength": 256,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "user.signup"
-                        },
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "example": [
-                            "user.signup",
-                            "user.deleted"
-                        ]
-                    },
-                    "channels": {
-                        "description": "List of message channels this endpoint listens to (omit for all).",
-                        "type": "array",
-                        "nullable": true,
-                        "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.:+]+$",
-                            "example": "project_1337"
-                        },
-                        "maxItems": 10,
-                        "minItems": 1,
-                        "uniqueItems": true,
-                        "example": [
-                            "project_123",
-                            "group_2"
-                        ]
-                    },
-                    "createdAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "updatedAt": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                },
-                "oneOf": [
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "http"
-                                ]
-                            },
-                            "url": {
-                                "type": "string",
-                                "format": "uri"
-                            }
-                        },
-                        "required": [
-                            "type",
-                            "url"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "eventStream"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "type"
-                        ]
-                    },
-                    {
-                        "type": "object",
-                        "properties": {
-                            "type": {
-                                "type": "string",
-                                "enum": [
-                                    "autoConfig"
-                                ]
-                            }
-                        },
-                        "required": [
-                            "type"
-                        ]
-                    }
-                ],
-                "required": [
-                    "createdAt",
-                    "description",
-                    "id",
-                    "metadata",
-                    "updatedAt"
-                ]
-            },
-            "ListResponse_LegacySinkOut_": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/LegacySinkOut"
-                        }
-                    },
-                    "iterator": {
-                        "type": "string",
-                        "nullable": true,
-                        "example": "iterator"
-                    },
-                    "prevIterator": {
-                        "type": "string",
-                        "nullable": true,
-                        "example": "-iterator"
-                    },
-                    "done": {
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "data",
-                    "done",
-                    "iterator"
-                ]
-            },
             "CancelMsgsIn": {
                 "type": "object",
                 "properties": {
@@ -48704,38 +49566,6 @@
                 },
                 "required": [
                     "enabled"
-                ]
-            },
-            "HttpSigningConfigOut": {
-                "type": "object",
-                "properties": {
-                    "scheme": {
-                        "$ref": "#/components/schemas/HttpSigningScheme",
-                        "nullable": true
-                    }
-                }
-            },
-            "HttpSigningScheme": {
-                "type": "string",
-                "enum": [
-                    "Bbva"
-                ]
-            },
-            "HttpSigningConfigIn": {
-                "type": "object",
-                "properties": {
-                    "key": {
-                        "description": "A PKCS#8 PEM-encoded RSA private key",
-                        "type": "string"
-                    },
-                    "scheme": {
-                        "description": "What sort of HTTP signing to perform",
-                        "$ref": "#/components/schemas/HttpSigningScheme"
-                    }
-                },
-                "required": [
-                    "key",
-                    "scheme"
                 ]
             },
             "EndpointStats": {
@@ -51475,67 +52305,6 @@
                     "payload"
                 ]
             },
-            "RawMessageOut": {
-                "type": "object",
-                "properties": {
-                    "eventId": {
-                        "description": "Optional unique identifier for the message",
-                        "type": "string",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "unique-identifier",
-                        "nullable": true
-                    },
-                    "eventType": {
-                        "description": "The event type's name",
-                        "type": "string",
-                        "maxLength": 256,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "user.signup"
-                    },
-                    "channels": {
-                        "description": "List of free-form identifiers that endpoints can filter by",
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_.:+]+$",
-                            "example": "project_1337"
-                        },
-                        "uniqueItems": true,
-                        "nullable": true
-                    },
-                    "id": {
-                        "description": "The Message's ID.",
-                        "type": "string",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^msg_[A-Za-z0-9]{27}$",
-                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "timestamp": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "tags": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "maxLength": 128,
-                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
-                            "example": "project_1337"
-                        },
-                        "uniqueItems": true,
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "eventType",
-                    "id",
-                    "timestamp"
-                ]
-            },
             "MessagePrecheckIn": {
                 "type": "object",
                 "properties": {
@@ -52163,115 +52932,6 @@
                     "url"
                 ]
             },
-            "ListResponse_MessageAttemptEndpointOut_": {
-                "type": "object",
-                "properties": {
-                    "data": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/MessageAttemptEndpointOut"
-                        }
-                    },
-                    "iterator": {
-                        "type": "string",
-                        "nullable": true,
-                        "example": "iterator"
-                    },
-                    "prevIterator": {
-                        "type": "string",
-                        "nullable": true,
-                        "example": "-iterator"
-                    },
-                    "done": {
-                        "type": "boolean"
-                    }
-                },
-                "required": [
-                    "data",
-                    "done",
-                    "iterator"
-                ]
-            },
-            "MessageAttemptEndpointOut": {
-                "type": "object",
-                "properties": {
-                    "url": {
-                        "type": "string",
-                        "format": "uri",
-                        "minLength": 1,
-                        "maxLength": 65536,
-                        "example": "https://example.com/webhook/"
-                    },
-                    "response": {
-                        "type": "string",
-                        "example": "{}"
-                    },
-                    "responseStatusCode": {
-                        "type": "integer",
-                        "format": "int16",
-                        "example": 200
-                    },
-                    "responseDurationMs": {
-                        "description": "Response duration in milliseconds.",
-                        "type": "integer",
-                        "format": "int64"
-                    },
-                    "status": {
-                        "$ref": "#/components/schemas/MessageStatus"
-                    },
-                    "statusText": {
-                        "$ref": "#/components/schemas/MessageStatusText"
-                    },
-                    "triggerType": {
-                        "$ref": "#/components/schemas/MessageAttemptTriggerType"
-                    },
-                    "msgId": {
-                        "description": "The Message's ID.",
-                        "type": "string",
-                        "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^msg_[A-Za-z0-9]{27}$",
-                        "example": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "endpointId": {
-                        "description": "The Endpoint's ID.",
-                        "type": "string",
-                        "maxLength": 30,
-                        "minLength": 30,
-                        "pattern": "^ep_[A-Za-z0-9]{27}$",
-                        "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "id": {
-                        "description": "The MessageAttempt's ID.",
-                        "type": "string",
-                        "maxLength": 33,
-                        "minLength": 33,
-                        "pattern": "^atmpt_[A-Za-z0-9]{27}$",
-                        "example": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2"
-                    },
-                    "timestamp": {
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "msg": {
-                        "$ref": "#/components/schemas/MessageOut",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "endpointId",
-                    "id",
-                    "msgId",
-                    "response",
-                    "responseDurationMs",
-                    "responseStatusCode",
-                    "status",
-                    "statusText",
-                    "timestamp",
-                    "triggerType",
-                    "url"
-                ]
-            },
             "MessageAttemptHeadersOut": {
                 "type": "object",
                 "properties": {
@@ -52837,7 +53497,7 @@
                     "status": {
                         "description": "Whether the destination will receive events.\n\nIf the destination is `enabled`, events sent to the application will be dispatched to the destination in order.\n\nIf the destination is `disabled`, events will not be dispatched until the destination is reenabled.",
                         "default": "enabled",
-                        "$ref": "#/components/schemas/SinkStatusIn"
+                        "$ref": "#/components/schemas/DestinationStatusIn"
                     },
                     "batchSize": {
                         "description": "How many events will be batched in a request to the destination.",
@@ -53174,7 +53834,7 @@
                     }
                 ]
             },
-            "SinkStatusIn": {
+            "DestinationStatusIn": {
                 "type": "string",
                 "enum": [
                     "enabled",
@@ -53607,11 +54267,10 @@
                 ]
             },
             "DestinationOut": {
-                "description": "Equivalent to [`SinkConfigOut`], with `fifoEndpoint` instead of `http`.",
                 "type": "object",
                 "properties": {
                     "id": {
-                        "description": "The destination's ID.",
+                        "description": "The Destination's ID.",
                         "type": "string",
                         "maxLength": 27,
                         "minLength": 26,
@@ -53619,7 +54278,7 @@
                         "example": "sink_2yZwUhtgs5Ai8T9yRQJXA"
                     },
                     "uid": {
-                        "description": "The destination's UID.",
+                        "description": "The Destination's UID.",
                         "type": "string",
                         "maxLength": 60,
                         "minLength": 1,
@@ -53628,7 +54287,7 @@
                         "nullable": true
                     },
                     "status": {
-                        "$ref": "#/components/schemas/SinkStatus"
+                        "$ref": "#/components/schemas/DestinationStatus"
                     },
                     "currentIterator": {
                         "type": "string"
@@ -53983,7 +54642,7 @@
                     "updatedAt"
                 ]
             },
-            "SinkStatus": {
+            "DestinationStatus": {
                 "type": "string",
                 "enum": [
                     "enabled",
@@ -54339,7 +54998,7 @@
                 "type": "object",
                 "properties": {
                     "uid": {
-                        "description": "The StreamSink's UID.",
+                        "description": "The Destination's UID.",
                         "type": "string",
                         "maxLength": 60,
                         "minLength": 1,
@@ -54349,7 +55008,7 @@
                     },
                     "status": {
                         "default": null,
-                        "$ref": "#/components/schemas/SinkStatusIn",
+                        "$ref": "#/components/schemas/DestinationStatusIn",
                         "nullable": true
                     },
                     "batchSize": {
@@ -54952,7 +55611,7 @@
                     }
                 }
             },
-            "SinkTransformationOut": {
+            "DestinationTransformationOut": {
                 "type": "object",
                 "properties": {
                     "code": {
@@ -54967,7 +55626,7 @@
                     "enabled"
                 ]
             },
-            "SinkTransformIn": {
+            "DestinationTransformIn": {
                 "type": "object",
                 "properties": {
                     "code": {
@@ -54978,7 +55637,7 @@
                     }
                 }
             },
-            "SinkSecretOut": {
+            "DestinationSecretOut": {
                 "type": "object",
                 "properties": {
                     "key": {
@@ -54990,7 +55649,7 @@
                     }
                 }
             },
-            "HttpSinkHeadersPatchIn": {
+            "DestinationHttpHeadersPatchIn": {
                 "type": "object",
                 "properties": {
                     "headers": {
@@ -55084,7 +55743,7 @@
                         "example": "sinkatmpt_2yZwUhtgs5Ai8T9yRQJXA"
                     },
                     "destinationId": {
-                        "description": "The StreamSink's ID.",
+                        "description": "The Destination's ID.",
                         "type": "string",
                         "maxLength": 27,
                         "minLength": 26,
@@ -55625,6 +56284,21 @@
                                 ]
                             }
                         },
+                        "deprecated": true,
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "pollingEndpoint"
+                                ]
+                            }
+                        },
                         "required": [
                             "type"
                         ]
@@ -55909,6 +56583,15 @@
                     "metadata",
                     "status",
                     "updatedAt"
+                ]
+            },
+            "SinkStatus": {
+                "type": "string",
+                "enum": [
+                    "enabled",
+                    "paused",
+                    "disabled",
+                    "retrying"
                 ]
             },
             "StreamSinkIn": {
@@ -56260,6 +56943,13 @@
                             "type"
                         ]
                     }
+                ]
+            },
+            "SinkStatusIn": {
+                "type": "string",
+                "enum": [
+                    "enabled",
+                    "disabled"
                 ]
             },
             "SinkHttpConfigIn": {
@@ -56631,6 +57321,63 @@
                             "type"
                         ]
                     }
+                ]
+            },
+            "SinkTransformationOut": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "enabled": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "enabled"
+                ]
+            },
+            "SinkTransformIn": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "maxLength": 51200,
+                        "minLength": 10,
+                        "nullable": true
+                    }
+                }
+            },
+            "SinkSecretOut": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "description": "The endpoint's verification secret.\n\nFormat: `base64` encoded random bytes optionally prefixed with `whsec_`.\nIt is recommended to not set this and let the server generate the secret.",
+                        "type": "string",
+                        "pattern": "^(whsec_|whsk_|whsk1_|whpk_|whpk1_)?[a-zA-Z0-9+/=]{32,100}$",
+                        "example": "whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD",
+                        "nullable": true
+                    }
+                }
+            },
+            "HttpSinkHeadersPatchIn": {
+                "type": "object",
+                "properties": {
+                    "headers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string",
+                            "nullable": true
+                        },
+                        "example": {
+                            "X-Example": "123",
+                            "X-Foobar": "Bar"
+                        }
+                    }
+                },
+                "required": [
+                    "headers"
                 ]
             },
             "ListResponse_SinkAttemptOut_": {
@@ -57927,74 +58674,6 @@
                     "refreshToken"
                 ]
             },
-            "GetMetricsOut": {
-                "type": "object",
-                "properties": {
-                    "metrics": {
-                        "type": "array",
-                        "items": {
-                            "$ref": "#/components/schemas/MetricOut"
-                        }
-                    }
-                },
-                "required": [
-                    "metrics"
-                ]
-            },
-            "MetricOut": {
-                "type": "object",
-                "properties": {
-                    "label": {
-                        "description": "Label for this series",
-                        "type": "string"
-                    },
-                    "description": {
-                        "description": "Human-readable description of this series",
-                        "type": "string"
-                    },
-                    "attributes": {
-                        "description": "Key/Value pairs attached to this sequence",
-                        "type": "object",
-                        "additionalProperties": {
-                            "type": "string"
-                        }
-                    },
-                    "value": {
-                        "description": "Most recent data point for this series\n\nAll points (u64, i64, and f64) are squished into an f64, be careful of inexactness for values above 2**53.",
-                        "type": "number",
-                        "format": "double"
-                    },
-                    "metricType": {
-                        "description": "Type of this metric",
-                        "$ref": "#/components/schemas/MetricType"
-                    },
-                    "timestamp": {
-                        "description": "Timestamp this metric was collected",
-                        "type": "string",
-                        "format": "date-time"
-                    },
-                    "unit": {
-                        "description": "Optional unit, following UCUM unit conventions if possible\n\nSee https://ucum.org/ for details",
-                        "type": "string",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "attributes",
-                    "description",
-                    "label",
-                    "metricType",
-                    "timestamp",
-                    "value"
-                ]
-            },
-            "MetricType": {
-                "type": "string",
-                "enum": [
-                    "counter",
-                    "gauge"
-                ]
-            },
             "MessageBroadcastIn": {
                 "type": "object",
                 "properties": {
@@ -58133,26 +58812,6 @@
                 "required": [
                     "capabilities",
                     "token"
-                ]
-            },
-            "InboundPathParams": {
-                "type": "object",
-                "properties": {
-                    "app_id": {
-                        "description": "The Application's ID or UID.",
-                        "type": "string",
-                        "maxLength": 256,
-                        "minLength": 1,
-                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                        "example": "unique-identifier"
-                    },
-                    "inbound_token": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "app_id",
-                    "inbound_token"
                 ]
             },
             "ListResponse_IngestSourceOut_": {
@@ -60302,43 +60961,6 @@
                     }
                 }
             },
-            "ZoomCrcResponse": {
-                "type": "object",
-                "properties": {
-                    "plainToken": {
-                        "type": "string"
-                    },
-                    "encryptedToken": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "encryptedToken",
-                    "plainToken"
-                ]
-            },
-            "SlackChallengeResponse": {
-                "type": "object",
-                "properties": {
-                    "challenge": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "challenge"
-                ]
-            },
-            "AdobeSignResponse": {
-                "type": "object",
-                "properties": {
-                    "xAdobeSignClientId": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "xAdobeSignClientId"
-                ]
-            },
             "ListResponse_IngestLogOut_": {
                 "type": "object",
                 "properties": {
@@ -60821,6 +61443,10 @@
         {
             "name": "Connector",
             "description": "Connectors allow you to connect applications to external services."
+        },
+        {
+            "name": "Destination",
+            "description": "Destinations are additional targets where messages can be sent to, in addition to regular HTTP webhook endpoints."
         }
     ],
     "x-tagGroups": [
@@ -60841,7 +61467,8 @@
                 "Message",
                 "Message Attempt",
                 "Integration",
-                "Connector"
+                "Connector",
+                "Destination"
             ]
         },
         {
@@ -61215,6 +61842,56 @@
                 }
             }
         },
+        "message.attempt.log": {
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "message.attempt.log",
+                "description": "Sent after message attempts are made. Contains metadata about message attempts and their results. In order to reduce the frequency of webhooks, these are sent in batches periodically.",
+                "operationId": "message.attempt.log",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MessageAttemptLogEvent"
+                            },
+                            "example": {
+                                "data": [
+                                    {
+                                        "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "appUid": "unique-app-identifier",
+                                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "msgEventId": "unique-msg-identifier",
+                                        "msgCreated": "2022-11-06T15:04:05Z",
+                                        "attemptStart": "2022-11-06T15:04:06Z",
+                                        "attemptEnd": "2022-11-06T15:04:07Z",
+                                        "attemptId": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "responseStatusCode": 200,
+                                        "attemptCount": 1,
+                                        "status": 0,
+                                        "eventType": "user.signup"
+                                    }
+                                ],
+                                "type": "message.attempt.log"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                },
+                "x-svix-group-name": "dispatch",
+                "x-svix-feature-flags": [
+                    "attempt_log"
+                ],
+                "x-internal": true
+            }
+        },
         "ingest.endpoint.disabled": {
             "post": {
                 "tags": [
@@ -61361,56 +62038,6 @@
                         "description": "Return any 2XX status to indicate that the data was received successfully"
                     }
                 }
-            }
-        },
-        "message.attempt.log": {
-            "post": {
-                "tags": [
-                    "Webhook"
-                ],
-                "summary": "message.attempt.log",
-                "description": "Sent after message attempts are made. Contains metadata about message attempts and their results. In order to reduce the frequency of webhooks, these are sent in batches periodically.",
-                "operationId": "message.attempt.log",
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/MessageAttemptLogEvent"
-                            },
-                            "example": {
-                                "data": [
-                                    {
-                                        "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "appUid": "unique-app-identifier",
-                                        "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "msgId": "msg_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "msgEventId": "unique-msg-identifier",
-                                        "msgCreated": "2022-11-06T15:04:05Z",
-                                        "attemptStart": "2022-11-06T15:04:06Z",
-                                        "attemptEnd": "2022-11-06T15:04:07Z",
-                                        "attemptId": "atmpt_1srOrx2ZWZBpBUvZwXKQmoEYga2",
-                                        "responseStatusCode": 200,
-                                        "attemptCount": 1,
-                                        "status": 0,
-                                        "eventType": "user.signup"
-                                    }
-                                ],
-                                "type": "message.attempt.log"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "2XX": {
-                        "description": "Return any 2XX status to indicate that the data was received successfully"
-                    }
-                },
-                "x-svix-group-name": "dispatch",
-                "x-svix-feature-flags": [
-                    "attempt_log"
-                ],
-                "x-internal": true
             }
         }
     }

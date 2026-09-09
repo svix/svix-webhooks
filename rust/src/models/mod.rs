@@ -47,6 +47,11 @@ mod create_stream_events_out;
 mod cron_config;
 mod destination_in;
 mod destination_out;
+mod destination_patch;
+mod destination_status;
+mod destination_status_in;
+mod destination_transform_in;
+mod destination_transformation_out;
 mod docusign_config;
 mod docusign_config_out;
 mod easypost_config;
@@ -115,6 +120,7 @@ mod integration_update;
 mod list_response_application_out;
 mod list_response_background_task_out;
 mod list_response_connector_out;
+mod list_response_destination_out;
 mod list_response_endpoint_message_out;
 mod list_response_endpoint_out;
 mod list_response_event_type_out;
@@ -300,6 +306,11 @@ pub use self::{
     cron_config::CronConfig,
     destination_in::{DestinationIn, DestinationInConfig},
     destination_out::{DestinationOut, DestinationOutConfig},
+    destination_patch::{DestinationPatch, DestinationPatchConfig},
+    destination_status::DestinationStatus,
+    destination_status_in::DestinationStatusIn,
+    destination_transform_in::DestinationTransformIn,
+    destination_transformation_out::DestinationTransformationOut,
     docusign_config::DocusignConfig,
     docusign_config_out::DocusignConfigOut,
     easypost_config::EasypostConfig,
@@ -368,6 +379,7 @@ pub use self::{
     list_response_application_out::ListResponseApplicationOut,
     list_response_background_task_out::ListResponseBackgroundTaskOut,
     list_response_connector_out::ListResponseConnectorOut,
+    list_response_destination_out::ListResponseDestinationOut,
     list_response_endpoint_message_out::ListResponseEndpointMessageOut,
     list_response_endpoint_out::ListResponseEndpointOut,
     list_response_event_type_out::ListResponseEventTypeOut,

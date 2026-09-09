@@ -45,6 +45,11 @@ from .create_stream_events_out import CreateStreamEventsOut
 from .cron_config import CronConfig
 from .destination_in import DestinationIn
 from .destination_out import DestinationOut
+from .destination_patch import DestinationPatch
+from .destination_status import DestinationStatus
+from .destination_status_in import DestinationStatusIn
+from .destination_transform_in import DestinationTransformIn
+from .destination_transformation_out import DestinationTransformationOut
 from .docusign_config import DocusignConfig
 from .docusign_config_out import DocusignConfigOut
 from .easypost_config import EasypostConfig
@@ -113,6 +118,7 @@ from .integration_update import IntegrationUpdate
 from .list_response_application_out import ListResponseApplicationOut
 from .list_response_background_task_out import ListResponseBackgroundTaskOut
 from .list_response_connector_out import ListResponseConnectorOut
+from .list_response_destination_out import ListResponseDestinationOut
 from .list_response_endpoint_message_out import ListResponseEndpointMessageOut
 from .list_response_endpoint_out import ListResponseEndpointOut
 from .list_response_event_type_out import ListResponseEventTypeOut
@@ -294,6 +300,11 @@ __all__ = [
     "CronConfig",
     "DestinationIn",
     "DestinationOut",
+    "DestinationPatch",
+    "DestinationStatus",
+    "DestinationStatusIn",
+    "DestinationTransformIn",
+    "DestinationTransformationOut",
     "DocusignConfig",
     "DocusignConfigOut",
     "EasypostConfig",
@@ -362,6 +373,7 @@ __all__ = [
     "ListResponseApplicationOut",
     "ListResponseBackgroundTaskOut",
     "ListResponseConnectorOut",
+    "ListResponseDestinationOut",
     "ListResponseEndpointMessageOut",
     "ListResponseEndpointOut",
     "ListResponseEventTypeOut",

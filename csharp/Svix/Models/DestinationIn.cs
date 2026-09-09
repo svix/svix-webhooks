@@ -16,7 +16,7 @@ namespace Svix.Models
         public string? Uid { get; set; } = null;
 
         [JsonProperty("status")]
-        public SinkStatusIn? Status { get; set; } = null;
+        public DestinationStatusIn? Status { get; set; } = null;
 
         [JsonProperty("batchSize")]
         public ushort? BatchSize { get; set; } = null;
@@ -373,7 +373,7 @@ namespace Svix.Models
         public string? Uid { get; set; } = null;
 
         [JsonProperty("status")]
-        public SinkStatusIn? Status { get; set; } = null;
+        public DestinationStatusIn? Status { get; set; } = null;
 
         [JsonProperty("batchSize")]
         public ushort? BatchSize { get; set; } = null;

@@ -37,6 +37,22 @@ module Svix
       end
     end
 
+    class PollingEndpoint
+
+      def serialize
+        Hash.new
+      end
+
+      def self.deserialize(attributes = {})
+        new
+      end
+      # Serializes the object to a json string
+      # @return String
+      def to_json(*args)
+        serialize.to_json(*args)
+      end
+    end
+
     class AzureBlobStorage < AzureBlobStorageConfigOut
     end
 
@@ -120,6 +136,7 @@ module Svix
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       StreamSinkOutConfig::Poller => "poller",
+      StreamSinkOutConfig::PollingEndpoint => "pollingEndpoint",
       StreamSinkOutConfig::AzureBlobStorage => "azureBlobStorage",
       StreamSinkOutConfig::OtelTracing => "otelTracing",
       StreamSinkOutConfig::Http => "http",

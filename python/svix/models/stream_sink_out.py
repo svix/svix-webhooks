@@ -55,6 +55,7 @@ class StreamSinkOut(BaseModel):
 
     type: t.Union[
         t.Literal["poller"],
+        t.Literal["pollingEndpoint"],
         t.Literal["azureBlobStorage"],
         t.Literal["otelTracing"],
         t.Literal["http"],
@@ -101,6 +102,8 @@ class StreamSinkOut(BaseModel):
             data["config"] = {}
         output = handler(data)
         if output.type == "poller":
+            output.config = data.get("config", {})
+        elif output.type == "pollingEndpoint":
             output.config = data.get("config", {})
         elif output.type == "azureBlobStorage":
             output.config = AzureBlobStorageConfigOut.model_validate(

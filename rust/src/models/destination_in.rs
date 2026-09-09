@@ -3,14 +3,14 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     azure_blob_storage_config_in::AzureBlobStorageConfigIn, big_query_config_in::BigQueryConfigIn,
-    clickhouse_config_in::ClickhouseConfigIn, event_bridge_config_in::EventBridgeConfigIn,
-    fifo_endpoint_config_in::FifoEndpointConfigIn,
+    clickhouse_config_in::ClickhouseConfigIn, destination_status_in::DestinationStatusIn,
+    event_bridge_config_in::EventBridgeConfigIn, fifo_endpoint_config_in::FifoEndpointConfigIn,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
     google_cloud_storage_config_in::GoogleCloudStorageConfigIn,
     otel_tracing_config_in::OtelTracingConfigIn, postgres_config_in::PostgresConfigIn,
     rabbit_mq_config_in::RabbitMqConfigIn, redshift_config_in::RedshiftConfigIn,
-    s3_config_in::S3ConfigIn, sink_status_in::SinkStatusIn, snowflake_config_in::SnowflakeConfigIn,
-    sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
+    s3_config_in::S3ConfigIn, snowflake_config_in::SnowflakeConfigIn, sns_config_in::SnsConfigIn,
+    sqs_config_in::SqsConfigIn,
 };
 
 /// The destination's type and type-specific configuration.
@@ -28,7 +28,7 @@ pub struct DestinationIn {
     /// If the destination is `disabled`, events will not be dispatched until
     /// the destination is reenabled.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub status: Option<SinkStatusIn>,
+    pub status: Option<DestinationStatusIn>,
 
     /// How many events will be batched in a request to the destination.
     #[serde(rename = "batchSize")]
