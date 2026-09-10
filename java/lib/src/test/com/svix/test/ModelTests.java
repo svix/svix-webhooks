@@ -56,6 +56,21 @@ public class ModelTests {
   }
 
   @Test
+  public void destinationPatchOmitsUnsetAndSendsExplicitNull() throws JsonProcessingException {
+    DestinationPatch unset =
+        new DestinationPatch().config(new DestinationPatchConfig.PollingEndpoint());
+    assertEquals("{\"type\":\"pollingEndpoint\",\"config\":{}}", unset.toJson());
+
+    DestinationPatch clearUid =
+        new DestinationPatch().uid(null).config(new DestinationPatchConfig.PollingEndpoint());
+    assertEquals("{\"uid\":null,\"type\":\"pollingEndpoint\",\"config\":{}}", clearUid.toJson());
+
+    DestinationPatch setUid =
+        new DestinationPatch().uid("dest_1").config(new DestinationPatchConfig.PollingEndpoint());
+    assertEquals("{\"uid\":\"dest_1\",\"type\":\"pollingEndpoint\",\"config\":{}}", setUid.toJson());
+  }
+
+  @Test
   public void readStructEnumField() throws JsonProcessingException {
     String jsonString =
         "{\"name\":\"name\",\"uid\":\"uuiidd\",\"type\":\"cron\",\"config\":{\"contentType\":\"asd\",\"payload\":\"cool\",\"schedule\":\"*"
