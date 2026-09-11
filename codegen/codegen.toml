@@ -351,8 +351,8 @@ template = "templates/kotlin/api_summary.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin"
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
-output_dir = "kotlin/lib/src/main/kotlin"
-extra_codegen_args = ["--context={\"package\":\"com.svix.kotlin\"}"]
+output_dir = "kotlin/lib/src/main/kotlin/api"
+extra_codegen_args = ["--context={\"package\":\"com.svix.kotlin.api\"}"]
 [[kotlin.task]]
 template = "templates/kotlin/api_resource.kt.jinja"
 output_dir = "kotlin/lib/src/main/kotlin/internalapi"

@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.ConnectorIn
 import com.svix.kotlin.models.ConnectorOut
 import com.svix.kotlin.models.ConnectorPatch
@@ -8,6 +9,7 @@ import com.svix.kotlin.models.ConnectorProduct
 import com.svix.kotlin.models.ConnectorUpsertIn
 import com.svix.kotlin.models.ListResponseConnectorOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class ConnectorListOptions(

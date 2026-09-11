@@ -1,5 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
+
+import com.svix.kotlin.SvixHttpClient
 
 class Ingest(private val client: SvixHttpClient) {
     val authentication: IngestAuthentication = IngestAuthentication(client)

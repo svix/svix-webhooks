@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.ListResponseOperationalWebhookEndpointOut
 import com.svix.kotlin.models.OperationalWebhookEndpointHeadersIn
 import com.svix.kotlin.models.OperationalWebhookEndpointHeadersOut
@@ -10,6 +11,7 @@ import com.svix.kotlin.models.OperationalWebhookEndpointSecretIn
 import com.svix.kotlin.models.OperationalWebhookEndpointSecretOut
 import com.svix.kotlin.models.OperationalWebhookEndpointUpsertIn
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class OperationalWebhookEndpointListOptions(

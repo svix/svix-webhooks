@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.EventTypeImportOpenApiIn
 import com.svix.kotlin.models.EventTypeImportOpenApiOut
 import com.svix.kotlin.models.EventTypeIn
@@ -9,6 +10,7 @@ import com.svix.kotlin.models.EventTypePatch
 import com.svix.kotlin.models.EventTypeUpsertIn
 import com.svix.kotlin.models.ListResponseEventTypeOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class EventTypeListOptions(

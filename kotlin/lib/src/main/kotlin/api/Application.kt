@@ -1,11 +1,13 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.ApplicationOut
 import com.svix.kotlin.models.ApplicationPatch
 import com.svix.kotlin.models.ListResponseApplicationOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class ApplicationListOptions(

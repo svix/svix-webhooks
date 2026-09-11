@@ -1,9 +1,11 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.CreateStreamEventsIn
 import com.svix.kotlin.models.CreateStreamEventsOut
 import com.svix.kotlin.models.EventStreamOut
+import com.svix.kotlin.serializeQueryParam
 import kotlin.time.Instant
 import okhttp3.Headers
 

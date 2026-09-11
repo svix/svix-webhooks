@@ -1,11 +1,13 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.DestinationIn
 import com.svix.kotlin.models.DestinationOut
 import com.svix.kotlin.models.DestinationPatch
 import com.svix.kotlin.models.ListResponseDestinationOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class DestinationListOptions(

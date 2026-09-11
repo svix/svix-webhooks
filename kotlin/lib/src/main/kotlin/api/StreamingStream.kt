@@ -1,11 +1,13 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.ListResponseStreamOut
 import com.svix.kotlin.models.Ordering
 import com.svix.kotlin.models.StreamIn
 import com.svix.kotlin.models.StreamOut
 import com.svix.kotlin.models.StreamPatch
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class StreamingStreamListOptions(

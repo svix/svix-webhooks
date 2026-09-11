@@ -1,11 +1,13 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.IngestSourceIn
 import com.svix.kotlin.models.IngestSourceOut
 import com.svix.kotlin.models.ListResponseIngestSourceOut
 import com.svix.kotlin.models.Ordering
 import com.svix.kotlin.models.RotateTokenOut
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class IngestSourceListOptions(

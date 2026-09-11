@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.IngestEndpointHeadersIn
 import com.svix.kotlin.models.IngestEndpointHeadersOut
 import com.svix.kotlin.models.IngestEndpointIn
@@ -10,6 +11,7 @@ import com.svix.kotlin.models.IngestEndpointSecretOut
 import com.svix.kotlin.models.IngestEndpointUpsertIn
 import com.svix.kotlin.models.ListResponseIngestEndpointOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class IngestEndpointListOptions(
