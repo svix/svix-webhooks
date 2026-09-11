@@ -6,6 +6,9 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+*
+
+## Version 2.5.0
 * Libs **(New)**: Add `autoconfig` API support to create and rotate AutoConfig tokens
 * Libs/Kotlin: Fix requests with body not having `content-type`
 
