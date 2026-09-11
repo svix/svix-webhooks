@@ -31,7 +31,18 @@ use Svix\Models\MessageIn;
 use Svix\Models\MessageStatus;
 use Svix\Models\Ordering;
 use Svix\Models\ReplayIn;
+use Svix\Models\S3ConfigIn;
+use Svix\Models\SinkHttpConfigIn;
+use Svix\Models\SinkStatus;
 use Svix\Models\StatusCodeClass;
+use Svix\Models\SinkHttpConfigPatch;
+use Svix\Models\StreamSinkIn;
+use Svix\Models\StreamSinkInConfig;
+use Svix\Models\StreamSinkOut;
+use Svix\Models\StreamSinkOutConfig\Http as StreamSinkOutHttp;
+use Svix\Models\StreamSinkOutConfig\Poller as StreamSinkOutPoller;
+use Svix\Models\StreamSinkPatch;
+use Svix\Models\StreamSinkPatchConfig;
 use Svix\SvixClient;
 use Svix\SvixOptions;
 use Svix\Version;
@@ -49,6 +60,10 @@ const IntegrationOut = '{"id":"integ_1srOrx2ZWZBpBUvZwXKQmoEYga2","name":"Test I
 const MessageOut = '{"eventId":"unique-identifier","eventType":"user.signup","payload":{"email":"test@example.com","type":"user.created","username":"test_user"},"channels":["project_123","group_2"],"id":"msg_1srOrx2ZWZBpBUvZwXKQmoEYga2","timestamp":"2019-08-24T14:15:22Z","tags":["project_1337"]}';
 const ReplayOut = '{"id":"qtask_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"running","task":"endpoint.replay","updatedAt":"2025-03-03T03:03:03.000000Z"}';
 const AppPortalAccessOut = '{"url": "https://app.svix.com/login#key=eyJhcHBJZCI6ICJhcHBfMXRSdFl","token": "appsk_kV3ts5tKPNJN4Dl25cMTfUNdmabxbX0O"}';
+const StreamSinkHttpOut = '{"id":"sink_1srOrx2ZWZBpBUvZwXKQmoEYga2","uid":"my-sink","status":"enabled","currentIterator":"eyJvZmZzZXQiOjB9","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","batchSize":100,"maxWaitSecs":10,"metadata":{},"type":"http","config":{"url":"https://example.com/webhook","headers":{"headers":{},"sensitive":[]}}}';
+const StreamSinkPollerOut = '{"id":"sink_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"enabled","currentIterator":"eyJvZmZzZXQiOjB9","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","batchSize":100,"maxWaitSecs":10,"metadata":{},"type":"poller","config":{}}';
+const StreamSinkPollerOutNoConfig = '{"id":"sink_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"enabled","currentIterator":"eyJvZmZzZXQiOjB9","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","batchSize":100,"maxWaitSecs":10,"metadata":{},"type":"poller"}';
+const StreamSinkPollerOutNullConfig = '{"id":"sink_1srOrx2ZWZBpBUvZwXKQmoEYga2","status":"enabled","currentIterator":"eyJvZmZzZXQiOjB9","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","batchSize":100,"maxWaitSecs":10,"metadata":{},"type":"poller","config":null}';
 
 
 class MockTest extends TestCase
@@ -517,5 +532,133 @@ class MockTest extends TestCase
         $rawBody = $req->getBody()->getContents();
 
         $this->assertEquals('{"eventType":"user.signup","payload":{},"transformationsParams":{"rawPayload":"<xml> not json<\/xml>","headers":{"content-type":"application\/xml"}}}', $rawBody);
+    }
+
+    public function testStructEnumBodySerialization(): void
+    {
+        $this->mockHandler->append(
+            new Response(200, [], StreamSinkHttpOut),
+            new Response(200, [], StreamSinkPollerOut),
+            new Response(200, [], StreamSinkHttpOut),
+        );
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $svx->streaming->sink->create(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            StreamSinkIn::create(
+                StreamSinkInConfig::http(
+                    SinkHttpConfigIn::create('https://example.com/webhook')
+                        ->withHeaders(['X-Custom' => 'yes'])
+                )
+            )->withUid('my-sink')
+        );
+
+        $svx->streaming->sink->create(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            StreamSinkIn::create(StreamSinkInConfig::poller())
+        );
+
+        $svx->streaming->sink->create(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            StreamSinkIn::create(
+                StreamSinkInConfig::amazonS3(S3ConfigIn::create('my-bucket')->withRegion('us-east-1'))
+            )
+        );
+
+        $httpBody = $this->requestHistory[0]['request']->getBody()->getContents();
+        $pollerBody = $this->requestHistory[1]['request']->getBody()->getContents();
+        $s3Body = $this->requestHistory[2]['request']->getBody()->getContents();
+
+        $this->assertEquals(
+            '{"type":"http","config":{"url":"https:\/\/example.com\/webhook","headers":{"X-Custom":"yes"}},"uid":"my-sink"}',
+            $httpBody
+        );
+        $this->assertEquals('{"type":"poller","config":{}}', $pollerBody);
+        $this->assertEquals(
+            '{"type":"amazonS3","config":{"bucket":"my-bucket","region":"us-east-1"}}',
+            $s3Body
+        );
+    }
+
+    public function testStructEnumBodyDeserialization(): void
+    {
+        $this->mockHandler->append(
+            new Response(200, [], StreamSinkHttpOut),
+            new Response(200, [], StreamSinkPollerOut),
+        );
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $httpSink = $svx->streaming->sink->get(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            'sink_1srOrx2ZWZBpBUvZwXKQmoEYga2'
+        );
+        $this->assertInstanceOf(StreamSinkOut::class, $httpSink);
+        $this->assertEquals('sink_1srOrx2ZWZBpBUvZwXKQmoEYga2', $httpSink->id);
+        $this->assertEquals('my-sink', $httpSink->uid);
+        $this->assertEquals(SinkStatus::ENABLED, $httpSink->status);
+        $this->assertInstanceOf(StreamSinkOutHttp::class, $httpSink->config);
+        $this->assertEquals('https://example.com/webhook', $httpSink->config->http->url);
+
+        $pollerSink = $svx->streaming->sink->get(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            'sink_1srOrx2ZWZBpBUvZwXKQmoEYga2'
+        );
+        $this->assertInstanceOf(StreamSinkOutPoller::class, $pollerSink->config);
+    }
+
+    public function testStructEnumPatchOmitsUnsetNulls(): void
+    {
+        $this->mockHandler->append(
+            new Response(200, [], StreamSinkPollerOut),
+            new Response(200, [], StreamSinkHttpOut),
+            new Response(200, [], StreamSinkPollerOut),
+        );
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $svx->streaming->sink->patch(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            'sink_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            StreamSinkPatch::create(StreamSinkPatchConfig::poller())
+        );
+
+        $svx->streaming->sink->patch(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            'sink_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            StreamSinkPatch::create(
+                StreamSinkPatchConfig::http(SinkHttpConfigPatch::create())
+            )
+        );
+
+        $svx->streaming->sink->patch(
+            'stream_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            'sink_1srOrx2ZWZBpBUvZwXKQmoEYga2',
+            StreamSinkPatch::create(StreamSinkPatchConfig::poller())
+                ->withUid(null)
+        );
+
+        $pollerBody = $this->requestHistory[0]['request']->getBody()->getContents();
+        $httpBody = $this->requestHistory[1]['request']->getBody()->getContents();
+        $nullUidBody = $this->requestHistory[2]['request']->getBody()->getContents();
+
+        $this->assertEquals('{"type":"poller","config":{}}', $pollerBody);
+        $this->assertEquals('{"type":"http","config":{}}', $httpBody);
+        $this->assertEquals('{"type":"poller","config":{},"uid":null}', $nullUidBody);
+        $this->assertStringNotContainsString('batchSize', $pollerBody);
+        $this->assertStringNotContainsString('status', $pollerBody);
+        $this->assertStringNotContainsString('metadata', $pollerBody);
+    }
+
+    public function testStructEnumPollerEmptyConfigDeserialization(): void
+    {
+        $fromEmpty = StreamSinkOut::fromJson(StreamSinkPollerOut);
+        $fromMissing = StreamSinkOut::fromJson(StreamSinkPollerOutNoConfig);
+        $fromNull = StreamSinkOut::fromJson(StreamSinkPollerOutNullConfig);
+
+        $this->assertInstanceOf(StreamSinkOutPoller::class, $fromEmpty->config);
+        $this->assertInstanceOf(StreamSinkOutPoller::class, $fromMissing->config);
+        $this->assertInstanceOf(StreamSinkOutPoller::class, $fromNull->config);
     }
 }
