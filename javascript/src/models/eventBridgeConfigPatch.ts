@@ -5,6 +5,8 @@ export interface EventBridgeConfigPatch {
   detailType?: string;
   accessKeyId?: string;
   secretAccessKey?: string;
+  roleArn?: string;
+  externalId?: string;
   region?: string;
 }
 
@@ -15,6 +17,8 @@ export const EventBridgeConfigPatchSerializer = {
       detailType: object["detailType"],
       accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      roleArn: object["roleArn"],
+      externalId: object["externalId"],
       region: object["region"],
     };
   },
@@ -25,6 +29,8 @@ export const EventBridgeConfigPatchSerializer = {
       detailType: self.detailType,
       accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      roleArn: self.roleArn,
+      externalId: self.externalId,
       region: self.region,
     };
   },

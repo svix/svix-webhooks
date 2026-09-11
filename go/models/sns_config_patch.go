@@ -12,6 +12,8 @@ type SnsConfigPatch struct {
 	Region          *string                `json:"region,omitempty"`
 	AccessKeyId     *string                `json:"accessKeyId,omitempty"`
 	SecretAccessKey *string                `json:"secretAccessKey,omitempty"`
+	RoleArn         *string                `json:"roleArn,omitempty"`
+	ExternalId      *string                `json:"externalId,omitempty"`
 	EndpointUrl     utils.Nullable[string] `json:"endpointUrl"`
 }
 
@@ -28,6 +30,12 @@ func (o SnsConfigPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.SecretAccessKey != nil {
 		toSerialize["secretAccessKey"] = o.SecretAccessKey
+	}
+	if o.RoleArn != nil {
+		toSerialize["roleArn"] = o.RoleArn
+	}
+	if o.ExternalId != nil {
+		toSerialize["externalId"] = o.ExternalId
 	}
 	if o.EndpointUrl.IsSet() {
 		toSerialize["endpointUrl"] = o.EndpointUrl

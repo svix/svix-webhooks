@@ -21,8 +21,10 @@ class RedshiftConfigOut implements \JsonSerializable
      * Only required if not using transformations.
      */
     private function __construct(
-        public readonly string $accessKeyId,
         public readonly string $region,
+        public readonly ?string $accessKeyId = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $clusterIdentifier = null,
         public readonly ?string $dbUser = null,
         public readonly ?string $workgroupName = null,
@@ -38,11 +40,12 @@ class RedshiftConfigOut implements \JsonSerializable
      * Create an instance of RedshiftConfigOut with required fields.
      */
     public static function create(
-        string $accessKeyId,
         string $region,
     ): self {
         return new self(
-            accessKeyId: $accessKeyId,
+            accessKeyId: null,
+            roleArn: null,
+            externalId: null,
             region: $region,
             clusterIdentifier: null,
             dbUser: null,
@@ -50,7 +53,67 @@ class RedshiftConfigOut implements \JsonSerializable
             dbName: null,
             schemaName: null,
             tableName: null,
-            setFields: ['accessKeyId' => true, 'region' => true]
+            setFields: ['region' => true]
+        );
+    }
+
+    public function withAccessKeyId(?string $accessKeyId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['accessKeyId'] = true;
+
+        return new self(
+            accessKeyId: $accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            clusterIdentifier: $this->clusterIdentifier,
+            dbUser: $this->dbUser,
+            workgroupName: $this->workgroupName,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            clusterIdentifier: $this->clusterIdentifier,
+            dbUser: $this->dbUser,
+            workgroupName: $this->workgroupName,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
+            region: $this->region,
+            clusterIdentifier: $this->clusterIdentifier,
+            dbUser: $this->dbUser,
+            workgroupName: $this->workgroupName,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
         );
     }
 
@@ -61,6 +124,8 @@ class RedshiftConfigOut implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $clusterIdentifier,
             dbUser: $this->dbUser,
@@ -79,6 +144,8 @@ class RedshiftConfigOut implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $dbUser,
@@ -97,6 +164,8 @@ class RedshiftConfigOut implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -115,6 +184,8 @@ class RedshiftConfigOut implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -133,6 +204,8 @@ class RedshiftConfigOut implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -151,6 +224,8 @@ class RedshiftConfigOut implements \JsonSerializable
 
         return new self(
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -165,9 +240,17 @@ class RedshiftConfigOut implements \JsonSerializable
     public function jsonSerialize(): mixed
     {
         $data = [
-            'accessKeyId' => $this->accessKeyId,
             'region' => $this->region];
 
+        if (isset($this->setFields['accessKeyId'])) {
+            $data['accessKeyId'] = $this->accessKeyId;
+        }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
+        }
         if (isset($this->setFields['clusterIdentifier'])) {
             $data['clusterIdentifier'] = $this->clusterIdentifier;
         }
@@ -196,7 +279,9 @@ class RedshiftConfigOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'RedshiftConfigOut'),
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'RedshiftConfigOut'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'RedshiftConfigOut'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'RedshiftConfigOut'),
             region: \Svix\Utils::deserializeString($data, 'region', true, 'RedshiftConfigOut'),
             clusterIdentifier: \Svix\Utils::deserializeString($data, 'clusterIdentifier', false, 'RedshiftConfigOut'),
             dbUser: \Svix\Utils::deserializeString($data, 'dbUser', false, 'RedshiftConfigOut'),

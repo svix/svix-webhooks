@@ -12,15 +12,29 @@ module Svix
     attr_accessor :region
     # Access key ID.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Required (along with `secret_access_key`) if `role_arn` is None
     attr_accessor :access_key_id
     # Secret access key.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Required (along with `access_key_id`) if `role_arn` is None
     attr_accessor :secret_access_key
     attr_accessor :endpoint_url
+    # Role ARN for delegated authentication
+    attr_accessor :role_arn
+    # Shared secret passed as the STS ExternalId.
+    #
+    # Can only be set if `role_arn` is Some
+    attr_accessor :external_id
 
-    ALL_FIELD ||= ["topic_arn", "region", "access_key_id", "secret_access_key", "endpoint_url"].freeze
+    ALL_FIELD ||= [
+      "topic_arn",
+      "region",
+      "access_key_id",
+      "secret_access_key",
+      "endpoint_url",
+      "role_arn",
+      "external_id"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -46,6 +60,8 @@ module Svix
       attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
       attrs["endpoint_url"] = attributes["endpointUrl"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       new(attrs)
     end
 
@@ -56,6 +72,8 @@ module Svix
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
       out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) unless @endpoint_url.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
       out
     end
 

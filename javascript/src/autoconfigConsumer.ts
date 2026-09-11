@@ -1,5 +1,5 @@
 import { SvixInternal } from "./api_internal";
-import { Destination as InternalDestination } from "./api_internal/destination";
+import { Autoconfig as InternalAutoconfig } from "./api_internal/autoconfig";
 import { Endpoint as InternalEndpoint } from "./api_internal/endpoint";
 import {
   MessagePollerv2 as InternalMessagePollerv2,
@@ -41,12 +41,11 @@ export class AutoConfigConsumer {
   }
 
   public async subscribe(): Promise<DestinationOut> {
-    const endpoint = new InternalEndpoint(this.requestCtx);
     if (this.autoconfigId != null) {
       // v2
-      const destination = await new InternalDestination(
+      const destination = await new InternalAutoconfig(
         this.requestCtx
-      ).autoconfig.subscribe(
+      ).destination.subscribe(
         this.appId,
         this.autoconfigId,
         sinkInCommonToPollingDestination(this.sinkIn)
@@ -57,12 +56,16 @@ export class AutoConfigConsumer {
 
     // v1
     return destinationOutFromV1Endpoint(
-      await endpoint.autoConfigDeprecated.update(this.appId, this.sinkId as string, {
-        sink: {
-          type: "poller",
-          config: this.sinkIn,
-        },
-      })
+      await new InternalEndpoint(this.requestCtx).autoConfigDeprecated.update(
+        this.appId,
+        this.sinkId as string,
+        {
+          sink: {
+            type: "poller",
+            config: this.sinkIn,
+          },
+        }
+      )
     );
   }
 
@@ -74,7 +77,7 @@ export class AutoConfigConsumer {
 
     // Get the sink id from the autoconfig id (v2)
     const destId = (
-      await new InternalEndpoint(this.requestCtx).autoconfig.get(
+      await new InternalAutoconfig(this.requestCtx).get(
         this.appId,
         this.autoconfigId as string
       )

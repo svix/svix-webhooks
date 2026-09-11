@@ -16,8 +16,8 @@ type (
 	}
 )
 
-func (svix InternalSvix) Destination() Destination {
-	return newDestination(svix.client)
+func (svix InternalSvix) Autoconfig() Autoconfig {
+	return newAutoconfig(svix.client)
 }
 
 func (svix InternalSvix) Endpoint() Endpoint {

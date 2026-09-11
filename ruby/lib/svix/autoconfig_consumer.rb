@@ -12,8 +12,9 @@ require "svix/models/sink_in_common"
 require "svix/models/destination_status"
 require "svix/models/subscribe_in"
 require "svix/api_internal/endpoint_auto_config_deprecated"
-require "svix/api_internal/endpoint_autoconfig"
-require "svix/api_internal/destination_autoconfig"
+require "svix/api_internal/autoconfig"
+require "svix/api_internal/autoconfig_destination"
+require "svix/api_internal/autoconfig_endpoint"
 require "svix/api_internal/message_pollerv2"
 
 module Svix
@@ -32,7 +33,7 @@ module Svix
 
     def subscribe
       if @autoconfig_id
-        destination = DestinationAutoconfig.new(@client).subscribe(
+        destination = ApiInternal::AutoconfigDestination.new(@client).subscribe(
           @app_id,
           @autoconfig_id,
           sink_in_common_to_polling_destination(@sink_in)
@@ -44,13 +45,13 @@ module Svix
         subscribe_in = SubscribeIn.new(
           "sink" => AutoConfigSinkType.new("config" => poller)
         )
-        endpoint = EndpointAutoConfigDeprecated.new(@client).update(@app_id, @sink_id, subscribe_in)
+        endpoint = ApiInternal::EndpointAutoConfigDeprecated.new(@client).update(@app_id, @sink_id, subscribe_in)
         destination_out_from_v1_endpoint(endpoint)
       end
     end
 
     def receive(consumer_id, options = {})
-      MessagePollerv2.new(@client).consumer_poll(
+      ApiInternal::MessagePollerv2.new(@client).consumer_poll(
         @app_id,
         sink_id,
         consumer_id,
@@ -59,7 +60,7 @@ module Svix
     end
 
     def commit(consumer_id, offset, options = {})
-      MessagePollerv2.new(@client).consumer_commit(
+      ApiInternal::MessagePollerv2.new(@client).consumer_commit(
         @app_id,
         sink_id,
         consumer_id,
@@ -73,8 +74,7 @@ module Svix
     def sink_id
       return @sink_id if @sink_id
 
-      # Get the sink id from the autoconfig id (v2)
-      dest_id = EndpointAutoconfig.new(@client).get(@app_id, @autoconfig_id).dest_id
+      dest_id = ApiInternal::Autoconfig.new(@client).get(@app_id, @autoconfig_id).dest_id
       raise "autoconfig subscription is pending. Have you called subscribe()?" if dest_id.nil? || dest_id.empty?
 
       dest_id

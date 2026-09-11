@@ -8,17 +8,23 @@ data class RedshiftConfigIn(
     /**
      * Access key ID.
      *
-     * Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * Required (along with `secret_access_key`) if `role_arn` is blank.
      */
     val accessKeyId: String? = null,
     /**
      * Secret access key.
      *
-     * Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * Required (along with `access_key_id`) if `role_arn` is blank.
      */
     val secretAccessKey: String? = null,
+    /** Role ARN for delegated authentication */
+    val roleArn: String? = null,
+    /**
+     * Shared secret passed as the STS ExternalId.
+     *
+     * Can only be set if `role_arn` is Some
+     */
+    val externalId: String? = null,
     /**
      * The region of the Redshift DB.
      *

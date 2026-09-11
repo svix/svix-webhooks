@@ -14,11 +14,6 @@ namespace Svix.ApiInternal
             get => new EndpointAutoConfigDeprecated(_client);
         }
 
-        public EndpointAutoconfig Autoconfig
-        {
-            get => new EndpointAutoconfig(_client);
-        }
-
         /// <summary>
         /// This operation was renamed to `set-transformation`.
         /// </summary>

@@ -3,7 +3,9 @@
 export interface SnsConfigOut {
   topicArn: string;
   region: string;
-  accessKeyId: string;
+  accessKeyId?: string | null;
+  roleArn?: string | null;
+  externalId?: string | null;
 }
 
 export const SnsConfigOutSerializer = {
@@ -12,6 +14,8 @@ export const SnsConfigOutSerializer = {
       topicArn: object["topicArn"],
       region: object["region"],
       accessKeyId: object["accessKeyId"],
+      roleArn: object["roleArn"],
+      externalId: object["externalId"],
     };
   },
 
@@ -20,6 +24,8 @@ export const SnsConfigOutSerializer = {
       topicArn: self.topicArn,
       region: self.region,
       accessKeyId: self.accessKeyId,
+      roleArn: self.roleArn,
+      externalId: self.externalId,
     };
   },
 };

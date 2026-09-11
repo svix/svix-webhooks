@@ -62,7 +62,7 @@ namespace Svix
         {
             if (autoconfigId != null)
             {
-                return await new EndpointAutoconfig(client).SubscribeAsync(
+                return await new AutoconfigEndpoint(client).SubscribeAsync(
                     appId,
                     autoconfigId,
                     endpoint,
@@ -81,7 +81,7 @@ namespace Svix
         {
             if (autoconfigId != null)
             {
-                return new EndpointAutoconfig(client).Subscribe(appId, autoconfigId, endpoint);
+                return new AutoconfigEndpoint(client).Subscribe(appId, autoconfigId, endpoint);
             }
             return new EndpointAutoConfigDeprecated(client).Update(
                 appId,

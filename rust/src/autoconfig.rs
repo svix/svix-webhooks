@@ -159,7 +159,8 @@ impl AutoConfig {
 
     pub async fn subscribe(&self) -> Result<EndpointOut> {
         if let Some(autoconfig_id) = &self.autoconfig_id {
-            return api_internal::endpoint_autoconfig(self.svix.cfg())
+            return api_internal::autoconfig(self.svix.cfg())
+                .endpoint()
                 .subscribe(
                     self.app_id.clone(),
                     autoconfig_id.clone(),

@@ -9,6 +9,10 @@ class SqsConfigOut(BaseModel):
 
     region: str
 
-    access_key_id: str
+    access_key_id: t.Optional[str] = None
+
+    role_arn: t.Optional[str] = None
+
+    external_id: t.Optional[str] = None
 
     endpoint_url: t.Optional[str] = None

@@ -15,6 +15,7 @@ module Svix
   class Client
     attr_accessor :application
     attr_accessor :authentication
+    attr_accessor :autoconfig
     attr_accessor :background_task
     attr_accessor :connector
     attr_accessor :destination
@@ -51,6 +52,7 @@ module Svix
 
       @application = Application.new(api_client)
       @authentication = Authentication.new(api_client)
+      @autoconfig = Autoconfig.new(api_client)
       @background_task = BackgroundTask.new(api_client)
       @connector = Connector.new(api_client)
       @destination = Destination.new(api_client)

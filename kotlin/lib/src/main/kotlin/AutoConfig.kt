@@ -2,8 +2,8 @@ package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.exceptions.WebhookVerificationException
+import com.svix.kotlin.internal.AutoconfigEndpoint
 import com.svix.kotlin.internal.EndpointAutoConfigDeprecated
-import com.svix.kotlin.internal.EndpointAutoconfig
 import com.svix.kotlin.models.EndpointIn
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.SubscribeIn
@@ -54,7 +54,7 @@ constructor(token: String, endpoint: EndpointIn) {
     @Throws(ApiException::class)
     suspend fun subscribe(): EndpointOut {
         return if (autoconfigId != null) {
-            EndpointAutoconfig(httpClient).subscribe(appId, autoconfigId, endpoint)
+            AutoconfigEndpoint(httpClient).subscribe(appId, autoconfigId, endpoint)
         } else {
             EndpointAutoConfigDeprecated(httpClient)
                 .update(appId, endpointId as String, SubscribeIn(endpoint))

@@ -33,7 +33,7 @@ namespace Svix
         {
             if (autoconfigId != null)
             {
-                var destination = await new DestinationAutoconfig(client).SubscribeAsync(
+                var destination = await new AutoconfigDestination(client).SubscribeAsync(
                     appId,
                     autoconfigId,
                     SinkInCommonToPollingDestination(sinkIn),
@@ -62,7 +62,7 @@ namespace Svix
         {
             if (autoconfigId != null)
             {
-                var destination = new DestinationAutoconfig(client).Subscribe(
+                var destination = new AutoconfigDestination(client).Subscribe(
                     appId,
                     autoconfigId,
                     SinkInCommonToPollingDestination(sinkIn)
@@ -94,7 +94,7 @@ namespace Svix
             }
 
             // Get the sink id from the autoconfig id (v2)
-            var subscription = await new EndpointAutoconfig(client).GetAsync(
+            var subscription = await new ApiInternal.Autoconfig(client).GetAsync(
                 appId,
                 autoconfigId!,
                 cancellationToken
@@ -114,7 +114,7 @@ namespace Svix
             }
 
             // Get the sink id from the autoconfig id (v2)
-            return new EndpointAutoconfig(client).Get(appId, autoconfigId!).DestId
+            return new ApiInternal.Autoconfig(client).Get(appId, autoconfigId!).DestId
                 ?? throw new InvalidOperationException(
                     "autoconfig subscription is pending. Have you called subscribe()?"
                 );

@@ -2,6 +2,7 @@
 
 pub(crate) mod application;
 pub(crate) mod authentication;
+pub(crate) mod autoconfig;
 pub(crate) mod connector;
 pub(crate) mod destination;
 pub(crate) mod destination_transformation;

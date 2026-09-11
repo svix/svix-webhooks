@@ -6,6 +6,8 @@ module Svix
   class RedshiftConfigPatch
     attr_accessor :access_key_id
     attr_accessor :secret_access_key
+    attr_accessor :role_arn
+    attr_accessor :external_id
     attr_accessor :region
     # Database name.
     #
@@ -20,7 +22,16 @@ module Svix
     # Only required if not using transformations.
     attr_accessor :table_name
 
-    ALL_FIELD ||= ["access_key_id", "secret_access_key", "region", "db_name", "schema_name", "table_name"].freeze
+    ALL_FIELD ||= [
+      "access_key_id",
+      "secret_access_key",
+      "role_arn",
+      "external_id",
+      "region",
+      "db_name",
+      "schema_name",
+      "table_name"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -43,6 +54,8 @@ module Svix
       attrs = Hash.new
       attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       attrs["region"] = attributes["region"]
       attrs["db_name"] = attributes["dbName"]
       attrs["schema_name"] = attributes["schemaName"]
@@ -54,6 +67,8 @@ module Svix
       out = Hash.new
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
       out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
       out["dbName"] = Svix::serialize_primitive(@db_name) unless @db_name.nil?
       out["schemaName"] = Svix::serialize_primitive(@schema_name) if @__schema_name_is_defined

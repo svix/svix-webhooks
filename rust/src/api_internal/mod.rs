@@ -1,36 +1,31 @@
 #[allow(dead_code)]
-mod destination;
+pub mod autoconfig;
 #[allow(dead_code)]
-pub mod destination_autoconfig;
+pub mod autoconfig_destination;
 #[allow(dead_code)]
-mod endpoint;
+pub mod autoconfig_endpoint;
 pub mod endpoint_auto_config_deprecated;
 #[allow(dead_code)]
-pub mod endpoint_autoconfig;
+mod endpoint;
 #[allow(dead_code)]
 mod message;
 pub mod message_pollerv2;
 
 use crate::Configuration;
-use destination_autoconfig::DestinationAutoconfig;
+use autoconfig::Autoconfig;
+pub(crate) use autoconfig_destination::AutoconfigDestination;
+pub(crate) use autoconfig_endpoint::AutoconfigEndpoint;
 use endpoint_auto_config_deprecated::EndpointAutoConfigDeprecated;
-use endpoint_autoconfig::EndpointAutoconfig;
 use message_pollerv2::MessagePollerv2;
 
-#[allow(dead_code)]
-pub(crate) fn destination_autoconfig(cfg: &Configuration) -> DestinationAutoconfig<'_> {
-    DestinationAutoconfig::new(cfg)
+pub(crate) fn autoconfig(cfg: &Configuration) -> Autoconfig<'_> {
+    Autoconfig::new(cfg)
 }
 
 pub(crate) fn endpoint_auto_config_deprecated(
     cfg: &Configuration,
 ) -> EndpointAutoConfigDeprecated<'_> {
     EndpointAutoConfigDeprecated::new(cfg)
-}
-
-#[allow(dead_code)]
-pub(crate) fn endpoint_autoconfig(cfg: &Configuration) -> EndpointAutoconfig<'_> {
-    EndpointAutoconfig::new(cfg)
 }
 
 pub(crate) fn message_pollerv2(cfg: &Configuration) -> MessagePollerv2<'_> {

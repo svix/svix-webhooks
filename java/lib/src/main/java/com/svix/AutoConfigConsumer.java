@@ -1,9 +1,9 @@
 package com.svix;
 
 import com.svix.exceptions.ApiException;
+import com.svix.internalapi.Autoconfig;
+import com.svix.internalapi.AutoconfigDestination;
 import com.svix.internalapi.EndpointAutoConfigDeprecated;
-import com.svix.internalapi.EndpointAutoconfig;
-import com.svix.internalapi.DestinationAutoconfig;
 import com.svix.internalapi.MessagePollerv2;
 import com.svix.internalapi.MessagePollerv2ConsumerCommitOptions;
 import com.svix.internalapi.MessagePollerv2ConsumerPollOptions;
@@ -49,7 +49,7 @@ public final class AutoConfigConsumer {
   /** Registers this polling sink with Svix using the auto-config API. */
   public DestinationOut subscribe() throws IOException, ApiException {
     if (autoconfigId != null) {
-      DestinationOut destination = new DestinationAutoconfig(svix.getHttpClient())
+      DestinationOut destination = new AutoconfigDestination(svix.getHttpClient())
           .subscribe(appId, autoconfigId, sinkInCommonToPollingDestination(sinkIn));
       this.sinkId = destination.getId();
       return destination;
@@ -69,7 +69,7 @@ public final class AutoConfigConsumer {
     }
 
     // Get the sink id from the autoconfig id (v2)
-    String destId = new EndpointAutoconfig(svix.getHttpClient()).get(appId, autoconfigId).getDestId();
+    String destId = new Autoconfig(svix.getHttpClient()).get(appId, autoconfigId).getDestId();
     if (destId == null || destId.isEmpty()) {
       throw new IllegalStateException(
           "autoconfig subscription is pending. Have you called subscribe()?");
