@@ -6,7 +6,10 @@ namespace Svix\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Svix\AutoConfig;
+use Svix\Models\AutoConfigSinkType;
+use Svix\Models\AutoConfigSinkTypeConfig;
 use Svix\Models\EndpointIn;
+use Svix\Models\SinkInCommon;
 
 final class AutoConfigTest extends TestCase
 {
@@ -93,5 +96,22 @@ final class AutoConfigTest extends TestCase
             'auto_v1_' . base64_encode('{not json'),
             EndpointIn::create('https://consumer.example/webhook'),
         );
+    }
+
+    public function testAutoConfigSinkTypeRoundtripsAsTypeAndConfig(): void
+    {
+        $sink = AutoConfigSinkType::create(
+            AutoConfigSinkTypeConfig::poller(SinkInCommon::create()->withEventTypes(['a'])),
+        );
+
+        $encoded = json_encode($sink, JSON_THROW_ON_ERROR);
+        $this->assertJsonStringEqualsJsonString(
+            '{"type":"poller","config":{"eventTypes":["a"]}}',
+            $encoded,
+        );
+
+        $decoded = AutoConfigSinkType::fromJson($encoded);
+        $this->assertInstanceOf(\Svix\Models\AutoConfigSinkTypeConfig\Poller::class, $decoded->config);
+        $this->assertSame(['a'], $decoded->config->poller->eventTypes);
     }
 }
