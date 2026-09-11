@@ -191,8 +191,8 @@ extra_codegen_args = [
 [csharp]
 [[csharp.task]]
 template = "templates/csharp/api_resource.cs.jinja"
-output_dir = "csharp/Svix"
-extra_codegen_args = ["--context={\"namespace\":\"Svix\"}"]
+output_dir = "csharp/Svix/Api"
+extra_codegen_args = ["--context={\"namespace\":\"Svix.Api\"}"]
 [[csharp.task]]
 template = "templates/csharp/component_type.cs.jinja"
 output_dir = "csharp/Svix/Models"

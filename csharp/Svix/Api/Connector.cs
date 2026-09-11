@@ -3,14 +3,14 @@
 using Microsoft.Extensions.Logging;
 using Svix.Models;
 
-namespace Svix
+namespace Svix.Api
 {
-    public class StreamingEventTypeListOptions : SvixOptionsBase
+    public class ConnectorListOptions : SvixOptionsBase
     {
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
-        public bool? IncludeArchived { get; set; }
+        public ConnectorProduct? ProductType { get; set; }
 
         public new Dictionary<string, string> QueryParams()
         {
@@ -20,13 +20,13 @@ namespace Svix
                     { "limit", Limit },
                     { "iterator", Iterator },
                     { "order", Order },
-                    { "include_archived", IncludeArchived },
+                    { "product_type", ProductType },
                 }
             );
         }
     }
 
-    public class StreamingEventTypeCreateOptions : SvixOptionsBase
+    public class ConnectorCreateOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -38,38 +38,28 @@ namespace Svix
         }
     }
 
-    public class StreamingEventTypeDeleteOptions : SvixOptionsBase
-    {
-        public bool? Expunge { get; set; }
-
-        public new Dictionary<string, string> QueryParams()
-        {
-            return SerializeParams(new Dictionary<string, object?> { { "expunge", Expunge } });
-        }
-    }
-
-    public class StreamingEventType(SvixClient client)
+    public class Connector(SvixClient client)
     {
         readonly SvixClient _client = client;
 
         /// <summary>
-        /// List of all the organization's event types for streaming.
+        /// List all connectors for an application.
         /// </summary>
-        public async Task<ListResponseStreamEventTypeOut> ListAsync(
-            StreamingEventTypeListOptions? options = null,
+        public async Task<ListResponseConnectorOut> ListAsync(
+            ConnectorListOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new StreamingEventTypeListOptions();
+                options = new ConnectorListOptions();
             }
             try
             {
                 var response =
-                    await _client.SvixHttpClient.SendRequestAsync<ListResponseStreamEventTypeOut>(
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseConnectorOut>(
                         method: HttpMethod.Get,
-                        path: "/api/v1/stream/event-type",
+                        path: "/api/v1/connector",
                         queryParams: options.QueryParams(),
                         headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
@@ -85,19 +75,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// List of all the organization's event types for streaming.
+        /// List all connectors for an application.
         /// </summary>
-        public ListResponseStreamEventTypeOut List(StreamingEventTypeListOptions? options = null)
+        public ListResponseConnectorOut List(ConnectorListOptions? options = null)
         {
             if (options == null)
             {
-                options = new StreamingEventTypeListOptions();
+                options = new ConnectorListOptions();
             }
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ListResponseStreamEventTypeOut>(
+                var response = _client.SvixHttpClient.SendRequest<ListResponseConnectorOut>(
                     method: HttpMethod.Get,
-                    path: "/api/v1/stream/event-type",
+                    path: "/api/v1/connector",
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams()
                 );
@@ -112,28 +102,27 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create an event type for Streams.
+        /// Create a new connector.
         /// </summary>
-        public async Task<StreamEventTypeOut> CreateAsync(
-            StreamEventTypeIn streamEventTypeIn,
-            StreamingEventTypeCreateOptions? options = null,
+        public async Task<ConnectorOut> CreateAsync(
+            ConnectorIn connectorIn,
+            ConnectorCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new StreamingEventTypeCreateOptions();
+                options = new ConnectorCreateOptions();
             }
-            streamEventTypeIn =
-                streamEventTypeIn ?? throw new ArgumentNullException(nameof(streamEventTypeIn));
+            connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<StreamEventTypeOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Post,
-                    path: "/api/v1/stream/event-type",
+                    path: "/api/v1/connector",
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
-                    content: streamEventTypeIn,
+                    content: connectorIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -147,27 +136,23 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create an event type for Streams.
+        /// Create a new connector.
         /// </summary>
-        public StreamEventTypeOut Create(
-            StreamEventTypeIn streamEventTypeIn,
-            StreamingEventTypeCreateOptions? options = null
-        )
+        public ConnectorOut Create(ConnectorIn connectorIn, ConnectorCreateOptions? options = null)
         {
             if (options == null)
             {
-                options = new StreamingEventTypeCreateOptions();
+                options = new ConnectorCreateOptions();
             }
-            streamEventTypeIn =
-                streamEventTypeIn ?? throw new ArgumentNullException(nameof(streamEventTypeIn));
+            connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<StreamEventTypeOut>(
+                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Post,
-                    path: "/api/v1/stream/event-type",
+                    path: "/api/v1/connector",
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
-                    content: streamEventTypeIn
+                    content: connectorIn
                 );
                 return response.Data;
             }
@@ -180,19 +165,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get an event type.
+        /// Get a connector.
         /// </summary>
-        public async Task<StreamEventTypeOut> GetAsync(
-            string name,
+        public async Task<ConnectorOut> GetAsync(
+            string connectorId,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<StreamEventTypeOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Get,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -206,16 +191,16 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get an event type.
+        /// Get a connector.
         /// </summary>
-        public StreamEventTypeOut Get(string name)
+        public ConnectorOut Get(string connectorId)
         {
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<StreamEventTypeOut>(
+                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Get,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } }
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } }
                 );
                 return response.Data;
             }
@@ -228,23 +213,23 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create or update or create a event type for Streams.
+        /// Create or update a connector.
         /// </summary>
-        public async Task<StreamEventTypeOut> UpsertAsync(
-            string name,
-            StreamEventTypeIn streamEventTypeIn,
+        public async Task<ConnectorOut> UpsertAsync(
+            string connectorId,
+            ConnectorUpsertIn connectorUpsertIn,
             CancellationToken cancellationToken = default
         )
         {
-            streamEventTypeIn =
-                streamEventTypeIn ?? throw new ArgumentNullException(nameof(streamEventTypeIn));
+            connectorUpsertIn =
+                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<StreamEventTypeOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Put,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
-                    content: streamEventTypeIn,
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
+                    content: connectorUpsertIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -258,19 +243,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create or update or create a event type for Streams.
+        /// Create or update a connector.
         /// </summary>
-        public StreamEventTypeOut Upsert(string name, StreamEventTypeIn streamEventTypeIn)
+        public ConnectorOut Upsert(string connectorId, ConnectorUpsertIn connectorUpsertIn)
         {
-            streamEventTypeIn =
-                streamEventTypeIn ?? throw new ArgumentNullException(nameof(streamEventTypeIn));
+            connectorUpsertIn =
+                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<StreamEventTypeOut>(
+                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Put,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
-                    content: streamEventTypeIn
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
+                    content: connectorUpsertIn
                 );
                 return response.Data;
             }
@@ -283,26 +268,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete an event type.
+        /// Delete a connector.
         /// </summary>
         public async Task<bool> DeleteAsync(
-            string name,
-            StreamingEventTypeDeleteOptions? options = null,
+            string connectorId,
             CancellationToken cancellationToken = default
         )
         {
-            if (options == null)
-            {
-                options = new StreamingEventTypeDeleteOptions();
-            }
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Delete,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
-                    queryParams: options.QueryParams(),
-                    headerParams: options.HeaderParams(),
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -316,22 +294,16 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete an event type.
+        /// Delete a connector.
         /// </summary>
-        public bool Delete(string name, StreamingEventTypeDeleteOptions? options = null)
+        public bool Delete(string connectorId)
         {
-            if (options == null)
-            {
-                options = new StreamingEventTypeDeleteOptions();
-            }
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Delete,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
-                    queryParams: options.QueryParams(),
-                    headerParams: options.HeaderParams()
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } }
                 );
                 return response.Data;
             }
@@ -344,24 +316,23 @@ namespace Svix
         }
 
         /// <summary>
-        /// Patch an event type for Streams.
+        /// Partially update a connector.
         /// </summary>
-        public async Task<StreamEventTypeOut> PatchAsync(
-            string name,
-            StreamEventTypePatch streamEventTypePatch,
+        public async Task<ConnectorOut> PatchAsync(
+            string connectorId,
+            ConnectorPatch connectorPatch,
             CancellationToken cancellationToken = default
         )
         {
-            streamEventTypePatch =
-                streamEventTypePatch
-                ?? throw new ArgumentNullException(nameof(streamEventTypePatch));
+            connectorPatch =
+                connectorPatch ?? throw new ArgumentNullException(nameof(connectorPatch));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<StreamEventTypeOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
                     method: HttpMethod.Patch,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
-                    content: streamEventTypePatch,
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
+                    content: connectorPatch,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -375,20 +346,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// Patch an event type for Streams.
+        /// Partially update a connector.
         /// </summary>
-        public StreamEventTypeOut Patch(string name, StreamEventTypePatch streamEventTypePatch)
+        public ConnectorOut Patch(string connectorId, ConnectorPatch connectorPatch)
         {
-            streamEventTypePatch =
-                streamEventTypePatch
-                ?? throw new ArgumentNullException(nameof(streamEventTypePatch));
+            connectorPatch =
+                connectorPatch ?? throw new ArgumentNullException(nameof(connectorPatch));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<StreamEventTypeOut>(
+                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
                     method: HttpMethod.Patch,
-                    path: "/api/v1/stream/event-type/{name}",
-                    pathParams: new Dictionary<string, string> { { "name", name } },
-                    content: streamEventTypePatch
+                    path: "/api/v1/connector/{connector_id}",
+                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
+                    content: connectorPatch
                 );
                 return response.Data;
             }

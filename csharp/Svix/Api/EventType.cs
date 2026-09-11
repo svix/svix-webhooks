@@ -3,7 +3,7 @@
 using Microsoft.Extensions.Logging;
 using Svix.Models;
 
-namespace Svix
+namespace Svix.Api
 {
     public class EventTypeListOptions : SvixOptionsBase
     {
