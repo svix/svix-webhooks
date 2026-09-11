@@ -16,16 +16,22 @@ class SqsConfigIn implements \JsonSerializable
      * Currently a required field, but marked as optional because we may infer it from other fields in the future.
      * @param string|null $accessKeyId Access key ID.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `secret_access_key`) if `role_arn` is blank.
      * @param string|null $secretAccessKey Secret access key.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `access_key_id`) if `role_arn` is blank.
+     * @param string|null $roleArn    Role ARN for delegated authentication
+     * @param string|null $externalId Shared secret passed as the STS ExternalId.
+     *
+     * Can only be set if `role_arn` is Some
      */
     private function __construct(
         public readonly string $queueUrl,
         public readonly ?string $region = null,
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
@@ -43,6 +49,8 @@ class SqsConfigIn implements \JsonSerializable
             region: null,
             accessKeyId: null,
             secretAccessKey: null,
+            roleArn: null,
+            externalId: null,
             endpointUrl: null,
             setFields: ['queueUrl' => true]
         );
@@ -58,6 +66,8 @@ class SqsConfigIn implements \JsonSerializable
             region: $region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -73,6 +83,8 @@ class SqsConfigIn implements \JsonSerializable
             region: $this->region,
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -88,6 +100,42 @@ class SqsConfigIn implements \JsonSerializable
             region: $this->region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -103,6 +151,8 @@ class SqsConfigIn implements \JsonSerializable
             region: $this->region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $endpointUrl,
             setFields: $setFields
         );
@@ -122,6 +172,12 @@ class SqsConfigIn implements \JsonSerializable
         if (isset($this->setFields['secretAccessKey'])) {
             $data['secretAccessKey'] = $this->secretAccessKey;
         }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
+        }
         if (isset($this->setFields['endpointUrl'])) {
             $data['endpointUrl'] = $this->endpointUrl;
         }
@@ -139,6 +195,8 @@ class SqsConfigIn implements \JsonSerializable
             region: \Svix\Utils::deserializeString($data, 'region', false, 'SqsConfigIn'),
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SqsConfigIn'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'SqsConfigIn'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'SqsConfigIn'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'SqsConfigIn'),
             endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SqsConfigIn')
         );
     }

@@ -55,7 +55,7 @@ func sinkInCommonToPollingDestination(sink models.SinkInCommon) models.Destinati
 // Subscribe registers or updates the polling sink via the auto-config API.
 func (a *AutoConfigConsumer) Subscribe(ctx context.Context) (*models.DestinationOut, error) {
 	if a.autoconfigID != "" {
-		dest, err := a.svix.Destination().Autoconfig().Subscribe(
+		dest, err := a.svix.AutoconfigSubscription().Destination().Subscribe(
 			ctx,
 			a.appID,
 			a.autoconfigID,
@@ -110,7 +110,7 @@ func (a *AutoConfigConsumer) getSinkID(ctx context.Context) (string, error) {
 	}
 
 	// Get the sink id from the autoconfig id (v2)
-	sub, err := a.svix.Endpoint().Autoconfig().Get(ctx, a.appID, a.autoconfigID)
+	sub, err := a.svix.AutoconfigSubscription().Get(ctx, a.appID, a.autoconfigID)
 	if err != nil {
 		return "", err
 	}

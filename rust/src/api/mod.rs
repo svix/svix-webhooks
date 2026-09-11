@@ -7,6 +7,7 @@ pub use self::client::{Svix, SvixOptions};
 
 mod application;
 mod authentication;
+mod autoconfig_subscription;
 mod background_task;
 mod connector;
 mod destination;
@@ -44,6 +45,10 @@ pub use self::{
         AuthenticationLogoutOptions, AuthenticationRotateStreamPollerTokenOptions,
         AuthenticationStreamExpireAllOptions, AuthenticationStreamLogoutOptions,
         AuthenticationStreamPortalAccessOptions,
+    },
+    autoconfig_subscription::{
+        AutoconfigSubscription, AutoconfigSubscriptionCreateOptions,
+        AutoconfigSubscriptionRotateOptions,
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
@@ -117,6 +122,9 @@ impl Svix {
     }
     pub fn authentication(&self) -> Authentication<'_> {
         Authentication::new(&self.cfg)
+    }
+    pub fn autoconfig_subscription(&self) -> AutoconfigSubscription<'_> {
+        AutoconfigSubscription::new(&self.cfg)
     }
     pub fn background_task(&self) -> BackgroundTask<'_> {
         BackgroundTask::new(&self.cfg)

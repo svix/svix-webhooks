@@ -5,6 +5,8 @@ require "json"
 module Svix
   class RedshiftConfigOut
     attr_accessor :access_key_id
+    attr_accessor :role_arn
+    attr_accessor :external_id
     attr_accessor :region
     attr_accessor :cluster_identifier
     attr_accessor :db_user
@@ -24,6 +26,8 @@ module Svix
 
     ALL_FIELD ||= [
       "access_key_id",
+      "role_arn",
+      "external_id",
       "region",
       "cluster_identifier",
       "db_user",
@@ -53,6 +57,8 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["access_key_id"] = attributes["accessKeyId"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       attrs["region"] = attributes["region"]
       attrs["cluster_identifier"] = attributes["clusterIdentifier"]
       attrs["db_user"] = attributes["dbUser"]
@@ -66,6 +72,8 @@ module Svix
     def serialize
       out = Hash.new
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
       out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
       out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) unless @cluster_identifier.nil?
       out["dbUser"] = Svix::serialize_primitive(@db_user) unless @db_user.nil?

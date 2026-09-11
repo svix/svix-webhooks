@@ -12,13 +12,11 @@ use Svix\Request\SvixHttpClient;
 class Endpoint
 {
     public EndpointAutoConfigDeprecated $autoConfigDeprecated;
-    public EndpointAutoconfig $autoconfig;
 
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
         $this->autoConfigDeprecated = new EndpointAutoConfigDeprecated($client);
-        $this->autoconfig = new EndpointAutoconfig($client);
     }
 
     /**

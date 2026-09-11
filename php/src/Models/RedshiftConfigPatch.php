@@ -23,6 +23,8 @@ class RedshiftConfigPatch implements \JsonSerializable
     private function __construct(
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $region = null,
         public readonly ?string $dbName = null,
         public readonly ?string $schemaName = null,
@@ -40,6 +42,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: null,
             secretAccessKey: null,
+            roleArn: null,
+            externalId: null,
             region: null,
             dbName: null,
             schemaName: null,
@@ -56,6 +60,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             dbName: $this->dbName,
             schemaName: $this->schemaName,
@@ -72,6 +78,44 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             region: $this->region,
             dbName: $this->dbName,
             schemaName: $this->schemaName,
@@ -88,6 +132,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $region,
             dbName: $this->dbName,
             schemaName: $this->schemaName,
@@ -104,6 +150,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             dbName: $dbName,
             schemaName: $this->schemaName,
@@ -120,6 +168,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             dbName: $this->dbName,
             schemaName: $schemaName,
@@ -136,6 +186,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             dbName: $this->dbName,
             schemaName: $this->schemaName,
@@ -154,6 +206,12 @@ class RedshiftConfigPatch implements \JsonSerializable
         }
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
+        }
+        if (null !== $this->roleArn) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (null !== $this->externalId) {
+            $data['externalId'] = $this->externalId;
         }
         if (null !== $this->region) {
             $data['region'] = $this->region;
@@ -179,6 +237,8 @@ class RedshiftConfigPatch implements \JsonSerializable
         return new self(
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'RedshiftConfigPatch'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'RedshiftConfigPatch'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'RedshiftConfigPatch'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'RedshiftConfigPatch'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'RedshiftConfigPatch'),
             dbName: \Svix\Utils::deserializeString($data, 'dbName', false, 'RedshiftConfigPatch'),
             schemaName: \Svix\Utils::deserializeString($data, 'schemaName', false, 'RedshiftConfigPatch'),

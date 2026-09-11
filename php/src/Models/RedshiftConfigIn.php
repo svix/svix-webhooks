@@ -17,10 +17,14 @@ class RedshiftConfigIn implements \JsonSerializable
     /**
      * @param string|null $accessKeyId Access key ID.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `secret_access_key`) if `role_arn` is blank.
      * @param string|null $secretAccessKey Secret access key.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `access_key_id`) if `role_arn` is blank.
+     * @param string|null $roleArn    Role ARN for delegated authentication
+     * @param string|null $externalId Shared secret passed as the STS ExternalId.
+     *
+     * Can only be set if `role_arn` is Some
      * @param string|null $region The region of the Redshift DB.
      *
      * Currently a required field, but marked as optional because we may infer it from other fields in the future.
@@ -40,6 +44,8 @@ class RedshiftConfigIn implements \JsonSerializable
     private function __construct(
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $region = null,
         public readonly ?string $clusterIdentifier = null,
         public readonly ?string $dbUser = null,
@@ -60,6 +66,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: null,
             secretAccessKey: null,
+            roleArn: null,
+            externalId: null,
             region: null,
             clusterIdentifier: null,
             dbUser: null,
@@ -79,6 +87,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -98,6 +108,50 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            clusterIdentifier: $this->clusterIdentifier,
+            dbUser: $this->dbUser,
+            workgroupName: $this->workgroupName,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            clusterIdentifier: $this->clusterIdentifier,
+            dbUser: $this->dbUser,
+            workgroupName: $this->workgroupName,
+            dbName: $this->dbName,
+            schemaName: $this->schemaName,
+            tableName: $this->tableName,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -117,6 +171,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -136,6 +192,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $clusterIdentifier,
             dbUser: $this->dbUser,
@@ -155,6 +213,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $dbUser,
@@ -174,6 +234,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -193,6 +255,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -212,6 +276,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -231,6 +297,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             clusterIdentifier: $this->clusterIdentifier,
             dbUser: $this->dbUser,
@@ -252,6 +320,12 @@ class RedshiftConfigIn implements \JsonSerializable
         }
         if (isset($this->setFields['secretAccessKey'])) {
             $data['secretAccessKey'] = $this->secretAccessKey;
+        }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
         }
         if (isset($this->setFields['region'])) {
             $data['region'] = $this->region;
@@ -286,6 +360,8 @@ class RedshiftConfigIn implements \JsonSerializable
         return new self(
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'RedshiftConfigIn'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'RedshiftConfigIn'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'RedshiftConfigIn'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'RedshiftConfigIn'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'RedshiftConfigIn'),
             clusterIdentifier: \Svix\Utils::deserializeString($data, 'clusterIdentifier', false, 'RedshiftConfigIn'),
             dbUser: \Svix\Utils::deserializeString($data, 'dbUser', false, 'RedshiftConfigIn'),

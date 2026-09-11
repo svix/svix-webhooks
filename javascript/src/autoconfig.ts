@@ -1,4 +1,5 @@
 import { SvixInternal } from "./api_internal";
+import { AutoconfigSubscription } from "./api_internal/autoconfigSubscription";
 import { Endpoint as InternalEndpoint } from "./api_internal/endpoint";
 import type { EndpointIn } from "./models/endpointIn";
 import type { EndpointOut } from "./models/endpointOut";
@@ -157,7 +158,7 @@ export class AutoConfig {
   public subscribe(): Promise<EndpointOut> {
     const endpoint = new InternalEndpoint(this.requestCtx);
     if (this.autoconfigId != null) {
-      return endpoint.autoconfig.subscribe(
+      return new AutoconfigSubscription(this.requestCtx).endpoint.subscribe(
         this.appId,
         this.autoconfigId,
         this.endpointIn

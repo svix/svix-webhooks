@@ -69,6 +69,10 @@ func (svix Svix) Authentication() Authentication {
 	return newAuthentication(svix.client)
 }
 
+func (svix Svix) AutoconfigSubscription() AutoconfigSubscription {
+	return newAutoconfigSubscription(svix.client)
+}
+
 func (svix Svix) BackgroundTask() BackgroundTask {
 	return newBackgroundTask(svix.client)
 }

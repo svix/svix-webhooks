@@ -16,10 +16,14 @@ class SnsConfigIn implements \JsonSerializable
      * Currently a required field, but marked as optional because we may infer it from other fields in the future.
      * @param string|null $accessKeyId Access key ID.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `secret_access_key`) if `role_arn` is None
      * @param string|null $secretAccessKey Secret access key.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Required (along with `access_key_id`) if `role_arn` is None
+     * @param string|null $roleArn    Role ARN for delegated authentication
+     * @param string|null $externalId Shared secret passed as the STS ExternalId.
+     *
+     * Can only be set if `role_arn` is Some
      */
     private function __construct(
         public readonly string $topicArn,
@@ -27,6 +31,8 @@ class SnsConfigIn implements \JsonSerializable
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
         public readonly ?string $endpointUrl = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -44,6 +50,8 @@ class SnsConfigIn implements \JsonSerializable
             accessKeyId: null,
             secretAccessKey: null,
             endpointUrl: null,
+            roleArn: null,
+            externalId: null,
             setFields: ['topicArn' => true]
         );
     }
@@ -59,6 +67,8 @@ class SnsConfigIn implements \JsonSerializable
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
             endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             setFields: $setFields
         );
     }
@@ -74,6 +84,8 @@ class SnsConfigIn implements \JsonSerializable
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
             endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             setFields: $setFields
         );
     }
@@ -89,6 +101,8 @@ class SnsConfigIn implements \JsonSerializable
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
             endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             setFields: $setFields
         );
     }
@@ -104,6 +118,42 @@ class SnsConfigIn implements \JsonSerializable
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
             endpointUrl: $endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            topicArn: $this->topicArn,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            topicArn: $this->topicArn,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            endpointUrl: $this->endpointUrl,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             setFields: $setFields
         );
     }
@@ -125,6 +175,12 @@ class SnsConfigIn implements \JsonSerializable
         if (isset($this->setFields['endpointUrl'])) {
             $data['endpointUrl'] = $this->endpointUrl;
         }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -139,7 +195,9 @@ class SnsConfigIn implements \JsonSerializable
             region: \Svix\Utils::deserializeString($data, 'region', false, 'SnsConfigIn'),
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SnsConfigIn'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'SnsConfigIn'),
-            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SnsConfigIn')
+            endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SnsConfigIn'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'SnsConfigIn'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'SnsConfigIn')
         );
     }
 

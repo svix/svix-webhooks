@@ -19,6 +19,7 @@ type (
 	ApplicationOut                            = models.ApplicationOut
 	ApplicationPatch                          = models.ApplicationPatch
 	ApplicationTokenExpireIn                  = models.ApplicationTokenExpireIn
+	AutoConfigOut                             = models.AutoConfigOut
 	AzureBlobStorageConfigIn                  = models.AzureBlobStorageConfigIn
 	AzureBlobStorageConfigOut                 = models.AzureBlobStorageConfigOut
 	AzureBlobStorageConfigPatch               = models.AzureBlobStorageConfigPatch
@@ -187,6 +188,7 @@ type (
 	ReplayIn                                  = models.ReplayIn
 	ReplayOut                                 = models.ReplayOut
 	RotatePollerTokenIn                       = models.RotatePollerTokenIn
+	RotateSubscriptionIn2                     = models.RotateSubscriptionIn2
 	RotateTokenOut                            = models.RotateTokenOut
 	RutterConfig                              = models.RutterConfig
 	RutterConfigOut                           = models.RutterConfigOut

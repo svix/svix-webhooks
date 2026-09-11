@@ -23,6 +23,8 @@ public class SnsConfigIn {
     @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
     @JsonProperty private URI endpointUrl;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
 
     public SnsConfigIn() {}
 
@@ -75,8 +77,7 @@ public class SnsConfigIn {
     /**
      * Access key ID.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `secret_access_key`) if `role_arn` is None
      *
      * @return accessKeyId
      */
@@ -97,8 +98,7 @@ public class SnsConfigIn {
     /**
      * Secret access key.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `access_key_id`) if `role_arn` is None
      *
      * @return secretAccessKey
      */
@@ -128,6 +128,46 @@ public class SnsConfigIn {
 
     public void setEndpointUrl(URI endpointUrl) {
         this.endpointUrl = endpointUrl;
+    }
+
+    public SnsConfigIn roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Role ARN for delegated authentication
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public SnsConfigIn externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Shared secret passed as the STS ExternalId.
+     *
+     * <p>Can only be set if `role_arn` is Some
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     /**

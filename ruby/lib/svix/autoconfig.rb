@@ -6,7 +6,9 @@ require "uri"
 
 require "svix/models/subscribe_in"
 require "svix/api_internal/endpoint_auto_config_deprecated"
-require "svix/api_internal/endpoint_autoconfig"
+require "svix/api_internal/autoconfig_subscription"
+require "svix/api_internal/autoconfig_subscription_destination"
+require "svix/api_internal/autoconfig_subscription_endpoint"
 
 module Svix
   class AutoConfig
@@ -33,7 +35,7 @@ module Svix
 
     def subscribe
       if @autoconfig_id
-        EndpointAutoconfig.new(@client).subscribe(
+        AutoconfigSubscription.new(@client).endpoint.subscribe(
           @app_id,
           @autoconfig_id,
           @endpoint

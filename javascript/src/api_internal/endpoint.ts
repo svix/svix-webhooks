@@ -5,7 +5,6 @@ import {
   EndpointTransformationInSerializer,
 } from "../models/endpointTransformationIn";
 import { EndpointAutoConfigDeprecated } from "./endpointAutoConfigDeprecated";
-import { EndpointAutoconfig } from "./endpointAutoconfig";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export class Endpoint {
@@ -13,10 +12,6 @@ export class Endpoint {
 
   public get autoConfigDeprecated() {
     return new EndpointAutoConfigDeprecated(this.requestCtx);
-  }
-
-  public get autoconfig() {
-    return new EndpointAutoconfig(this.requestCtx);
   }
 
   /**

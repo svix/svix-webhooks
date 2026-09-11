@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.svix.exceptions.ApiException;
 import com.svix.exceptions.EmptyWebhookSecretException;
 import com.svix.exceptions.WebhookVerificationException;
+import com.svix.internalapi.AutoconfigSubscription;
 import com.svix.internalapi.EndpointAutoConfigDeprecated;
-import com.svix.internalapi.EndpointAutoconfig;
 import com.svix.models.EndpointIn;
 import com.svix.models.EndpointOut;
 import com.svix.models.SubscribeIn;
@@ -69,8 +69,8 @@ public final class AutoConfig {
   /** Registers this endpoint with Svix using the auto-config API. */
   public EndpointOut subscribe() throws IOException, ApiException {
     if (autoconfigId != null) {
-      return new EndpointAutoconfig(svix.getHttpClient()).subscribe(appId, autoconfigId,
-          endpoint);
+      return new AutoconfigSubscription(svix.getHttpClient()).getEndpoint().subscribe(appId,
+          autoconfigId, endpoint);
     }
     return new EndpointAutoConfigDeprecated(svix.getHttpClient()).update(appId, endpointId,
         new SubscribeIn().endpoint(endpoint));

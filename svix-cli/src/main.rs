@@ -9,10 +9,11 @@ use self::{
     cmds::{
         api::{
             application::ApplicationArgs, authentication::AuthenticationArgs,
-            destination::DestinationArgs, endpoint::EndpointArgs, environment::EnvironmentArgs,
-            event_type::EventTypeArgs, ingest::IngestArgs, integration::IntegrationArgs,
-            message::MessageArgs, message_attempt::MessageAttemptArgs,
-            operational_webhook::OperationalWebhookArgs, streaming::StreamingArgs,
+            autoconfig_subscription::AutoconfigSubscriptionArgs, destination::DestinationArgs,
+            endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
+            ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
+            message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
+            streaming::StreamingArgs,
         },
         listen::ListenArgs,
         open::OpenArgs,
@@ -79,6 +80,8 @@ enum RootCommands {
     Application(ApplicationArgs),
     /// Manage authentication tasks such as getting dashboard URLs
     Authentication(AuthenticationArgs),
+    /// Create and rotate AutoConfig subscriptions
+    AutoconfigSubscription(AutoconfigSubscriptionArgs),
     /// Generate the autocompletion script for the specified shell
     Completion { shell: Shell },
     /// List, create & modify connectors
@@ -157,6 +160,10 @@ async fn main() -> Result<()> {
         RootCommands::Authentication(args) => {
             let cfg = cfg?;
             let client = get_client(&cfg)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::AutoconfigSubscription(args) => {
+            let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }
         RootCommands::Connector(args) => {

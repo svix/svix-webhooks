@@ -15,12 +15,10 @@ public class Endpoint {
     private final SvixHttpClient client;
 
     @Getter private final EndpointAutoConfigDeprecated autoConfigDeprecated;
-    @Getter private final EndpointAutoconfig autoconfig;
 
     public Endpoint(SvixHttpClient client) {
         this.client = client;
         this.autoConfigDeprecated = new EndpointAutoConfigDeprecated(client);
-        this.autoconfig = new EndpointAutoconfig(client);
     }
 
     /**

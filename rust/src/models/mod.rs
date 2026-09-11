@@ -16,6 +16,7 @@ mod application_out;
 mod application_patch;
 mod application_token_expire_in;
 mod authentication_source;
+mod auto_config_out;
 mod auto_config_sink_type;
 mod auto_config_subscription_out;
 mod azure_blob_storage_config_in;
@@ -189,6 +190,7 @@ mod redshift_config_patch;
 mod replay_in;
 mod replay_out;
 mod rotate_poller_token_in;
+mod rotate_subscription_in2;
 mod rotate_token_out;
 mod rutter_config;
 mod rutter_config_out;
@@ -275,6 +277,7 @@ pub use self::{
     application_patch::ApplicationPatch,
     application_token_expire_in::ApplicationTokenExpireIn,
     authentication_source::AuthenticationSource,
+    auto_config_out::AutoConfigOut,
     auto_config_sink_type::AutoConfigSinkType,
     auto_config_subscription_out::AutoConfigSubscriptionOut,
     azure_blob_storage_config_in::AzureBlobStorageConfigIn,
@@ -448,6 +451,7 @@ pub use self::{
     replay_in::ReplayIn,
     replay_out::ReplayOut,
     rotate_poller_token_in::RotatePollerTokenIn,
+    rotate_subscription_in2::RotateSubscriptionIn2,
     rotate_token_out::RotateTokenOut,
     rutter_config::RutterConfig,
     rutter_config_out::RutterConfigOut,

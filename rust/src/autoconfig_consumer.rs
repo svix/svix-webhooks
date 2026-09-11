@@ -66,7 +66,8 @@ impl AutoConfigConsumer {
 
     pub async fn subscribe(&mut self) -> Result<DestinationOut> {
         if let Some(autoconfig_id) = &self.autoconfig_id {
-            let destination = api_internal::destination_autoconfig(self.svix.cfg())
+            let destination = api_internal::autoconfig_subscription(self.svix.cfg())
+                .destination()
                 .subscribe(
                     self.app_id.clone(),
                     autoconfig_id.clone(),
@@ -98,7 +99,7 @@ impl AutoConfigConsumer {
         }
 
         // Get the sink id from the autoconfig id (v2)
-        api_internal::endpoint_autoconfig(self.svix.cfg())
+        api_internal::autoconfig_subscription(self.svix.cfg())
             .get(
                 self.app_id.clone(),
                 self.autoconfig_id

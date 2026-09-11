@@ -12,8 +12,9 @@ require "svix/models/sink_in_common"
 require "svix/models/destination_status"
 require "svix/models/subscribe_in"
 require "svix/api_internal/endpoint_auto_config_deprecated"
-require "svix/api_internal/endpoint_autoconfig"
-require "svix/api_internal/destination_autoconfig"
+require "svix/api_internal/autoconfig_subscription"
+require "svix/api_internal/autoconfig_subscription_destination"
+require "svix/api_internal/autoconfig_subscription_endpoint"
 require "svix/api_internal/message_pollerv2"
 
 module Svix
@@ -32,7 +33,7 @@ module Svix
 
     def subscribe
       if @autoconfig_id
-        destination = DestinationAutoconfig.new(@client).subscribe(
+        destination = AutoconfigSubscription.new(@client).destination.subscribe(
           @app_id,
           @autoconfig_id,
           sink_in_common_to_polling_destination(@sink_in)
@@ -74,7 +75,7 @@ module Svix
       return @sink_id if @sink_id
 
       # Get the sink id from the autoconfig id (v2)
-      dest_id = EndpointAutoconfig.new(@client).get(@app_id, @autoconfig_id).dest_id
+      dest_id = AutoconfigSubscription.new(@client).get(@app_id, @autoconfig_id).dest_id
       raise "autoconfig subscription is pending. Have you called subscribe()?" if dest_id.nil? || dest_id.empty?
 
       dest_id
