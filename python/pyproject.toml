@@ -1,6 +1,6 @@
 [project]
 name = "svix"
-version = "2.4.0"
+version = "2.5.0"
 description = "Svix webhooks API client and webhook verification library"
 authors = [
     { name = "Svix", email = "development@svix.com" }
