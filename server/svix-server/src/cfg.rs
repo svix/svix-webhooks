@@ -146,6 +146,10 @@ pub struct ConfigurationInner {
     pub opentelemetry_sample_ratio: Option<f64>,
     /// The service name to use for OpenTelemetry. If not provided, it defaults to "svix_server".
     pub opentelemetry_service_name: String,
+    /// Whether to additionally send log events to the configured OpenTelemetry collector. Disabled
+    /// by default. If the OpenTelemetry address is not set, this will do nothing. When disabled,
+    /// logs are only ever written to stdout.
+    pub opentelemetry_logs_enabled: bool,
     /// Whether to enable the logging of the databases at the configured log level. This may be
     /// useful for analyzing their response times.
     pub db_tracing: bool,
