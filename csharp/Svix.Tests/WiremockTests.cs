@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Svix.Api;
 using Svix.Models;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;

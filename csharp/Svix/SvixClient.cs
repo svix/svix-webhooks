@@ -1,5 +1,6 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.Logging;
+using Svix.Api;
 
 namespace Svix
 {
@@ -13,6 +14,11 @@ namespace Svix
         public Authentication Authentication
         {
             get => new Authentication(this);
+        }
+
+        public Autoconfig Autoconfig
+        {
+            get => new Autoconfig(this);
         }
 
         public Endpoint Endpoint

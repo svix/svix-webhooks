@@ -3,14 +3,13 @@
 using Microsoft.Extensions.Logging;
 using Svix.Models;
 
-namespace Svix
+namespace Svix.Api
 {
-    public class ConnectorListOptions : SvixOptionsBase
+    public class StreamingStreamListOptions : SvixOptionsBase
     {
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
-        public ConnectorProduct? ProductType { get; set; }
 
         public new Dictionary<string, string> QueryParams()
         {
@@ -20,13 +19,12 @@ namespace Svix
                     { "limit", Limit },
                     { "iterator", Iterator },
                     { "order", Order },
-                    { "product_type", ProductType },
                 }
             );
         }
     }
 
-    public class ConnectorCreateOptions : SvixOptionsBase
+    public class StreamingStreamCreateOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -38,32 +36,31 @@ namespace Svix
         }
     }
 
-    public class Connector(SvixClient client)
+    public class StreamingStream(SvixClient client)
     {
         readonly SvixClient _client = client;
 
         /// <summary>
-        /// List all connectors for an application.
+        /// List of all the organization's streams.
         /// </summary>
-        public async Task<ListResponseConnectorOut> ListAsync(
-            ConnectorListOptions? options = null,
+        public async Task<ListResponseStreamOut> ListAsync(
+            StreamingStreamListOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new ConnectorListOptions();
+                options = new StreamingStreamListOptions();
             }
             try
             {
-                var response =
-                    await _client.SvixHttpClient.SendRequestAsync<ListResponseConnectorOut>(
-                        method: HttpMethod.Get,
-                        path: "/api/v1/connector",
-                        queryParams: options.QueryParams(),
-                        headerParams: options.HeaderParams(),
-                        cancellationToken: cancellationToken
-                    );
+                var response = await _client.SvixHttpClient.SendRequestAsync<ListResponseStreamOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/stream",
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
                 return response.Data;
             }
             catch (ApiException e)
@@ -75,19 +72,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// List all connectors for an application.
+        /// List of all the organization's streams.
         /// </summary>
-        public ListResponseConnectorOut List(ConnectorListOptions? options = null)
+        public ListResponseStreamOut List(StreamingStreamListOptions? options = null)
         {
             if (options == null)
             {
-                options = new ConnectorListOptions();
+                options = new StreamingStreamListOptions();
             }
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ListResponseConnectorOut>(
+                var response = _client.SvixHttpClient.SendRequest<ListResponseStreamOut>(
                     method: HttpMethod.Get,
-                    path: "/api/v1/connector",
+                    path: "/api/v1/stream",
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams()
                 );
@@ -102,27 +99,27 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create a new connector.
+        /// Creates a new stream.
         /// </summary>
-        public async Task<ConnectorOut> CreateAsync(
-            ConnectorIn connectorIn,
-            ConnectorCreateOptions? options = null,
+        public async Task<StreamOut> CreateAsync(
+            StreamIn streamIn,
+            StreamingStreamCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new ConnectorCreateOptions();
+                options = new StreamingStreamCreateOptions();
             }
-            connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
+            streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<StreamOut>(
                     method: HttpMethod.Post,
-                    path: "/api/v1/connector",
+                    path: "/api/v1/stream",
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
-                    content: connectorIn,
+                    content: streamIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -136,23 +133,23 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create a new connector.
+        /// Creates a new stream.
         /// </summary>
-        public ConnectorOut Create(ConnectorIn connectorIn, ConnectorCreateOptions? options = null)
+        public StreamOut Create(StreamIn streamIn, StreamingStreamCreateOptions? options = null)
         {
             if (options == null)
             {
-                options = new ConnectorCreateOptions();
+                options = new StreamingStreamCreateOptions();
             }
-            connectorIn = connectorIn ?? throw new ArgumentNullException(nameof(connectorIn));
+            streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
+                var response = _client.SvixHttpClient.SendRequest<StreamOut>(
                     method: HttpMethod.Post,
-                    path: "/api/v1/connector",
+                    path: "/api/v1/stream",
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
-                    content: connectorIn
+                    content: streamIn
                 );
                 return response.Data;
             }
@@ -165,19 +162,19 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get a connector.
+        /// Get a stream by id or uid.
         /// </summary>
-        public async Task<ConnectorOut> GetAsync(
-            string connectorId,
+        public async Task<StreamOut> GetAsync(
+            string streamId,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<StreamOut>(
                     method: HttpMethod.Get,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -191,16 +188,16 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get a connector.
+        /// Get a stream by id or uid.
         /// </summary>
-        public ConnectorOut Get(string connectorId)
+        public StreamOut Get(string streamId)
         {
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
+                var response = _client.SvixHttpClient.SendRequest<StreamOut>(
                     method: HttpMethod.Get,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } }
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } }
                 );
                 return response.Data;
             }
@@ -213,23 +210,22 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create or update a connector.
+        /// Create or update a stream.
         /// </summary>
-        public async Task<ConnectorOut> UpsertAsync(
-            string connectorId,
-            ConnectorUpsertIn connectorUpsertIn,
+        public async Task<StreamOut> UpsertAsync(
+            string streamId,
+            StreamIn streamIn,
             CancellationToken cancellationToken = default
         )
         {
-            connectorUpsertIn =
-                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
+            streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<StreamOut>(
                     method: HttpMethod.Put,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorUpsertIn,
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
+                    content: streamIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -243,19 +239,18 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create or update a connector.
+        /// Create or update a stream.
         /// </summary>
-        public ConnectorOut Upsert(string connectorId, ConnectorUpsertIn connectorUpsertIn)
+        public StreamOut Upsert(string streamId, StreamIn streamIn)
         {
-            connectorUpsertIn =
-                connectorUpsertIn ?? throw new ArgumentNullException(nameof(connectorUpsertIn));
+            streamIn = streamIn ?? throw new ArgumentNullException(nameof(streamIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
+                var response = _client.SvixHttpClient.SendRequest<StreamOut>(
                     method: HttpMethod.Put,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorUpsertIn
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
+                    content: streamIn
                 );
                 return response.Data;
             }
@@ -268,10 +263,10 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete a connector.
+        /// Delete a stream.
         /// </summary>
         public async Task<bool> DeleteAsync(
-            string connectorId,
+            string streamId,
             CancellationToken cancellationToken = default
         )
         {
@@ -279,8 +274,8 @@ namespace Svix
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Delete,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -294,16 +289,16 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete a connector.
+        /// Delete a stream.
         /// </summary>
-        public bool Delete(string connectorId)
+        public bool Delete(string streamId)
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Delete,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } }
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } }
                 );
                 return response.Data;
             }
@@ -316,23 +311,22 @@ namespace Svix
         }
 
         /// <summary>
-        /// Partially update a connector.
+        /// Partially update a stream.
         /// </summary>
-        public async Task<ConnectorOut> PatchAsync(
-            string connectorId,
-            ConnectorPatch connectorPatch,
+        public async Task<StreamOut> PatchAsync(
+            string streamId,
+            StreamPatch streamPatch,
             CancellationToken cancellationToken = default
         )
         {
-            connectorPatch =
-                connectorPatch ?? throw new ArgumentNullException(nameof(connectorPatch));
+            streamPatch = streamPatch ?? throw new ArgumentNullException(nameof(streamPatch));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<ConnectorOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<StreamOut>(
                     method: HttpMethod.Patch,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorPatch,
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
+                    content: streamPatch,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -346,19 +340,18 @@ namespace Svix
         }
 
         /// <summary>
-        /// Partially update a connector.
+        /// Partially update a stream.
         /// </summary>
-        public ConnectorOut Patch(string connectorId, ConnectorPatch connectorPatch)
+        public StreamOut Patch(string streamId, StreamPatch streamPatch)
         {
-            connectorPatch =
-                connectorPatch ?? throw new ArgumentNullException(nameof(connectorPatch));
+            streamPatch = streamPatch ?? throw new ArgumentNullException(nameof(streamPatch));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ConnectorOut>(
+                var response = _client.SvixHttpClient.SendRequest<StreamOut>(
                     method: HttpMethod.Patch,
-                    path: "/api/v1/connector/{connector_id}",
-                    pathParams: new Dictionary<string, string> { { "connector_id", connectorId } },
-                    content: connectorPatch
+                    path: "/api/v1/stream/{stream_id}",
+                    pathParams: new Dictionary<string, string> { { "stream_id", streamId } },
+                    content: streamPatch
                 );
                 return response.Data;
             }

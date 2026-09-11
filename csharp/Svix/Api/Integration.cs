@@ -3,9 +3,9 @@
 using Microsoft.Extensions.Logging;
 using Svix.Models;
 
-namespace Svix
+namespace Svix.Api
 {
-    public class IngestSourceListOptions : SvixOptionsBase
+    public class IntegrationListOptions : SvixOptionsBase
     {
         public ulong? Limit { get; set; }
         public string? Iterator { get; set; }
@@ -24,7 +24,7 @@ namespace Svix
         }
     }
 
-    public class IngestSourceCreateOptions : SvixOptionsBase
+    public class IntegrationCreateOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -36,7 +36,7 @@ namespace Svix
         }
     }
 
-    public class IngestSourceRotateTokenOptions : SvixOptionsBase
+    public class IntegrationRotateKeyOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -48,28 +48,30 @@ namespace Svix
         }
     }
 
-    public class IngestSource(SvixClient client)
+    public class Integration(SvixClient client)
     {
         readonly SvixClient _client = client;
 
         /// <summary>
-        /// List of all the organization's Ingest Sources.
+        /// List the application's integrations.
         /// </summary>
-        public async Task<ListResponseIngestSourceOut> ListAsync(
-            IngestSourceListOptions? options = null,
+        public async Task<ListResponseIntegrationOut> ListAsync(
+            string appId,
+            IntegrationListOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new IngestSourceListOptions();
+                options = new IntegrationListOptions();
             }
             try
             {
                 var response =
-                    await _client.SvixHttpClient.SendRequestAsync<ListResponseIngestSourceOut>(
+                    await _client.SvixHttpClient.SendRequestAsync<ListResponseIntegrationOut>(
                         method: HttpMethod.Get,
-                        path: "/ingest/api/v1/source",
+                        path: "/api/v1/app/{app_id}/integration",
+                        pathParams: new Dictionary<string, string> { { "app_id", appId } },
                         queryParams: options.QueryParams(),
                         headerParams: options.HeaderParams(),
                         cancellationToken: cancellationToken
@@ -85,19 +87,20 @@ namespace Svix
         }
 
         /// <summary>
-        /// List of all the organization's Ingest Sources.
+        /// List the application's integrations.
         /// </summary>
-        public ListResponseIngestSourceOut List(IngestSourceListOptions? options = null)
+        public ListResponseIntegrationOut List(string appId, IntegrationListOptions? options = null)
         {
             if (options == null)
             {
-                options = new IngestSourceListOptions();
+                options = new IntegrationListOptions();
             }
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<ListResponseIngestSourceOut>(
+                var response = _client.SvixHttpClient.SendRequest<ListResponseIntegrationOut>(
                     method: HttpMethod.Get,
-                    path: "/ingest/api/v1/source",
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams()
                 );
@@ -112,28 +115,29 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create Ingest Source.
+        /// Create an integration.
         /// </summary>
-        public async Task<IngestSourceOut> CreateAsync(
-            IngestSourceIn ingestSourceIn,
-            IngestSourceCreateOptions? options = null,
+        public async Task<IntegrationOut> CreateAsync(
+            string appId,
+            IntegrationIn integrationIn,
+            IntegrationCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new IngestSourceCreateOptions();
+                options = new IntegrationCreateOptions();
             }
-            ingestSourceIn =
-                ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
+            integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<IngestSourceOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
                     method: HttpMethod.Post,
-                    path: "/ingest/api/v1/source",
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
-                    content: ingestSourceIn,
+                    content: integrationIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -147,27 +151,28 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create Ingest Source.
+        /// Create an integration.
         /// </summary>
-        public IngestSourceOut Create(
-            IngestSourceIn ingestSourceIn,
-            IngestSourceCreateOptions? options = null
+        public IntegrationOut Create(
+            string appId,
+            IntegrationIn integrationIn,
+            IntegrationCreateOptions? options = null
         )
         {
             if (options == null)
             {
-                options = new IngestSourceCreateOptions();
+                options = new IntegrationCreateOptions();
             }
-            ingestSourceIn =
-                ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
+            integrationIn = integrationIn ?? throw new ArgumentNullException(nameof(integrationIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<IngestSourceOut>(
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
                     method: HttpMethod.Post,
-                    path: "/ingest/api/v1/source",
+                    path: "/api/v1/app/{app_id}/integration",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
-                    content: ingestSourceIn
+                    content: integrationIn
                 );
                 return response.Data;
             }
@@ -180,19 +185,24 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get an Ingest Source by id or uid.
+        /// Get an integration.
         /// </summary>
-        public async Task<IngestSourceOut> GetAsync(
-            string sourceId,
+        public async Task<IntegrationOut> GetAsync(
+            string appId,
+            string integId,
             CancellationToken cancellationToken = default
         )
         {
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<IngestSourceOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
                     method: HttpMethod.Get,
-                    path: "/ingest/api/v1/source/{source_id}",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -206,16 +216,20 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get an Ingest Source by id or uid.
+        /// Get an integration.
         /// </summary>
-        public IngestSourceOut Get(string sourceId)
+        public IntegrationOut Get(string appId, string integId)
         {
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<IngestSourceOut>(
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
                     method: HttpMethod.Get,
-                    path: "/ingest/api/v1/source/{source_id}",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } }
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
                 );
                 return response.Data;
             }
@@ -228,65 +242,79 @@ namespace Svix
         }
 
         /// <summary>
-        /// Create or update an Ingest Source.
+        /// Update an integration.
         /// </summary>
-        public async Task<IngestSourceOut> UpsertAsync(
-            string sourceId,
-            IngestSourceIn ingestSourceIn,
+        public async Task<IntegrationOut> UpdateAsync(
+            string appId,
+            string integId,
+            IntegrationUpdate integrationUpdate,
             CancellationToken cancellationToken = default
         )
         {
-            ingestSourceIn =
-                ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
+            integrationUpdate =
+                integrationUpdate ?? throw new ArgumentNullException(nameof(integrationUpdate));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<IngestSourceOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationOut>(
                     method: HttpMethod.Put,
-                    path: "/ingest/api/v1/source/{source_id}",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    content: ingestSourceIn,
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    content: integrationUpdate,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(UpsertAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(UpdateAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Create or update an Ingest Source.
+        /// Update an integration.
         /// </summary>
-        public IngestSourceOut Upsert(string sourceId, IngestSourceIn ingestSourceIn)
+        public IntegrationOut Update(
+            string appId,
+            string integId,
+            IntegrationUpdate integrationUpdate
+        )
         {
-            ingestSourceIn =
-                ingestSourceIn ?? throw new ArgumentNullException(nameof(ingestSourceIn));
+            integrationUpdate =
+                integrationUpdate ?? throw new ArgumentNullException(nameof(integrationUpdate));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<IngestSourceOut>(
+                var response = _client.SvixHttpClient.SendRequest<IntegrationOut>(
                     method: HttpMethod.Put,
-                    path: "/ingest/api/v1/source/{source_id}",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
-                    content: ingestSourceIn
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
+                    content: integrationUpdate
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(Upsert)} failed");
+                _client.Logger?.LogError(e, $"{nameof(Update)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Delete an Ingest Source.
+        /// Delete an integration.
         /// </summary>
         public async Task<bool> DeleteAsync(
-            string sourceId,
+            string appId,
+            string integId,
             CancellationToken cancellationToken = default
         )
         {
@@ -294,8 +322,12 @@ namespace Svix
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
                     method: HttpMethod.Delete,
-                    path: "/ingest/api/v1/source/{source_id}",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -309,16 +341,20 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete an Ingest Source.
+        /// Delete an integration.
         /// </summary>
-        public bool Delete(string sourceId)
+        public bool Delete(string appId, string integId)
         {
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<bool>(
                     method: HttpMethod.Delete,
-                    path: "/ingest/api/v1/source/{source_id}",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } }
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    }
                 );
                 return response.Data;
             }
@@ -331,29 +367,29 @@ namespace Svix
         }
 
         /// <summary>
-        /// Rotate the Ingest Source's Url Token.
-        ///
-        /// This will rotate the ingest source's token, which is used to
-        /// construct the unique `ingestUrl` for the source. Previous tokens
-        /// will remain valid for 48 hours after rotation. The token can be
-        /// rotated a maximum of three times within the 48-hour period.
+        /// Rotate the integration's key. The previous key will be immediately revoked.
         /// </summary>
-        public async Task<RotateTokenOut> RotateTokenAsync(
-            string sourceId,
-            IngestSourceRotateTokenOptions? options = null,
+        public async Task<IntegrationKeyOut> RotateKeyAsync(
+            string appId,
+            string integId,
+            IntegrationRotateKeyOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new IngestSourceRotateTokenOptions();
+                options = new IntegrationRotateKeyOptions();
             }
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<RotateTokenOut>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<IntegrationKeyOut>(
                     method: HttpMethod.Post,
-                    path: "/ingest/api/v1/source/{source_id}/token/rotate",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
                     cancellationToken: cancellationToken
@@ -362,35 +398,35 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(RotateTokenAsync)} failed");
+                _client.Logger?.LogError(e, $"{nameof(RotateKeyAsync)} failed");
 
                 throw;
             }
         }
 
         /// <summary>
-        /// Rotate the Ingest Source's Url Token.
-        ///
-        /// This will rotate the ingest source's token, which is used to
-        /// construct the unique `ingestUrl` for the source. Previous tokens
-        /// will remain valid for 48 hours after rotation. The token can be
-        /// rotated a maximum of three times within the 48-hour period.
+        /// Rotate the integration's key. The previous key will be immediately revoked.
         /// </summary>
-        public RotateTokenOut RotateToken(
-            string sourceId,
-            IngestSourceRotateTokenOptions? options = null
+        public IntegrationKeyOut RotateKey(
+            string appId,
+            string integId,
+            IntegrationRotateKeyOptions? options = null
         )
         {
             if (options == null)
             {
-                options = new IngestSourceRotateTokenOptions();
+                options = new IntegrationRotateKeyOptions();
             }
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<RotateTokenOut>(
+                var response = _client.SvixHttpClient.SendRequest<IntegrationKeyOut>(
                     method: HttpMethod.Post,
-                    path: "/ingest/api/v1/source/{source_id}/token/rotate",
-                    pathParams: new Dictionary<string, string> { { "source_id", sourceId } },
+                    path: "/api/v1/app/{app_id}/integration/{integ_id}/key/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "integ_id", integId },
+                    },
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams()
                 );
@@ -398,7 +434,7 @@ namespace Svix
             }
             catch (ApiException e)
             {
-                _client.Logger?.LogError(e, $"{nameof(RotateToken)} failed");
+                _client.Logger?.LogError(e, $"{nameof(RotateKey)} failed");
 
                 throw;
             }
