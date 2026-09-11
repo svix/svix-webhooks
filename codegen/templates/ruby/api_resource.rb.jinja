@@ -6,6 +6,9 @@ require 'net/http'
 
 
 module Svix
+  {% if context is defined and context.module is defined and context.module -%}
+  module {{ context.module }}
+  {% endif -%}
   {% if resource.name == "message" -%}
   module_function
     {% include "api_extra/message.rb" %}
@@ -75,4 +78,7 @@ module Svix
 
 {% endfor -%}
   end
+  {% if context is defined and context.module is defined and context.module -%}
+  end
+  {% endif -%}
 end
