@@ -23244,7 +23244,7 @@
                 ],
                 "summary": "Find Subscriptions",
                 "description": "List AutoConfig subscriptions for an application.",
-                "operationId": "v1.autoconfig-subscription.find",
+                "operationId": "v1.endpoint.autoconfig.find",
                 "parameters": [
                     {
                         "in": "path",
@@ -23398,7 +23398,7 @@
                 ],
                 "summary": "Create Subscription",
                 "description": "Create an AutoConfig subscription.",
-                "operationId": "v1.autoconfig-subscription.create",
+                "operationId": "v1.endpoint.autoconfig.create",
                 "parameters": [
                     {
                         "in": "path",
@@ -23516,62 +23516,62 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.autoconfigSubscription.create(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                        "source": "const response = await svix.endpoint.autoconfig.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.autoconfigSubscription.create(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                        "source": "const response = await svix.endpoint.autoconfig.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.autoconfig_subscription.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                        "source": "response = svix.endpoint.autoconfig.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.autoconfig_subscription.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                        "source": "response = await svix.endpoint.autoconfig.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.AutoconfigSubscription.Create(ctx, \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", nil)"
+                        "source": "response, err := svix.Endpoint.Autoconfig.Create(ctx, \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", nil)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response = svix.autoconfigSubscription.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                        "source": "val response = svix.endpoint.autoconfig.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getAutoconfigSubscription().create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                        "source": "var response = svix.getEndpoint().getAutoconfig().create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix.autoconfig_subscription.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                        "source": "response = svix.endpoint.autoconfig.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .autoconfig_subscription()\n    .create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(), None)\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .autoconfig()\n    .create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(), None)\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.AutoconfigSubscription.Create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                        "source": "var response = svix.Endpoint.Autoconfig.Create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->autoconfigSubscription->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                        "source": "$response = $svix->endpoint->autoconfig->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix autoconfig-subscription create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
+                        "source": "svix endpoint autoconfig create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
                     },
                     {
                         "lang": "Shell",
@@ -23588,7 +23588,7 @@
                 ],
                 "summary": "Get Subscription",
                 "description": "Get an AutoConfig subscription, including the bound endpoint or destination if any.",
-                "operationId": "v1.autoconfig-subscription.get",
+                "operationId": "v1.endpoint.autoconfig.get",
                 "parameters": [
                     {
                         "in": "path",
@@ -23716,7 +23716,7 @@
                 ],
                 "summary": "Delete Subscription",
                 "description": "Delete an AutoConfig subscription. This will also invalidate the autoconfig token.",
-                "operationId": "v1.autoconfig-subscription.delete",
+                "operationId": "v1.endpoint.autoconfig.delete",
                 "parameters": [
                     {
                         "in": "path",
@@ -23839,7 +23839,7 @@
                 ],
                 "summary": "Rotate Token",
                 "description": "Rotate the auth token and signing secret for an AutoConfig subscription.",
-                "operationId": "v1.autoconfig-subscription.rotate",
+                "operationId": "v1.endpoint.autoconfig.rotate",
                 "parameters": [
                     {
                         "in": "path",
@@ -23982,62 +23982,62 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.autoconfigSubscription.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"autoconfig_id\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
+                        "source": "const response = await svix.endpoint.autoconfig.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"autoconfig_id\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.autoconfigSubscription.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"autoconfig_id\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
+                        "source": "const response = await svix.endpoint.autoconfig.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"autoconfig_id\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.autoconfig_subscription.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
+                        "source": "response = svix.endpoint.autoconfig.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.autoconfig_subscription.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
+                        "source": "response = await svix.endpoint.autoconfig.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.AutoconfigSubscription.Rotate(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"autoconfig_id\",\n\tRotateSubscriptionIn2{\n\t\tSigningSecret: new(\n\t\t\tEndpointSecretRotateIn{\n\t\t\t\tKey:                new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\t\t\tGracePeriodSeconds: new(uint32(1)),\n\t\t\t},\n\t\t),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.Autoconfig.Rotate(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"autoconfig_id\",\n\tRotateSubscriptionIn2{\n\t\tSigningSecret: new(\n\t\t\tEndpointSecretRotateIn{\n\t\t\t\tKey:                new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\t\t\tGracePeriodSeconds: new(uint32(1)),\n\t\t\t},\n\t\t),\n\t},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.autoconfigSubscription.rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"autoconfig_id\",\n        RotateSubscriptionIn2(\n            signingSecret =\n                EndpointSecretRotateIn(\n                    key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n                    gracePeriodSeconds = 1,\n                )\n        ),\n    )"
+                        "source": "val response =\n    svix.endpoint.autoconfig.rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"autoconfig_id\",\n        RotateSubscriptionIn2(\n            signingSecret =\n                EndpointSecretRotateIn(\n                    key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n                    gracePeriodSeconds = 1,\n                )\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getAutoconfigSubscription()\n        .rotate(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"autoconfig_id\",\n            new RotateSubscriptionIn2()\n                .signingSecret(new EndpointSecretRotateIn()\n                    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                    .gracePeriodSeconds(1)));"
+                        "source": "var response = svix.getEndpoint()\n        .getAutoconfig()\n        .rotate(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"autoconfig_id\",\n            new RotateSubscriptionIn2()\n                .signingSecret(new EndpointSecretRotateIn()\n                    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                    .gracePeriodSeconds(1)));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .autoconfig_subscription\n  .rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    {signingSecret: {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\", gracePeriodSeconds: 1}}\n  )"
+                        "source": "response = svix\n  .endpoint\n  .autoconfig\n  .rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    {signingSecret: {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\", gracePeriodSeconds: 1}}\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .autoconfig_subscription()\n    .rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"autoconfig_id\".to_string(),\n        RotateSubscriptionIn2 {\n            signing_secret: Some(EndpointSecretRotateIn {\n                key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n                grace_period_seconds: Some(1),\n            }),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .autoconfig()\n    .rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"autoconfig_id\".to_string(),\n        RotateSubscriptionIn2 {\n            signing_secret: Some(EndpointSecretRotateIn {\n                key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n                grace_period_seconds: Some(1),\n            }),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.AutoconfigSubscription.Rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    new RotateSubscriptionIn2\n    {\n        SigningSecret = new EndpointSecretRotateIn\n        {\n            Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            GracePeriodSeconds = 1,\n        },\n    }\n);"
+                        "source": "var response = svix.Endpoint.Autoconfig.Rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    new RotateSubscriptionIn2\n    {\n        SigningSecret = new EndpointSecretRotateIn\n        {\n            Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            GracePeriodSeconds = 1,\n        },\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->autoconfigSubscription->rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2::create()\n    ->withSigningSecret(EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withGracePeriodSeconds(1))\n);"
+                        "source": "$response = $svix->endpoint->autoconfig->rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2::create()\n    ->withSigningSecret(EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withGracePeriodSeconds(1))\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix autoconfig-subscription rotate \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"autoconfig_id\" '{\n    \"signingSecret\": {\n      \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      \"gracePeriodSeconds\": 1\n    }\n  }'"
+                        "source": "svix endpoint autoconfig rotate \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"autoconfig_id\" '{\n    \"signingSecret\": {\n      \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      \"gracePeriodSeconds\": 1\n    }\n  }'"
                     },
                     {
                         "lang": "Shell",
@@ -24054,7 +24054,7 @@
                 ],
                 "summary": "Subscribe Endpoint",
                 "description": "Create or update the HTTP endpoint for an AutoConfig subscription.",
-                "operationId": "v1.autoconfig-subscription.endpoint.subscribe",
+                "operationId": "v1.endpoint.autoconfig.subscribe",
                 "parameters": [
                     {
                         "in": "path",
@@ -24194,7 +24194,7 @@
                 ],
                 "summary": "Subscribe Destination",
                 "description": "Create or update the destination for an AutoConfig subscription.",
-                "operationId": "v1.autoconfig-subscription.destination.subscribe",
+                "operationId": "v1.destination.autoconfig.subscribe",
                 "parameters": [
                     {
                         "in": "path",
@@ -45975,6 +45975,39 @@
                 "x-internal": true
             }
         },
+        "request.rate_limit.soft": {
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "request.rate_limit.soft",
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "operationId": "request.rate_limit.soft",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SoftRateLimitExceededEvent"
+                            },
+                            "example": {
+                                "data": {
+                                    "action": "create-message",
+                                    "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "requestRate": 42,
+                                    "rateLimit": 50
+                                },
+                                "type": "request.rate_limit.soft"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                }
+            }
+        },
         "ingest.endpoint.disabled": {
             "post": {
                 "tags": [
@@ -47248,6 +47281,74 @@
                 "required": [
                     "end",
                     "start"
+                ]
+            },
+            "SoftRateLimitExceededEvent": {
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/SoftRateLimitExceededEventData"
+                    },
+                    "type": {
+                        "type": "string",
+                        "default": "request.rate_limit.soft",
+                        "enum": [
+                            "request.rate_limit.soft"
+                        ]
+                    }
+                },
+                "required": [
+                    "data",
+                    "type"
+                ]
+            },
+            "SoftRateLimitExceededEventData": {
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "description": "The kind of action being performed",
+                        "$ref": "#/components/schemas/RateLimitedAction"
+                    },
+                    "orgId": {
+                        "description": "The environment against which the request was made that triggered the limit",
+                        "type": "string",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^org_[A-Za-z0-9]{27}$",
+                        "example": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "requestRate": {
+                        "description": "The number of requests per second in the second where this event triggered",
+                        "type": "integer",
+                        "format": "uint64",
+                        "minimum": 0.0
+                    },
+                    "rateLimit": {
+                        "description": "The configured rate-limit for this action in this environment",
+                        "type": "integer",
+                        "format": "uint64",
+                        "minimum": 0.0
+                    }
+                },
+                "required": [
+                    "action",
+                    "orgId",
+                    "rateLimit",
+                    "requestRate"
+                ]
+            },
+            "RateLimitedAction": {
+                "description": "The action being performed that triggered a request rate-limit",
+                "oneOf": [
+                    {
+                        "description": "Creating a message (in the Dispatch/Webhooks application)",
+                        "type": "string",
+                        "enum": [
+                            "create-message"
+                        ]
+                    }
                 ]
             },
             "IngestEndpointDisabledEvent": {
@@ -61803,6 +61904,10 @@
         {
             "name": "AutoConfig",
             "description": "AutoConfig is a feature that allows you to automatically configure your endpoints."
+        },
+        {
+            "name": "Rate Limiting",
+            "description": "Events related to request rate-limits"
         }
     ],
     "x-tagGroups": [
@@ -61810,7 +61915,8 @@
             "name": "General",
             "tags": [
                 "Background Task",
-                "Environment"
+                "Environment",
+                "Rate Limiting"
             ]
         },
         {
@@ -62247,6 +62353,39 @@
                     "attempt_log"
                 ],
                 "x-internal": true
+            }
+        },
+        "request.rate_limit.soft": {
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "request.rate_limit.soft",
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "operationId": "request.rate_limit.soft",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SoftRateLimitExceededEvent"
+                            },
+                            "example": {
+                                "data": {
+                                    "action": "create-message",
+                                    "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "requestRate": 42,
+                                    "rateLimit": 50
+                                },
+                                "type": "request.rate_limit.soft"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                }
             }
         },
         "ingest.endpoint.disabled": {

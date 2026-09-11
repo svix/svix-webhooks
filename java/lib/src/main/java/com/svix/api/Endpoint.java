@@ -36,10 +36,12 @@ import java.util.Map;
 public class Endpoint {
     private final SvixHttpClient client;
 
+    @Getter private final EndpointAutoconfig autoconfig;
     @Getter private final EndpointTransformation transformation;
 
     public Endpoint(SvixHttpClient client) {
         this.client = client;
+        this.autoconfig = new EndpointAutoconfig(client);
         this.transformation = new EndpointTransformation(client);
     }
 

@@ -16,7 +16,6 @@ from .application_patch import ApplicationPatch
 from .application_token_expire_in import ApplicationTokenExpireIn
 from .auto_config_out import AutoConfigOut
 from .auto_config_sink_type import AutoConfigSinkType
-from .auto_config_subscription_out import AutoConfigSubscriptionOut
 from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
 from .azure_blob_storage_config_out import AzureBlobStorageConfigOut
 from .azure_blob_storage_config_patch import AzureBlobStorageConfigPatch
@@ -224,7 +223,6 @@ from .sqs_config_in import SqsConfigIn
 from .sqs_config_out import SqsConfigOut
 from .sqs_config_patch import SqsConfigPatch
 from .starting_position import StartingPosition
-from .status import Status
 from .status_code_class import StatusCodeClass
 from .stream_event_type_in import StreamEventTypeIn
 from .stream_event_type_out import StreamEventTypeOut
@@ -273,7 +271,6 @@ __all__ = [
     "ApplicationTokenExpireIn",
     "AutoConfigOut",
     "AutoConfigSinkType",
-    "AutoConfigSubscriptionOut",
     "AzureBlobStorageConfigIn",
     "AzureBlobStorageConfigOut",
     "AzureBlobStorageConfigPatch",
@@ -477,7 +474,6 @@ __all__ = [
     "SqsConfigOut",
     "SqsConfigPatch",
     "StartingPosition",
-    "Status",
     "StatusCodeClass",
     "StreamEventTypeIn",
     "StreamEventTypeOut",

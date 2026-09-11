@@ -7,12 +7,12 @@ pub use self::client::{Svix, SvixOptions};
 
 mod application;
 mod authentication;
-mod autoconfig_subscription;
 mod background_task;
 mod connector;
 mod destination;
 mod destination_transformation;
 mod endpoint;
+mod endpoint_autoconfig;
 mod endpoint_transformation;
 mod environment;
 mod event_type;
@@ -46,10 +46,6 @@ pub use self::{
         AuthenticationStreamExpireAllOptions, AuthenticationStreamLogoutOptions,
         AuthenticationStreamPortalAccessOptions,
     },
-    autoconfig_subscription::{
-        AutoconfigSubscription, AutoconfigSubscriptionCreateOptions,
-        AutoconfigSubscriptionRotateOptions,
-    },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
     destination::{Destination, DestinationCreateOptions, DestinationListOptions},
@@ -58,6 +54,9 @@ pub use self::{
         Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
         EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
         EndpointRotateSecretOptions, EndpointSendExampleOptions,
+    },
+    endpoint_autoconfig::{
+        EndpointAutoconfig, EndpointAutoconfigCreateOptions, EndpointAutoconfigRotateOptions,
     },
     endpoint_transformation::EndpointTransformation,
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},
@@ -122,9 +121,6 @@ impl Svix {
     }
     pub fn authentication(&self) -> Authentication<'_> {
         Authentication::new(&self.cfg)
-    }
-    pub fn autoconfig_subscription(&self) -> AutoconfigSubscription<'_> {
-        AutoconfigSubscription::new(&self.cfg)
     }
     pub fn background_task(&self) -> BackgroundTask<'_> {
         BackgroundTask::new(&self.cfg)

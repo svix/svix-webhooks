@@ -7,21 +7,21 @@ import {
 } from "../models/rotateSubscriptionIn2";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
-export interface AutoconfigSubscriptionCreateOptions {
+export interface EndpointAutoconfigCreateOptions {
   idempotencyKey?: string;
 }
 
-export interface AutoconfigSubscriptionRotateOptions {
+export interface EndpointAutoconfigRotateOptions {
   idempotencyKey?: string;
 }
 
-export class AutoconfigSubscription {
+export class EndpointAutoconfig {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
   /** Create an AutoConfig subscription. */
   public async create(
     appId: string,
-    options?: AutoconfigSubscriptionCreateOptions
+    options?: EndpointAutoconfigCreateOptions
   ): Promise<AutoConfigOut> {
     const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/autoconfig");
 
@@ -36,7 +36,7 @@ export class AutoconfigSubscription {
     appId: string,
     autoconfigId: string,
     rotateSubscriptionIn2: RotateSubscriptionIn2 = {},
-    options?: AutoconfigSubscriptionRotateOptions
+    options?: EndpointAutoconfigRotateOptions
   ): Promise<AutoConfigOut> {
     const request = new SvixRequest(
       HttpMethod.POST,

@@ -10,7 +10,7 @@ use Svix\Models\AutoConfigOut;
 use Svix\Models\RotateSubscriptionIn2;
 use Svix\Request\SvixHttpClient;
 
-class AutoconfigSubscription
+class EndpointAutoconfig
 {
     public function __construct(
         private readonly SvixHttpClient $client,
@@ -24,7 +24,7 @@ class AutoconfigSubscription
      */
     public function create(
         string $appId,
-        AutoconfigSubscriptionCreateOptions $options = new AutoconfigSubscriptionCreateOptions(),
+        EndpointAutoconfigCreateOptions $options = new EndpointAutoconfigCreateOptions(),
     ): AutoConfigOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/autoconfig");
         $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
@@ -42,7 +42,7 @@ class AutoconfigSubscription
         string $appId,
         string $autoconfigId,
         RotateSubscriptionIn2 $rotateSubscriptionIn2,
-        AutoconfigSubscriptionRotateOptions $options = new AutoconfigSubscriptionRotateOptions(),
+        EndpointAutoconfigRotateOptions $options = new EndpointAutoconfigRotateOptions(),
     ): AutoConfigOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/autoconfig/{$autoconfigId}/rotate");
         $request->setHeaderParam('idempotency-key', $options->idempotencyKey);

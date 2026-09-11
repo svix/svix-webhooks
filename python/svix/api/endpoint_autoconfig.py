@@ -7,7 +7,7 @@ from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
 @dataclass
-class AutoconfigSubscriptionCreateOptions(BaseOptions):
+class EndpointAutoconfigCreateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -19,7 +19,7 @@ class AutoconfigSubscriptionCreateOptions(BaseOptions):
 
 
 @dataclass
-class AutoconfigSubscriptionRotateOptions(BaseOptions):
+class EndpointAutoconfigRotateOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -30,13 +30,11 @@ class AutoconfigSubscriptionRotateOptions(BaseOptions):
         )
 
 
-class AutoconfigSubscriptionAsync(ApiBaseAsync):
+class EndpointAutoconfigAsync(ApiBaseAsync):
     async def create(
         self,
         app_id: str,
-        options: AutoconfigSubscriptionCreateOptions = (
-            AutoconfigSubscriptionCreateOptions()
-        ),
+        options: EndpointAutoconfigCreateOptions = (EndpointAutoconfigCreateOptions()),
     ) -> AutoConfigOut:
         """Create an AutoConfig subscription."""
         response = await self._request_asyncio(
@@ -55,9 +53,7 @@ class AutoconfigSubscriptionAsync(ApiBaseAsync):
         app_id: str,
         autoconfig_id: str,
         rotate_subscription_in2: RotateSubscriptionIn2,
-        options: AutoconfigSubscriptionRotateOptions = (
-            AutoconfigSubscriptionRotateOptions()
-        ),
+        options: EndpointAutoconfigRotateOptions = (EndpointAutoconfigRotateOptions()),
     ) -> AutoConfigOut:
         """Rotate the auth token and signing secret for an AutoConfig subscription."""
         response = await self._request_asyncio(
@@ -76,13 +72,11 @@ class AutoconfigSubscriptionAsync(ApiBaseAsync):
         return AutoConfigOut.model_validate(response.json())
 
 
-class AutoconfigSubscription(ApiBaseSync):
+class EndpointAutoconfig(ApiBaseSync):
     def create(
         self,
         app_id: str,
-        options: AutoconfigSubscriptionCreateOptions = (
-            AutoconfigSubscriptionCreateOptions()
-        ),
+        options: EndpointAutoconfigCreateOptions = (EndpointAutoconfigCreateOptions()),
     ) -> AutoConfigOut:
         """Create an AutoConfig subscription."""
         response = self._request_sync(
@@ -101,9 +95,7 @@ class AutoconfigSubscription(ApiBaseSync):
         app_id: str,
         autoconfig_id: str,
         rotate_subscription_in2: RotateSubscriptionIn2,
-        options: AutoconfigSubscriptionRotateOptions = (
-            AutoconfigSubscriptionRotateOptions()
-        ),
+        options: EndpointAutoconfigRotateOptions = (EndpointAutoconfigRotateOptions()),
     ) -> AutoConfigOut:
         """Rotate the auth token and signing secret for an AutoConfig subscription."""
         response = self._request_sync(

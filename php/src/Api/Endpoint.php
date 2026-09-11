@@ -29,11 +29,13 @@ use Svix\Request\SvixHttpClient;
 
 class Endpoint
 {
+    public EndpointAutoconfig $autoconfig;
     public EndpointTransformation $transformation;
 
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->autoconfig = new EndpointAutoconfig($client);
         $this->transformation = new EndpointTransformation($client);
     }
 

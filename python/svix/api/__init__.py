@@ -261,12 +261,6 @@ from .authentication import (
     AuthenticationStreamLogoutOptions,
     AuthenticationStreamPortalAccessOptions,
 )
-from .autoconfig_subscription import (
-    AutoconfigSubscription,
-    AutoconfigSubscriptionAsync,
-    AutoconfigSubscriptionCreateOptions,
-    AutoconfigSubscriptionRotateOptions,
-)
 from .background_task import (
     BackgroundTask,
     BackgroundTaskAsync,
@@ -299,6 +293,12 @@ from .endpoint import (
     EndpointReplayMissingOptions,
     EndpointRotateSecretOptions,
     EndpointSendExampleOptions,
+)
+from .endpoint_autoconfig import (
+    EndpointAutoconfig,
+    EndpointAutoconfigAsync,
+    EndpointAutoconfigCreateOptions,
+    EndpointAutoconfigRotateOptions,
 )
 from .endpoint_transformation import EndpointTransformation, EndpointTransformationAsync
 from .event_type import (
@@ -398,10 +398,6 @@ __all__ = [
     "AuthenticationStreamLogoutOptions",
     "AuthenticationStreamExpireAllOptions",
     "AuthenticationRotateStreamPollerTokenOptions",
-    "AutoconfigSubscription",
-    "AutoconfigSubscriptionAsync",
-    "AutoconfigSubscriptionCreateOptions",
-    "AutoconfigSubscriptionRotateOptions",
     "BackgroundTask",
     "BackgroundTaskAsync",
     "BackgroundTaskListOptions",
@@ -425,6 +421,10 @@ __all__ = [
     "EndpointGetStatsOptions",
     "EndpointRecoverOptions",
     "EndpointSendExampleOptions",
+    "EndpointAutoconfig",
+    "EndpointAutoconfigAsync",
+    "EndpointAutoconfigCreateOptions",
+    "EndpointAutoconfigRotateOptions",
     "EndpointTransformation",
     "EndpointTransformationAsync",
     "EventType",

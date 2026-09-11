@@ -1,5 +1,5 @@
 // this file is @generated
-use super::EndpointTransformation;
+use super::{EndpointAutoconfig, EndpointTransformation};
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -60,6 +60,10 @@ pub struct Endpoint<'a> {
 impl<'a> Endpoint<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn autoconfig(&self) -> EndpointAutoconfig<'a> {
+        EndpointAutoconfig::new(self.cfg)
     }
 
     pub fn transformation(&self) -> EndpointTransformation<'a> {

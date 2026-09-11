@@ -53,6 +53,8 @@ data class EndpointRecoverOptions(val idempotencyKey: String? = null)
 data class EndpointSendExampleOptions(val idempotencyKey: String? = null)
 
 class Endpoint(private val client: SvixHttpClient) {
+    val autoconfig: EndpointAutoconfig = EndpointAutoconfig(client)
+
     val transformation: EndpointTransformation = EndpointTransformation(client)
 
     /** List the application's endpoints. */

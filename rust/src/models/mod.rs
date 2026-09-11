@@ -18,7 +18,6 @@ mod application_token_expire_in;
 mod authentication_source;
 mod auto_config_out;
 mod auto_config_sink_type;
-mod auto_config_subscription_out;
 mod azure_blob_storage_config_in;
 mod azure_blob_storage_config_out;
 mod azure_blob_storage_config_patch;
@@ -222,7 +221,6 @@ mod sqs_config_in;
 mod sqs_config_out;
 mod sqs_config_patch;
 mod starting_position;
-mod status;
 mod status_code_class;
 mod stream_event_type_in;
 mod stream_event_type_out;
@@ -279,7 +277,6 @@ pub use self::{
     authentication_source::AuthenticationSource,
     auto_config_out::AutoConfigOut,
     auto_config_sink_type::AutoConfigSinkType,
-    auto_config_subscription_out::AutoConfigSubscriptionOut,
     azure_blob_storage_config_in::AzureBlobStorageConfigIn,
     azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     azure_blob_storage_config_patch::AzureBlobStorageConfigPatch,
@@ -483,7 +480,6 @@ pub use self::{
     sqs_config_out::SqsConfigOut,
     sqs_config_patch::SqsConfigPatch,
     starting_position::StartingPosition,
-    status::Status,
     status_code_class::StatusCodeClass,
     stream_event_type_in::StreamEventTypeIn,
     stream_event_type_out::StreamEventTypeOut,

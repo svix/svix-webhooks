@@ -8,27 +8,27 @@ import (
 	"github.com/svix/svix-webhooks/go/models"
 )
 
-type AutoconfigSubscription struct {
+type EndpointAutoconfig struct {
 	client *internal.SvixHttpClient
 }
 
-func newAutoconfigSubscription(client *internal.SvixHttpClient) AutoconfigSubscription {
-	return AutoconfigSubscription{client}
+func newEndpointAutoconfig(client *internal.SvixHttpClient) EndpointAutoconfig {
+	return EndpointAutoconfig{client}
 }
 
-type AutoconfigSubscriptionCreateOptions struct {
+type EndpointAutoconfigCreateOptions struct {
 	IdempotencyKey *string
 }
 
-type AutoconfigSubscriptionRotateOptions struct {
+type EndpointAutoconfigRotateOptions struct {
 	IdempotencyKey *string
 }
 
 // Create an AutoConfig subscription.
-func (autoconfigSubscription AutoconfigSubscription) Create(
+func (endpointAutoconfig EndpointAutoconfig) Create(
 	ctx context.Context,
 	appId string,
-	o *AutoconfigSubscriptionCreateOptions,
+	o *EndpointAutoconfigCreateOptions,
 ) (*models.AutoConfigOut, error) {
 	var err error
 	pathMap := map[string]string{
@@ -36,7 +36,7 @@ func (autoconfigSubscription AutoconfigSubscription) Create(
 	}
 	headerMap := map[string]string{}
 	if o == nil {
-		opts := AutoconfigSubscriptionCreateOptions{}
+		opts := EndpointAutoconfigCreateOptions{}
 		o = &opts
 	}
 	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -45,7 +45,7 @@ func (autoconfigSubscription AutoconfigSubscription) Create(
 	}
 	return internal.ExecuteRequest[any, models.AutoConfigOut](
 		ctx,
-		autoconfigSubscription.client,
+		endpointAutoconfig.client,
 		"POST",
 		"/api/v1/app/{app_id}/autoconfig",
 		pathMap,
@@ -56,12 +56,12 @@ func (autoconfigSubscription AutoconfigSubscription) Create(
 }
 
 // Rotate the auth token and signing secret for an AutoConfig subscription.
-func (autoconfigSubscription AutoconfigSubscription) Rotate(
+func (endpointAutoconfig EndpointAutoconfig) Rotate(
 	ctx context.Context,
 	appId string,
 	autoconfigId string,
 	rotateSubscriptionIn2 models.RotateSubscriptionIn2,
-	o *AutoconfigSubscriptionRotateOptions,
+	o *EndpointAutoconfigRotateOptions,
 ) (*models.AutoConfigOut, error) {
 	var err error
 	pathMap := map[string]string{
@@ -70,7 +70,7 @@ func (autoconfigSubscription AutoconfigSubscription) Rotate(
 	}
 	headerMap := map[string]string{}
 	if o == nil {
-		opts := AutoconfigSubscriptionRotateOptions{}
+		opts := EndpointAutoconfigRotateOptions{}
 		o = &opts
 	}
 	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
@@ -79,7 +79,7 @@ func (autoconfigSubscription AutoconfigSubscription) Rotate(
 	}
 	return internal.ExecuteRequest[models.RotateSubscriptionIn2, models.AutoConfigOut](
 		ctx,
-		autoconfigSubscription.client,
+		endpointAutoconfig.client,
 		"POST",
 		"/api/v1/app/{app_id}/autoconfig/{autoconfig_id}/rotate",
 		pathMap,

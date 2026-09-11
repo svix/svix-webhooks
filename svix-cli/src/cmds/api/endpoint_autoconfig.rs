@@ -5,46 +5,46 @@ use svix::api::Svix;
 use svix::models::*;
 
 #[derive(Args, Clone)]
-pub struct AutoconfigSubscriptionCreateOptions {
+pub struct EndpointAutoconfigCreateOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
 }
 
-impl From<AutoconfigSubscriptionCreateOptions> for svix::api::AutoconfigSubscriptionCreateOptions {
-    fn from(value: AutoconfigSubscriptionCreateOptions) -> Self {
-        let AutoconfigSubscriptionCreateOptions { idempotency_key } = value;
+impl From<EndpointAutoconfigCreateOptions> for svix::api::EndpointAutoconfigCreateOptions {
+    fn from(value: EndpointAutoconfigCreateOptions) -> Self {
+        let EndpointAutoconfigCreateOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
 
 #[derive(Args, Clone)]
-pub struct AutoconfigSubscriptionRotateOptions {
+pub struct EndpointAutoconfigRotateOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
 }
 
-impl From<AutoconfigSubscriptionRotateOptions> for svix::api::AutoconfigSubscriptionRotateOptions {
-    fn from(value: AutoconfigSubscriptionRotateOptions) -> Self {
-        let AutoconfigSubscriptionRotateOptions { idempotency_key } = value;
+impl From<EndpointAutoconfigRotateOptions> for svix::api::EndpointAutoconfigRotateOptions {
+    fn from(value: EndpointAutoconfigRotateOptions) -> Self {
+        let EndpointAutoconfigRotateOptions { idempotency_key } = value;
         Self { idempotency_key }
     }
 }
 
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true, flatten_help = true)]
-pub struct AutoconfigSubscriptionArgs {
+pub struct EndpointAutoconfigArgs {
     #[command(subcommand)]
-    pub command: AutoconfigSubscriptionCommands,
+    pub command: EndpointAutoconfigCommands,
 }
 
 #[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
-pub enum AutoconfigSubscriptionCommands {
+pub enum EndpointAutoconfigCommands {
     /// Create an AutoConfig subscription.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix autoconfig-subscription create app_abc000000000000000000000000\n",
+            "Example: svix endpoint autoconfig create app_abc000000000000000000000000\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -58,13 +58,13 @@ pub enum AutoconfigSubscriptionCommands {
     Create {
         app_id: String,
         #[clap(flatten)]
-        options: AutoconfigSubscriptionCreateOptions,
+        options: EndpointAutoconfigCreateOptions,
     },
     /// Rotate the auth token and signing secret for an AutoConfig subscription.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix autoconfig-subscription rotate app_abc000000000000000000000000 AUTOCONFIG_ID {...}\n",
+            "Example: svix endpoint autoconfig rotate app_abc000000000000000000000000 AUTOCONFIG_ID {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
@@ -86,11 +86,11 @@ pub enum AutoconfigSubscriptionCommands {
         autoconfig_id: String,
         rotate_subscription_in2: Option<crate::json::JsonOf<RotateSubscriptionIn2>>,
         #[clap(flatten)]
-        options: AutoconfigSubscriptionRotateOptions,
+        options: EndpointAutoconfigRotateOptions,
     },
 }
 
-impl AutoconfigSubscriptionCommands {
+impl EndpointAutoconfigCommands {
     pub async fn exec(
         self,
         client: &Svix,
@@ -99,7 +99,8 @@ impl AutoconfigSubscriptionCommands {
         match self {
             Self::Create { app_id, options } => {
                 let resp = client
-                    .autoconfig_subscription()
+                    .endpoint()
+                    .autoconfig()
                     .create(app_id, Some(options.into()))
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
@@ -111,7 +112,8 @@ impl AutoconfigSubscriptionCommands {
                 options,
             } => {
                 let resp = client
-                    .autoconfig_subscription()
+                    .endpoint()
+                    .autoconfig()
                     .rotate(
                         app_id,
                         autoconfig_id,

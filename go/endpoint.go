@@ -17,6 +17,9 @@ func newEndpoint(client *internal.SvixHttpClient) Endpoint {
 	return Endpoint{client}
 }
 
+func (endpoint Endpoint) Autoconfig() EndpointAutoconfig {
+	return newEndpointAutoconfig(endpoint.client)
+}
 func (endpoint Endpoint) Transformation() EndpointTransformation {
 	return newEndpointTransformation(endpoint.client)
 }

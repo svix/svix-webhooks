@@ -2,20 +2,20 @@
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
-pub struct AutoconfigSubscriptionCreateOptions {
+pub struct EndpointAutoconfigCreateOptions {
     pub idempotency_key: Option<String>,
 }
 
 #[derive(Default)]
-pub struct AutoconfigSubscriptionRotateOptions {
+pub struct EndpointAutoconfigRotateOptions {
     pub idempotency_key: Option<String>,
 }
 
-pub struct AutoconfigSubscription<'a> {
+pub struct EndpointAutoconfig<'a> {
     cfg: &'a Configuration,
 }
 
-impl<'a> AutoconfigSubscription<'a> {
+impl<'a> EndpointAutoconfig<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
     }
@@ -24,9 +24,9 @@ impl<'a> AutoconfigSubscription<'a> {
     pub async fn create(
         &self,
         app_id: String,
-        options: Option<AutoconfigSubscriptionCreateOptions>,
+        options: Option<EndpointAutoconfigCreateOptions>,
     ) -> Result<AutoConfigOut> {
-        let AutoconfigSubscriptionCreateOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointAutoconfigCreateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(http::Method::POST, "/api/v1/app/{app_id}/autoconfig")
             .with_path_param("app_id", app_id)
@@ -41,9 +41,9 @@ impl<'a> AutoconfigSubscription<'a> {
         app_id: String,
         autoconfig_id: String,
         rotate_subscription_in2: RotateSubscriptionIn2,
-        options: Option<AutoconfigSubscriptionRotateOptions>,
+        options: Option<EndpointAutoconfigRotateOptions>,
     ) -> Result<AutoConfigOut> {
-        let AutoconfigSubscriptionRotateOptions { idempotency_key } = options.unwrap_or_default();
+        let EndpointAutoconfigRotateOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
             http::Method::POST,

@@ -13,21 +13,20 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AutoconfigSubscription {
+public class EndpointAutoconfig {
     private final SvixHttpClient client;
 
-    public AutoconfigSubscription(SvixHttpClient client) {
+    public EndpointAutoconfig(SvixHttpClient client) {
         this.client = client;
     }
 
     /** Create an AutoConfig subscription. */
     public AutoConfigOut create(final String appId) throws IOException, ApiException {
-        return this.create(appId, new AutoconfigSubscriptionCreateOptions());
+        return this.create(appId, new EndpointAutoconfigCreateOptions());
     }
 
     /** Create an AutoConfig subscription. */
-    public AutoConfigOut create(
-            final String appId, final AutoconfigSubscriptionCreateOptions options)
+    public AutoConfigOut create(final String appId, final EndpointAutoconfigCreateOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
@@ -48,10 +47,7 @@ public class AutoconfigSubscription {
             final RotateSubscriptionIn2 rotateSubscriptionIn2)
             throws IOException, ApiException {
         return this.rotate(
-                appId,
-                autoconfigId,
-                rotateSubscriptionIn2,
-                new AutoconfigSubscriptionRotateOptions());
+                appId, autoconfigId, rotateSubscriptionIn2, new EndpointAutoconfigRotateOptions());
     }
 
     /** Rotate the auth token and signing secret for an AutoConfig subscription. */
@@ -59,7 +55,7 @@ public class AutoconfigSubscription {
             final String appId,
             final String autoconfigId,
             final RotateSubscriptionIn2 rotateSubscriptionIn2,
-            final AutoconfigSubscriptionRotateOptions options)
+            final EndpointAutoconfigRotateOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client

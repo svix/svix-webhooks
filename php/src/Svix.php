@@ -8,7 +8,6 @@ namespace Svix;
 use GuzzleHttp\Client;
 use Svix\Api\Application;
 use Svix\Api\Authentication;
-use Svix\Api\AutoconfigSubscription;
 use Svix\Api\BackgroundTask;
 use Svix\Api\Connector;
 use Svix\Api\Destination;
@@ -29,7 +28,6 @@ class Svix
 {
     public Application $application;
     public Authentication $authentication;
-    public AutoconfigSubscription $autoconfigSubscription;
     public BackgroundTask $backgroundTask;
     public Connector $connector;
     public Destination $destination;
@@ -61,7 +59,6 @@ class Svix
 
         $this->application = new Application($svixHttpClient);
         $this->authentication = new Authentication($svixHttpClient);
-        $this->autoconfigSubscription = new AutoconfigSubscription($svixHttpClient);
         $this->backgroundTask = new BackgroundTask($svixHttpClient);
         $this->connector = new Connector($svixHttpClient);
         $this->destination = new Destination($svixHttpClient);

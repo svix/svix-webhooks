@@ -8,7 +8,6 @@ import httpx
 
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
-from .autoconfig_subscription import AutoconfigSubscription, AutoconfigSubscriptionAsync
 from .background_task import BackgroundTask, BackgroundTaskAsync
 from .client import AuthenticatedClient
 from .common import _make_httpx_async_client, _make_httpx_client
@@ -114,10 +113,6 @@ class SvixAsync(ClientBase):
         return AuthenticationAsync(self._client, self._httpx_client)
 
     @property
-    def autoconfig_subscription(self) -> AutoconfigSubscriptionAsync:
-        return AutoconfigSubscriptionAsync(self._client, self._httpx_client)
-
-    @property
     def background_task(self) -> BackgroundTaskAsync:
         return BackgroundTaskAsync(self._client, self._httpx_client)
 
@@ -188,10 +183,6 @@ class Svix(ClientBase):
     @property
     def authentication(self) -> Authentication:
         return Authentication(self._client, self._httpx_client)
-
-    @property
-    def autoconfig_subscription(self) -> AutoconfigSubscription:
-        return AutoconfigSubscription(self._client, self._httpx_client)
 
     @property
     def background_task(self) -> BackgroundTask:

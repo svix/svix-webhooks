@@ -28,6 +28,10 @@ from ..models import (
     ReplayOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .endpoint_autoconfig import (
+    EndpointAutoconfig,
+    EndpointAutoconfigAsync,
+)
 from .endpoint_transformation import (
     EndpointTransformation,
     EndpointTransformationAsync,
@@ -142,6 +146,10 @@ class EndpointSendExampleOptions(BaseOptions):
 
 
 class EndpointAsync(ApiBaseAsync):
+    @property
+    def autoconfig(self) -> EndpointAutoconfigAsync:
+        return EndpointAutoconfigAsync(self._client, self._httpx_client)
+
     @property
     def transformation(self) -> EndpointTransformationAsync:
         return EndpointTransformationAsync(self._client, self._httpx_client)
@@ -494,6 +502,10 @@ class EndpointAsync(ApiBaseAsync):
 
 
 class Endpoint(ApiBaseSync):
+    @property
+    def autoconfig(self) -> EndpointAutoconfig:
+        return EndpointAutoconfig(self._client, self._httpx_client)
+
     @property
     def transformation(self) -> EndpointTransformation:
         return EndpointTransformation(self._client, self._httpx_client)

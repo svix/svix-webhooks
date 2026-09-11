@@ -5,9 +5,11 @@ require "net/http"
 
 module Svix
   class Endpoint
+    attr_accessor :autoconfig
     attr_accessor :transformation
     def initialize(client)
       @client = client
+      @autoconfig = EndpointAutoconfig.new(client)
       @transformation = EndpointTransformation.new(client)
     end
 

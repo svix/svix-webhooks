@@ -5,7 +5,7 @@ using Svix.Models;
 
 namespace Svix
 {
-    public class AutoconfigSubscriptionCreateOptions : SvixOptionsBase
+    public class EndpointAutoconfigCreateOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -17,7 +17,7 @@ namespace Svix
         }
     }
 
-    public class AutoconfigSubscriptionRotateOptions : SvixOptionsBase
+    public class EndpointAutoconfigRotateOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
 
@@ -29,7 +29,7 @@ namespace Svix
         }
     }
 
-    public class AutoconfigSubscription(SvixClient client)
+    public class EndpointAutoconfig(SvixClient client)
     {
         readonly SvixClient _client = client;
 
@@ -38,13 +38,13 @@ namespace Svix
         /// </summary>
         public async Task<AutoConfigOut> CreateAsync(
             string appId,
-            AutoconfigSubscriptionCreateOptions? options = null,
+            EndpointAutoconfigCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new AutoconfigSubscriptionCreateOptions();
+                options = new EndpointAutoconfigCreateOptions();
             }
             try
             {
@@ -69,14 +69,11 @@ namespace Svix
         /// <summary>
         /// Create an AutoConfig subscription.
         /// </summary>
-        public AutoConfigOut Create(
-            string appId,
-            AutoconfigSubscriptionCreateOptions? options = null
-        )
+        public AutoConfigOut Create(string appId, EndpointAutoconfigCreateOptions? options = null)
         {
             if (options == null)
             {
-                options = new AutoconfigSubscriptionCreateOptions();
+                options = new EndpointAutoconfigCreateOptions();
             }
             try
             {
@@ -104,13 +101,13 @@ namespace Svix
             string appId,
             string autoconfigId,
             RotateSubscriptionIn2 rotateSubscriptionIn2,
-            AutoconfigSubscriptionRotateOptions? options = null,
+            EndpointAutoconfigRotateOptions? options = null,
             CancellationToken cancellationToken = default
         )
         {
             if (options == null)
             {
-                options = new AutoconfigSubscriptionRotateOptions();
+                options = new EndpointAutoconfigRotateOptions();
             }
             rotateSubscriptionIn2 =
                 rotateSubscriptionIn2
@@ -147,12 +144,12 @@ namespace Svix
             string appId,
             string autoconfigId,
             RotateSubscriptionIn2 rotateSubscriptionIn2,
-            AutoconfigSubscriptionRotateOptions? options = null
+            EndpointAutoconfigRotateOptions? options = null
         )
         {
             if (options == null)
             {
-                options = new AutoconfigSubscriptionRotateOptions();
+                options = new EndpointAutoconfigRotateOptions();
             }
             rotateSubscriptionIn2 =
                 rotateSubscriptionIn2

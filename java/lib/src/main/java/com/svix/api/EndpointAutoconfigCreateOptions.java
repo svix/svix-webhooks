@@ -4,6 +4,6 @@ package com.svix.api;
 import lombok.Data;
 
 @Data
-public class AutoconfigSubscriptionRotateOptions {
+public class EndpointAutoconfigCreateOptions {
     String idempotencyKey;
 }
