@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type BackgroundTask struct {
 	client *internal.SvixHttpClient
 }
 
-func newBackgroundTask(client *internal.SvixHttpClient) BackgroundTask {
+func NewBackgroundTask(client *internal.SvixHttpClient) BackgroundTask {
 	return BackgroundTask{client}
 }
 

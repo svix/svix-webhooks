@@ -20,6 +20,7 @@ import (
 
 	"github.com/jarcoal/httpmock"
 	svix "github.com/svix/svix-webhooks/go"
+	"github.com/svix/svix-webhooks/go/api"
 	"github.com/svix/svix-webhooks/go/models"
 	"github.com/svix/svix-webhooks/go/utils"
 )
@@ -891,7 +892,7 @@ func TestDatetimeInQueryParam(t *testing.T) {
 		},
 	)
 
-	opts := svix.MessageAttemptListByEndpointOptions{
+	opts := api.MessageAttemptListByEndpointOptions{
 		Before: &expectedTime,
 	}
 	_, err := svx.MessageAttempt().ListByEndpoint(ctx, "app1", "endp", &opts)

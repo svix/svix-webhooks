@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type Connector struct {
 	client *internal.SvixHttpClient
 }
 
-func newConnector(client *internal.SvixHttpClient) Connector {
+func NewConnector(client *internal.SvixHttpClient) Connector {
 	return Connector{client}
 }
 

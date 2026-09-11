@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -13,12 +13,12 @@ type Message struct {
 	client *internal.SvixHttpClient
 }
 
-func newMessage(client *internal.SvixHttpClient) Message {
+func NewMessage(client *internal.SvixHttpClient) Message {
 	return Message{client}
 }
 
 func (message Message) Poller() MessagePoller {
-	return newMessagePoller(message.client)
+	return NewMessagePoller(message.client)
 }
 
 type MessageListOptions struct {

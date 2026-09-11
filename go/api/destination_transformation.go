@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type DestinationTransformation struct {
 	client *internal.SvixHttpClient
 }
 
-func newDestinationTransformation(client *internal.SvixHttpClient) DestinationTransformation {
+func NewDestinationTransformation(client *internal.SvixHttpClient) DestinationTransformation {
 	return DestinationTransformation{client}
 }
 

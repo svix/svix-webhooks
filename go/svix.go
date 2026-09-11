@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/svix/svix-webhooks/go/api"
 	"github.com/svix/svix-webhooks/go/internal"
 )
 
@@ -61,68 +62,68 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 	return &svx, nil
 }
 
-func (svix Svix) Application() Application {
-	return newApplication(svix.client)
+func (svix Svix) Application() api.Application {
+	return api.NewApplication(svix.client)
 }
 
-func (svix Svix) Authentication() Authentication {
-	return newAuthentication(svix.client)
+func (svix Svix) Authentication() api.Authentication {
+	return api.NewAuthentication(svix.client)
 }
 
-func (svix Svix) BackgroundTask() BackgroundTask {
-	return newBackgroundTask(svix.client)
+func (svix Svix) BackgroundTask() api.BackgroundTask {
+	return api.NewBackgroundTask(svix.client)
 }
 
-func (svix Svix) Connector() Connector {
-	return newConnector(svix.client)
+func (svix Svix) Connector() api.Connector {
+	return api.NewConnector(svix.client)
 }
 
-func (svix Svix) Destination() Destination {
-	return newDestination(svix.client)
+func (svix Svix) Destination() api.Destination {
+	return api.NewDestination(svix.client)
 }
 
-func (svix Svix) Endpoint() Endpoint {
-	return newEndpoint(svix.client)
+func (svix Svix) Endpoint() api.Endpoint {
+	return api.NewEndpoint(svix.client)
 }
 
-func (svix Svix) Environment() Environment {
-	return newEnvironment(svix.client)
+func (svix Svix) Environment() api.Environment {
+	return api.NewEnvironment(svix.client)
 }
 
-func (svix Svix) EventType() EventType {
-	return newEventType(svix.client)
+func (svix Svix) EventType() api.EventType {
+	return api.NewEventType(svix.client)
 }
 
-func (svix Svix) Health() Health {
-	return newHealth(svix.client)
+func (svix Svix) Health() api.Health {
+	return api.NewHealth(svix.client)
 }
 
-func (svix Svix) Ingest() Ingest {
-	return newIngest(svix.client)
+func (svix Svix) Ingest() api.Ingest {
+	return api.NewIngest(svix.client)
 }
 
-func (svix Svix) Integration() Integration {
-	return newIntegration(svix.client)
+func (svix Svix) Integration() api.Integration {
+	return api.NewIntegration(svix.client)
 }
 
-func (svix Svix) Message() Message {
-	return newMessage(svix.client)
+func (svix Svix) Message() api.Message {
+	return api.NewMessage(svix.client)
 }
 
-func (svix Svix) MessageAttempt() MessageAttempt {
-	return newMessageAttempt(svix.client)
+func (svix Svix) MessageAttempt() api.MessageAttempt {
+	return api.NewMessageAttempt(svix.client)
 }
 
-func (svix Svix) OperationalWebhook() OperationalWebhook {
-	return newOperationalWebhook(svix.client)
+func (svix Svix) OperationalWebhook() api.OperationalWebhook {
+	return api.NewOperationalWebhook(svix.client)
 }
 
-func (svix Svix) Statistics() Statistics {
-	return newStatistics(svix.client)
+func (svix Svix) Statistics() api.Statistics {
+	return api.NewStatistics(svix.client)
 }
 
-func (svix Svix) Streaming() Streaming {
-	return newStreaming(svix.client)
+func (svix Svix) Streaming() api.Streaming {
+	return api.NewStreaming(svix.client)
 }
 
 // Add a custom suffix to the default user-agent

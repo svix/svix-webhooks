@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,21 +12,21 @@ type Streaming struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreaming(client *internal.SvixHttpClient) Streaming {
+func NewStreaming(client *internal.SvixHttpClient) Streaming {
 	return Streaming{client}
 }
 
 func (streaming Streaming) EventType() StreamingEventType {
-	return newStreamingEventType(streaming.client)
+	return NewStreamingEventType(streaming.client)
 }
 func (streaming Streaming) Events() StreamingEvents {
-	return newStreamingEvents(streaming.client)
+	return NewStreamingEvents(streaming.client)
 }
 func (streaming Streaming) Sink() StreamingSink {
-	return newStreamingSink(streaming.client)
+	return NewStreamingSink(streaming.client)
 }
 func (streaming Streaming) Stream() StreamingStream {
-	return newStreamingStream(streaming.client)
+	return NewStreamingStream(streaming.client)
 }
 
 // Get the HTTP sink headers.

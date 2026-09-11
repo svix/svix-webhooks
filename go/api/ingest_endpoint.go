@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,12 +12,12 @@ type IngestEndpoint struct {
 	client *internal.SvixHttpClient
 }
 
-func newIngestEndpoint(client *internal.SvixHttpClient) IngestEndpoint {
+func NewIngestEndpoint(client *internal.SvixHttpClient) IngestEndpoint {
 	return IngestEndpoint{client}
 }
 
 func (ingestEndpoint IngestEndpoint) Transformation() IngestEndpointTransformation {
-	return newIngestEndpointTransformation(ingestEndpoint.client)
+	return NewIngestEndpointTransformation(ingestEndpoint.client)
 }
 
 type IngestEndpointListOptions struct {

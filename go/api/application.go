@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type Application struct {
 	client *internal.SvixHttpClient
 }
 
-func newApplication(client *internal.SvixHttpClient) Application {
+func NewApplication(client *internal.SvixHttpClient) Application {
 	return Application{client}
 }
 

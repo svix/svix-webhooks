@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/svix/svix-webhooks/go/api"
 	"github.com/svix/svix-webhooks/go/internal"
 )
 
@@ -63,8 +64,8 @@ func New(token string, options *SvixOptions) (*Svix, error) {
 
 {% for resource in api.resources -%}
 {% set resource_name = resource.name | to_upper_camel_case -%}
-func (svix Svix) {{ resource_name }}() {{ resource_name }} {
-	return new{{ resource_name }}(svix.client)
+func (svix Svix) {{ resource_name }}() api.{{ resource_name }} {
+	return api.New{{ resource_name }}(svix.client)
 }
 
 {% endfor -%}

@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type EventType struct {
 	client *internal.SvixHttpClient
 }
 
-func newEventType(client *internal.SvixHttpClient) EventType {
+func NewEventType(client *internal.SvixHttpClient) EventType {
 	return EventType{client}
 }
 

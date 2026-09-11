@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -13,7 +13,7 @@ type StreamingEvents struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingEvents(client *internal.SvixHttpClient) StreamingEvents {
+func NewStreamingEvents(client *internal.SvixHttpClient) StreamingEvents {
 	return StreamingEvents{client}
 }
 
