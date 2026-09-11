@@ -1,6 +1,7 @@
 // this file is @generated
 import { Application } from "./api/application";
 import { Authentication } from "./api/authentication";
+import { AutoconfigSubscription } from "./api/autoconfigSubscription";
 import { BackgroundTask } from "./api/backgroundTask";
 import { Connector } from "./api/connector";
 import { Destination } from "./api/destination";
@@ -68,6 +69,10 @@ export class Svix {
 
   public get authentication() {
     return new Authentication(this.requestCtx);
+  }
+
+  public get autoconfigSubscription() {
+    return new AutoconfigSubscription(this.requestCtx);
   }
 
   public get backgroundTask() {

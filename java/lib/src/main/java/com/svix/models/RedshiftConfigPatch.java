@@ -19,6 +19,8 @@ import lombok.ToString;
 public class RedshiftConfigPatch {
     @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private String region;
     @JsonProperty private String dbName;
     @JsonProperty private MaybeUnset<String> schemaName;
@@ -62,6 +64,44 @@ public class RedshiftConfigPatch {
 
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+
+    public RedshiftConfigPatch roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public RedshiftConfigPatch externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public RedshiftConfigPatch region(String region) {

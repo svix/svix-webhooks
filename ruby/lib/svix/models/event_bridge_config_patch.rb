@@ -8,9 +8,19 @@ module Svix
     attr_accessor :detail_type
     attr_accessor :access_key_id
     attr_accessor :secret_access_key
+    attr_accessor :role_arn
+    attr_accessor :external_id
     attr_accessor :region
 
-    ALL_FIELD ||= ["event_bus_name", "detail_type", "access_key_id", "secret_access_key", "region"].freeze
+    ALL_FIELD ||= [
+      "event_bus_name",
+      "detail_type",
+      "access_key_id",
+      "secret_access_key",
+      "role_arn",
+      "external_id",
+      "region"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -38,6 +48,8 @@ module Svix
       attrs["detail_type"] = attributes["detailType"]
       attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       attrs["region"] = attributes["region"]
       new(attrs)
     end
@@ -48,6 +60,8 @@ module Svix
       out["detailType"] = Svix::serialize_primitive(@detail_type) unless @detail_type.nil?
       out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
       out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
       out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
       out
     end

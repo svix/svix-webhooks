@@ -6,12 +6,17 @@ type EventBridgeConfigIn struct {
 	DetailType   *string `json:"detailType,omitempty"` // Free-form string, with a maximum of 128 characters
 	// Access key ID.
 	//
-	// Currently a required field, but marked as optional because we may add different authentication in the future.
+	// Required (along with `secret_access_key`) if `role_arn` is blank.
 	AccessKeyId *string `json:"accessKeyId,omitempty"`
 	// Secret access key.
 	//
-	// Currently a required field, but marked as optional because we may add different authentication in the future.
+	// Required (along with `access_key_id`) if `role_arn` is blank.
 	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
+	RoleArn         *string `json:"roleArn,omitempty"` // Role ARN for delegated authentication
+	// Shared secret passed as the STS ExternalId.
+	//
+	// Can only be set if `role_arn` is Some
+	ExternalId *string `json:"externalId,omitempty"`
 	// The region of the EventBridge bus.
 	//
 	// Currently a required field, but marked as optional because we may infer it from other fields in the future.

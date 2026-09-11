@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class EventBridgeConfigOut(
     val eventBusName: String,
     val detailType: String,
-    val accessKeyId: String,
+    val accessKeyId: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val region: String,
 )

@@ -17,11 +17,19 @@ class SqsConfigIn(BaseModel):
     access_key_id: t.Optional[str] = None
     """Access key ID.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Required (along with `secret_access_key`) if `role_arn` is blank."""
 
     secret_access_key: t.Optional[str] = None
     """Secret access key.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Required (along with `access_key_id`) if `role_arn` is blank."""
+
+    role_arn: t.Optional[str] = None
+    """Role ARN for delegated authentication"""
+
+    external_id: t.Optional[str] = None
+    """Shared secret passed as the STS ExternalId.
+
+    Can only be set if `role_arn` is Some"""
 
     endpoint_url: t.Optional[str] = None

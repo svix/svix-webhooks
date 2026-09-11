@@ -16,6 +16,3 @@ func newEndpoint(client *internal.SvixHttpClient) Endpoint {
 func (endpoint Endpoint) AutoConfigDeprecated() EndpointAutoConfigDeprecated {
 	return newEndpointAutoConfigDeprecated(endpoint.client)
 }
-func (endpoint Endpoint) Autoconfig() EndpointAutoconfig {
-	return newEndpointAutoconfig(endpoint.client)
-}

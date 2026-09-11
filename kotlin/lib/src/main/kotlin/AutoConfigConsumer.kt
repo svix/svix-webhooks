@@ -1,9 +1,8 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.exceptions.ApiException
+import com.svix.kotlin.internal.AutoconfigSubscription
 import com.svix.kotlin.internal.EndpointAutoConfigDeprecated
-import com.svix.kotlin.internal.EndpointAutoconfig
-import com.svix.kotlin.internal.DestinationAutoconfig;
 import com.svix.kotlin.internal.MessagePollerv2
 import com.svix.kotlin.internal.MessagePollerv2ConsumerCommitOptions
 import com.svix.kotlin.internal.MessagePollerv2ConsumerPollOptions
@@ -48,7 +47,8 @@ constructor(token: String, sinkIn: SinkInCommon) {
     suspend fun subscribe(): DestinationOut {
         if (autoconfigId != null) {
             val destination =
-                DestinationAutoconfig(httpClient)
+                AutoconfigSubscription(httpClient)
+                    .destination
                     .subscribe(
                         appId,
                         autoconfigId,
@@ -81,7 +81,7 @@ constructor(token: String, sinkIn: SinkInCommon) {
         }
 
         // Get the sink id from the autoconfig id (v2)
-        return EndpointAutoconfig(httpClient).get(appId, autoconfigId as String).destId
+        return AutoconfigSubscription(httpClient).get(appId, autoconfigId as String).destId
             ?: error("autoconfig subscription is pending. Have you called subscribe()?")
     }
 

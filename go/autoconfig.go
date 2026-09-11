@@ -178,7 +178,7 @@ func NewAutoConfig(token string, endpoint models.EndpointIn) (*AutoConfig, error
 // Subscribe registers or updates the endpoint via the auto-config API.
 func (a *AutoConfig) Subscribe(ctx context.Context) (*models.EndpointOut, error) {
 	if a.autoconfigID != "" {
-		return a.svix.Endpoint().Autoconfig().Subscribe(
+		return a.svix.AutoconfigSubscription().Endpoint().Subscribe(
 			ctx,
 			a.appID,
 			a.autoconfigID,

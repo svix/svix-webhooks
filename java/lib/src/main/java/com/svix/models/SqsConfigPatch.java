@@ -23,6 +23,8 @@ public class SqsConfigPatch {
     @JsonProperty private String region;
     @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private MaybeUnset<URI> endpointUrl;
 
     public SqsConfigPatch() {}
@@ -101,6 +103,44 @@ public class SqsConfigPatch {
 
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+
+    public SqsConfigPatch roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public SqsConfigPatch externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public SqsConfigPatch endpointUrl(URI endpointUrl) {

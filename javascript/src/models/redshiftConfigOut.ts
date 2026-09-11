@@ -1,7 +1,9 @@
 // this file is @generated
 
 export interface RedshiftConfigOut {
-  accessKeyId: string;
+  accessKeyId?: string | null;
+  roleArn?: string | null;
+  externalId?: string | null;
   region: string;
   clusterIdentifier?: string | null;
   dbUser?: string | null;
@@ -30,6 +32,8 @@ export const RedshiftConfigOutSerializer = {
   _fromJsonObject(object: any): RedshiftConfigOut {
     return {
       accessKeyId: object["accessKeyId"],
+      roleArn: object["roleArn"],
+      externalId: object["externalId"],
       region: object["region"],
       clusterIdentifier: object["clusterIdentifier"],
       dbUser: object["dbUser"],
@@ -43,6 +47,8 @@ export const RedshiftConfigOutSerializer = {
   _toJsonObject(self: RedshiftConfigOut): any {
     return {
       accessKeyId: self.accessKeyId,
+      roleArn: self.roleArn,
+      externalId: self.externalId,
       region: self.region,
       clusterIdentifier: self.clusterIdentifier,
       dbUser: self.dbUser,

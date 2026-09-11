@@ -7,17 +7,13 @@ import pydantic
 from .api.client import AuthenticatedClient
 from .api.common import _make_httpx_async_client, _make_httpx_client
 from .api.svix import Svix, SvixOptions
-from .api_internal.destination_autoconfig import (
-    DestinationAutoconfig,
-    DestinationAutoconfigAsync,
+from .api_internal.autoconfig_subscription import (
+    AutoconfigSubscription,
+    AutoconfigSubscriptionAsync,
 )
 from .api_internal.endpoint_auto_config_deprecated import (
     EndpointAutoConfigDeprecated,
     EndpointAutoConfigDeprecatedAsync,
-)
-from .api_internal.endpoint_autoconfig import (
-    EndpointAutoconfig,
-    EndpointAutoconfigAsync,
 )
 from .api_internal.message_pollerv2 import (
     MessagePollerv2,
@@ -177,7 +173,9 @@ class AutoConfig:
             self._httpx_client = _make_httpx_client(self._client)
 
         if self._autoconfig_id is not None:
-            return EndpointAutoconfig(self._client, self._httpx_client).subscribe(
+            return AutoconfigSubscription(
+                self._client, self._httpx_client
+            ).endpoint.subscribe(
                 self._app_id,
                 self._autoconfig_id,
                 self._endpoint,
@@ -194,9 +192,9 @@ class AutoConfig:
             self._httpx_async_client = _make_httpx_async_client(self._client)
 
         if self._autoconfig_id is not None:
-            return await EndpointAutoconfigAsync(
+            return await AutoconfigSubscriptionAsync(
                 self._client, self._httpx_async_client
-            ).subscribe(
+            ).endpoint.subscribe(
                 self._app_id,
                 self._autoconfig_id,
                 self._endpoint,
@@ -257,9 +255,9 @@ class AutoConfigConsumer:
             self._httpx_client = _make_httpx_client(self._client)
 
         if self._autoconfig_id is not None:
-            destination = DestinationAutoconfig(
+            destination = AutoconfigSubscription(
                 self._client, self._httpx_client
-            ).subscribe(
+            ).destination.subscribe(
                 self._app_id,
                 self._autoconfig_id,
                 _sink_in_common_to_polling_destination(self._sink_in),
@@ -280,9 +278,9 @@ class AutoConfigConsumer:
             self._httpx_async_client = _make_httpx_async_client(self._client)
 
         if self._autoconfig_id is not None:
-            destination = await DestinationAutoconfigAsync(
+            destination = await AutoconfigSubscriptionAsync(
                 self._client, self._httpx_async_client
-            ).subscribe(
+            ).destination.subscribe(
                 self._app_id,
                 self._autoconfig_id,
                 _sink_in_common_to_polling_destination(self._sink_in),
@@ -312,7 +310,7 @@ class AutoConfigConsumer:
         if self._autoconfig_id is None:
             raise AutoConfigError("v2 tokens set autoconfig_id")
         dest_id = (
-            EndpointAutoconfig(self._client, self._httpx_client)
+            AutoconfigSubscription(self._client, self._httpx_client)
             .get(
                 self._app_id,
                 self._autoconfig_id,
@@ -337,7 +335,9 @@ class AutoConfigConsumer:
         if self._autoconfig_id is None:
             raise AutoConfigError("v2 tokens set autoconfig_id")
         dest_id = (
-            await EndpointAutoconfigAsync(self._client, self._httpx_async_client).get(
+            await AutoconfigSubscriptionAsync(
+                self._client, self._httpx_async_client
+            ).get(
                 self._app_id,
                 self._autoconfig_id,
             )

@@ -5,6 +5,8 @@ export interface SnsConfigPatch {
   region?: string;
   accessKeyId?: string;
   secretAccessKey?: string;
+  roleArn?: string;
+  externalId?: string;
   endpointUrl?: string | null;
 }
 
@@ -15,6 +17,8 @@ export const SnsConfigPatchSerializer = {
       region: object["region"],
       accessKeyId: object["accessKeyId"],
       secretAccessKey: object["secretAccessKey"],
+      roleArn: object["roleArn"],
+      externalId: object["externalId"],
       endpointUrl: object["endpointUrl"],
     };
   },
@@ -25,6 +29,8 @@ export const SnsConfigPatchSerializer = {
       region: self.region,
       accessKeyId: self.accessKeyId,
       secretAccessKey: self.secretAccessKey,
+      roleArn: self.roleArn,
+      externalId: self.externalId,
       endpointUrl: self.endpointUrl,
     };
   },

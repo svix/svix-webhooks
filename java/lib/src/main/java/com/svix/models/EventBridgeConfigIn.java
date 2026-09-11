@@ -20,6 +20,8 @@ public class EventBridgeConfigIn {
     @JsonProperty private String detailType;
     @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private String region;
 
     public EventBridgeConfigIn() {}
@@ -70,8 +72,7 @@ public class EventBridgeConfigIn {
     /**
      * Access key ID.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `secret_access_key`) if `role_arn` is blank.
      *
      * @return accessKeyId
      */
@@ -92,8 +93,7 @@ public class EventBridgeConfigIn {
     /**
      * Secret access key.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `access_key_id`) if `role_arn` is blank.
      *
      * @return secretAccessKey
      */
@@ -104,6 +104,46 @@ public class EventBridgeConfigIn {
 
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+
+    public EventBridgeConfigIn roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Role ARN for delegated authentication
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public EventBridgeConfigIn externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Shared secret passed as the STS ExternalId.
+     *
+     * <p>Can only be set if `role_arn` is Some
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public EventBridgeConfigIn region(String region) {

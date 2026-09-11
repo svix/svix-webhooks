@@ -13,4 +13,8 @@ class EventBridgeConfigPatch(BaseModel):
 
     secret_access_key: t.Optional[str] = None
 
+    role_arn: t.Optional[str] = None
+
+    external_id: t.Optional[str] = None
+
     region: t.Optional[str] = None

@@ -14,6 +14,7 @@ from .application_in import ApplicationIn
 from .application_out import ApplicationOut
 from .application_patch import ApplicationPatch
 from .application_token_expire_in import ApplicationTokenExpireIn
+from .auto_config_out import AutoConfigOut
 from .auto_config_sink_type import AutoConfigSinkType
 from .auto_config_subscription_out import AutoConfigSubscriptionOut
 from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
@@ -191,6 +192,7 @@ from .redshift_config_patch import RedshiftConfigPatch
 from .replay_in import ReplayIn
 from .replay_out import ReplayOut
 from .rotate_poller_token_in import RotatePollerTokenIn
+from .rotate_subscription_in2 import RotateSubscriptionIn2
 from .rotate_token_out import RotateTokenOut
 from .rutter_config import RutterConfig
 from .rutter_config_out import RutterConfigOut
@@ -269,6 +271,7 @@ __all__ = [
     "ApplicationOut",
     "ApplicationPatch",
     "ApplicationTokenExpireIn",
+    "AutoConfigOut",
     "AutoConfigSinkType",
     "AutoConfigSubscriptionOut",
     "AzureBlobStorageConfigIn",
@@ -442,6 +445,7 @@ __all__ = [
     "ReplayIn",
     "ReplayOut",
     "RotatePollerTokenIn",
+    "RotateSubscriptionIn2",
     "RotateTokenOut",
     "RutterConfig",
     "RutterConfigOut",

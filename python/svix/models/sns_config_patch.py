@@ -13,4 +13,8 @@ class SnsConfigPatch(BaseModel):
 
     secret_access_key: t.Optional[str] = None
 
+    role_arn: t.Optional[str] = None
+
+    external_id: t.Optional[str] = None
+
     endpoint_url: t.Optional[str] = None

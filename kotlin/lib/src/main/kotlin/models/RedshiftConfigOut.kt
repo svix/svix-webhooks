@@ -5,7 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class RedshiftConfigOut(
-    val accessKeyId: String,
+    val accessKeyId: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val region: String,
     val clusterIdentifier: String? = null,
     val dbUser: String? = null,

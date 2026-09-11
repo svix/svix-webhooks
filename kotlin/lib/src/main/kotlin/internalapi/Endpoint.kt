@@ -7,8 +7,6 @@ import com.svix.kotlin.models.EndpointTransformationIn
 class Endpoint(private val client: SvixHttpClient) {
     val autoConfigDeprecated: EndpointAutoConfigDeprecated = EndpointAutoConfigDeprecated(client)
 
-    val autoconfig: EndpointAutoconfig = EndpointAutoconfig(client)
-
     /**
      * This operation was renamed to `set-transformation`.
      *
