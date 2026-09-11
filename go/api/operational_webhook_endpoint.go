@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type OperationalWebhookEndpoint struct {
 	client *internal.SvixHttpClient
 }
 
-func newOperationalWebhookEndpoint(client *internal.SvixHttpClient) OperationalWebhookEndpoint {
+func NewOperationalWebhookEndpoint(client *internal.SvixHttpClient) OperationalWebhookEndpoint {
 	return OperationalWebhookEndpoint{client}
 }
 

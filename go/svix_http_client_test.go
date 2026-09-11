@@ -11,6 +11,7 @@ import (
 
 	"github.com/jarcoal/httpmock"
 	svix "github.com/svix/svix-webhooks/go"
+	"github.com/svix/svix-webhooks/go/api"
 	"github.com/svix/svix-webhooks/go/models"
 )
 
@@ -179,7 +180,7 @@ func TestOptionsSerialization(t *testing.T) {
 	limit := uint64(12)
 	order := models.ORDERING_ASCENDING
 	iter := "asd^&*1223"
-	listOpts := svix.ApplicationListOptions{
+	listOpts := api.ApplicationListOptions{
 		Limit:    &limit,
 		Order:    &order,
 		Iterator: &iter,
@@ -204,7 +205,7 @@ func TestQueryParamListSerialization(t *testing.T) {
 			return httpmock.NewStringResponse(200, msgListOut), nil
 		},
 	)
-	listOpts := svix.MessageListOptions{
+	listOpts := api.MessageListOptions{
 		EventTypes: &[]string{"asd13", "123asd"},
 	}
 	_, err := svx.Message().List(context.Background(), "random_app_id", &listOpts)
@@ -228,7 +229,7 @@ func TestOctothorpeUrlParam(t *testing.T) {
 		},
 	)
 	tag := "test#test"
-	listOpts := svix.MessageListOptions{
+	listOpts := api.MessageListOptions{
 		Tag: &tag,
 	}
 	_, err := svx.Message().List(context.Background(), "random_app_id", &listOpts)
@@ -291,7 +292,7 @@ func TestClientProvidedIdempotencyKeyIsNotOverridden(t *testing.T) {
 	appIn := models.ApplicationIn{
 		Name: "test app",
 	}
-	createOpts := svix.ApplicationCreateOptions{
+	createOpts := api.ApplicationCreateOptions{
 		IdempotencyKey: &clientProvidedKey,
 	}
 	_, err := svx.Application().Create(context.Background(), appIn, &createOpts)

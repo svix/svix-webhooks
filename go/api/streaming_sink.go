@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,12 +12,12 @@ type StreamingSink struct {
 	client *internal.SvixHttpClient
 }
 
-func newStreamingSink(client *internal.SvixHttpClient) StreamingSink {
+func NewStreamingSink(client *internal.SvixHttpClient) StreamingSink {
 	return StreamingSink{client}
 }
 
 func (streamingSink StreamingSink) Transformation() StreamingSinkTransformation {
-	return newStreamingSinkTransformation(streamingSink.client)
+	return NewStreamingSinkTransformation(streamingSink.client)
 }
 
 type StreamingSinkListOptions struct {

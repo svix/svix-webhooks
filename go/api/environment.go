@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type Environment struct {
 	client *internal.SvixHttpClient
 }
 
-func newEnvironment(client *internal.SvixHttpClient) Environment {
+func NewEnvironment(client *internal.SvixHttpClient) Environment {
 	return Environment{client}
 }
 

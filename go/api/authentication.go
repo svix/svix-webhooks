@@ -1,5 +1,5 @@
 // Package svix this file is @generated DO NOT EDIT
-package svix
+package api
 
 import (
 	"context"
@@ -12,7 +12,7 @@ type Authentication struct {
 	client *internal.SvixHttpClient
 }
 
-func newAuthentication(client *internal.SvixHttpClient) Authentication {
+func NewAuthentication(client *internal.SvixHttpClient) Authentication {
 	return Authentication{client}
 }
 

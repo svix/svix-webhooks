@@ -18,14 +18,24 @@ type {{ resource_type_name }} struct {
 	client *internal.SvixHttpClient
 }
 
+{% if context.package == "api" -%}
+func New{{ resource_type_name }}(client *internal.SvixHttpClient) {{ resource_type_name }} {
+	return {{ resource_type_name }}{client}
+}
+{% else -%}
 func new{{ resource_type_name }}(client *internal.SvixHttpClient) {{ resource_type_name }} {
 	return {{ resource_type_name }}{client}
 }
+{% endif -%}
 
 {% for name, sub in resource.subresources | items %}
 {%- set sub_name = sub.name | to_upper_camel_case %}
 func ({{ resource_self_name }} {{ resource_type_name }}) {{ name | to_upper_camel_case }}() {{ sub_name }} {
+	{% if context.package == "api" -%}
+	return New{{ sub_name }}({{ resource_self_name }}.client)
+	{% else -%}
 	return new{{ sub_name }}({{ resource_self_name }}.client)
+	{% endif -%}
 }
 {%- endfor %}
 
