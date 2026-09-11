@@ -5,6 +5,10 @@ import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
 import com.svix.kotlin.SvixOptions
+import com.svix.kotlin.api.ApplicationCreateOptions
+import com.svix.kotlin.api.ApplicationListOptions
+import com.svix.kotlin.api.MessageCreateOptions
+import com.svix.kotlin.api.MessageListOptions
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.models.*
 import kotlin.time.Instant

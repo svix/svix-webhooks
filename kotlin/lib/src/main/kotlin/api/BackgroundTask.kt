@@ -1,11 +1,13 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.BackgroundTaskOut
 import com.svix.kotlin.models.BackgroundTaskStatus
 import com.svix.kotlin.models.BackgroundTaskType
 import com.svix.kotlin.models.ListResponseBackgroundTaskOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 
 data class BackgroundTaskListOptions(
     /** Filter the response based on the status. */

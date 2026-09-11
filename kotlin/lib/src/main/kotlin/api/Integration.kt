@@ -1,12 +1,14 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.IntegrationIn
 import com.svix.kotlin.models.IntegrationKeyOut
 import com.svix.kotlin.models.IntegrationOut
 import com.svix.kotlin.models.IntegrationUpdate
 import com.svix.kotlin.models.ListResponseIntegrationOut
 import com.svix.kotlin.models.Ordering
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class IntegrationListOptions(

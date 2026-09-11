@@ -1,5 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
+
+import com.svix.kotlin.SvixHttpClient
 
 class Health(private val client: SvixHttpClient) {
     /** Verify the API server is up and running. */

@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.EmptyResponse
 import com.svix.kotlin.models.ListResponseEndpointMessageOut
 import com.svix.kotlin.models.ListResponseMessageAttemptOut
@@ -8,6 +9,7 @@ import com.svix.kotlin.models.ListResponseMessageEndpointOut
 import com.svix.kotlin.models.MessageAttemptOut
 import com.svix.kotlin.models.MessageStatus
 import com.svix.kotlin.models.StatusCodeClass
+import com.svix.kotlin.serializeQueryParam
 import kotlin.time.Instant
 import okhttp3.Headers
 

@@ -3,7 +3,7 @@
 package {{ context.package }}
 
 import com.svix.kotlin.SvixHttpClient
-{% if context.package == "com.svix.kotlin.internal" -%}
+{% if context.package == "com.svix.kotlin.internal" or context.package == "com.svix.kotlin.api" -%}
 import com.svix.kotlin.serializeQueryParam
 {% if resource.name == "message" -%}
 import com.svix.kotlin.StringAnyMapSerializer

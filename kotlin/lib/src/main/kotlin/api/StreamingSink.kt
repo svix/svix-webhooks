@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.EmptyResponse
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.ListResponseStreamSinkOut
@@ -9,6 +10,7 @@ import com.svix.kotlin.models.SinkSecretOut
 import com.svix.kotlin.models.StreamSinkIn
 import com.svix.kotlin.models.StreamSinkOut
 import com.svix.kotlin.models.StreamSinkPatch
+import com.svix.kotlin.serializeQueryParam
 import okhttp3.Headers
 
 data class StreamingSinkListOptions(

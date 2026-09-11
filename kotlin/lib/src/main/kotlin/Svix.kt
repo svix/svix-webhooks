@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin
 
+import com.svix.kotlin.api.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class Svix(token: String, options: SvixOptions = SvixOptions()) {

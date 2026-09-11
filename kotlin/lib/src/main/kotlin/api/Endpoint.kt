@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.BulkReplayIn
 import com.svix.kotlin.models.EndpointHeadersIn
 import com.svix.kotlin.models.EndpointHeadersOut
@@ -21,6 +22,7 @@ import com.svix.kotlin.models.RecoverIn
 import com.svix.kotlin.models.RecoverOut
 import com.svix.kotlin.models.ReplayIn
 import com.svix.kotlin.models.ReplayOut
+import com.svix.kotlin.serializeQueryParam
 import kotlin.time.Instant
 import okhttp3.Headers
 

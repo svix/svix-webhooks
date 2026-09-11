@@ -1,6 +1,8 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.StringAnyMapSerializer
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.ApplicationIn
 import com.svix.kotlin.models.BulkExpungeContentsIn
 import com.svix.kotlin.models.BulkExpungeContentsOut
@@ -10,6 +12,7 @@ import com.svix.kotlin.models.MessageIn
 import com.svix.kotlin.models.MessageOut
 import com.svix.kotlin.models.MessagePrecheckIn
 import com.svix.kotlin.models.MessagePrecheckOut
+import com.svix.kotlin.serializeQueryParam
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonElement

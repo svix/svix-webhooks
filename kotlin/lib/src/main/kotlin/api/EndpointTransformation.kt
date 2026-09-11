@@ -1,6 +1,7 @@
 // this file is @generated
-package com.svix.kotlin
+package com.svix.kotlin.api
 
+import com.svix.kotlin.SvixHttpClient
 import com.svix.kotlin.models.EndpointTransformationOut
 import com.svix.kotlin.models.EndpointTransformationPatch
 
