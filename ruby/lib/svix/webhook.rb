@@ -27,16 +27,9 @@ module Svix
     end
 
     def verify(payload, headers)
-      msgId = headers["svix-id"]
-      msgSignature = headers["svix-signature"]
-      msgTimestamp = headers["svix-timestamp"]
+      msgId, msgTimestamp, msgSignature = find_signed_headers(headers)
       if !msgSignature || !msgId || !msgTimestamp
-        msgId = headers["webhook-id"]
-        msgSignature = headers["webhook-signature"]
-        msgTimestamp = headers["webhook-timestamp"]
-        if !msgSignature || !msgId || !msgTimestamp
-          raise WebhookVerificationError, "Missing required headers"
-        end
+        raise WebhookVerificationError, "Missing required headers"
       end
 
       verify_timestamp(msgTimestamp)
@@ -73,6 +66,41 @@ module Svix
     private
     SECRET_PREFIX = "whsec_"
     DEFAULT_TOLERANCE = 5 * 60
+
+    # Returns the id, timestamp and signature values, or nil when neither the
+    # branded nor the unbranded set of headers is present.
+    def find_signed_headers(headers)
+      found = lookup_signed_headers(headers)
+      return found if found
+
+      # Svix sends the headers in lowercase, so the lookup above is the common
+      # case. Some servers hand them back with a different casing (Rack
+      # typically yields "Svix-Id"), so retry once against downcased keys
+      # rather than paying for that every time.
+      return nil unless headers.respond_to?(:each_pair)
+
+      lookup_signed_headers(downcase_keys(headers))
+    end
+
+    def lookup_signed_headers(headers)
+      ["svix", "webhook"].each do |prefix|
+        msgId = headers["#{prefix}-id"]
+        msgTimestamp = headers["#{prefix}-timestamp"]
+        msgSignature = headers["#{prefix}-signature"]
+
+        if msgId && msgTimestamp && msgSignature
+          return [msgId, msgTimestamp, msgSignature]
+        end
+      end
+
+      nil
+    end
+
+    def downcase_keys(headers)
+      headers.each_pair.with_object({}) do |(name, value), downcased|
+        downcased[name.to_s.downcase] = value
+      end
+    end
 
     def verify_timestamp(timestampHeader)
       begin

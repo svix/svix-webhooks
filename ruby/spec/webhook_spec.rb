@@ -107,6 +107,58 @@ describe Svix::Webhook do
     wh.verify(testPayload.payload, testPayload.headers)
   end
 
+  it "title cased signature is valid" do
+    testPayload = TestPayload.new
+    testPayload.headers = {
+      "Svix-Id" => testPayload.headers["svix-id"],
+      "Svix-Signature" => testPayload.headers["svix-signature"],
+      "Svix-Timestamp" => testPayload.headers["svix-timestamp"]
+    }
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify(testPayload.payload, testPayload.headers)
+  end
+
+  it "mixed case signature is valid" do
+    testPayload = TestPayload.new
+    testPayload.headers = {
+      "SVIX-ID" => testPayload.headers["svix-id"],
+      "sViX-SiGnAtUrE" => testPayload.headers["svix-signature"],
+      "Svix-TimeStamp" => testPayload.headers["svix-timestamp"]
+    }
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify(testPayload.payload, testPayload.headers)
+  end
+
+  it "title cased unbranded signature is valid" do
+    testPayload = TestPayload.new
+    testPayload.headers = {
+      "Webhook-Id" => testPayload.headers["svix-id"],
+      "Webhook-Signature" => testPayload.headers["svix-signature"],
+      "Webhook-Timestamp" => testPayload.headers["svix-timestamp"]
+    }
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    wh.verify(testPayload.payload, testPayload.headers)
+  end
+
+  it "missing title cased id raises error" do
+    testPayload = TestPayload.new
+    testPayload.headers = {
+      "Svix-Signature" => testPayload.headers["svix-signature"],
+      "Svix-Timestamp" => testPayload.headers["svix-timestamp"]
+    }
+
+    wh = Svix::Webhook.new(testPayload.secret)
+
+    expect { wh.verify(testPayload.payload, testPayload.headers) }
+      .to(raise_error(Svix::WebhookVerificationError, /Missing required headers/))
+  end
+
   it "old timestamp raises error" do
     testPayload = TestPayload.new(timestamp: Time.now.to_i - TOLERANCE - 1)
 
