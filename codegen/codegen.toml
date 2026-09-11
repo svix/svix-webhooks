@@ -177,6 +177,7 @@ extra_codegen_args = [
 template = "templates/ruby/api_resource.rb.jinja"
 output_dir = "ruby/lib/svix/api_internal"
 extra_codegen_args = [
+    "--context={\"module\":\"ApiInternal\"}",
     "--include-mode=only-specified",
     "--include-op-id=v1.endpoint.auto-config-deprecated.update",
     "--include-op-id=v1.endpoint.autoconfig.subscribe",
