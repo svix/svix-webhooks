@@ -40,26 +40,19 @@ class Webhook
      */
     public function verify($payload, $headers)
     {
-        if (
-            isset($headers['svix-id'])
-            && isset($headers['svix-timestamp'])
-            && isset($headers['svix-signature'])
-        ) {
-            $msgId = $headers['svix-id'];
-            $msgTimestamp = $headers['svix-timestamp'];
-            $msgSignature = $headers['svix-signature'];
-        } elseif (
-            isset($headers['webhook-id'])
-            && isset($headers['webhook-timestamp'])
-            && isset($headers['webhook-signature'])
-        ) {
-            $msgId = $headers['webhook-id'];
-            $msgTimestamp = $headers['webhook-timestamp'];
-            $msgSignature = $headers['webhook-signature'];
-        } else {
+        $signedHeaders = self::findSignedHeaders($headers);
+        if ($signedHeaders === null && is_array($headers)) {
+            // Svix sends the headers in lowercase, so the lookup above is the
+            // common case. Some servers hand them back with a different casing
+            // (`getallheaders()` typically returns `Svix-Id`), so retry once
+            // against lowercased keys rather than paying for that every time.
+            $signedHeaders = self::findSignedHeaders(array_change_key_case($headers, CASE_LOWER));
+        }
+        if ($signedHeaders === null) {
             throw new Exception\WebhookVerificationException("Missing required headers");
         }
 
+        list($msgId, $msgTimestamp, $msgSignature) = $signedHeaders;
 
         $timestamp = $this->verifyTimestamp($msgTimestamp);
 
@@ -129,5 +122,28 @@ class Webhook
     private function isPositiveInteger($v)
     {
         return is_numeric($v) && !is_float($v + 0) && (int) $v == $v && (int) $v > 0;
+    }
+
+    /**
+     * Returns the id, timestamp and signature values as a list, or null when
+     * neither the branded nor the unbranded set of headers is present.
+     */
+    private static function findSignedHeaders($headers)
+    {
+        foreach (["svix", "webhook"] as $prefix) {
+            if (
+                isset($headers["{$prefix}-id"])
+                && isset($headers["{$prefix}-timestamp"])
+                && isset($headers["{$prefix}-signature"])
+            ) {
+                return [
+                    $headers["{$prefix}-id"],
+                    $headers["{$prefix}-timestamp"],
+                    $headers["{$prefix}-signature"],
+                ];
+            }
+        }
+
+        return null;
     }
 }
