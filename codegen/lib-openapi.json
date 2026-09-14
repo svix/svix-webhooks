@@ -29929,7 +29929,7 @@
                     "Stream"
                 ],
                 "summary": "Simulate Stream Transformation",
-                "description": "Simulate the stream transformations endpoint",
+                "description": "Simulate the stream transformations endpoint (returns a raw JSON object)",
                 "operationId": "v1.streaming.transformation.simulate",
                 "parameters": [
                     {
@@ -29959,6 +29959,125 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/StreamTransformationSimulateOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/stream/transformations/v2/simulate": {
+            "post": {
+                "tags": [
+                    "Stream"
+                ],
+                "summary": "Simulate Stream Transformation V2",
+                "description": "Simulate the stream transformations endpoint",
+                "operationId": "v1.streaming.transformation.v2.simulate",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StreamTransformationSimulateIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/StreamTransformationSimulateV2Out"
                                 }
                             }
                         }
@@ -45975,6 +46094,39 @@
                 "x-internal": true
             }
         },
+        "request.rate_limit.soft": {
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "request.rate_limit.soft",
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "operationId": "request.rate_limit.soft",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SoftRateLimitExceededEvent"
+                            },
+                            "example": {
+                                "data": {
+                                    "action": "create-message",
+                                    "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "requestRate": 42,
+                                    "rateLimit": 50
+                                },
+                                "type": "request.rate_limit.soft"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                }
+            }
+        },
         "ingest.endpoint.disabled": {
             "post": {
                 "tags": [
@@ -47248,6 +47400,69 @@
                 "required": [
                     "end",
                     "start"
+                ]
+            },
+            "SoftRateLimitExceededEvent": {
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "$ref": "#/components/schemas/SoftRateLimitExceededEventData"
+                    },
+                    "type": {
+                        "type": "string",
+                        "default": "request.rate_limit.soft",
+                        "enum": [
+                            "request.rate_limit.soft"
+                        ]
+                    }
+                },
+                "required": [
+                    "data",
+                    "type"
+                ]
+            },
+            "SoftRateLimitExceededEventData": {
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "type": "object",
+                "properties": {
+                    "action": {
+                        "description": "The kind of action being performed",
+                        "$ref": "#/components/schemas/RateLimitedAction"
+                    },
+                    "orgId": {
+                        "description": "The environment against which the request was made that triggered the limit",
+                        "type": "string",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^org_[A-Za-z0-9]{27}$",
+                        "example": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "requestRate": {
+                        "description": "The number of requests per second in the second where this event triggered",
+                        "type": "integer",
+                        "format": "uint64",
+                        "minimum": 0.0
+                    },
+                    "rateLimit": {
+                        "description": "The configured rate-limit for this action in this environment",
+                        "type": "integer",
+                        "format": "uint64",
+                        "minimum": 0.0
+                    }
+                },
+                "required": [
+                    "action",
+                    "orgId",
+                    "rateLimit",
+                    "requestRate"
+                ]
+            },
+            "RateLimitedAction": {
+                "description": "The action being performed that triggered a request rate-limit\n\n- `create-message`: Creating a message (in the Dispatch/Webhooks application).",
+                "type": "string",
+                "enum": [
+                    "create-message"
                 ]
             },
             "IngestEndpointDisabledEvent": {
@@ -50038,7 +50253,9 @@
                         "format": "date-time"
                     },
                     "token": {
-                        "type": "string"
+                        "description": "The AutoConfig token",
+                        "type": "string",
+                        "example": "auto_v2_eyJhaWQiOiJhcHBfMXNyT3J4MlpXWk..."
                     },
                     "endpId": {
                         "description": "The Endpoint's ID.",
@@ -50063,7 +50280,9 @@
                         "format": "date-time"
                     },
                     "tokenCensored": {
-                        "type": "string"
+                        "description": "The censored AutoConfig token",
+                        "type": "string",
+                        "example": "auto_v2_eyJh...TyJ9"
                     },
                     "endpId": {
                         "description": "The Endpoint's ID.",
@@ -53627,7 +53846,9 @@
                         "format": "date-time"
                     },
                     "token": {
-                        "type": "string"
+                        "description": "The AutoConfig token",
+                        "type": "string",
+                        "example": "auto_v2_eyJhaWQiOiJhcHBfMXNyT3J4MlpXWk..."
                     },
                     "id": {
                         "description": "The AutoConfigSubscription's ID.",
@@ -53688,7 +53909,9 @@
                         "format": "date-time"
                     },
                     "tokenCensored": {
-                        "type": "string"
+                        "description": "The censored AutoConfig token",
+                        "type": "string",
+                        "example": "auto_v2_eyJh...TyJ9"
                     },
                     "id": {
                         "description": "The AutoConfigSubscription's ID.",
@@ -56515,6 +56738,328 @@
                 },
                 "required": [
                     "output"
+                ]
+            },
+            "StreamTransformationSimulateV2Out": {
+                "oneOf": [
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "http"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/HttpSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "otelTracing"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/OtelSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "amazonS3"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/ObjectStorageSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "azureBlobStorage"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/ObjectStorageSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "googleCloudStorage"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/ObjectStorageSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "sns"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/SnsSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "sqs"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/SqsSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
+                    }
+                ]
+            },
+            "HttpSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "method": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "headers": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "string"
+                        }
+                    },
+                    "body": {
+                        "type": "string"
+                    },
+                    "cancel": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "body",
+                    "cancel",
+                    "headers",
+                    "method",
+                    "url"
+                ]
+            },
+            "OtelSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "spans": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OtelSpanSimulateOut"
+                        }
+                    },
+                    "scope": {
+                        "$ref": "#/components/schemas/OtelScopeSimulateOut",
+                        "nullable": true
+                    },
+                    "serviceName": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "spans"
+                ]
+            },
+            "OtelSpanSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "kind": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "traceIdKey": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "spanIdKey": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "parentSpanIdKey": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "startTime": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "endTime": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "attributes": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "$ref": "#/components/schemas/OtelAttributeSimulateOut"
+                        }
+                    }
+                },
+                "required": [
+                    "attributes"
+                ]
+            },
+            "OtelAttributeSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "typeUrl": {
+                        "type": "string"
+                    },
+                    "value": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "typeUrl",
+                    "value"
+                ]
+            },
+            "OtelScopeSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "version": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                }
+            },
+            "ObjectStorageSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "key": {
+                        "type": "string"
+                    },
+                    "blob": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "blob",
+                    "key"
+                ]
+            },
+            "SnsSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SnsMessageSimulateOut"
+                        }
+                    }
+                },
+                "required": [
+                    "messages"
+                ]
+            },
+            "SnsMessageSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "payload": {
+                        "type": "string"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "payload"
+                ]
+            },
+            "SqsSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/SqsMessageSimulateOut"
+                        }
+                    }
+                },
+                "required": [
+                    "messages"
+                ]
+            },
+            "SqsMessageSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "payload": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "payload"
                 ]
             },
             "ListResponse_StreamSinkOut_": {
@@ -61803,6 +62348,10 @@
         {
             "name": "AutoConfig",
             "description": "AutoConfig is a feature that allows you to automatically configure your endpoints."
+        },
+        {
+            "name": "Rate Limiting",
+            "description": "Events related to request rate-limits"
         }
     ],
     "x-tagGroups": [
@@ -61810,7 +62359,8 @@
             "name": "General",
             "tags": [
                 "Background Task",
-                "Environment"
+                "Environment",
+                "Rate Limiting"
             ]
         },
         {
@@ -62247,6 +62797,39 @@
                     "attempt_log"
                 ],
                 "x-internal": true
+            }
+        },
+        "request.rate_limit.soft": {
+            "post": {
+                "tags": [
+                    "Webhook"
+                ],
+                "summary": "request.rate_limit.soft",
+                "description": "Sent when a request approached the configured rate-limit for a given action",
+                "operationId": "request.rate_limit.soft",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SoftRateLimitExceededEvent"
+                            },
+                            "example": {
+                                "data": {
+                                    "action": "create-message",
+                                    "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "requestRate": 42,
+                                    "rateLimit": 50
+                                },
+                                "type": "request.rate_limit.soft"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "2XX": {
+                        "description": "Return any 2XX status to indicate that the data was received successfully"
+                    }
+                }
             }
         },
         "ingest.endpoint.disabled": {

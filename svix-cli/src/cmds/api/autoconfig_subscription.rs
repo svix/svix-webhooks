@@ -52,7 +52,7 @@ pub enum AutoconfigSubscriptionCommands {
     #[command(after_help = "Example response:
 {
   \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"token\": \"...\",
+  \"token\": \"auto_v2_eyJhaWQiOiJhcHBfMXNyT3J4MlpXWk...\",
   \"id\": \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\"
 }\n")]
     Create {
@@ -78,7 +78,7 @@ pub enum AutoconfigSubscriptionCommands {
 }\n\nExample response:
 {
   \"createdAt\": \"2030-01-01T00:00:00Z\",
-  \"token\": \"...\",
+  \"token\": \"auto_v2_eyJhaWQiOiJhcHBfMXNyT3J4MlpXWk...\",
   \"id\": \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\"
 }\n")]
     Rotate {

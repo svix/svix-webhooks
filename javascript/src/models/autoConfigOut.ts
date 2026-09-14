@@ -2,6 +2,7 @@
 
 export interface AutoConfigOut {
   createdAt: Date;
+  /** The AutoConfig token */
   token: string;
   /** The AutoConfigSubscription's ID. */
   id: string;

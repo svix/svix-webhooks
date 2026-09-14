@@ -8,6 +8,7 @@ pub struct AutoConfigSubscriptionOut {
     #[serde(rename = "createdAt")]
     pub created_at: chrono::DateTime<chrono::Utc>,
 
+    /// The censored AutoConfig token
     #[serde(rename = "tokenCensored")]
     pub token_censored: String,
 

@@ -8,6 +8,7 @@ class AutoConfigOut(BaseModel):
     created_at: datetime
 
     token: str
+    """The AutoConfig token"""
 
     id: str
     """The AutoConfigSubscription's ID."""

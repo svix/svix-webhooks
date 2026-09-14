@@ -52,7 +52,7 @@ public class AutoConfigSubscriptionOut {
     }
 
     /**
-     * Get tokenCensored
+     * The censored AutoConfig token
      *
      * @return tokenCensored
      */

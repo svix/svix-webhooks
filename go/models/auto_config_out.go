@@ -5,6 +5,6 @@ import "time"
 
 type AutoConfigOut struct {
 	CreatedAt time.Time `json:"createdAt"`
-	Token     string    `json:"token"`
-	Id        string    `json:"id"` // The AutoConfigSubscription's ID.
+	Token     string    `json:"token"` // The AutoConfig token
+	Id        string    `json:"id"`    // The AutoConfigSubscription's ID.
 }

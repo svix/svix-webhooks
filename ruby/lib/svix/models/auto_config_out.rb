@@ -5,6 +5,7 @@ require "json"
 module Svix
   class AutoConfigOut
     attr_accessor :created_at
+    # The AutoConfig token
     attr_accessor :token
     # The AutoConfigSubscription's ID.
     attr_accessor :id
