@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-* Add `opentelemetry_logs_enabled` to optionally send log events to the configured OpenTelemetry collector (`opentelemetry_address`), in addition to stdout. Disabled by default
+* Add `opentelemetry_logs_enabled` to optionally send log events to the configured OpenTelemetry collector (`opentelemetry_address`), in addition to stdout. Disabled by default. Exported log records include the fields of their enclosing spans as attributes
 
 ## Version 1.99.0
 * Fix warning when opentelemetry is disabled

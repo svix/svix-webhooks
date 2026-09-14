@@ -10,3 +10,5 @@ To set this up you can follow these steps:
 5. Ensure the OpenTelemetry Collector is running, start the Svix server, and watch the tracing information be received.
 
 Traces and metrics are exported automatically once `opentelemetry_address` is set. Log events are opt-in: set `opentelemetry_logs_enabled = true` to additionally export logs to the collector, alongside the existing stdout logging (stdout output is unaffected either way).
+
+Exported log records carry the fields of their enclosing `tracing` spans as attributes (`org_id`, `app_id`, `msg_id`, `endp_id`, etc.), matching the span context shown in the stdout logs, so they can be filtered on in the collector's backend.
