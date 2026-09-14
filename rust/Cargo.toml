@@ -45,7 +45,7 @@ itertools = "0.15.0"
 js_option = "0.2.0"
 percent-encoding = "2.3.1"
 rand = "0.10.2"
-rustls = { version = "0.23.31", optional = true }
+rustls = { version = "0.23.45", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_repr = "0.1"
