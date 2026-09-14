@@ -74,7 +74,8 @@ impl From<EventTypeImportOpenapiOptions> for svix::api::EventTypeImportOpenapiOp
 
 #[derive(Args, Clone)]
 pub struct EventTypeDeleteOptions {
-    /// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
+    /// By default event types are archived when "deleted". Passing this to `true` deletes them
+    /// entirely.
     #[arg(long)]
     pub expunge: Option<bool>,
 }

@@ -8,7 +8,8 @@ from .message_status_text import MessageStatusText
 
 
 class EndpointMessageOut(BaseModel):
-    """A model containing information on a given message plus additional fields on the last attempt for that message."""
+    """A model containing information on a given message plus additional fields on the last attempt for
+    that message."""
 
     status: MessageStatus
 

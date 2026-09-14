@@ -39,7 +39,8 @@ type EventTypeImportOpenapiOptions struct {
 }
 
 type EventTypeDeleteOptions struct {
-	// By default event types are archived when "deleted". Passing this to `true` deletes them entirely.
+	// By default event types are archived when "deleted". Passing this to `true` deletes them
+	// entirely.
 	Expunge *bool
 }
 

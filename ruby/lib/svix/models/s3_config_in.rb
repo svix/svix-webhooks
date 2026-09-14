@@ -15,7 +15,8 @@ module Svix
     attr_accessor :secret_access_key
     # The region of the S3 bucket
     #
-    # Currently a required field, but marked as optional because we may infer it from other fields in the future.
+    # Currently a required field, but marked as optional because we may infer
+    # it from other fields in the future.
     attr_accessor :region
     attr_accessor :endpoint_url
     # Role ARN for delegated authentication

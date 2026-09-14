@@ -9,8 +9,8 @@ pub struct CreateStreamEventsIn {
 
     /// Optionally creates a new Stream alongside the events.
     ///
-    /// If the stream id or uid that is used in the path already exists, this
-    /// argument is ignored.
+    /// If the stream id or uid that is used in the path already exists,
+    /// this argument is ignored.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub stream: Option<StreamIn>,
 }

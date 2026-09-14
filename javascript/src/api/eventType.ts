@@ -44,7 +44,10 @@ export interface EventTypeImportOpenapiOptions {
 }
 
 export interface EventTypeDeleteOptions {
-  /** By default event types are archived when "deleted". Passing this to `true` deletes them entirely. */
+  /**
+   * By default event types are archived when "deleted". Passing this to `true` deletes them
+   * entirely.
+   */
   expunge?: boolean;
 }
 

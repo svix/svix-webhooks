@@ -39,7 +39,8 @@ pub struct DestinationIn {
     /// not reached.
     ///
     /// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a
-    /// request is sent after 10 seconds or 100 events, whichever comes first.
+    /// request is sent after 10 seconds or 100 events, whichever comes
+    /// first.
     ///
     /// Note that an empty batch is never sent to the destination.
     #[serde(rename = "maxWaitSecs")]

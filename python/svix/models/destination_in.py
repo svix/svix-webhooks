@@ -30,9 +30,11 @@ class DestinationIn(BaseModel):
     status: t.Optional[DestinationStatusIn] = None
     """Whether the destination will receive events.
 
-    If the destination is `enabled`, events sent to the application will be dispatched to the destination in order.
+    If the destination is `enabled`, events sent to the application will be
+    dispatched to the destination in order.
 
-    If the destination is `disabled`, events will not be dispatched until the destination is reenabled."""
+    If the destination is `disabled`, events will not be dispatched until the
+    destination is reenabled."""
 
     batch_size: t.Optional[int] = None
     """How many events will be batched in a request to the destination."""
@@ -40,15 +42,18 @@ class DestinationIn(BaseModel):
     max_wait_secs: t.Optional[int] = None
     """How long to wait before a batch of events is sent, if the `batchSize` is not reached.
 
-    For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after 10 seconds or 100 events, whichever comes first.
+    For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after
+    10 seconds or 100 events, whichever comes first.
 
     Note that an empty batch is never sent to the destination."""
 
     event_types: t.Optional[t.List[str]] = None
-    """A list of event types that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events."""
+    """A list of event types that filter which events are dispatched to the destination.
+    An empty list (or null) will not filter out any events."""
 
     channels: t.Optional[t.List[str]] = None
-    """A list of channels that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events."""
+    """A list of channels that filter which events are dispatched to the destination.
+    An empty list (or null) will not filter out any events."""
 
     metadata: t.Optional[t.Dict[str, str]] = None
 

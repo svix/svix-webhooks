@@ -6,7 +6,8 @@ export interface SqsConfigIn {
   /**
    * The region of the SQS queue.
    *
-   * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+   * Currently a required field, but marked as optional because we may infer
+   * it from other fields in the future.
    */
   region?: string | null;
   /**

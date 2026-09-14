@@ -40,7 +40,8 @@ interface _StreamSinkInFields {
   /**
    * Whether the sink will receive events.
    *
-   * If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+   * If the sink is `enabled`, any events posted to the stream will be
+   * dispatched to the Sink in the same order that events were posted to the stream.
    *
    * If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
    */
@@ -55,7 +56,10 @@ interface _StreamSinkInFields {
    * Note that we will never send an empty batch of events to the Sink.
    */
   maxWaitSecs?: number;
-  /** A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events. */
+  /**
+   * A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out
+   * any events.
+   */
   eventTypes?: string[];
   channels?: string[];
   metadata?: { [key: string]: string };

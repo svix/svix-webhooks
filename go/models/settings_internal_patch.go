@@ -17,7 +17,9 @@ type SettingsInternalPatch struct {
 	CustomFontFamilyUrl   utils.Nullable[string]                `json:"customFontFamilyUrl"`
 	// A CSS `font-family` value, used as-is by the App Portal.
 	//
-	// Can be combined with `customFontFamily`, which only accepts one of the fonts the App Portal knows how to load: when both are set, that font is placed first and this stack provides the fallbacks.
+	// Can be combined with `customFontFamily`, which only accepts one of the
+	// fonts the App Portal knows how to load: when both are set, that font is
+	// placed first and this stack provides the fallbacks.
 	CustomFontStack               utils.Nullable[string]             `json:"customFontStack"`
 	DisableEndpointOnFailure      *bool                              `json:"disableEndpointOnFailure,omitempty"`
 	DisplayName                   utils.Nullable[string]             `json:"displayName"`

@@ -24,7 +24,8 @@ module Svix
     attr_accessor :external_id
     # The region of the EventBridge bus.
     #
-    # Currently a required field, but marked as optional because we may infer it from other fields in the future.
+    # Currently a required field, but marked as optional because we may infer
+    # it from other fields in the future.
     attr_accessor :region
 
     ALL_FIELD ||= [

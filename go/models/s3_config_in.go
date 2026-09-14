@@ -13,7 +13,8 @@ type S3ConfigIn struct {
 	SecretAccessKey *string `json:"secretAccessKey,omitempty"`
 	// The region of the S3 bucket
 	//
-	// Currently a required field, but marked as optional because we may infer it from other fields in the future.
+	// Currently a required field, but marked as optional because we may infer
+	// it from other fields in the future.
 	Region      *string `json:"region,omitempty"`
 	EndpointUrl *string `json:"endpointUrl,omitempty"`
 	RoleArn     *string `json:"roleArn,omitempty"` // Role ARN for delegated authentication

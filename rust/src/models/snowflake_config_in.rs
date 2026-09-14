@@ -4,8 +4,8 @@ use serde::{Deserialize, Serialize};
 /// Configuration parameters for defining a Snowflake sink.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct SnowflakeConfigIn {
-    /// PEM-encoded private key used for signing token-based requests to the
-    /// Snowflake API.
+    /// PEM-encoded private key used for signing token-based requests
+    /// to the Snowflake API.
     ///
     /// Beginning/end delimiters are not required.
     ///

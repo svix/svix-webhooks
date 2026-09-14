@@ -20,7 +20,8 @@ class S3ConfigIn(BaseModel):
     region: t.Optional[str] = None
     """The region of the S3 bucket
 
-    Currently a required field, but marked as optional because we may infer it from other fields in the future."""
+    Currently a required field, but marked as optional because we may infer
+    it from other fields in the future."""
 
     endpoint_url: t.Optional[str] = None
 

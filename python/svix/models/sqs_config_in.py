@@ -12,7 +12,8 @@ class SqsConfigIn(BaseModel):
     region: t.Optional[str] = None
     """The region of the SQS queue.
 
-    Currently a required field, but marked as optional because we may infer it from other fields in the future."""
+    Currently a required field, but marked as optional because we may infer
+    it from other fields in the future."""
 
     access_key_id: t.Optional[str] = None
     """Access key ID.

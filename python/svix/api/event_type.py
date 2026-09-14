@@ -67,7 +67,8 @@ class EventTypeImportOpenapiOptions(BaseOptions):
 @dataclass
 class EventTypeDeleteOptions(BaseOptions):
     expunge: t.Optional[bool] = None
-    """By default event types are archived when "deleted". Passing this to `true` deletes them entirely."""
+    """By default event types are archived when "deleted". Passing this to `true` deletes them
+entirely."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(

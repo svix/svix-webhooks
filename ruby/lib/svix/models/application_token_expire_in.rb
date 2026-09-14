@@ -8,7 +8,8 @@ module Svix
     attr_accessor :expiry
     # An optional list of session ids.
     #
-    # If any session ids are specified, only Application tokens created with that session id will be expired.
+    # If any session ids are specified, only Application tokens created with that
+    # session id will be expired.
     attr_accessor :session_ids
 
     ALL_FIELD ||= ["expiry", "session_ids"].freeze
