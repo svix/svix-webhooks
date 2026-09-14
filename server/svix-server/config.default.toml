@@ -109,6 +109,11 @@ api_enabled = true
 # Should this instance run the message worker
 worker_enabled = true
 
+# Should this instance run the expired message cleaner, which nulls payloads and deletes
+# message contents for messages past their expiration. Message rows themselves are kept
+# regardless, to preserve pagination, and can be deleted with the `prune` command.
+expired_message_cleaner_enabled = true
+
 # Should this instance run background migrations
 background_migrations_enabled = true
 

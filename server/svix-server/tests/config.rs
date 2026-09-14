@@ -13,6 +13,25 @@ fn test_environment_parsing() {
     test_retry_schedule_parsing();
     test_retry_schedule_parsing_legacy();
     test_proxy_addr_from_env_parsing();
+    test_expired_message_cleaner_parsing();
+}
+
+#[allow(clippy::result_large_err)]
+fn test_expired_message_cleaner_parsing() {
+    figment::Jail::expect_with(|jail| {
+        jail.set_env("SVIX_JWT_SECRET", "x");
+
+        // Defaults to enabled
+        let cfg = load().unwrap();
+        assert!(cfg.expired_message_cleaner_enabled);
+
+        jail.set_env("SVIX_EXPIRED_MESSAGE_CLEANER_ENABLED", "false");
+
+        let cfg = load().unwrap();
+        assert!(!cfg.expired_message_cleaner_enabled);
+
+        Ok(())
+    });
 }
 
 #[allow(clippy::result_large_err)]

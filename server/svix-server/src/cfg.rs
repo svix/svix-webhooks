@@ -216,6 +216,12 @@ pub struct ConfigurationInner {
     /// Should this instance run the message worker
     pub worker_enabled: bool,
 
+    /// Should this instance run the expired message cleaner, which nulls payloads and deletes
+    /// message contents for messages past their expiration. Message rows themselves are kept
+    /// regardless, to preserve pagination, and can be deleted with the `prune` command.
+    #[serde(default = "default_true")]
+    pub expired_message_cleaner_enabled: bool,
+
     /// Subnets to whitelist for outbound webhooks. Note that allowing endpoints in private IP space
     /// is a security risk and should only be allowed if you are using the service internally or for
     /// testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`

@@ -219,6 +219,7 @@ pub async fn run_with_prefix(
 
     let with_api = cfg.api_enabled;
     let with_worker = cfg.worker_enabled;
+    let with_expired_message_cleaner = cfg.expired_message_cleaner_enabled;
     let with_background_migrations = cfg.background_migrations_enabled;
     let listen_address = cfg.listen_address;
 
@@ -260,7 +261,7 @@ pub async fn run_with_prefix(
             }
         },
         async {
-            if with_worker {
+            if with_worker && with_expired_message_cleaner {
                 tracing::debug!("Expired message cleaner: Started");
                 expired_message_cleaner_loop(&pool).await
             } else {
