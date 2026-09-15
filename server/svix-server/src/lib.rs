@@ -134,6 +134,18 @@ fn warn_if_risky_redis_pending_timeout(cfg: &Configuration) {
         );
     }
 }
+
+/// OTLP log export needs a collector to export to; `opentelemetry_logs_enabled` on its own
+/// silently does nothing. See the corresponding gate in [`setup_tracing`].
+fn warn_if_otlp_logs_without_address(cfg: &Configuration) {
+    if cfg.opentelemetry_logs_enabled && cfg.opentelemetry_address.is_none() {
+        tracing::warn!(
+            "opentelemetry_logs_enabled is set but opentelemetry_address is not; log events \
+             will not be exported. Set opentelemetry_address to enable OTLP log export."
+        );
+    }
+}
+
 #[derive(Clone)]
 pub struct AppState {
     db: DatabaseConnection,
@@ -151,6 +163,7 @@ pub async fn run_with_prefix(
     listener: Option<TcpListener>,
 ) {
     warn_if_risky_redis_pending_timeout(&cfg);
+    warn_if_otlp_logs_without_address(&cfg);
 
     tracing::debug!("DB: Initializing pool");
     let pool = init_db(&cfg).await;
@@ -372,6 +385,7 @@ pub fn setup_tracing(
 
     let (otel_layer, otel_tracer_provider) = mapped.unzip();
 
+    // Both are required; `warn_if_otlp_logs_without_address` warns if only the flag is set.
     let mapped_logs = cfg
         .opentelemetry_address
         .as_ref()
