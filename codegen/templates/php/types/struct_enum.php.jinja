@@ -1,0 +1,193 @@
+{% from "types/macros.php.jinja" import field_from_json, field_to_json -%}
+{% set type_name = type.name | to_upper_camel_case -%}
+{% set enum_type_name = type_name ~ "Config" -%}
+{% set disc_field = type.discriminator_field -%}
+{% set content_field = type.content_field -%}
+
+namespace Svix\Models;
+
+{% if type.description is defined -%}
+{{ type.description | to_doc_comment(style="php_class") }}
+{% endif -%}
+class {{ type_name }} implements \JsonSerializable
+{
+    private array $setFields = [];
+
+    /**
+     * @param {{ enum_type_name }} $config
+    {% for field in type.fields -%}
+        {%- set optional_prefix -%}{% if not field.required %}|null{% endif %}{%- endset -%}
+     * @param {{ field.type.to_phpdoc() }}{{ optional_prefix }} ${{ field.name | to_lower_camel_case }} {{ field.description | to_doc_comment(style="php_field") }}
+    {% endfor -%}
+     */
+    private function __construct(
+        public readonly {{ enum_type_name }} $config,
+        {% for field in type.fields | selectattr("required") -%}
+        public readonly {{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }},
+        {% endfor -%}
+        {% for field in type.fields | selectattr("required", "false") -%}
+        public readonly ?{{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }} = null,
+        {% endfor -%}
+        array $setFields = []
+    ) {
+        $this->setFields = $setFields;
+    }
+
+    /**
+     * Create an instance of {{ type_name }} with required fields
+     */
+    public static function create(
+        {{ enum_type_name }} $config,
+        {% for field in type.fields | selectattr("required") -%}
+        {{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }},
+        {% endfor -%}
+    ): self
+    {
+        return new self(
+            config: $config,
+            {% for field in type.fields -%}
+            {{ field.name | to_lower_camel_case }}: {{ "$" ~ field.name | to_lower_camel_case if field.required else "null" }},
+            {% endfor -%}
+            setFields: [
+                'config' => true,
+                {%- for field in type.fields | selectattr("required") -%}
+                '{{ field.name | to_lower_camel_case }}' => true,
+                {%- endfor -%}
+            ]
+        );
+    }
+
+    {% for field in type.fields | selectattr("required", "false") -%}
+    public function with{{ field.name | to_upper_camel_case }}(?{{ field.type.to_php() }} ${{ field.name | to_lower_camel_case }}): self
+    {
+        $setFields = $this->setFields;
+        $setFields['{{ field.name | to_lower_camel_case }}'] = true;
+
+        return new self(
+            config: $this->config,
+            {% for inner_field in type.fields -%}
+            {{ inner_field.name | to_lower_camel_case }}: {% if field.name != inner_field.name %}$this->{{ inner_field.name | to_lower_camel_case }}{% else %}${{ field.name | to_lower_camel_case }}{% endif %},
+            {% endfor -%}
+            setFields: $setFields
+        );
+    }
+
+    {% endfor -%}
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize(): mixed
+    {
+        $data = [
+            '{{ disc_field }}' => $this->config->variantName(),
+            '{{ content_field }}' => $this->config,
+        {% for field in type.fields | selectattr("required") | selectattr("nullable", "false") -%}
+            {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+            '{{ field.name }}' => {{ field_to_json(field_expr, field.type, field.required, type_name) }},
+        {% endfor -%}
+        ];
+
+        {% for field in type.fields | selectattr("required", "false") | selectattr("nullable") -%}
+        if (isset($this->setFields['{{ field.name | to_lower_camel_case }}'])) {
+            {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+            $data['{{ field.name }}'] = {{ field_to_json(field_expr, field.type, field.required, type_name) }};
+        }
+        {% endfor -%}
+        {% for field in type.fields | selectattr("required", "false") | selectattr("nullable", "false") -%}
+        if ($this->{{ field.name | to_lower_camel_case }} !== null) {
+            {% set field_expr %}$this->{{ field.name | to_lower_camel_case }}{% endset -%}
+            $data['{{ field.name }}'] = {{ field_to_json(field_expr, field.type, field.required, type_name) }};
+        }
+        {% endfor -%}
+
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
+    }
+
+    /**
+     * Create an instance from a mixed obj
+     */
+    public static function fromMixed(mixed $data): self
+    {
+        return new self(
+            config: {{ enum_type_name }}::fromTypeAndConfig(
+                \Svix\Utils::deserializeString($data, '{{ disc_field }}', true, '{{ type_name }}'),
+                \Svix\Utils::getValFromJson($data, '{{ content_field }}', false, '{{ type_name }}') ?? []
+            ),
+            {% for field in type.fields -%}
+            {{ field.name | to_lower_camel_case }}: {{ field_from_json(field.name, field.type, field.required, type_name) }}
+            {%- if not loop.last %},{% endif %}
+
+            {% endfor -%}
+        );
+    }
+
+    /**
+     * Create an instance from a json string
+     */
+    public static function fromJson(string $json): self
+    {
+        $data = json_decode(json: $json, associative: true, depth: 512, flags: JSON_THROW_ON_ERROR);
+        return self::fromMixed($data);
+    }
+}
+
+abstract class {{ enum_type_name }} implements \JsonSerializable
+{
+    abstract public function variantName(): string;
+
+    abstract public function configPayload(): mixed;
+
+    {% for variant in type.variants -%}
+        {% set variant_class = variant.name | to_upper_camel_case -%}
+        {% set variant_prop = variant.name | to_lower_camel_case -%}
+    public static function {{ variant_prop }}({% if variant.schema_ref is defined %}{{ variant.schema_ref | to_upper_camel_case }} ${{ variant_prop }}{% endif %}): {{ enum_type_name }}\{{ variant_class }}
+    {
+        return new {{ enum_type_name }}\{{ variant_class }}({% if variant.schema_ref is defined %}${{ variant_prop }}{% endif %});
+    }
+
+    {% endfor -%}
+    public static function fromTypeAndConfig(string $type, mixed $config): self
+    {
+        $config ??= [];
+
+        return match ($type) {
+            {% for variant in type.variants -%}
+                {% set variant_prop = variant.name | to_lower_camel_case -%}
+            '{{ variant.name }}' => self::{{ variant_prop }}({% if variant.schema_ref is defined %}{{ variant.schema_ref | to_upper_camel_case }}::fromMixed($config){% endif %}),
+            {% endfor -%}
+            default => throw new \InvalidArgumentException("Unknown type: {$type}"),
+        };
+    }
+
+    public function jsonSerialize(): mixed
+    {
+        return \Svix\Utils::newStdClassIfArrayIsEmpty($this->configPayload());
+    }
+}
+
+namespace Svix\Models\{{ enum_type_name }};
+
+{% for variant in type.variants -%}
+{% set variant_class = variant.name | to_upper_camel_case -%}
+{% set variant_prop = variant.name | to_lower_camel_case -%}
+final class {{ variant_class }} extends \Svix\Models\{{ enum_type_name }}
+{
+    {% if variant.schema_ref is defined -%}
+    public function __construct(public readonly \Svix\Models\{{ variant.schema_ref | to_upper_camel_case }} ${{ variant_prop }})
+    {
+    }
+
+    {% endif -%}
+    public function variantName(): string
+    {
+        return '{{ variant.name }}';
+    }
+
+    public function configPayload(): mixed
+    {
+        return {% if variant.schema_ref is defined %}$this->{{ variant_prop }}{% else %}new \stdClass(){% endif %};
+    }
+}
+
+{% endfor -%}
