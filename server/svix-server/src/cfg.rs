@@ -401,7 +401,7 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
 }
 
 impl ConfigurationInner {
-    pub(self) fn queue_dsn(&self) -> Option<&str> {
+    pub(crate) fn queue_dsn(&self) -> Option<&str> {
         self.queue_dsn.as_deref().or(self.redis_dsn.as_deref())
     }
 

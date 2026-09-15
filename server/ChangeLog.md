@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Fix Redis queue initialization to consistently use `queue_dsn`
 
 ## Version 1.101.0
 * Add `v1.message.bulk-expunge-content` endpoint
