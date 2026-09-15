@@ -16,7 +16,8 @@ module Svix
     attr_accessor :channels
     # Optionally creates a new application alongside the message.
     #
-    # If the application id or uid that is used in the path already exists, this argument is ignored.
+    # If the application id or uid that is used in the path already exists,
+    # this argument is ignored.
     attr_accessor :application
     # List of free-form tags that can be filtered by when listing messages
     attr_accessor :tags
@@ -24,11 +25,14 @@ module Svix
     attr_accessor :transformations_params
     # The date and time at which the message will be delivered.
     #
-    # Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future.
+    # Note that this time is best-effort-only. Must be at least one minute
+    # and no more than 24 hours in the future.
     attr_accessor :deliver_at
-    # Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
+    # Optional number of days to retain the message payload. Defaults to 90.
+    # Note that this is mutually exclusive with `payloadRetentionHours`.
     attr_accessor :payload_retention_period
-    # Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
+    # Optional number of hours to retain the message payload. Note that
+    # this is mutually exclusive with `payloadRetentionPeriod`.
     attr_accessor :payload_retention_hours
 
     ALL_FIELD ||= [

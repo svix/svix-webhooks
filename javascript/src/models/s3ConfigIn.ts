@@ -17,7 +17,8 @@ export interface S3ConfigIn {
   /**
    * The region of the S3 bucket
    *
-   * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+   * Currently a required field, but marked as optional because we may infer
+   * it from other fields in the future.
    */
   region?: string | null;
   endpointUrl?: string | null;

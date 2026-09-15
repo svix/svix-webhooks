@@ -8,11 +8,13 @@ module Svix
     attr_accessor :url
     # Username to access Clickhouse.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Currently a required field, but marked as optional because we may add
+    # different authentication in the future.
     attr_accessor :username
     # Password to access Clickhouse.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Currently a required field, but marked as optional because we may add
+    # different authentication in the future.
     attr_accessor :password
     # The Clickhouse database to connect to.
     attr_accessor :database

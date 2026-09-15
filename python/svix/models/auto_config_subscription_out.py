@@ -10,6 +10,7 @@ class AutoConfigSubscriptionOut(BaseModel):
     created_at: datetime
 
     token_censored: str
+    """The censored AutoConfig token"""
 
     id: str
     """The AutoConfigSubscription's ID."""

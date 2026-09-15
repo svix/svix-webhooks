@@ -6,13 +6,15 @@ export interface ClickhouseConfigIn {
   /**
    * Username to access Clickhouse.
    *
-   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   * Currently a required field, but marked as optional because we may add
+   * different authentication in the future.
    */
   username?: string | null;
   /**
    * Password to access Clickhouse.
    *
-   * Currently a required field, but marked as optional because we may add different authentication in the future.
+   * Currently a required field, but marked as optional because we may add
+   * different authentication in the future.
    */
   password?: string | null;
   /** The Clickhouse database to connect to. */

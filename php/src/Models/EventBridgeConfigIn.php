@@ -24,7 +24,8 @@ class EventBridgeConfigIn implements \JsonSerializable
      * Can only be set if `role_arn` is Some
      * @param string|null $region The region of the EventBridge bus.
      *
-     * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+     * Currently a required field, but marked as optional because we may infer
+     * it from other fields in the future.
      */
     private function __construct(
         public readonly string $eventBusName,

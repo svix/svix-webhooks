@@ -10,7 +10,8 @@ class AutoConfigOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string $id the AutoConfigSubscription's ID
+     * @param string $token The AutoConfig token
+     * @param string $id    the AutoConfigSubscription's ID
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,

@@ -4,7 +4,8 @@ require "json"
 
 module Svix
   class PostgresConfigIn
-    # PostgreSQL connection URL, e.g. `postgres://user@host:5432/dbname?sslmode=require`.
+    # PostgreSQL connection URL, e.g.
+    # `postgres://user@host:5432/dbname?sslmode=require`.
     #
     # Do NOT embed a password here; use the `password` field instead.
     attr_accessor :url
@@ -12,11 +13,14 @@ module Svix
     attr_accessor :password
     # Table to insert into. May be schema-qualified (e.g. `public.events`).
     #
-    # Quote characters are not supported. Each dot-separated segment is automatically double-quoted when the query is built, so `public.events` becomes `"public"."events"`.
+    # Quote characters are not supported. Each dot-separated segment is automatically
+    # double-quoted when the query is built, so `public.events` becomes `"public"."events"`.
     attr_accessor :table_name
     # PEM-encoded CA certificate used to verify the Postgres server's TLS certificate.
     #
-    # Supply this to trust a private or self-signed CA when connecting with `sslmode=verify-ca` or `sslmode=verify-full`. Without it, only the built-in public roots are trusted.
+    # Supply this to trust a private or self-signed CA when connecting with
+    # `sslmode=verify-ca` or `sslmode=verify-full`. Without it, only the built-in
+    # public roots are trusted.
     attr_accessor :ssl_root_cert
 
     ALL_FIELD ||= ["url", "password", "table_name", "ssl_root_cert"].freeze

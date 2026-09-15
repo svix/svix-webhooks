@@ -3,7 +3,8 @@ package models
 
 import "time"
 
-// A model containing information on a given message plus additional fields on the last attempt for that message.
+// A model containing information on a given message plus additional fields on the last attempt for
+// that message.
 type EndpointMessageOut struct {
 	Status      MessageStatus     `json:"status"`
 	StatusText  MessageStatusText `json:"statusText"`

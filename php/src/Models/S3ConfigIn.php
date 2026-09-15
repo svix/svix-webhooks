@@ -18,7 +18,8 @@ class S3ConfigIn implements \JsonSerializable
      * Required (along with `access_key_id`) if `role_arn` is null
      * @param string|null $region the region of the S3 bucket
      *
-     * Currently a required field, but marked as optional because we may infer it from other fields in the future
+     * Currently a required field, but marked as optional because we may infer
+     * it from other fields in the future
      * @param string|null $roleArn    Role ARN for delegated authentication
      * @param string|null $externalId Shared secret passed as the STS ExternalId.
      *

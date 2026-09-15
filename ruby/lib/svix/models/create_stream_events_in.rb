@@ -7,7 +7,8 @@ module Svix
     attr_accessor :events
     # Optionally creates a new Stream alongside the events.
     #
-    # If the stream id or uid that is used in the path already exists, this argument is ignored.
+    # If the stream id or uid that is used in the path already exists,
+    # this argument is ignored.
     attr_accessor :stream
 
     ALL_FIELD ||= ["events", "stream"].freeze

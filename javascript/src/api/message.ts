@@ -43,7 +43,8 @@ export interface MessageListOptions {
   /**
    * When `true` message payloads are included in the response.
    *
-   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+   * without specifying this parameter.
    */
   withContent?: boolean;
   /** Filter messages matching the provided tag. */
@@ -56,7 +57,8 @@ export interface MessageCreateOptions {
   /**
    * When `true`, message payloads are included in the response.
    *
-   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+   * without specifying this parameter.
    */
   withContent?: boolean;
   idempotencyKey?: string;
@@ -70,7 +72,8 @@ export interface MessageGetOptions {
   /**
    * When `true` message payloads are included in the response.
    *
-   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+   * Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+   * without specifying this parameter.
    */
   withContent?: boolean;
 }

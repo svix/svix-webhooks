@@ -49,7 +49,7 @@ public class AutoConfigOut {
     }
 
     /**
-     * Get token
+     * The AutoConfig token
      *
      * @return token
      */

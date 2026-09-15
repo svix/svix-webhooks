@@ -6,7 +6,8 @@ type SqsConfigIn struct {
 	QueueUrl string `json:"queueUrl"`
 	// The region of the SQS queue.
 	//
-	// Currently a required field, but marked as optional because we may infer it from other fields in the future.
+	// Currently a required field, but marked as optional because we may infer
+	// it from other fields in the future.
 	Region *string `json:"region,omitempty"`
 	// Access key ID.
 	//

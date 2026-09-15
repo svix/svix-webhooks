@@ -10,9 +10,10 @@ class AutoConfigSubscriptionOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string      $id     the AutoConfigSubscription's ID
-     * @param string|null $endpId the Endpoint's ID
-     * @param string|null $destId the StreamSink's ID
+     * @param string      $tokenCensored The censored AutoConfig token
+     * @param string      $id            the AutoConfigSubscription's ID
+     * @param string|null $endpId        the Endpoint's ID
+     * @param string|null $destId        the StreamSink's ID
      */
     private function __construct(
         public readonly \DateTimeImmutable $createdAt,
