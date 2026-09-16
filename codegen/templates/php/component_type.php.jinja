@@ -8,4 +8,6 @@ declare(strict_types=1);
     {% include "types/string_enum.php.jinja" -%}
 {% elif type.kind == "integer_enum" -%}
     {% include "types/integer_enum.php.jinja" -%}
+{% elif type.kind == "struct_enum" -%}
+    {% include "types/struct_enum.php.jinja" -%}
 {% endif -%}
