@@ -1707,6 +1707,10 @@
         "php/src/ApiInternal/MessagePollerv2.php"
     ],
     [
+        "php/src/ApiInternal/MessagePollerv2ConsumerCommitOptions.php",
+        "php/src/ApiInternal/MessagePollerv2ConsumerPollOptions.php"
+    ],
+    [
         "php/src/Models/AggregateEventTypesOut.php",
         "php/src/Models/ApiTokenOut.php",
         "php/src/Models/AppPortalAccessIn.php",
