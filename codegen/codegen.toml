@@ -418,6 +418,23 @@ extra_codegen_args = [
 [[php.task]]
 template = "templates/php/operation_options.php.jinja"
 output_dir = "php/src/Api"
+extra_codegen_args = [
+    "--context={\"namespace\":\"Svix\\\\Api\"}",
+    "--exclude-op-id=v1.ingest.source.list",
+    "--exclude-op-id=v1.ingest.source.create",
+    "--exclude-op-id=v1.ingest.source.get",
+    "--exclude-op-id=v1.ingest.source.upsert",
+    "--exclude-op-id=v1.ingest.source.delete",
+]
+[[php.task]]
+template = "templates/php/operation_options.php.jinja"
+output_dir = "php/src/ApiInternal"
+extra_codegen_args = [
+    "--context={\"namespace\":\"Svix\\\\ApiInternal\"}",
+    "--include-mode=only-specified",
+    "--include-op-id=v1.message.pollerv2.consumer-poll",
+    "--include-op-id=v1.message.pollerv2.consumer-commit",
+]
 [[php.task]]
 template = "templates/php/summary.php.jinja"
 output_dir = "php/src"
