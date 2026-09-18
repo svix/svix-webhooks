@@ -54,6 +54,13 @@ type EndpointGetStatsOptions struct {
 	Until *time.Time
 }
 
+type EndpointGetAttemptStatsOptions struct {
+	// Filter the range to data starting from this date.
+	Since *time.Time
+	// Filter the range to data ending by this date.
+	Until *time.Time
+}
+
 type EndpointRecoverOptions struct {
 	IdempotencyKey *string
 }
@@ -484,6 +491,42 @@ func (endpoint Endpoint) GetStats(
 		endpoint.client,
 		"GET",
 		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+		pathMap,
+		queryMap,
+		nil,
+		nil,
+	)
+}
+
+// Get basic statistics about attempted deliveries for the endpoint.
+//
+// Time windows are always rounded to hour granularity
+func (endpoint Endpoint) GetAttemptStats(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	o *EndpointGetAttemptStatsOptions,
+) (*models.EndpointAttemptStats, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	queryMap := map[string]string{}
+	if o == nil {
+		opts := EndpointGetAttemptStatsOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("since", o.Since, queryMap, &err)
+	internal.SerializeParamToMap("until", o.Until, queryMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[any, models.EndpointAttemptStats](
+		ctx,
+		endpoint.client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
 		pathMap,
 		queryMap,
 		nil,

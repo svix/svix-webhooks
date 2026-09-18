@@ -54,6 +54,7 @@ export { type DocusignConfigOut } from "./docusignConfigOut";
 export { type EasypostConfig } from "./easypostConfig";
 export { type EasypostConfigOut } from "./easypostConfigOut";
 export { type EmptyResponse } from "./emptyResponse";
+export { type EndpointAttemptStats } from "./endpointAttemptStats";
 export { type EndpointHeadersIn } from "./endpointHeadersIn";
 export { type EndpointHeadersOut } from "./endpointHeadersOut";
 export { type EndpointHeadersPatchIn } from "./endpointHeadersPatchIn";

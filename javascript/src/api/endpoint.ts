@@ -2,6 +2,10 @@
 
 import { type BulkReplayIn, BulkReplayInSerializer } from "../models/bulkReplayIn";
 import {
+  type EndpointAttemptStats,
+  EndpointAttemptStatsSerializer,
+} from "../models/endpointAttemptStats";
+import {
   type EndpointHeadersIn,
   EndpointHeadersInSerializer,
 } from "../models/endpointHeadersIn";
@@ -73,6 +77,13 @@ export interface EndpointBulkReplayOptions {
 }
 
 export interface EndpointGetStatsOptions {
+  /** Filter the range to data starting from this date. */
+  since?: Date | null;
+  /** Filter the range to data ending by this date. */
+  until?: Date | null;
+}
+
+export interface EndpointGetAttemptStatsOptions {
   /** Filter the range to data starting from this date. */
   since?: Date | null;
   /** Filter the range to data ending by this date. */
@@ -392,6 +403,34 @@ export class Endpoint {
     });
 
     return await request.send(this.requestCtx, EndpointStatsSerializer._fromJsonObject);
+  }
+
+  /**
+   * Get basic statistics about attempted deliveries for the endpoint.
+   *
+   * Time windows are always rounded to hour granularity
+   */
+  public async getAttemptStats(
+    appId: string,
+    endpointId: string,
+    options?: EndpointGetAttemptStatsOptions
+  ): Promise<EndpointAttemptStats> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setQueryParams({
+      since: options?.since,
+      until: options?.until,
+    });
+
+    return await request.send(
+      this.requestCtx,
+      EndpointAttemptStatsSerializer._fromJsonObject
+    );
   }
 
   /**

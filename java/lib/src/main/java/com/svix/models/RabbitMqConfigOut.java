@@ -16,9 +16,29 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class RabbitMqConfigOut {
+    @JsonProperty private String uri;
     @JsonProperty private String routingKey;
 
     public RabbitMqConfigOut() {}
+
+    public RabbitMqConfigOut uri(String uri) {
+        this.uri = uri;
+        return this;
+    }
+
+    /**
+     * Get uri
+     *
+     * @return uri
+     */
+    @javax.annotation.Nonnull
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
     public RabbitMqConfigOut routingKey(String routingKey) {
         this.routingKey = routingKey;

@@ -29,7 +29,7 @@ type SettingsInternalOut struct {
 	EnforceHttps                  *bool                   `json:"enforceHttps,omitempty"`
 	EnableChannels                *bool                   `json:"enableChannels,omitempty"`
 	EnableMessageStream           *bool                   `json:"enableMessageStream,omitempty"`
-	AdvancedEndpointTypes         []AdvancedEndpointType  `json:"advancedEndpointTypes,omitempty"`
+	AdvancedDestinations          []AdvancedEndpointType  `json:"advancedDestinations,omitempty"`
 	ReadOnly                      *bool                   `json:"readOnly,omitempty"`
 	EnableIntegrationManagement   *bool                   `json:"enableIntegrationManagement,omitempty"`
 	EnableTransformations         *bool                   `json:"enableTransformations,omitempty"`

@@ -58,6 +58,7 @@ mod docusign_config_out;
 mod easypost_config;
 mod easypost_config_out;
 mod empty_response;
+mod endpoint_attempt_stats;
 mod endpoint_headers_in;
 mod endpoint_headers_out;
 mod endpoint_headers_patch_in;
@@ -319,6 +320,7 @@ pub use self::{
     easypost_config::EasypostConfig,
     easypost_config_out::EasypostConfigOut,
     empty_response::EmptyResponse,
+    endpoint_attempt_stats::EndpointAttemptStats,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
     endpoint_headers_patch_in::EndpointHeadersPatchIn,

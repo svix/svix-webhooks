@@ -44,6 +44,15 @@ pub struct EndpointGetStatsOptions {
 }
 
 #[derive(Default)]
+pub struct EndpointGetAttemptStatsOptions {
+    /// Filter the range to data starting from this date.
+    pub since: Option<chrono::DateTime<chrono::Utc>>,
+
+    /// Filter the range to data ending by this date.
+    pub until: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Default)]
 pub struct EndpointRecoverOptions {
     pub idempotency_key: Option<String>,
 }
@@ -353,6 +362,29 @@ impl<'a> Endpoint<'a> {
         crate::request::Request::new(
             http::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_query_param("since", since)
+        .with_optional_query_param("until", until)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get basic statistics about attempted deliveries for the endpoint.
+    ///
+    /// Time windows are always rounded to hour granularity
+    pub async fn get_attempt_stats(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        options: Option<EndpointGetAttemptStatsOptions>,
+    ) -> Result<EndpointAttemptStats> {
+        let EndpointGetAttemptStatsOptions { since, until } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)
