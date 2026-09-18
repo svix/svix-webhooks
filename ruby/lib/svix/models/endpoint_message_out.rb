@@ -3,7 +3,8 @@
 require "json"
 
 module Svix
-  # A model containing information on a given message plus additional fields on the last attempt for that message.
+  # A model containing information on a given message plus additional fields on the last attempt for
+  # that message.
   class EndpointMessageOut
     attr_accessor :status
     attr_accessor :status_text

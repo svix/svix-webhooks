@@ -3,7 +3,8 @@
 /**
  * Configuration parameters for defining a Redshift sink.
  *
- * For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.
+ * For provisioned clusters, set `cluster_identifier` and `db_user`.
+ * For Redshift Serverless, set `workgroup_name`.
  */
 export interface RedshiftConfigIn {
   /**
@@ -29,7 +30,8 @@ export interface RedshiftConfigIn {
   /**
    * The region of the Redshift DB.
    *
-   * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+   * Currently a required field, but marked as optional because we may infer
+   * it from other fields in the future.
    */
   region?: string | null;
   /** Required for provisioned clusters. */

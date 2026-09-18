@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AutoConfigSubscriptionOut(
     val createdAt: Instant,
+    /** The censored AutoConfig token */
     val tokenCensored: String,
     /** The AutoConfigSubscription's ID. */
     val id: String,

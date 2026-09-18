@@ -24,7 +24,8 @@ class MessageIn(BaseModel):
     application: t.Optional[ApplicationIn] = None
     """Optionally creates a new application alongside the message.
 
-    If the application id or uid that is used in the path already exists, this argument is ignored."""
+    If the application id or uid that is used in the path already exists,
+    this argument is ignored."""
 
     tags: t.Optional[t.List[str]] = None
     """List of free-form tags that can be filtered by when listing messages"""
@@ -35,10 +36,13 @@ class MessageIn(BaseModel):
     deliver_at: t.Optional[datetime] = None
     """The date and time at which the message will be delivered.
 
-    Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future."""
+    Note that this time is best-effort-only. Must be at least one minute
+    and no more than 24 hours in the future."""
 
     payload_retention_period: t.Optional[int] = None
-    """Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`."""
+    """Optional number of days to retain the message payload. Defaults to 90.
+    Note that this is mutually exclusive with `payloadRetentionHours`."""
 
     payload_retention_hours: t.Optional[int] = None
-    """Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`."""
+    """Optional number of hours to retain the message payload. Note that
+    this is mutually exclusive with `payloadRetentionPeriod`."""

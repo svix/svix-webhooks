@@ -38,7 +38,8 @@ pub struct MessageAttemptListByEndpointOptions {
 
     /// When `true` attempt content is included in the response.
     ///
-    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+    /// without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
 
@@ -129,7 +130,8 @@ pub struct MessageAttemptListByMsgOptions {
 
     /// When `true` attempt content is included in the response.
     ///
-    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+    /// without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
 
@@ -206,7 +208,8 @@ pub struct MessageAttemptListAttemptedMessagesOptions {
 
     /// When `true` message payloads are included in the response.
     ///
-    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+    /// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+    /// without specifying this parameter.
     #[arg(long)]
     pub with_content: Option<bool>,
 

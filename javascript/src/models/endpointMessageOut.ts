@@ -2,7 +2,10 @@
 import { type MessageStatus, MessageStatusSerializer } from "./messageStatus";
 import { type MessageStatusText, MessageStatusTextSerializer } from "./messageStatusText";
 
-/** A model containing information on a given message plus additional fields on the last attempt for that message. */
+/**
+ * A model containing information on a given message plus additional fields on the last attempt for
+ * that message.
+ */
 export interface EndpointMessageOut {
   status: MessageStatus;
   statusText: MessageStatusText;

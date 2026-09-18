@@ -8,11 +8,13 @@ module Svix
     attr_accessor :feature_flags
     # How long the token will be valid for, in seconds.
     #
-    # Valid values are between 1 hour and 7 days. The default is 7 days.
+    # Valid values are between 1 hour and 7 days.
+    # The default is 7 days.
     attr_accessor :expiry
     # An optional session ID to attach to the token.
     #
-    # When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
+    # When expiring tokens with "Expire All", you can include the session ID
+    # to only expire tokens that were created with that session ID.
     attr_accessor :session_id
 
     ALL_FIELD ||= ["feature_flags", "expiry", "session_id"].freeze

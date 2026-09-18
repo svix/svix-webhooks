@@ -13,7 +13,8 @@ class SqsConfigIn implements \JsonSerializable
     /**
      * @param string|null $region The region of the SQS queue.
      *
-     * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+     * Currently a required field, but marked as optional because we may infer
+     * it from other fields in the future.
      * @param string|null $accessKeyId Access key ID.
      *
      * Required (along with `secret_access_key`) if `role_arn` is blank.

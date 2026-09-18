@@ -3,8 +3,8 @@ use serde::{Deserialize, Serialize};
 
 /// Configuration parameters for defining a Redshift sink.
 ///
-/// For provisioned clusters, set `cluster_identifier` and `db_user`. For
-/// Redshift Serverless, set `workgroup_name`.
+/// For provisioned clusters, set `cluster_identifier` and `db_user`.
+/// For Redshift Serverless, set `workgroup_name`.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RedshiftConfigIn {
     /// Access key ID.

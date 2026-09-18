@@ -16,8 +16,8 @@ pub struct PostgresConfigIn {
     /// Table to insert into. May be schema-qualified (e.g. `public.events`).
     ///
     /// Quote characters are not supported. Each dot-separated segment is
-    /// automatically double-quoted when the query is built, so `public.events`
-    /// becomes `"public"."events"`.
+    /// automatically double-quoted when the query is built, so
+    /// `public.events` becomes `"public"."events"`.
     #[serde(rename = "tableName")]
     pub table_name: String,
 

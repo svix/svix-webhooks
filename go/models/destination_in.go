@@ -28,22 +28,29 @@ type DestinationIn struct {
 	Uid *string `json:"uid,omitempty"` // An optional unique identifier for the destination.
 	// Whether the destination will receive events.
 	//
-	// If the destination is `enabled`, events sent to the application will be dispatched to the destination in order.
+	// If the destination is `enabled`, events sent to the application will be
+	// dispatched to the destination in order.
 	//
-	// If the destination is `disabled`, events will not be dispatched until the destination is reenabled.
+	// If the destination is `disabled`, events will not be dispatched until the
+	// destination is reenabled.
 	Status    *DestinationStatusIn `json:"status,omitempty"`
 	BatchSize *uint16              `json:"batchSize,omitempty"` // How many events will be batched in a request to the destination.
 	// How long to wait before a batch of events is sent, if the `batchSize` is not reached.
 	//
-	// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after 10 seconds or 100 events, whichever comes first.
+	// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, a request is sent after
+	// 10 seconds or 100 events, whichever comes first.
 	//
 	// Note that an empty batch is never sent to the destination.
-	MaxWaitSecs *uint16             `json:"maxWaitSecs,omitempty"`
-	EventTypes  []string            `json:"eventTypes,omitempty"` // A list of event types that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events.
-	Channels    []string            `json:"channels,omitempty"`   // A list of channels that filter which events are dispatched to the destination. An empty list (or null) will not filter out any events.
-	Metadata    *map[string]string  `json:"metadata,omitempty"`
-	Type        DestinationInType   `json:"type"`
-	Config      DestinationInConfig `json:"config"`
+	MaxWaitSecs *uint16 `json:"maxWaitSecs,omitempty"`
+	// A list of event types that filter which events are dispatched to the destination.
+	// An empty list (or null) will not filter out any events.
+	EventTypes []string `json:"eventTypes,omitempty"`
+	// A list of channels that filter which events are dispatched to the destination.
+	// An empty list (or null) will not filter out any events.
+	Channels []string            `json:"channels,omitempty"`
+	Metadata *map[string]string  `json:"metadata,omitempty"`
+	Type     DestinationInType   `json:"type"`
+	Config   DestinationInConfig `json:"config"`
 }
 
 type DestinationInType string

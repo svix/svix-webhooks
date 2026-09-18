@@ -7,7 +7,8 @@ from .common import BaseModel
 class RedshiftConfigIn(BaseModel):
     """Configuration parameters for defining a Redshift sink.
 
-    For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`."""
+    For provisioned clusters, set `cluster_identifier` and `db_user`.
+    For Redshift Serverless, set `workgroup_name`."""
 
     access_key_id: t.Optional[str] = None
     """Access key ID.
@@ -30,7 +31,8 @@ class RedshiftConfigIn(BaseModel):
     region: t.Optional[str] = None
     """The region of the Redshift DB.
 
-    Currently a required field, but marked as optional because we may infer it from other fields in the future."""
+    Currently a required field, but marked as optional because we may infer
+    it from other fields in the future."""
 
     cluster_identifier: t.Optional[str] = None
     """Required for provisioned clusters."""

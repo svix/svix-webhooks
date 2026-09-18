@@ -5,7 +5,7 @@ import "time"
 
 type AutoConfigSubscriptionOut struct {
 	CreatedAt     time.Time `json:"createdAt"`
-	TokenCensored string    `json:"tokenCensored"`
+	TokenCensored string    `json:"tokenCensored"`    // The censored AutoConfig token
 	Id            string    `json:"id"`               // The AutoConfigSubscription's ID.
 	EndpId        *string   `json:"endpId,omitempty"` // The Endpoint's ID.
 	DestId        *string   `json:"destId,omitempty"` // The StreamSink's ID.

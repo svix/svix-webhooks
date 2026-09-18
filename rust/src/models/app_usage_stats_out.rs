@@ -7,12 +7,6 @@ use super::{
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct AppUsageStatsOut {
-    /// Any app IDs or UIDs received in the request that weren't found.
-    ///
-    /// Stats will be produced for all the others.
-    #[serde(rename = "unresolvedAppIds")]
-    pub unresolved_app_ids: std::collections::BTreeSet<String>,
-
     /// The QueueBackgroundTask's ID.
     pub id: String,
 
@@ -22,4 +16,10 @@ pub struct AppUsageStatsOut {
 
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
+
+    /// Any app IDs or UIDs received in the request that weren't found.
+    ///
+    /// Stats will be produced for all the others.
+    #[serde(rename = "unresolvedAppIds")]
+    pub unresolved_app_ids: std::collections::BTreeSet<String>,
 }

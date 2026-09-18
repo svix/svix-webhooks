@@ -8,7 +8,8 @@ namespace Svix\Models;
 /**
  * Configuration parameters for defining a Redshift sink.
  *
- * For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`.
+ * For provisioned clusters, set `cluster_identifier` and `db_user`.
+ * For Redshift Serverless, set `workgroup_name`.
  */
 class RedshiftConfigIn implements \JsonSerializable
 {
@@ -27,7 +28,8 @@ class RedshiftConfigIn implements \JsonSerializable
      * Can only be set if `role_arn` is Some
      * @param string|null $region The region of the Redshift DB.
      *
-     * Currently a required field, but marked as optional because we may infer it from other fields in the future.
+     * Currently a required field, but marked as optional because we may infer
+     * it from other fields in the future.
      * @param string|null $clusterIdentifier required for provisioned clusters
      * @param string|null $dbUser            required for provisioned clusters
      * @param string|null $workgroupName     required for Redshift Serverless

@@ -27,7 +27,8 @@ type StreamSinkIn struct {
 	Uid *string `json:"uid,omitempty"` // An optional unique identifier for the sink.
 	// Whether the sink will receive events.
 	//
-	// If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+	// If the sink is `enabled`, any events posted to the stream will be
+	// dispatched to the Sink in the same order that events were posted to the stream.
 	//
 	// If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
 	Status    *SinkStatusIn `json:"status,omitempty"`
@@ -37,12 +38,14 @@ type StreamSinkIn struct {
 	// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
 	//
 	// Note that we will never send an empty batch of events to the Sink.
-	MaxWaitSecs *uint16            `json:"maxWaitSecs,omitempty"`
-	EventTypes  []string           `json:"eventTypes,omitempty"` // A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
-	Channels    []string           `json:"channels,omitempty"`
-	Metadata    *map[string]string `json:"metadata,omitempty"`
-	Type        StreamSinkInType   `json:"type"`
-	Config      StreamSinkInConfig `json:"config"`
+	MaxWaitSecs *uint16 `json:"maxWaitSecs,omitempty"`
+	// A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out
+	// any events.
+	EventTypes []string           `json:"eventTypes,omitempty"`
+	Channels   []string           `json:"channels,omitempty"`
+	Metadata   *map[string]string `json:"metadata,omitempty"`
+	Type       StreamSinkInType   `json:"type"`
+	Config     StreamSinkInConfig `json:"config"`
 }
 
 type StreamSinkInType string

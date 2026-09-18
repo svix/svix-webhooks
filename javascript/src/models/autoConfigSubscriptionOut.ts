@@ -3,6 +3,7 @@ import { type Status, StatusSerializer } from "./status";
 
 export interface AutoConfigSubscriptionOut {
   createdAt: Date;
+  /** The censored AutoConfig token */
   tokenCensored: string;
   /** The AutoConfigSubscription's ID. */
   id: string;
