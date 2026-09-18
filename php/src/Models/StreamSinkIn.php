@@ -13,7 +13,8 @@ class StreamSinkIn implements \JsonSerializable
      * @param string|null       $uid    an optional unique identifier for the sink
      * @param SinkStatusIn|null $status Whether the sink will receive events.
      *
-     * If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+     * If the sink is `enabled`, any events posted to the stream will be
+     * dispatched to the Sink in the same order that events were posted to the stream.
      *
      * If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
      * @param int|null $batchSize   how many events will be batched in a request to the Sink
@@ -22,7 +23,8 @@ class StreamSinkIn implements \JsonSerializable
      * For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
      *
      * Note that we will never send an empty batch of events to the Sink.
-     * @param list<string>|null          $eventTypes A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
+     * @param list<string>|null          $eventTypes A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out
+     *                                               any events.
      * @param list<string>|null          $channels
      * @param array<string, string>|null $metadata
      */
