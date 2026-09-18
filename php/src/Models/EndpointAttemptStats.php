@@ -5,37 +5,41 @@ declare(strict_types=1);
 
 namespace Svix\Models;
 
-class RabbitMqConfigOut implements \JsonSerializable
+class EndpointAttemptStats implements \JsonSerializable
 {
     private array $setFields = [];
 
     private function __construct(
-        public readonly string $uri,
-        public readonly string $routingKey,
+        public readonly int $success,
+        public readonly int $fail,
+        public readonly int $canceled,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
     }
 
     /**
-     * Create an instance of RabbitMqConfigOut with required fields.
+     * Create an instance of EndpointAttemptStats with required fields.
      */
     public static function create(
-        string $uri,
-        string $routingKey,
+        int $success,
+        int $fail,
+        int $canceled,
     ): self {
         return new self(
-            uri: $uri,
-            routingKey: $routingKey,
-            setFields: ['uri' => true, 'routingKey' => true]
+            success: $success,
+            fail: $fail,
+            canceled: $canceled,
+            setFields: ['success' => true, 'fail' => true, 'canceled' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'uri' => $this->uri,
-            'routingKey' => $this->routingKey];
+            'success' => $this->success,
+            'fail' => $this->fail,
+            'canceled' => $this->canceled];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -46,8 +50,9 @@ class RabbitMqConfigOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            uri: \Svix\Utils::deserializeString($data, 'uri', true, 'RabbitMqConfigOut'),
-            routingKey: \Svix\Utils::deserializeString($data, 'routingKey', true, 'RabbitMqConfigOut')
+            success: \Svix\Utils::deserializeInt($data, 'success', true, 'EndpointAttemptStats'),
+            fail: \Svix\Utils::deserializeInt($data, 'fail', true, 'EndpointAttemptStats'),
+            canceled: \Svix\Utils::deserializeInt($data, 'canceled', true, 'EndpointAttemptStats')
         );
     }
 

@@ -56,6 +56,7 @@ from .docusign_config_out import DocusignConfigOut
 from .easypost_config import EasypostConfig
 from .easypost_config_out import EasypostConfigOut
 from .empty_response import EmptyResponse
+from .endpoint_attempt_stats import EndpointAttemptStats
 from .endpoint_headers_in import EndpointHeadersIn
 from .endpoint_headers_out import EndpointHeadersOut
 from .endpoint_headers_patch_in import EndpointHeadersPatchIn
@@ -313,6 +314,7 @@ __all__ = [
     "EasypostConfig",
     "EasypostConfigOut",
     "EmptyResponse",
+    "EndpointAttemptStats",
     "EndpointHeadersIn",
     "EndpointHeadersOut",
     "EndpointHeadersPatchIn",

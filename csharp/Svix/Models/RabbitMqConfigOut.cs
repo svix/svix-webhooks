@@ -6,6 +6,9 @@ namespace Svix.Models
 {
     public class RabbitMqConfigOut
     {
+        [JsonProperty("uri", Required = Required.Always)]
+        public required string Uri { get; set; }
+
         [JsonProperty("routingKey", Required = Required.Always)]
         public required string RoutingKey { get; set; }
 
@@ -14,6 +17,7 @@ namespace Svix.Models
             StringBuilder sb = new StringBuilder();
 
             sb.Append("class RabbitMqConfigOut {\n");
+            sb.Append("  Uri: ").Append(Uri).Append('\n');
             sb.Append("  RoutingKey: ").Append(RoutingKey).Append('\n');
             sb.Append("}\n");
             return sb.ToString();

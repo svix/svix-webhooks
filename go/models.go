@@ -59,6 +59,7 @@ type (
 	EasypostConfig                            = models.EasypostConfig
 	EasypostConfigOut                         = models.EasypostConfigOut
 	EmptyResponse                             = models.EmptyResponse
+	EndpointAttemptStats                      = models.EndpointAttemptStats
 	EndpointHeadersIn                         = models.EndpointHeadersIn
 	EndpointHeadersOut                        = models.EndpointHeadersOut
 	EndpointHeadersPatchIn                    = models.EndpointHeadersPatchIn

@@ -55,9 +55,9 @@ pub use self::{
     destination::{Destination, DestinationCreateOptions, DestinationListOptions},
     destination_transformation::DestinationTransformation,
     endpoint::{
-        Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetStatsOptions,
-        EndpointListOptions, EndpointRecoverOptions, EndpointReplayMissingOptions,
-        EndpointRotateSecretOptions, EndpointSendExampleOptions,
+        Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetAttemptStatsOptions,
+        EndpointGetStatsOptions, EndpointListOptions, EndpointRecoverOptions,
+        EndpointReplayMissingOptions, EndpointRotateSecretOptions, EndpointSendExampleOptions,
     },
     endpoint_transformation::EndpointTransformation,
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},

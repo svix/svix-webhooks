@@ -3,21 +3,22 @@
 require "json"
 
 module Svix
-  class RabbitMqConfigOut
-    attr_accessor :uri
-    attr_accessor :routing_key
+  class EndpointAttemptStats
+    attr_accessor :success
+    attr_accessor :fail
+    attr_accessor :canceled
 
-    ALL_FIELD ||= ["uri", "routing_key"].freeze
+    ALL_FIELD ||= ["success", "fail", "canceled"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
       unless attributes.is_a?(Hash)
-        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::RabbitMqConfigOut` new method")
+        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::EndpointAttemptStats` new method")
       end
 
       attributes.each do |k, v|
         unless ALL_FIELD.include?(k.to_s)
-          fail(ArgumentError, "The field #{k} is not part of Svix::RabbitMqConfigOut")
+          fail(ArgumentError, "The field #{k} is not part of Svix::EndpointAttemptStats")
         end
 
         instance_variable_set("@#{k}", v)
@@ -28,15 +29,17 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["uri"] = attributes["uri"]
-      attrs["routing_key"] = attributes["routingKey"]
+      attrs["success"] = attributes["success"]
+      attrs["fail"] = attributes["fail"]
+      attrs["canceled"] = attributes["canceled"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["uri"] = Svix::serialize_primitive(@uri) unless @uri.nil?
-      out["routingKey"] = Svix::serialize_primitive(@routing_key) unless @routing_key.nil?
+      out["success"] = Svix::serialize_primitive(@success) unless @success.nil?
+      out["fail"] = Svix::serialize_primitive(@fail) unless @fail.nil?
+      out["canceled"] = Svix::serialize_primitive(@canceled) unless @canceled.nil?
       out
     end
 

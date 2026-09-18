@@ -8,6 +8,7 @@ from deprecated import deprecated
 from .. import models
 from ..models import (
     BulkReplayIn,
+    EndpointAttemptStats,
     EndpointHeadersIn,
     EndpointHeadersOut,
     EndpointHeadersPatchIn,
@@ -103,6 +104,22 @@ class EndpointBulkReplayOptions(BaseOptions):
 
 @dataclass
 class EndpointGetStatsOptions(BaseOptions):
+    since: t.Optional[datetime] = None
+    """Filter the range to data starting from this date."""
+    until: t.Optional[datetime] = None
+    """Filter the range to data ending by this date."""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "since": self.since,
+                "until": self.until,
+            }
+        )
+
+
+@dataclass
+class EndpointGetAttemptStatsOptions(BaseOptions):
     since: t.Optional[datetime] = None
     """Filter the range to data starting from this date."""
     until: t.Optional[datetime] = None
@@ -413,6 +430,27 @@ class EndpointAsync(ApiBaseAsync):
             header_params=options._header_params(),
         )
         return EndpointStats.model_validate(response.json())
+
+    async def get_attempt_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointGetAttemptStatsOptions = (EndpointGetAttemptStatsOptions()),
+    ) -> EndpointAttemptStats:
+        """Get basic statistics about attempted deliveries for the endpoint.
+
+        Time windows are always rounded to hour granularity"""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return EndpointAttemptStats.model_validate(response.json())
 
     async def recover(
         self,
@@ -765,6 +803,27 @@ class Endpoint(ApiBaseSync):
             header_params=options._header_params(),
         )
         return EndpointStats.model_validate(response.json())
+
+    def get_attempt_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointGetAttemptStatsOptions = (EndpointGetAttemptStatsOptions()),
+    ) -> EndpointAttemptStats:
+        """Get basic statistics about attempted deliveries for the endpoint.
+
+        Time windows are always rounded to hour granularity"""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return EndpointAttemptStats.model_validate(response.json())
 
     def recover(
         self,

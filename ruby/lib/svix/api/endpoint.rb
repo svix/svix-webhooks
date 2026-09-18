@@ -154,6 +154,19 @@ module Svix
       EndpointStats.deserialize(res)
     end
 
+    def get_attempt_stats(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/attempt-stats",
+        query_params: {
+          "since" => options["since"],
+          "until" => options["until"]
+        }
+      )
+      EndpointAttemptStats.deserialize(res)
+    end
+
     def recover(app_id, endpoint_id, recover_in, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(
