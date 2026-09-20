@@ -8,6 +8,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 ## Unreleased
 * Libs/PHP: Add support for `destination` and `stream` APIs
 * Libs/PHP: Add `AutoConfigConsumer`
+* Libs/Python **(Breaking)**: Drop support for Python 3.9 (EOL). Minimum supported version is now 3.10
 
 ## Version 2.5.0
 * Libs **(New)**: Add `autoconfig` API support to create and rotate AutoConfig tokens
