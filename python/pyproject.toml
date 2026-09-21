@@ -6,7 +6,7 @@ authors = [
     { name = "Svix", email = "development@svix.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
     "pydantic >=2.10",
@@ -34,7 +34,6 @@ classifiers = [
     "Typing :: Typed",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -79,7 +78,7 @@ dev = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
@@ -108,7 +107,7 @@ ignore = [
 "svix/models/**.py" = ["I001", "E501"]  # ignore in generated code
 
 [tool.ty.environment]
-python-version = "3.9"
+python-version = "3.10"
 
 [tool.black]
 line-length = 88
