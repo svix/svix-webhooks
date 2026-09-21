@@ -2,7 +2,12 @@
 
 set -ex
 
-mypy svix
+if [[ "${PYTHON_VERSION:-x}" = pypy* ]]; then
+    echo >&2 "mypy doesn't run under pypy. :-("
+else
+    mypy svix
+fi
+
 ty check svix/
 ty check tests/
 ruff check svix/
