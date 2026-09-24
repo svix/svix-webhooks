@@ -14,7 +14,7 @@ defaults:
 jobs:
   check-fmt:
     name: Check formatting
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
@@ -28,7 +28,7 @@ jobs:
 
   check-unused-deps:
     name: Check for unused dependencies
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
 
@@ -40,7 +40,7 @@ jobs:
 
   cargo-sort:
     name: 'Run cargo-sort'
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
         name: Checkout
@@ -55,7 +55,7 @@ jobs:
 
   test-versions:
     name: Server CI
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       matrix:
         # bump this when bumping the MSRV
