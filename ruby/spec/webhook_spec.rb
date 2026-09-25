@@ -46,7 +46,25 @@ describe Svix::Webhook do
 
   describe ".new_using_raw_bytes" do
     it "rejects empty webhook secrets" do
-      expect { Svix::Webhook.new("") }.to raise_error(Svix::EmptyWebhookSecretError)
+      expect { Svix::Webhook.new_using_raw_bytes([]) }.to raise_error(Svix::EmptyWebhookSecretError)
+    end
+
+    it "uses the bytes as the key without base64-decoding them" do
+      raw_key = Base64.decode64(DEFAULT_SECRET).bytes
+      testPayload = TestPayload.new
+
+      wh = Svix::Webhook.new_using_raw_bytes(raw_key)
+
+      wh.verify(testPayload.payload, testPayload.headers)
+    end
+
+    it "signs the same as the equivalent base64 secret" do
+      raw_key = Array.new(32) { |i| (i * 37 + 200) % 256 }
+      from_raw = Svix::Webhook.new_using_raw_bytes(raw_key)
+      from_b64 = Svix::Webhook.new("whsec_" + Base64.strict_encode64(raw_key.pack("C*")))
+
+      expect(from_raw.sign(DEFAULT_MSG_ID, 1649367553, DEFAULT_PAYLOAD))
+        .to eq(from_b64.sign(DEFAULT_MSG_ID, 1649367553, DEFAULT_PAYLOAD))
     end
   end
 
@@ -245,7 +263,7 @@ describe Svix::Webhook do
   it "new_using_raw_bytes accepts a custom tolerance" do
     testPayload = TestPayload.new(timestamp: Time.now.to_i - (2 * TOLERANCE))
 
-    wh = Svix::Webhook.new_using_raw_bytes(testPayload.secret.bytes, tolerance: 3 * TOLERANCE)
+    wh = Svix::Webhook.new_using_raw_bytes(Base64.decode64(testPayload.secret).bytes, tolerance: 3 * TOLERANCE)
 
     wh.verify(testPayload.payload, testPayload.headers)
   end

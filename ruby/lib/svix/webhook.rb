@@ -3,8 +3,10 @@
 module Svix
   class Webhook
 
+    # `secret` is the raw key as an array of bytes. It is used as the HMAC key
+    # as-is, unlike the string accepted by `new`, which is base64-decoded.
     def self.new_using_raw_bytes(secret, tolerance: DEFAULT_TOLERANCE)
-      self.new(secret.pack("C*").force_encoding("UTF-8"), tolerance: tolerance)
+      self.new(SECRET_PREFIX + Base64.strict_encode64(secret.pack("C*")), tolerance: tolerance)
     end
 
     # `tolerance` is the maximum difference allowed, in seconds, between the
