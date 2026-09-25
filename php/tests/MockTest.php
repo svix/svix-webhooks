@@ -421,6 +421,28 @@ class MockTest extends TestCase
         $this->assertEquals('https://custom.svix.com/api/v1/app', $customRequest->getUri()->__toString());
     }
 
+    public function testServerUrlTrailingSlashesAreStripped(): void
+    {
+        $cases = [
+            'https://custom.svix.com/' => 'https://custom.svix.com/api/v1/app',
+            'https://custom.svix.com///' => 'https://custom.svix.com/api/v1/app',
+            'https://custom.svix.com/prefix/' => 'https://custom.svix.com/prefix/api/v1/app',
+            'https://custom.svix.com/prefix' => 'https://custom.svix.com/prefix/api/v1/app',
+        ];
+
+        foreach ($cases as $serverUrl => $expectedUrl) {
+            $this->requestHistory = [];
+            $this->mockHandler->append(new Response(200, [], ListResAppOut));
+            $svx = new \Svix\Svix("token.part.us", new SvixOptions(serverUrl: $serverUrl), $this->httpClient);
+            $svx->application->list();
+            $this->assertEquals(
+                $expectedUrl,
+                $this->requestHistory[0]['request']->getUri()->__toString(),
+                "server url {$serverUrl}"
+            );
+        }
+    }
+
     public function testRetryOn500Response(): void
     {
         // Queue 3 x 500 responses to trigger retries, then a final 500 that should throw
