@@ -24,6 +24,9 @@ class SvixHttpClient
         private \GuzzleHttp\Client $guzzleClient,
         private SvixOptions $opts
     ) {
+        // Strip trailing slashes so that `https://api.svix.com/` does not
+        // produce request URLs such as `https://api.svix.com//api/v1/app`.
+        $this->baseUrl = rtrim($baseUrl, '/');
     }
 
     public function newReq(

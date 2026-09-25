@@ -26,6 +26,26 @@ describe "API Client" do
     )
   end
 
+  [
+    ["http://api.example/", "http://api.example/api/v1/app"],
+    ["http://api.example///", "http://api.example/api/v1/app"],
+    ["http://api.example/prefix/", "http://api.example/prefix/api/v1/app"],
+    ["http://api.example/prefix", "http://api.example/prefix/api/v1/app"]
+  ].each do |server_url, expected_url|
+    it "strips trailing slashes from server url #{server_url}" do
+      stub_request(:get, expected_url)
+        .to_return(
+          status: 200,
+          body: ListResponseAppOut_JSON
+        )
+
+      client = Svix::Client.new("testsk_token.eu", Svix::SvixOptions.new(false, server_url))
+      client.application.list
+
+      expect(WebMock).to(have_requested(:get, expected_url))
+    end
+  end
+
   it "test hashtag in query param" do
     stub_request(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id")
       .with(query: hash_including({}))
