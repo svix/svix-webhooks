@@ -31,7 +31,7 @@ use validator::{Validate, ValidationError};
 
 use crate::{
     core::types::{
-        ApplicationIdOrUid, BaseId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+        ALL_ERROR, ApplicationIdOrUid, BaseId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
         MessageAttemptId, MessageIdOrUid,
     },
     error::{Error, HttpError, Result, ValidationErrorItem},
@@ -470,9 +470,13 @@ pub fn validation_errors(
     err.into_errors()
         .into_iter()
         .flat_map(|(k, v)| {
-            // Add the next field to the location
+            // Add the next field to the location. The `__all__` key is a placeholder the
+            // wrapper-type validators in `core::types` use for errors on the value itself,
+            // and carries no meaning for the reported location, so it is skipped.
             let mut loc = acc_path.clone();
-            loc.push(k.into_owned());
+            if k != ALL_ERROR {
+                loc.push(k.into_owned());
+            }
 
             match v {
                 // If it's a [`validator::ValidationErrorsKind::Field`], then it will be a vector of
@@ -634,7 +638,10 @@ where
         } else {
             let event_types = EventTypeNameSet(event_types);
             event_types.validate().map_err(|e| {
-                HttpError::unprocessable_entity(validation_errors(vec!["query".to_owned()], e))
+                HttpError::unprocessable_entity(validation_errors(
+                    vec!["query".to_owned(), "event_types".to_owned()],
+                    e,
+                ))
             })?;
             Ok(Self(Some(event_types)))
         }
@@ -829,7 +836,10 @@ mod tests {
     use validator::Validate;
 
     use super::{Pagination, default_limit, validate_no_control_characters, validation_errors};
-    use crate::{core::types::ApplicationUid, error::ValidationErrorItem};
+    use crate::{
+        core::types::{ApplicationUid, EventTypeName, EventTypeNameSet},
+        error::ValidationErrorItem,
+    };
 
     #[derive(Debug, Validate)]
     struct ValidationErrorTestStruct {
@@ -897,6 +907,22 @@ mod tests {
             msg: "Above 10".to_owned(),
             ty: "value_error".to_owned(),
         }));
+    }
+
+    #[test]
+    fn test_validation_errors_wrapper_type_location() {
+        let set = EventTypeNameSet([EventTypeName("1,".to_owned())].into());
+        let errs = set.validate().unwrap_err();
+        let errs = validation_errors(vec!["query".to_owned(), "event_types".to_owned()], errs);
+
+        assert_eq!(
+            errs,
+            vec![ValidationErrorItem {
+                loc: vec!["query".to_owned(), "event_types".to_owned()],
+                msg: "String must match the following pattern: [a-zA-Z0-9\\-_.].".to_owned(),
+                ty: "value_error".to_owned(),
+            }]
+        );
     }
 
     #[test]
