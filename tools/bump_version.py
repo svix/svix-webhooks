@@ -213,7 +213,7 @@ def update_changelog(new_version: str) -> None:
     content = changelog_path.read_text()
     updated = content.replace(
         "\n## Unreleased\n",
-        f"\n## Unreleased\n* \n\n## Version {new_version}\n",
+        f"\n## Unreleased\n\n## Version {new_version}\n",
     )
     if updated != content:
         changelog_path.write_text(updated)
