@@ -6,6 +6,8 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+
+## Version 2.6.0
 * Libs/PHP: Add support for `destination` and `stream` APIs
 * Libs/PHP: Add `AutoConfigConsumer`
 * Libs/Python **(Breaking)**: Drop support for Python 3.9 (EOL). Minimum supported version is now 3.10
