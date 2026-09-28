@@ -1,3 +1,5 @@
+use std::sync::RwLock;
+
 use crate::{
     api::{Svix, SvixOptions},
     api_internal,
@@ -20,7 +22,7 @@ pub use crate::api_internal::message_pollerv2::{
 
 pub struct AutoConfigConsumer {
     app_id: String,
-    sink_id: Option<String>,
+    sink_id: RwLock<Option<String>>,
     autoconfig_id: Option<String>,
     sink_in: SinkInCommon,
     svix: Svix,
@@ -57,14 +59,14 @@ impl AutoConfigConsumer {
 
         Ok(Self {
             app_id,
-            sink_id,
+            sink_id: RwLock::new(sink_id),
             autoconfig_id,
             sink_in,
             svix,
         })
     }
 
-    pub async fn subscribe(&mut self) -> Result<DestinationOut> {
+    pub async fn subscribe(&self) -> Result<DestinationOut> {
         if let Some(autoconfig_id) = &self.autoconfig_id {
             let destination = api_internal::autoconfig_subscription(self.svix.cfg())
                 .destination()
@@ -74,7 +76,7 @@ impl AutoConfigConsumer {
                     sink_in_common_to_polling_destination(&self.sink_in),
                 )
                 .await?;
-            self.sink_id = Some(destination.id.clone());
+            self.set_cached_sink_id(destination.id.clone());
             return Ok(destination);
         }
 
@@ -84,7 +86,7 @@ impl AutoConfigConsumer {
         let endpoint = api_internal::endpoint_auto_config_deprecated(self.svix.cfg())
             .update(
                 self.app_id.clone(),
-                self.sink_id.clone().expect("v1 tokens set sink_id"),
+                self.cached_sink_id().expect("v1 tokens set sink_id"),
                 subscribe_in,
             )
             .await?;
@@ -92,14 +94,14 @@ impl AutoConfigConsumer {
         Ok(destination_out_from_v1_endpoint(endpoint))
     }
 
-    async fn get_sink_id(&mut self) -> Result<String> {
-        if let Some(sink_id) = self.sink_id.clone() {
+    async fn get_sink_id(&self) -> Result<String> {
+        if let Some(sink_id) = self.cached_sink_id() {
             // Already have the sink id from subscribe() or the v1 token
             return Ok(sink_id);
         }
 
         // Get the sink id from the autoconfig id (v2)
-        api_internal::autoconfig_subscription(self.svix.cfg())
+        let sink_id = api_internal::autoconfig_subscription(self.svix.cfg())
             .get(
                 self.app_id.clone(),
                 self.autoconfig_id
@@ -112,11 +114,14 @@ impl AutoConfigConsumer {
                 Error::Generic(
                     "autoconfig subscription is pending. Have you called subscribe()?".to_owned(),
                 )
-            })
+            })?;
+
+        self.set_cached_sink_id(sink_id.clone());
+        Ok(sink_id)
     }
 
     pub async fn receive(
-        &mut self,
+        &self,
         consumer_id: String,
         options: Option<api_internal::message_pollerv2::MessagePollerv2ConsumerPollOptions>,
     ) -> Result<PollerV2PollOut> {
@@ -128,7 +133,7 @@ impl AutoConfigConsumer {
     }
 
     pub async fn commit(
-        &mut self,
+        &self,
         consumer_id: String,
         offset: u64,
         options: Option<api_internal::message_pollerv2::MessagePollerv2ConsumerCommitOptions>,
@@ -144,6 +149,14 @@ impl AutoConfigConsumer {
                 options,
             )
             .await
+    }
+
+    fn cached_sink_id(&self) -> Option<String> {
+        self.sink_id.read().unwrap().clone()
+    }
+
+    fn set_cached_sink_id(&self, value: String) {
+        *self.sink_id.write().unwrap() = Some(value);
     }
 }
 
