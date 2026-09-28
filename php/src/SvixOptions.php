@@ -30,9 +30,10 @@ class SvixOptions
         /** Retry Schedule in milliseconds
          *
          * List of delays to wait before each retry attempt.
-         * Takes precedence over `numRetries`.
-         */
-        public ?array $retryScheduleMs = [60, 120, 240],
+         * Takes precedence over `numRetries` when set.
+         *
+         * Default: null (use `numRetries`) */
+        public ?array $retryScheduleMs = null,
     ) {
     }
 
@@ -43,7 +44,7 @@ class SvixOptions
             serverUrl: Utils::getServerUrlFromToken($token),
             timeoutMs: 30000,
             numRetries: 2,
-            retryScheduleMs: [60, 120, 240],
+            retryScheduleMs: null,
         );
     }
 }

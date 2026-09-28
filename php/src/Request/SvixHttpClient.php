@@ -16,7 +16,7 @@ use Svix\Version;
 class SvixHttpClient
 {
     /** @var int[] Retry schedule in milliseconds - defines sleep time before each retry attempt */
-    private array $retryScheduleMs = [50, 100];
+    private array $retryScheduleMs;
 
     public function __construct(
         private string $baseUrl,
@@ -24,6 +24,28 @@ class SvixHttpClient
         private \GuzzleHttp\Client $guzzleClient,
         private SvixOptions $opts
     ) {
+        $this->retryScheduleMs = self::buildRetrySchedule($opts);
+    }
+
+    /**
+     * An explicit `retryScheduleMs` wins; otherwise `numRetries` retries are
+     * made, waiting 50ms before the first and doubling the wait each time.
+     *
+     * @return int[]
+     */
+    private static function buildRetrySchedule(SvixOptions $opts): array
+    {
+        if ($opts->retryScheduleMs !== null) {
+            return array_values($opts->retryScheduleMs);
+        }
+
+        $schedule = [];
+        $delayMs = 50;
+        for ($i = 0; $i < ($opts->numRetries ?? 2); $i++) {
+            $schedule[] = $delayMs;
+            $delayMs *= 2;
+        }
+        return $schedule;
     }
 
     public function newReq(

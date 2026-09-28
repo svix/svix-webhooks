@@ -454,6 +454,47 @@ class MockTest extends TestCase
         }
     }
 
+    private function countRequestsUntilApiException(SvixOptions $options): int
+    {
+        for ($i = 0; $i < 10; $i++) {
+            $this->mockHandler->append(new Response(500, [], '{"error": "Internal Server Error"}'));
+        }
+
+        $svx = new \Svix\Svix("super_secret", $options, httpClient: $this->httpClient);
+        try {
+            $svx->application->list();
+            $this->fail('Expected an ApiException');
+        } catch (\Svix\Exception\ApiException $e) {
+            $this->assertEquals(500, $e->getCode());
+        }
+
+        return count($this->requestHistory);
+    }
+
+    public function testNumRetriesOptionIsRespected(): void
+    {
+        $this->assertEquals(1, $this->countRequestsUntilApiException(new SvixOptions(numRetries: 0)));
+
+        $this->requestHistory = [];
+        $this->mockHandler->reset();
+        $this->assertEquals(5, $this->countRequestsUntilApiException(new SvixOptions(numRetries: 4)));
+    }
+
+    public function testRetryScheduleOptionIsRespected(): void
+    {
+        $this->assertEquals(
+            4,
+            $this->countRequestsUntilApiException(new SvixOptions(retryScheduleMs: [1, 1, 1]))
+        );
+
+        $this->requestHistory = [];
+        $this->mockHandler->reset();
+        $this->assertEquals(
+            1,
+            $this->countRequestsUntilApiException(new SvixOptions(numRetries: 5, retryScheduleMs: []))
+        );
+    }
+
     public function testEmptyAppPortalAccessInBody(): void
     {
         $this->mockHandler->append(new Response(200, [], AppPortalAccessOut));
