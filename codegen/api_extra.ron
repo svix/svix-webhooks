@@ -17,7 +17,6 @@
                     header_params: [],
                     query_params: [],
                     request_body_schema_name: Some("EndpointTransformationIn"),
-                    request_body_all_optional: true,
                     request_body_required: false,
                 ),
             ],
