@@ -7,6 +7,9 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 
+## Version 2.6.1
+* Libs/All: Update to latest Svix Cloud spec
+
 ## Version 2.6.0
 * Libs/PHP: Add support for `destination` and `stream` APIs
 * Libs/PHP: Add `AutoConfigConsumer`
