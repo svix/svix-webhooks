@@ -6,8 +6,9 @@ module Svix
   class RabbitMqConfigPatch
     attr_accessor :routing_key
     attr_accessor :uri
+    attr_accessor :mandatory
 
-    ALL_FIELD ||= ["routing_key", "uri"].freeze
+    ALL_FIELD ||= ["routing_key", "uri", "mandatory"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -30,6 +31,7 @@ module Svix
       attrs = Hash.new
       attrs["routing_key"] = attributes["routingKey"]
       attrs["uri"] = attributes["uri"]
+      attrs["mandatory"] = attributes["mandatory"]
       new(attrs)
     end
 
@@ -37,6 +39,7 @@ module Svix
       out = Hash.new
       out["routingKey"] = Svix::serialize_primitive(@routing_key) unless @routing_key.nil?
       out["uri"] = Svix::serialize_primitive(@uri) unless @uri.nil?
+      out["mandatory"] = Svix::serialize_primitive(@mandatory) unless @mandatory.nil?
       out
     end
 

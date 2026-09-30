@@ -44,12 +44,15 @@ pub enum AutoconfigSubscriptionCommands {
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
-            "Example: svix autoconfig-subscription create app_abc000000000000000000000000\n",
+            "Example: svix autoconfig-subscription create app_abc000000000000000000000000 {...}\n",
             "{after-help}",
             "\n",
             "{all-args}",
         ))]
-    #[command(after_help = "Example response:
+    #[command(after_help = "Example body:
+{
+  \"featureFlags\": [\"cool-new-feature\"]
+}\n\nExample response:
 {
   \"createdAt\": \"2030-01-01T00:00:00Z\",
   \"token\": \"auto_v2_eyJhaWQiOiJhcHBfMXNyT3J4MlpXWk...\",
@@ -57,8 +60,23 @@ pub enum AutoconfigSubscriptionCommands {
 }\n")]
     Create {
         app_id: String,
+        create_auto_config_subscription_in:
+            Option<crate::json::JsonOf<CreateAutoConfigSubscriptionIn>>,
         #[clap(flatten)]
         options: AutoconfigSubscriptionCreateOptions,
+    },
+    /// Delete an AutoConfig subscription. This also invalidates its auth token.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix autoconfig-subscription delete app_abc000000000000000000000000 AUTOCONFIG_ID\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    Delete {
+        app_id: String,
+        autoconfig_id: String,
     },
     /// Rotate the auth token and signing secret for an AutoConfig subscription.
     #[command(help_template = concat!(
@@ -97,12 +115,31 @@ impl AutoconfigSubscriptionCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
-            Self::Create { app_id, options } => {
+            Self::Create {
+                app_id,
+                create_auto_config_subscription_in,
+                options,
+            } => {
                 let resp = client
                     .autoconfig_subscription()
-                    .create(app_id, Some(options.into()))
+                    .create(
+                        app_id,
+                        create_auto_config_subscription_in
+                            .unwrap_or_default()
+                            .into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::Delete {
+                app_id,
+                autoconfig_id,
+            } => {
+                client
+                    .autoconfig_subscription()
+                    .delete(app_id, autoconfig_id)
+                    .await?;
             }
             Self::Rotate {
                 app_id,

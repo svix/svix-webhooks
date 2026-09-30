@@ -3,6 +3,7 @@
 export interface RabbitMqConfigOut {
   uri: string;
   routingKey: string;
+  mandatory: boolean;
 }
 
 export const RabbitMqConfigOutSerializer = {
@@ -10,6 +11,7 @@ export const RabbitMqConfigOutSerializer = {
     return {
       uri: object["uri"],
       routingKey: object["routingKey"],
+      mandatory: object["mandatory"],
     };
   },
 
@@ -17,6 +19,7 @@ export const RabbitMqConfigOutSerializer = {
     return {
       uri: self.uri,
       routingKey: self.routingKey,
+      mandatory: self.mandatory,
     };
   },
 };

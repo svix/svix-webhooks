@@ -28,6 +28,7 @@ type AutoconfigSubscriptionRotateOptions struct {
 func (autoconfigSubscription AutoconfigSubscription) Create(
 	ctx context.Context,
 	appId string,
+	createAutoConfigSubscriptionIn models.CreateAutoConfigSubscriptionIn,
 	o *AutoconfigSubscriptionCreateOptions,
 ) (*models.AutoConfigOut, error) {
 	var err error
@@ -43,7 +44,7 @@ func (autoconfigSubscription AutoconfigSubscription) Create(
 	if err != nil {
 		return nil, err
 	}
-	return internal.ExecuteRequest[any, models.AutoConfigOut](
+	return internal.ExecuteRequest[models.CreateAutoConfigSubscriptionIn, models.AutoConfigOut](
 		ctx,
 		autoconfigSubscription.client,
 		"POST",
@@ -51,8 +52,32 @@ func (autoconfigSubscription AutoconfigSubscription) Create(
 		pathMap,
 		nil,
 		headerMap,
+		&createAutoConfigSubscriptionIn,
+	)
+}
+
+// Delete an AutoConfig subscription. This also invalidates its auth token.
+func (autoconfigSubscription AutoconfigSubscription) Delete(
+	ctx context.Context,
+	appId string,
+	autoconfigId string,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":        appId,
+		"autoconfig_id": autoconfigId,
+	}
+	_, err = internal.ExecuteRequest[any, any](
+		ctx,
+		autoconfigSubscription.client,
+		"DELETE",
+		"/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+		pathMap,
+		nil,
+		nil,
 		nil,
 	)
+	return err
 }
 
 // Rotate the auth token and signing secret for an AutoConfig subscription.

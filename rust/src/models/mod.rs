@@ -43,6 +43,7 @@ mod connector_out;
 mod connector_patch;
 mod connector_product;
 mod connector_upsert_in;
+mod create_auto_config_subscription_in;
 mod create_stream_events_in;
 mod create_stream_events_out;
 mod cron_config;
@@ -305,6 +306,7 @@ pub use self::{
     connector_patch::ConnectorPatch,
     connector_product::ConnectorProduct,
     connector_upsert_in::ConnectorUpsertIn,
+    create_auto_config_subscription_in::CreateAutoConfigSubscriptionIn,
     create_stream_events_in::CreateStreamEventsIn,
     create_stream_events_out::CreateStreamEventsOut,
     cron_config::CronConfig,

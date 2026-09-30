@@ -13,6 +13,8 @@ pub enum ConnectorKind {
     CloseCrm,
     #[serde(rename = "CustomerIO")]
     CustomerIo,
+    #[serde(rename = "DatadogTracing")]
+    DatadogTracing,
     #[serde(rename = "Discord")]
     Discord,
     #[serde(rename = "Hubspot")]
@@ -50,6 +52,7 @@ impl fmt::Display for ConnectorKind {
             Self::AgenticCommerceProtocol => "AgenticCommerceProtocol",
             Self::CloseCrm => "CloseCRM",
             Self::CustomerIo => "CustomerIO",
+            Self::DatadogTracing => "DatadogTracing",
             Self::Discord => "Discord",
             Self::Hubspot => "Hubspot",
             Self::Inngest => "Inngest",

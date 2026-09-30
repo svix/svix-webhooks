@@ -41,6 +41,7 @@ from .connector_out import ConnectorOut
 from .connector_patch import ConnectorPatch
 from .connector_product import ConnectorProduct
 from .connector_upsert_in import ConnectorUpsertIn
+from .create_auto_config_subscription_in import CreateAutoConfigSubscriptionIn
 from .create_stream_events_in import CreateStreamEventsIn
 from .create_stream_events_out import CreateStreamEventsOut
 from .cron_config import CronConfig
@@ -299,6 +300,7 @@ __all__ = [
     "ConnectorPatch",
     "ConnectorProduct",
     "ConnectorUpsertIn",
+    "CreateAutoConfigSubscriptionIn",
     "CreateStreamEventsIn",
     "CreateStreamEventsOut",
     "CronConfig",

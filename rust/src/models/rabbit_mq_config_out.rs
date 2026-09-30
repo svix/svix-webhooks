@@ -7,4 +7,6 @@ pub struct RabbitMqConfigOut {
 
     #[serde(rename = "routingKey")]
     pub routing_key: String,
+
+    pub mandatory: bool,
 }

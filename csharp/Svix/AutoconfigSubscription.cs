@@ -38,6 +38,7 @@ namespace Svix
         /// </summary>
         public async Task<AutoConfigOut> CreateAsync(
             string appId,
+            CreateAutoConfigSubscriptionIn createAutoConfigSubscriptionIn,
             AutoconfigSubscriptionCreateOptions? options = null,
             CancellationToken cancellationToken = default
         )
@@ -46,6 +47,9 @@ namespace Svix
             {
                 options = new AutoconfigSubscriptionCreateOptions();
             }
+            createAutoConfigSubscriptionIn =
+                createAutoConfigSubscriptionIn
+                ?? throw new ArgumentNullException(nameof(createAutoConfigSubscriptionIn));
             try
             {
                 var response = await _client.SvixHttpClient.SendRequestAsync<AutoConfigOut>(
@@ -54,6 +58,7 @@ namespace Svix
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: options.QueryParams(),
                     headerParams: options.HeaderParams(),
+                    content: createAutoConfigSubscriptionIn,
                     cancellationToken: cancellationToken
                 );
                 return response.Data;
@@ -71,6 +76,7 @@ namespace Svix
         /// </summary>
         public AutoConfigOut Create(
             string appId,
+            CreateAutoConfigSubscriptionIn createAutoConfigSubscriptionIn,
             AutoconfigSubscriptionCreateOptions? options = null
         )
         {
@@ -78,6 +84,9 @@ namespace Svix
             {
                 options = new AutoconfigSubscriptionCreateOptions();
             }
+            createAutoConfigSubscriptionIn =
+                createAutoConfigSubscriptionIn
+                ?? throw new ArgumentNullException(nameof(createAutoConfigSubscriptionIn));
             try
             {
                 var response = _client.SvixHttpClient.SendRequest<AutoConfigOut>(
@@ -85,13 +94,71 @@ namespace Svix
                     path: "/api/v1/app/{app_id}/autoconfig",
                     pathParams: new Dictionary<string, string> { { "app_id", appId } },
                     queryParams: options.QueryParams(),
-                    headerParams: options.HeaderParams()
+                    headerParams: options.HeaderParams(),
+                    content: createAutoConfigSubscriptionIn
                 );
                 return response.Data;
             }
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Create)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete an AutoConfig subscription. This also invalidates its auth token.
+        /// </summary>
+        public async Task<bool> DeleteAsync(
+            string appId,
+            string autoconfigId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "autoconfig_id", autoconfigId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete an AutoConfig subscription. This also invalidates its auth token.
+        /// </summary>
+        public bool Delete(string appId, string autoconfigId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "autoconfig_id", autoconfigId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(Delete)} failed");
 
                 throw;
             }

@@ -39,6 +39,7 @@ export { type ConnectorOut } from "./connectorOut";
 export { type ConnectorPatch } from "./connectorPatch";
 export { ConnectorProduct } from "./connectorProduct";
 export { type ConnectorUpsertIn } from "./connectorUpsertIn";
+export { type CreateAutoConfigSubscriptionIn } from "./createAutoConfigSubscriptionIn";
 export { type CreateStreamEventsIn } from "./createStreamEventsIn";
 export { type CreateStreamEventsOut } from "./createStreamEventsOut";
 export { type CronConfig } from "./cronConfig";

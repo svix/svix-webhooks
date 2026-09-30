@@ -6,6 +6,7 @@ module Svix
     AGENTIC_COMMERCE_PROTOCOL = "AgenticCommerceProtocol".freeze
     CLOSE_CRM = "CloseCRM".freeze
     CUSTOMER_IO = "CustomerIO".freeze
+    DATADOG_TRACING = "DatadogTracing".freeze
     DISCORD = "Discord".freeze
     HUBSPOT = "Hubspot".freeze
     INNGEST = "Inngest".freeze
@@ -27,6 +28,7 @@ module Svix
         AGENTIC_COMMERCE_PROTOCOL,
         CLOSE_CRM,
         CUSTOMER_IO,
+        DATADOG_TRACING,
         DISCORD,
         HUBSPOT,
         INNGEST,

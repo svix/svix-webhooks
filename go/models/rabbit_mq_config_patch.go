@@ -6,6 +6,7 @@ import "encoding/json"
 type RabbitMqConfigPatch struct {
 	RoutingKey *string `json:"routingKey,omitempty"`
 	Uri        *string `json:"uri,omitempty"`
+	Mandatory  *bool   `json:"mandatory,omitempty"`
 }
 
 func (o RabbitMqConfigPatch) MarshalJSON() ([]byte, error) {
@@ -15,6 +16,9 @@ func (o RabbitMqConfigPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.Uri != nil {
 		toSerialize["uri"] = o.Uri
+	}
+	if o.Mandatory != nil {
+		toSerialize["mandatory"] = o.Mandatory
 	}
 	return json.Marshal(toSerialize)
 }

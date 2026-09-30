@@ -15,6 +15,9 @@ namespace Svix.Models
         [JsonProperty("routingKey", Required = Required.Always)]
         public required string RoutingKey { get; set; }
 
+        [JsonProperty("mandatory")]
+        public bool? Mandatory { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -22,6 +25,7 @@ namespace Svix.Models
             sb.Append("class RabbitMqConfigIn {\n");
             sb.Append("  Uri: ").Append(Uri).Append('\n');
             sb.Append("  RoutingKey: ").Append(RoutingKey).Append('\n');
+            sb.Append("  Mandatory: ").Append(Mandatory).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }
