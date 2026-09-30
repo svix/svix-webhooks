@@ -5,6 +5,7 @@ export enum ConnectorKind {
   AgenticCommerceProtocol = "AgenticCommerceProtocol",
   CloseCrm = "CloseCRM",
   CustomerIo = "CustomerIO",
+  DatadogTracing = "DatadogTracing",
   Discord = "Discord",
   Hubspot = "Hubspot",
   Inngest = "Inngest",

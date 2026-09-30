@@ -5,10 +5,18 @@ require "json"
 module Svix
   # Configuration for a RabbitMq sink.
   class RabbitMqConfigIn
+    # URI to connect to
+    #
+    # Note that the VHost must be percent-escaped, so a default URI would look
+    # like `amqp://user:pass@host/%2F`
     attr_accessor :uri
+    # Routing key for message dispatch
     attr_accessor :routing_key
+    # If true, then dispatches will fail if there is no attached queue; if false, they are
+    # silently dropped (this was previously the default)
+    attr_accessor :mandatory
 
-    ALL_FIELD ||= ["uri", "routing_key"].freeze
+    ALL_FIELD ||= ["uri", "routing_key", "mandatory"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -31,6 +39,7 @@ module Svix
       attrs = Hash.new
       attrs["uri"] = attributes["uri"]
       attrs["routing_key"] = attributes["routingKey"]
+      attrs["mandatory"] = attributes["mandatory"]
       new(attrs)
     end
 
@@ -38,6 +47,7 @@ module Svix
       out = Hash.new
       out["uri"] = Svix::serialize_primitive(@uri) unless @uri.nil?
       out["routingKey"] = Svix::serialize_primitive(@routing_key) unless @routing_key.nil?
+      out["mandatory"] = Svix::serialize_primitive(@mandatory) unless @mandatory.nil?
       out
     end
 

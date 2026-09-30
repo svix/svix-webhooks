@@ -7,6 +7,7 @@ class ConnectorKind(str, Enum):
     AGENTIC_COMMERCE_PROTOCOL = "AgenticCommerceProtocol"
     CLOSE_CRM = "CloseCRM"
     CUSTOMER_IO = "CustomerIO"
+    DATADOG_TRACING = "DatadogTracing"
     DISCORD = "Discord"
     HUBSPOT = "Hubspot"
     INNGEST = "Inngest"

@@ -44,6 +44,7 @@ type (
 	ConnectorPatch                            = models.ConnectorPatch
 	ConnectorProduct                          = models.ConnectorProduct
 	ConnectorUpsertIn                         = models.ConnectorUpsertIn
+	CreateAutoConfigSubscriptionIn            = models.CreateAutoConfigSubscriptionIn
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
 	CronConfig                                = models.CronConfig

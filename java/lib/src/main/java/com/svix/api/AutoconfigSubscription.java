@@ -4,6 +4,7 @@ package com.svix.api;
 import com.svix.SvixHttpClient;
 import com.svix.exceptions.ApiException;
 import com.svix.models.AutoConfigOut;
+import com.svix.models.CreateAutoConfigSubscriptionIn;
 import com.svix.models.RotateSubscriptionIn2;
 
 import okhttp3.Headers;
@@ -21,13 +22,18 @@ public class AutoconfigSubscription {
     }
 
     /** Create an AutoConfig subscription. */
-    public AutoConfigOut create(final String appId) throws IOException, ApiException {
-        return this.create(appId, new AutoconfigSubscriptionCreateOptions());
+    public AutoConfigOut create(
+            final String appId, final CreateAutoConfigSubscriptionIn createAutoConfigSubscriptionIn)
+            throws IOException, ApiException {
+        return this.create(
+                appId, createAutoConfigSubscriptionIn, new AutoconfigSubscriptionCreateOptions());
     }
 
     /** Create an AutoConfig subscription. */
     public AutoConfigOut create(
-            final String appId, final AutoconfigSubscriptionCreateOptions options)
+            final String appId,
+            final CreateAutoConfigSubscriptionIn createAutoConfigSubscriptionIn,
+            final AutoconfigSubscriptionCreateOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =
                 this.client
@@ -38,7 +44,22 @@ public class AutoconfigSubscription {
             headers.put("idempotency-key", options.idempotencyKey);
         }
         return this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), null, AutoConfigOut.class);
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                createAutoConfigSubscriptionIn,
+                AutoConfigOut.class);
+    }
+
+    /** Delete an AutoConfig subscription. This also invalidates its auth token. */
+    public void delete(final String appId, final String autoconfigId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format("/api/v1/app/%s/autoconfig/%s", appId, autoconfigId));
+        this.client.executeRequest("DELETE", url.build(), null, null, null);
     }
 
     /** Rotate the auth token and signing secret for an AutoConfig subscription. */

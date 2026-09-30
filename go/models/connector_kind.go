@@ -14,6 +14,7 @@ const (
 	CONNECTORKIND_AGENTIC_COMMERCE_PROTOCOL ConnectorKind = "AgenticCommerceProtocol"
 	CONNECTORKIND_CLOSE_CRM                 ConnectorKind = "CloseCRM"
 	CONNECTORKIND_CUSTOMER_IO               ConnectorKind = "CustomerIO"
+	CONNECTORKIND_DATADOG_TRACING           ConnectorKind = "DatadogTracing"
 	CONNECTORKIND_DISCORD                   ConnectorKind = "Discord"
 	CONNECTORKIND_HUBSPOT                   ConnectorKind = "Hubspot"
 	CONNECTORKIND_INNGEST                   ConnectorKind = "Inngest"
@@ -35,6 +36,7 @@ var allowedConnectorKind = []ConnectorKind{
 	"AgenticCommerceProtocol",
 	"CloseCRM",
 	"CustomerIO",
+	"DatadogTracing",
 	"Discord",
 	"Hubspot",
 	"Inngest",
@@ -71,6 +73,7 @@ var ConnectorKindFromString = map[string]ConnectorKind{
 	"AgenticCommerceProtocol": CONNECTORKIND_AGENTIC_COMMERCE_PROTOCOL,
 	"CloseCRM":                CONNECTORKIND_CLOSE_CRM,
 	"CustomerIO":              CONNECTORKIND_CUSTOMER_IO,
+	"DatadogTracing":          CONNECTORKIND_DATADOG_TRACING,
 	"Discord":                 CONNECTORKIND_DISCORD,
 	"Hubspot":                 CONNECTORKIND_HUBSPOT,
 	"Inngest":                 CONNECTORKIND_INNGEST,

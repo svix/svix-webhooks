@@ -12,6 +12,7 @@ class RabbitMqConfigOut implements \JsonSerializable
     private function __construct(
         public readonly string $uri,
         public readonly string $routingKey,
+        public readonly bool $mandatory,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -23,11 +24,13 @@ class RabbitMqConfigOut implements \JsonSerializable
     public static function create(
         string $uri,
         string $routingKey,
+        bool $mandatory,
     ): self {
         return new self(
             uri: $uri,
             routingKey: $routingKey,
-            setFields: ['uri' => true, 'routingKey' => true]
+            mandatory: $mandatory,
+            setFields: ['uri' => true, 'routingKey' => true, 'mandatory' => true]
         );
     }
 
@@ -35,7 +38,8 @@ class RabbitMqConfigOut implements \JsonSerializable
     {
         $data = [
             'uri' => $this->uri,
-            'routingKey' => $this->routingKey];
+            'routingKey' => $this->routingKey,
+            'mandatory' => $this->mandatory];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -47,7 +51,8 @@ class RabbitMqConfigOut implements \JsonSerializable
     {
         return new self(
             uri: \Svix\Utils::deserializeString($data, 'uri', true, 'RabbitMqConfigOut'),
-            routingKey: \Svix\Utils::deserializeString($data, 'routingKey', true, 'RabbitMqConfigOut')
+            routingKey: \Svix\Utils::deserializeString($data, 'routingKey', true, 'RabbitMqConfigOut'),
+            mandatory: \Svix\Utils::deserializeBool($data, 'mandatory', true, 'RabbitMqConfigOut')
         );
     }
 

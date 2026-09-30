@@ -197,7 +197,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getAuthentication()\n        .appPortalAccess(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new AppPortalAccessIn()\n                .application(new ApplicationIn()\n                    .name(\"My first application\")\n                    .throttleRate(1L)\n                    .uid(\"unique-identifier\")\n                    .metadata(Map.of()))\n                .capabilities(\n                    Set.of(AppPortalCapability.VIEW_BASE, AppPortalCapability.VIEW_ENDPOINT_SECRET))\n                .featureFlags(Set.of())\n                .expiry(1L)\n                .sessionId(\"user_1FB8\"));"
+                        "source": "var response = svix.getAuthentication()\n        .appPortalAccess(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new AppPortalAccessIn()\n                .application(new ApplicationIn()\n                    .name(\"My first application\")\n                    .throttleRate(1)\n                    .uid(\"unique-identifier\")\n                    .metadata(Map.of()))\n                .capabilities(\n                    Set.of(AppPortalCapability.VIEW_BASE, AppPortalCapability.VIEW_ENDPOINT_SECRET))\n                .featureFlags(Set.of())\n                .expiry(1L)\n                .sessionId(\"user_1FB8\"));"
                     },
                     {
                         "lang": "Ruby",
@@ -5073,7 +5073,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getApplication()\n        .create(new ApplicationIn()\n            .name(\"My first application\")\n            .throttleRate(1L)\n            .uid(\"unique-identifier\")\n            .metadata(Map.of()));"
+                        "source": "var response = svix.getApplication()\n        .create(new ApplicationIn()\n            .name(\"My first application\")\n            .throttleRate(1)\n            .uid(\"unique-identifier\")\n            .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -5453,7 +5453,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getApplication()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new ApplicationIn()\n                .name(\"My first application\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getApplication()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new ApplicationIn()\n                .name(\"My first application\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -5814,7 +5814,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getApplication()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new ApplicationPatch()\n                .name(\"sample string\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getApplication()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new ApplicationPatch()\n                .name(\"sample string\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -6624,7 +6624,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new EndpointIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .eventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of())\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
+                        "source": "var response = svix.getEndpoint()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new EndpointIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .eventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of())\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -7034,7 +7034,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpsertIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .eventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointUpsertIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .eventTypes(Set.of(\"user.signup\", \"user.deleted\"))\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -7425,7 +7425,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointPatch()\n                .description(\"sample string\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/\"))\n                .disabled(true)\n                .eventTypes(Set.of())\n                .channels(Set.of())\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getEndpoint()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointPatch()\n                .description(\"sample string\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .url(URI.create(\"https://example.com/\"))\n                .disabled(true)\n                .eventTypes(Set.of())\n                .channels(Set.of())\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -17313,7 +17313,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getMessage()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new MessageIn()\n                .eventId(\"unique-identifier\")\n                .eventType(\"user.signup\")\n                .payload(\"{\\\"email\\\": \\\"test@example.com\\\",\\\"type\\\": \\\"user.created\\\",\\\"username\\\":\"\n                    + \" \\\"test_user\\\"}\")\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .application(new ApplicationIn()\n                    .name(\"My first application\")\n                    .throttleRate(1L)\n                    .uid(\"unique-identifier\")\n                    .metadata(Map.of()))\n                .tags(Set.of(\"my_tag\", \"other\"))\n                .transformationsParams(Map.of())\n                .deliverAt(OffsetDateTime.parse(\"2025-10-02T20:28:42+00:00\"))\n                .payloadRetentionPeriod(90L)\n                .payloadRetentionHours(1L));\n\n    // Alternatively, with a raw string payload.\n    var response = svix.getMessage()\n        .create(\n            \"app_id\",\n            Message.messageInRaw(\"This is a raw body.\", \"text/plain\").eventType(\"user.signup\"));"
+                        "source": "var response = svix.getMessage()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new MessageIn()\n                .eventId(\"unique-identifier\")\n                .eventType(\"user.signup\")\n                .payload(\"{\\\"email\\\": \\\"test@example.com\\\",\\\"type\\\": \\\"user.created\\\",\\\"username\\\":\"\n                    + \" \\\"test_user\\\"}\")\n                .channels(Set.of(\"project_123\", \"group_2\"))\n                .application(new ApplicationIn()\n                    .name(\"My first application\")\n                    .throttleRate(1)\n                    .uid(\"unique-identifier\")\n                    .metadata(Map.of()))\n                .tags(Set.of(\"my_tag\", \"other\"))\n                .transformationsParams(Map.of())\n                .deliverAt(OffsetDateTime.parse(\"2025-10-02T20:28:42+00:00\"))\n                .payloadRetentionPeriod(90L)\n                .payloadRetentionHours(1L));\n\n    // Alternatively, with a raw string payload.\n    var response = svix.getMessage()\n        .create(\n            \"app_id\",\n            Message.messageInRaw(\"This is a raw body.\", \"text/plain\").eventType(\"user.signup\"));"
                     },
                     {
                         "lang": "Ruby",
@@ -23645,6 +23645,16 @@
                         "style": "simple"
                     }
                 ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateAutoConfigSubscriptionIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
                 "responses": {
                     "201": {
                         "description": "",
@@ -23736,67 +23746,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.autoconfigSubscription.create(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                        "source": "const response = await svix.autoconfigSubscription.create(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  {\n    featureFlags: [\"cool-new-feature\"],\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.autoconfigSubscription.create(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                        "source": "const response = await svix.autoconfigSubscription.create(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  {\n    featureFlags: [\"cool-new-feature\"],\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.autoconfig_subscription.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                        "source": "response = svix.autoconfig_subscription.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    CreateAutoConfigSubscriptionIn(\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.autoconfig_subscription.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                        "source": "response = await svix.autoconfig_subscription.create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    CreateAutoConfigSubscriptionIn(\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.AutoconfigSubscription.Create(ctx, \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", nil)"
+                        "source": "response, err := svix.AutoconfigSubscription.Create(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tCreateAutoConfigSubscriptionIn{FeatureFlags: []string{\"cool-new-feature\"}},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response = svix.autoconfigSubscription.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                        "source": "val response =\n    svix.autoconfigSubscription.create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        CreateAutoConfigSubscriptionIn(featureFlags = setOf(\"cool-new-feature\")),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getAutoconfigSubscription().create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                        "source": "var response = svix.getAutoconfigSubscription()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new CreateAutoConfigSubscriptionIn().featureFlags(Set.of(\"cool-new-feature\")));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix.autoconfig_subscription.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                        "source": "response = svix.autoconfig_subscription.create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {featureFlags: [\"cool-new-feature\"]})"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .autoconfig_subscription()\n    .create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(), None)\n    .await?;"
+                        "source": "let response = svix\n    .autoconfig_subscription()\n    .create(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        CreateAutoConfigSubscriptionIn {\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.AutoconfigSubscription.Create(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                        "source": "var response = svix.AutoconfigSubscription.Create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new CreateAutoConfigSubscriptionIn { FeatureFlags = [\"cool-new-feature\"] }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->autoconfigSubscription->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                        "source": "$response = $svix->autoconfigSubscription->create(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    CreateAutoConfigSubscriptionIn::create()\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix autoconfig-subscription create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
+                        "source": "svix autoconfig-subscription create \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/autoconfig' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/autoconfig' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
                     }
                 ]
             }
@@ -23935,7 +23945,7 @@
                     "AutoConfig"
                 ],
                 "summary": "Delete Subscription",
-                "description": "Delete an AutoConfig subscription. This will also invalidate the autoconfig token.",
+                "description": "Delete an AutoConfig subscription. This also invalidates its auth token.",
                 "operationId": "v1.autoconfig-subscription.delete",
                 "parameters": [
                     {
@@ -24049,7 +24059,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "await svix.autoconfigSubscription.delete(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "await svix.autoconfigSubscription.delete(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.autoconfig_subscription.delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "await svix.autoconfig_subscription.delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svix.AutoconfigSubscription.Delete(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.autoconfigSubscription.delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getAutoconfigSubscription()\n        .delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.autoconfig_subscription.delete(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "svix.autoconfig_subscription()\n    .delete(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.AutoconfigSubscription.Delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$svix->autoconfigSubscription->delete(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix autoconfig-subscription delete \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/autoconfig/auto_1srOrx2ZWZBpBUvZwXKQmoEYga2' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
+                    }
+                ]
             }
         },
         "/api/v1/app/{app_id}/autoconfig/{autoconfig_id}/rotate": {
@@ -24202,67 +24278,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.autoconfigSubscription.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"autoconfig_id\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
+                        "source": "const response = await svix.autoconfigSubscription.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.autoconfigSubscription.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"autoconfig_id\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
+                        "source": "const response = await svix.autoconfigSubscription.rotate(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  {\n    signingSecret: {\n      key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      gracePeriodSeconds: 1,\n    },\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.autoconfig_subscription.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
+                        "source": "response = svix.autoconfig_subscription.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.autoconfig_subscription.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
+                        "source": "response = await svix.autoconfig_subscription.rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    RotateSubscriptionIn2(\n        signing_secret=EndpointSecretRotateIn(\n            key=\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            grace_period_seconds=1,\n        ),\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.AutoconfigSubscription.Rotate(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"autoconfig_id\",\n\tRotateSubscriptionIn2{\n\t\tSigningSecret: new(\n\t\t\tEndpointSecretRotateIn{\n\t\t\t\tKey:                new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\t\t\tGracePeriodSeconds: new(uint32(1)),\n\t\t\t},\n\t\t),\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.AutoconfigSubscription.Rotate(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tRotateSubscriptionIn2{\n\t\tSigningSecret: new(\n\t\t\tEndpointSecretRotateIn{\n\t\t\t\tKey:                new(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"),\n\t\t\t\tGracePeriodSeconds: new(uint32(1)),\n\t\t\t},\n\t\t),\n\t},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.autoconfigSubscription.rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"autoconfig_id\",\n        RotateSubscriptionIn2(\n            signingSecret =\n                EndpointSecretRotateIn(\n                    key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n                    gracePeriodSeconds = 1,\n                )\n        ),\n    )"
+                        "source": "val response =\n    svix.autoconfigSubscription.rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        RotateSubscriptionIn2(\n            signingSecret =\n                EndpointSecretRotateIn(\n                    key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n                    gracePeriodSeconds = 1,\n                )\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getAutoconfigSubscription()\n        .rotate(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"autoconfig_id\",\n            new RotateSubscriptionIn2()\n                .signingSecret(new EndpointSecretRotateIn()\n                    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                    .gracePeriodSeconds(1)));"
+                        "source": "var response = svix.getAutoconfigSubscription()\n        .rotate(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new RotateSubscriptionIn2()\n                .signingSecret(new EndpointSecretRotateIn()\n                    .key(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                    .gracePeriodSeconds(1)));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .autoconfig_subscription\n  .rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    {signingSecret: {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\", gracePeriodSeconds: 1}}\n  )"
+                        "source": "response = svix\n  .autoconfig_subscription\n  .rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    {signingSecret: {key: \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\", gracePeriodSeconds: 1}}\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .autoconfig_subscription()\n    .rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"autoconfig_id\".to_string(),\n        RotateSubscriptionIn2 {\n            signing_secret: Some(EndpointSecretRotateIn {\n                key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n                grace_period_seconds: Some(1),\n            }),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .autoconfig_subscription()\n    .rotate(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        RotateSubscriptionIn2 {\n            signing_secret: Some(EndpointSecretRotateIn {\n                key: Some(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\".to_string()),\n                grace_period_seconds: Some(1),\n            }),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.AutoconfigSubscription.Rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    new RotateSubscriptionIn2\n    {\n        SigningSecret = new EndpointSecretRotateIn\n        {\n            Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            GracePeriodSeconds = 1,\n        },\n    }\n);"
+                        "source": "var response = svix.AutoconfigSubscription.Rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new RotateSubscriptionIn2\n    {\n        SigningSecret = new EndpointSecretRotateIn\n        {\n            Key = \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n            GracePeriodSeconds = 1,\n        },\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->autoconfigSubscription->rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"autoconfig_id\",\n    RotateSubscriptionIn2::create()\n    ->withSigningSecret(EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withGracePeriodSeconds(1))\n);"
+                        "source": "$response = $svix->autoconfigSubscription->rotate(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    RotateSubscriptionIn2::create()\n    ->withSigningSecret(EndpointSecretRotateIn::create()\n    ->withKey(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n    ->withGracePeriodSeconds(1))\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix autoconfig-subscription rotate \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"autoconfig_id\" '{\n    \"signingSecret\": {\n      \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      \"gracePeriodSeconds\": 1\n    }\n  }'"
+                        "source": "svix autoconfig-subscription rotate \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"auto_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"signingSecret\": {\n      \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      \"gracePeriodSeconds\": 1\n    }\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/autoconfig/autoconfig_id/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"signingSecret\": {\n      \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      \"gracePeriodSeconds\": 1\n    }\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/autoconfig/auto_1srOrx2ZWZBpBUvZwXKQmoEYga2/rotate' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"signingSecret\": {\n      \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",\n      \"gracePeriodSeconds\": 1\n    }\n  }'"
                     }
                 ]
             }
@@ -24932,7 +25008,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getDestination()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new DestinationIn()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new DestinationInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                        "source": "var response = svix.getDestination()\n        .create(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            new DestinationIn()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100)\n                .maxWaitSecs(1)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new DestinationInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -25341,7 +25417,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getDestination()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationIn()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new DestinationInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                        "source": "var response = svix.getDestination()\n        .upsert(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationIn()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100)\n                .maxWaitSecs(1)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new DestinationInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -25730,7 +25806,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getDestination()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationPatch()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(\n                    new DestinationPatchConfig.AzureBlobStorage(new AzureBlobStorageConfigPatch()\n                        .container(\"sample string\")\n                        .account(\"sample string\")\n                        .accessKey(\"sample string\"))));"
+                        "source": "var response = svix.getDestination()\n        .patch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"destination_id\",\n            new DestinationPatch()\n                .uid(\"unique-identifier\")\n                .status(DestinationStatusIn.ENABLED)\n                .batchSize(100)\n                .maxWaitSecs(1)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(\n                    new DestinationPatchConfig.AzureBlobStorage(new AzureBlobStorageConfigPatch()\n                        .container(\"sample string\")\n                        .account(\"sample string\")\n                        .accessKey(\"sample string\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -30762,7 +30838,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .create(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            new StreamSinkIn()\n                .uid(\"unique-identifier\")\n                .status(SinkStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .create(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            new StreamSinkIn()\n                .uid(\"unique-identifier\")\n                .status(SinkStatusIn.ENABLED)\n                .batchSize(100)\n                .maxWaitSecs(1)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -31168,7 +31244,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .upsert(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new StreamSinkIn()\n                .uid(\"unique-identifier\")\n                .status(SinkStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .upsert(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new StreamSinkIn()\n                .uid(\"unique-identifier\")\n                .status(SinkStatusIn.ENABLED)\n                .batchSize(100)\n                .maxWaitSecs(1)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkInConfig.AzureBlobStorage(new AzureBlobStorageConfigIn()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -31555,7 +31631,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .patch(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new StreamSinkPatch()\n                .uid(\"unique-identifier\")\n                .status(SinkStatusIn.ENABLED)\n                .batchSize(100L)\n                .maxWaitSecs(1L)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkPatchConfig.AzureBlobStorage(new AzureBlobStorageConfigPatch()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
+                        "source": "var response = svix.getStreaming()\n        .getSink()\n        .patch(\n            \"strm_31Dc0DD72P5AddYUguyBd\",\n            \"sink_31Dc11sPYY9aLDkwPuGMa\",\n            new StreamSinkPatch()\n                .uid(\"unique-identifier\")\n                .status(SinkStatusIn.ENABLED)\n                .batchSize(100)\n                .maxWaitSecs(1)\n                .eventTypes(List.of())\n                .channels(List.of())\n                .metadata(Map.of())\n                .config(new StreamSinkPatchConfig.AzureBlobStorage(new AzureBlobStorageConfigPatch()\n                    .container(\"sample string\")\n                    .account(\"sample string\")\n                    .accessKey(\"sample string\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -36042,7 +36118,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .create(new OperationalWebhookEndpointIn()\n            .url(URI.create(\"https://example.com/webhook/\"))\n            .description(\"An example endpoint name\")\n            .throttleRate(1L)\n            .uid(\"unique-identifier\")\n            .disabled(true)\n            .eventTypes(Set.of(\"message.attempt.failing\"))\n            .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n            .metadata(Map.of())\n            .headers(Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
+                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .create(new OperationalWebhookEndpointIn()\n            .url(URI.create(\"https://example.com/webhook/\"))\n            .description(\"An example endpoint name\")\n            .throttleRate(1)\n            .uid(\"unique-identifier\")\n            .disabled(true)\n            .eventTypes(Set.of(\"message.attempt.failing\"))\n            .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n            .metadata(Map.of())\n            .headers(Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -36412,7 +36488,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .upsert(\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new OperationalWebhookEndpointUpsertIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .eventTypes(Set.of(\"message.attempt.failing\"))\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getOperationalWebhook()\n        .getEndpoint()\n        .upsert(\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new OperationalWebhookEndpointUpsertIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .eventTypes(Set.of(\"message.attempt.failing\"))\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -42032,7 +42108,7 @@
                     "Authentication"
                 ],
                 "summary": "Exchange One Time Token",
-                "description": "This is a one time token.",
+                "description": "Exchange a one-time token for a token.\nThis invalidates the one-time token.",
                 "operationId": "v1.authentication.exchange-one-time-token",
                 "parameters": [
                     {
@@ -42065,6 +42141,237 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/auth/one-time-token/exchange": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Exchange One Time Token",
+                "description": "Exchange a one-time token for a token.\nThis doesn't invalidate the one-time token.",
+                "operationId": "v1.authentication.one-time-token.exchange",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OneTimeTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OneTimeTokenOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/auth/one-time-token/finalize": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Finalize One Time Token",
+                "description": "Finalize the exchange of a one-time token.\nThis invalidates the one-time token.",
+                "operationId": "v1.authentication.one-time-token.finalize",
+                "parameters": [
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OneTimeTokenIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "204": {
+                        "description": "no content"
                     },
                     "400": {
                         "description": "Bad request",
@@ -43635,10 +43942,10 @@
                         "schema": {
                             "description": "The iterator returned from a prior invocation",
                             "type": "string",
-                            "maxLength": 25,
-                            "minLength": 24,
-                            "pattern": "^log[A-Za-z0-9]{21,22}$",
-                            "example": "log2yZwUhtgs5Ai8T9yRQJXA",
+                            "maxLength": 26,
+                            "minLength": 25,
+                            "pattern": "^log_[A-Za-z0-9]{21,22}$",
+                            "example": "log_2yZwUhtgs5Ai8T9yRQJXA",
                             "nullable": true
                         },
                         "style": "form"
@@ -44126,7 +44433,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getIngest()\n        .getEndpoint()\n        .create(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            new IngestEndpointIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of())\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
+                        "source": "var response = svix.getIngest()\n        .getEndpoint()\n        .create(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            new IngestEndpointIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .secret(\"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\")\n                .metadata(Map.of())\n                .headers(\n                    Map.ofEntries(Map.entry(\"X-Example\", \"123\"), Map.entry(\"X-Foobar\", \"Bar\"))));"
                     },
                     {
                         "lang": "Ruby",
@@ -44524,7 +44831,7 @@
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getIngest()\n        .getEndpoint()\n        .upsert(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new IngestEndpointUpsertIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1L)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .metadata(Map.of()));"
+                        "source": "var response = svix.getIngest()\n        .getEndpoint()\n        .upsert(\n            \"src_31Dc4Mx7vQVLfxFgArIhq\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new IngestEndpointUpsertIn()\n                .url(URI.create(\"https://example.com/webhook/\"))\n                .description(\"An example endpoint name\")\n                .throttleRate(1)\n                .uid(\"unique-identifier\")\n                .disabled(true)\n                .metadata(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
@@ -46281,7 +46588,7 @@
                             "example": {
                                 "data": [
                                     {
-                                        "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "orgId": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                                         "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                                         "appUid": "unique-app-identifier",
                                         "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -46331,7 +46638,7 @@
                             "example": {
                                 "data": {
                                     "action": "create-message",
-                                    "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "orgId": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                                     "requestRate": 42,
                                     "rateLimit": 50
                                 },
@@ -49654,6 +49961,7 @@
                     "AgenticCommerceProtocol",
                     "CloseCRM",
                     "CustomerIO",
+                    "DatadogTracing",
                     "Discord",
                     "Hubspot",
                     "Inngest",
@@ -50309,17 +50617,17 @@
                     "success": {
                         "type": "integer",
                         "format": "uint64",
-                        "minimum": 0.0
+                        "minimum": 0
                     },
                     "fail": {
                         "type": "integer",
                         "format": "uint64",
-                        "minimum": 0.0
+                        "minimum": 0
                     },
                     "canceled": {
                         "type": "integer",
                         "format": "uint64",
-                        "minimum": 0.0
+                        "minimum": 0
                     }
                 },
                 "required": [
@@ -54100,6 +54408,26 @@
                     "updatedAt"
                 ]
             },
+            "CreateAutoConfigSubscriptionIn": {
+                "type": "object",
+                "properties": {
+                    "featureFlags": {
+                        "description": "The set of feature flags the created token will have access to.\n\nWhen omitted or empty, the token inherits the calling token's feature flags.\nWhen set, these flags are used instead. An application token may only grant a subset of its own flags.",
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "maxLength": 256,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$"
+                        },
+                        "maxItems": 25,
+                        "minItems": 1,
+                        "example": [
+                            "cool-new-feature"
+                        ]
+                    }
+                }
+            },
             "AutoConfigOut": {
                 "type": "object",
                 "properties": {
@@ -54950,10 +55278,17 @@
                 "type": "object",
                 "properties": {
                     "uri": {
+                        "description": "URI to connect to\n\nNote that the VHost must be percent-escaped, so a default URI would look\nlike `amqp://user:pass@host/%2F`",
                         "type": "string"
                     },
                     "routingKey": {
+                        "description": "Routing key for message dispatch",
                         "type": "string"
+                    },
+                    "mandatory": {
+                        "description": "If true, then dispatches will fail if there is no attached queue; if false, they are\nsilently dropped (this was previously the default)",
+                        "type": "boolean",
+                        "default": true
                     }
                 },
                 "required": [
@@ -55663,9 +55998,13 @@
                     },
                     "routingKey": {
                         "type": "string"
+                    },
+                    "mandatory": {
+                        "type": "boolean"
                     }
                 },
                 "required": [
+                    "mandatory",
                     "routingKey",
                     "uri"
                 ]
@@ -56399,6 +56738,9 @@
                     },
                     "uri": {
                         "type": "string"
+                    },
+                    "mandatory": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -59708,6 +60050,20 @@
                             "kind": {
                                 "type": "string",
                                 "enum": [
+                                    "DatadogTracing"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "kind"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "kind": {
+                                "type": "string",
+                                "enum": [
                                     "Discord"
                                 ]
                             }
@@ -62304,10 +62660,10 @@
                     "id": {
                         "description": "The ErrorLog's ID.",
                         "type": "string",
-                        "maxLength": 25,
-                        "minLength": 24,
-                        "pattern": "^log[A-Za-z0-9]{21,22}$",
-                        "example": "log2yZwUhtgs5Ai8T9yRQJXA"
+                        "maxLength": 26,
+                        "minLength": 25,
+                        "pattern": "^log_[A-Za-z0-9]{21,22}$",
+                        "example": "log_2yZwUhtgs5Ai8T9yRQJXA"
                     },
                     "source_id": {
                         "description": "The Source's ID.",
@@ -63182,7 +63538,7 @@
                             "example": {
                                 "data": [
                                     {
-                                        "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                        "orgId": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                                         "appId": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                                         "appUid": "unique-app-identifier",
                                         "endpointId": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
@@ -63232,7 +63588,7 @@
                             "example": {
                                 "data": {
                                     "action": "create-message",
-                                    "orgId": "env_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                                    "orgId": "org_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                                     "requestRate": 42,
                                     "rateLimit": 50
                                 },

@@ -2,7 +2,11 @@
 import typing as t
 from dataclasses import dataclass
 
-from ..models import AutoConfigOut, RotateSubscriptionIn2
+from ..models import (
+    AutoConfigOut,
+    CreateAutoConfigSubscriptionIn,
+    RotateSubscriptionIn2,
+)
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
 
 
@@ -34,6 +38,7 @@ class AutoconfigSubscriptionAsync(ApiBaseAsync):
     async def create(
         self,
         app_id: str,
+        create_auto_config_subscription_in: CreateAutoConfigSubscriptionIn,
         options: AutoconfigSubscriptionCreateOptions = (
             AutoconfigSubscriptionCreateOptions()
         ),
@@ -47,8 +52,22 @@ class AutoconfigSubscriptionAsync(ApiBaseAsync):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
+            json_body=create_auto_config_subscription_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
         return AutoConfigOut.model_validate(response.json())
+
+    async def delete(self, app_id: str, autoconfig_id: str) -> None:
+        """Delete an AutoConfig subscription. This also invalidates its auth token."""
+        await self._request_asyncio(
+            method="delete",
+            path="/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+            path_params={
+                "app_id": app_id,
+                "autoconfig_id": autoconfig_id,
+            },
+        )
 
     async def rotate(
         self,
@@ -80,6 +99,7 @@ class AutoconfigSubscription(ApiBaseSync):
     def create(
         self,
         app_id: str,
+        create_auto_config_subscription_in: CreateAutoConfigSubscriptionIn,
         options: AutoconfigSubscriptionCreateOptions = (
             AutoconfigSubscriptionCreateOptions()
         ),
@@ -93,8 +113,22 @@ class AutoconfigSubscription(ApiBaseSync):
             },
             query_params=options._query_params(),
             header_params=options._header_params(),
+            json_body=create_auto_config_subscription_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
         )
         return AutoConfigOut.model_validate(response.json())
+
+    def delete(self, app_id: str, autoconfig_id: str) -> None:
+        """Delete an AutoConfig subscription. This also invalidates its auth token."""
+        self._request_sync(
+            method="delete",
+            path="/api/v1/app/{app_id}/autoconfig/{autoconfig_id}",
+            path_params={
+                "app_id": app_id,
+                "autoconfig_id": autoconfig_id,
+            },
+        )
 
     def rotate(
         self,

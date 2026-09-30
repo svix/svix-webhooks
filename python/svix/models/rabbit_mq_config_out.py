@@ -7,3 +7,5 @@ class RabbitMqConfigOut(BaseModel):
     uri: str
 
     routing_key: str
+
+    mandatory: bool

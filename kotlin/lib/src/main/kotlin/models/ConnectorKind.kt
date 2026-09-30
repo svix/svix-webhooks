@@ -14,6 +14,7 @@ enum class ConnectorKind : ToQueryParam {
     @SerialName("AgenticCommerceProtocol") AGENTIC_COMMERCE_PROTOCOL,
     @SerialName("CloseCRM") CLOSE_CRM,
     @SerialName("CustomerIO") CUSTOMER_IO,
+    @SerialName("DatadogTracing") DATADOG_TRACING,
     @SerialName("Discord") DISCORD,
     @SerialName("Hubspot") HUBSPOT,
     @SerialName("Inngest") INNGEST,
