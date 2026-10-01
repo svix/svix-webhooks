@@ -51,7 +51,7 @@ ARG WRITE_EXECUTABLE_METADATA="1"
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260824-slim AS prod
+FROM docker.io/debian:trixie-20260918-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
@@ -63,11 +63,12 @@ RUN <<EOF
     chown -R appuser: /home/appuser
 EOF
 
+ARG __BUST_DOCKER_BUILD_CACHE=2026-10-01
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/var/cache/apt,type=cache,sharing=locked <<EOF
     apt-get update -q
+    apt-get upgrade -y
     apt-get install -y \
         ca-certificates=20250419 \
-        libssl3t64=3.* \
         --no-install-recommends
     update-ca-certificates
 EOF
