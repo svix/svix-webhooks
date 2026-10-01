@@ -2,6 +2,7 @@ import { test } from "node:test";
 import { strict as assert } from "node:assert/strict";
 
 import { Svix } from "./index";
+import { ApiException } from "./util";
 
 /** Exposes the request context the real `Svix` constructor built. */
 class SvixUnderTest extends Svix {
@@ -31,4 +32,34 @@ test("serverUrl without a trailing slash is unchanged", () => {
 test("default and regional server URLs are used as-is", () => {
   assert.equal(baseUrl("token"), "https://api.svix.com");
   assert.equal(baseUrl("testsk.eu.abc"), "https://api.eu.svix.com");
+});
+
+function countingServerErrorFetch(counter: { calls: number }): typeof fetch {
+  return (async () => {
+    counter.calls += 1;
+    return new Response(`{"code":"500","detail":"asd"}`, { status: 500 });
+  }) as typeof fetch;
+}
+
+test("numRetries: 0 disables retries", async () => {
+  const counter = { calls: 0 };
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    numRetries: 0,
+    fetch: countingServerErrorFetch(counter),
+  });
+
+  await assert.rejects(svx.application.list(), ApiException);
+  assert.equal(counter.calls, 1);
+});
+
+test("default retries twice after the initial request", async () => {
+  const counter = { calls: 0 };
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    fetch: countingServerErrorFetch(counter),
+  });
+
+  await assert.rejects(svx.application.list(), ApiException);
+  assert.equal(counter.calls, 3);
 });
