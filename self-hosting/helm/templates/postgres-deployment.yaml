@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "svix.fullname" . }}-{{ .Values.postgres.name }}
+  labels:
+    {{- include "svix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  replicas: {{ .Values.postgres.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "svix.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: database
+  template:
+    metadata:
+      labels:
+        {{- include "svix.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: database
+    spec:
+      containers:
+        - name: {{ .Values.postgres.name }}
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+          ports:
+            - name: postgres
+              containerPort: 5432
+              protocol: TCP
+          env:
+            {{- range $key, $value := .Values.postgres.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          livenessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.postgres.healthcheck.command | nindent 16 }}
+            initialDelaySeconds: 30
+            periodSeconds: {{ .Values.postgres.healthcheck.interval | replace "s" "" | atoi }}
+            timeoutSeconds: {{ .Values.postgres.healthcheck.timeout | replace "s" "" | atoi }}
+            failureThreshold: {{ .Values.postgres.healthcheck.retries }}
+          readinessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.postgres.healthcheck.command | nindent 16 }}
+            initialDelaySeconds: 5
+            periodSeconds: {{ .Values.postgres.healthcheck.interval | replace "s" "" | atoi }}
+            timeoutSeconds: {{ .Values.postgres.healthcheck.timeout | replace "s" "" | atoi }}
+            failureThreshold: 3
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-data
+          {{- if .Values.postgres.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.postgres.persistence.claimName }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }} 
