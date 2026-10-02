@@ -290,6 +290,20 @@ class WiremockTests {
     }
 
     @Test
+    fun postWithoutRequestBodyIsSent() {
+        val svx = testClient()
+        wireMockServer.stubFor(
+            WireMock.post(urlEqualTo("/api/v1/app/ap/msg/msg1/endpoint/endp/resend"))
+                .willReturn(WireMock.status(202).withBody("{}"))
+        )
+        runBlocking { svx.messageAttempt.resend("ap", "msg1", "endp") }
+        wireMockServer.verify(
+            1,
+            postRequestedFor(urlEqualTo("/api/v1/app/ap/msg/msg1/endpoint/endp/resend")),
+        )
+    }
+
+    @Test
     fun defaultRetryStatusCode500() {
         val svx = testClient()
         wireMockServer.stubFor(
