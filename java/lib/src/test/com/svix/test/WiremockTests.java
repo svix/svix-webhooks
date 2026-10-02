@@ -277,6 +277,18 @@ public class WiremockTests {
     }
 
     @Test
+    public void postWithoutRequestBodyIsSent() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.post(urlEqualTo("/api/v1/app/ap/msg/msg1/endpoint/endp/resend"))
+                        .willReturn(WireMock.status(202).withBody("{}")));
+
+        svx.getMessageAttempt().resend("ap", "msg1", "endp");
+        wireMockRule.verify(
+                1, postRequestedFor(urlEqualTo("/api/v1/app/ap/msg/msg1/endpoint/endp/resend")));
+    }
+
+    @Test
     public void subResourceWorks() throws Exception {
         Svix svx = testClient();
         wireMockRule.stubFor(

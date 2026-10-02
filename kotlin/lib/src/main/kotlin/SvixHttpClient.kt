@@ -59,6 +59,8 @@ internal constructor(
                 method,
                 Json.encodeToString(reqBody).toRequestBody("application/json".toMediaType()),
             )
+        } else if (method == "POST" || method == "PUT" || method == "PATCH") {
+            reqBuilder.method(method, ByteArray(0).toRequestBody())
         } else {
             reqBuilder.method(method, null)
         }

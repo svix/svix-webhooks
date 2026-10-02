@@ -47,6 +47,8 @@ public class SvixHttpClient {
             jsonBody = objectMapper.writeValueAsString(reqBody);
             RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json"));
             reqBuilder.method(method, body);
+        } else if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
+            reqBuilder.method(method, RequestBody.create(new byte[0]));
         } else {
             reqBuilder.method(method, null);
         }
