@@ -40,14 +40,16 @@ class Webhook
      */
     public function verify($payload, $headers)
     {
-        $signedHeaders = self::findSignedHeaders($headers);
-        if ($signedHeaders === null && is_array($headers)) {
-            // Svix sends the headers in lowercase, so the lookup above is the
-            // common case. Some servers hand them back with a different casing
-            // (`getallheaders()` typically returns `Svix-Id`), so retry once
-            // against lowercased keys rather than paying for that every time.
-            $signedHeaders = self::findSignedHeaders(array_change_key_case($headers, CASE_LOWER));
+        // Svix sends the headers in lowercase, but some servers hand them back
+        // with a different casing (`getallheaders()` typically returns
+        // `Svix-Id`), so normalize once up front the way the JavaScript
+        // library does. Non-array header containers are left alone, since
+        // findSignedHeaders only needs them to support isset().
+        if (is_array($headers)) {
+            $headers = array_change_key_case($headers, CASE_LOWER);
         }
+
+        $signedHeaders = self::findSignedHeaders($headers);
         if ($signedHeaders === null) {
             throw new Exception\WebhookVerificationException("Missing required headers");
         }
