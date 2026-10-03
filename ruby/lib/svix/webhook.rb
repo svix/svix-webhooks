@@ -27,16 +27,12 @@ module Svix
     end
 
     def verify(payload, headers)
-      msgId = headers["svix-id"]
-      msgSignature = headers["svix-signature"]
-      msgTimestamp = headers["svix-timestamp"]
+      # Svix sends the headers in lowercase, but some servers hand them back
+      # with a different casing (Rack typically yields "Svix-Id"), so normalize
+      # once up front the way the JavaScript library does.
+      msgId, msgTimestamp, msgSignature = find_signed_headers(downcase_keys(headers))
       if !msgSignature || !msgId || !msgTimestamp
-        msgId = headers["webhook-id"]
-        msgSignature = headers["webhook-signature"]
-        msgTimestamp = headers["webhook-timestamp"]
-        if !msgSignature || !msgId || !msgTimestamp
-          raise WebhookVerificationError, "Missing required headers"
-        end
+        raise WebhookVerificationError, "Missing required headers"
       end
 
       verify_timestamp(msgTimestamp)
@@ -73,6 +69,30 @@ module Svix
     private
     SECRET_PREFIX = "whsec_"
     DEFAULT_TOLERANCE = 5 * 60
+
+    # Returns the id, timestamp and signature values, or nil when neither the
+    # branded nor the unbranded set of headers is present.
+    def find_signed_headers(headers)
+      ["svix", "webhook"].each do |prefix|
+        msgId = headers["#{prefix}-id"]
+        msgTimestamp = headers["#{prefix}-timestamp"]
+        msgSignature = headers["#{prefix}-signature"]
+
+        if msgId && msgTimestamp && msgSignature
+          return [msgId, msgTimestamp, msgSignature]
+        end
+      end
+
+      nil
+    end
+
+    def downcase_keys(headers)
+      return headers unless headers.respond_to?(:each_pair)
+
+      headers.each_pair.with_object({}) do |(name, value), downcased|
+        downcased[name.to_s.downcase] = value
+      end
+    end
 
     def verify_timestamp(timestampHeader)
       begin
