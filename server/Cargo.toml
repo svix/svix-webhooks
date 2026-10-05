@@ -24,6 +24,8 @@ uninlined_format_args = "warn"
 edition = "2021"
 license = "MIT"
 version = "1.101.0"
+# keep this in sync with .github/workflows/server-ci.yml
+rust-version = "1.88"
 
 [profile.dev]
 # optimize host dependencies for faster rebuilds.
