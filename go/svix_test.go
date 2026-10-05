@@ -19,9 +19,9 @@ import (
 	"time"
 
 	"github.com/jarcoal/httpmock"
-	svix "github.com/svix/svix-webhooks/go"
-	"github.com/svix/svix-webhooks/go/models"
-	"github.com/svix/svix-webhooks/go/utils"
+	svix "github.com/svix/svix-webhooks/v2/go"
+	"github.com/svix/svix-webhooks/v2/go/models"
+	"github.com/svix/svix-webhooks/v2/go/utils"
 )
 
 var endpointOurStr = `

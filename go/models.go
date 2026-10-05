@@ -1,7 +1,7 @@
 // Package svix this file is @generated DO NOT EDIT
 package svix
 
-import "github.com/svix/svix-webhooks/go/models"
+import "github.com/svix/svix-webhooks/v2/go/models"
 
 type (
 	AdobeSignConfig                           = models.AdobeSignConfig

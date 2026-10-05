@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"runtime"
 
-	"github.com/svix/svix-webhooks/go/internal"
+	"github.com/svix/svix-webhooks/v2/go/internal"
 )
 
 type (

@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Go: Fix module path such that v2 are properly released
 
 ## Version 2.6.1
 * Libs/All: Update to latest Svix Cloud spec

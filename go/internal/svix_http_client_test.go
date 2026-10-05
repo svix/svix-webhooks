@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 func Test_executeRequestWithRetries(t *testing.T) {
