@@ -77,6 +77,13 @@ jobs:
         with:
           tool: nextest
 
+      - name: Update lockfile
+        # If it's the MSRV job, rather than stable or beta
+        if: ${{ startsWith(matrix.rust, '1.') }}
+        run: cargo update
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+
       - name: Clippy
         run: cargo clippy --locked --all-targets --all-features -- -D warnings
 

@@ -16,7 +16,7 @@ categories = [
     "web-programming",
 ]
 include = ["src/**/*", "README.md"]
-# bump .github/workflows/rust-link.yml when changing this
+# keep this in sync with .github/workflows/rust-lint.yml
 rust-version = "1.88"
 
 [features]

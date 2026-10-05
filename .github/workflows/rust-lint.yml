@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        # bump this when bumping the MSRV
+        # keep this in sync with rust/Cargo.toml
         rust: ["1.88.0", stable, beta]
     steps:
       - uses: actions/checkout@v7
@@ -64,6 +64,13 @@ jobs:
       - uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
         with:
           tool: nextest
+
+      - name: Update lockfile
+        # If it's the MSRV job, rather than stable or beta
+        if: ${{ startsWith(matrix.rust, '1.') }}
+        run: cargo update
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
 
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
