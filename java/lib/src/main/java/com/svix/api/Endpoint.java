@@ -169,12 +169,12 @@ public class Endpoint {
      *
      * <p>The previous secret will remain valid for the specified grace period (default 24 hours).
      */
-    public void rotateSecret(
+    public EndpointSecretOut rotateSecret(
             final String appId,
             final String endpointId,
             final EndpointSecretRotateIn endpointSecretRotateIn)
             throws IOException, ApiException {
-        this.rotateSecret(
+        return this.rotateSecret(
                 appId, endpointId, endpointSecretRotateIn, new EndpointRotateSecretOptions());
     }
 
@@ -183,7 +183,7 @@ public class Endpoint {
      *
      * <p>The previous secret will remain valid for the specified grace period (default 24 hours).
      */
-    public void rotateSecret(
+    public EndpointSecretOut rotateSecret(
             final String appId,
             final String endpointId,
             final EndpointSecretRotateIn endpointSecretRotateIn,
@@ -200,8 +200,12 @@ public class Endpoint {
         if (options.idempotencyKey != null) {
             headers.put("idempotency-key", options.idempotencyKey);
         }
-        this.client.executeRequest(
-                "POST", url.build(), Headers.of(headers), endpointSecretRotateIn, null);
+        return this.client.executeRequest(
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                endpointSecretRotateIn,
+                EndpointSecretOut.class);
     }
 
     /** Get the additional headers to be sent with the webhook. */

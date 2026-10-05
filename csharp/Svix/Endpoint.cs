@@ -579,7 +579,7 @@ namespace Svix
         ///
         /// The previous secret will remain valid for the specified grace period (default 24 hours).
         /// </summary>
-        public async Task<bool> RotateSecretAsync(
+        public async Task<EndpointSecretOut> RotateSecretAsync(
             string appId,
             string endpointId,
             EndpointSecretRotateIn endpointSecretRotateIn,
@@ -596,7 +596,7 @@ namespace Svix
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointSecretOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>
@@ -624,7 +624,7 @@ namespace Svix
         ///
         /// The previous secret will remain valid for the specified grace period (default 24 hours).
         /// </summary>
-        public bool RotateSecret(
+        public EndpointSecretOut RotateSecret(
             string appId,
             string endpointId,
             EndpointSecretRotateIn endpointSecretRotateIn,
@@ -640,7 +640,7 @@ namespace Svix
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
+                var response = _client.SvixHttpClient.SendRequest<EndpointSecretOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>

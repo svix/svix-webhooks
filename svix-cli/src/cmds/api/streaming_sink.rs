@@ -253,7 +253,7 @@ pub enum StreamingSinkCommands {
         sink_id: String,
         stream_sink_patch: crate::json::JsonOf<StreamSinkPatch>,
     },
-    /// Get the sink's signing secret (only supported for http sinks)
+    /// Get the sink's signing secret (only supported for http sinks).
     ///
     /// This is used to verify the authenticity of the delivery.
     ///
@@ -275,6 +275,10 @@ pub enum StreamingSinkCommands {
         sink_id: String,
     },
     /// Rotates the signing secret (only supported for http sinks).
+    ///
+    /// This is used to verify the authenticity of the delivery.
+    ///
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
@@ -289,6 +293,7 @@ pub enum StreamingSinkCommands {
   \"gracePeriodSeconds\": 123
 }\n\nExample response:
 {
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
 }\n")]
     RotateSecret {
         stream_id: String,

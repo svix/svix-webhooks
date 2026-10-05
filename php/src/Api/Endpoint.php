@@ -168,11 +168,13 @@ class Endpoint
         string $endpointId,
         EndpointSecretRotateIn $endpointSecretRotateIn,
         EndpointRotateSecretOptions $options = new EndpointRotateSecretOptions(),
-    ): void {
+    ): EndpointSecretOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret/rotate");
         $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($endpointSecretRotateIn));
-        $res = $this->client->sendNoResponseBody($request);
+        $res = $this->client->send($request);
+
+        return EndpointSecretOut::fromJson($res);
     }
 
     /**

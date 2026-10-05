@@ -48,6 +48,19 @@ impl From<DestinationCreateOptions> for svix::api::DestinationCreateOptions {
     }
 }
 
+#[derive(Args, Clone)]
+pub struct DestinationRotateSecretOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<DestinationRotateSecretOptions> for svix::api::DestinationRotateSecretOptions {
+    fn from(value: DestinationRotateSecretOptions) -> Self {
+        let DestinationRotateSecretOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
 #[derive(Args)]
 #[command(args_conflicts_with_subcommands = true, flatten_help = true)]
 pub struct DestinationArgs {
@@ -240,6 +253,30 @@ pub enum DestinationCommands {
         id: String,
         destination_patch: crate::json::JsonOf<DestinationPatch>,
     },
+    /// Rotates the signing secret (only supported for the `fifoEndpoint` destination).
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix destination rotate-secret app_abc000000000000000000000000 DESTINATION_ID {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
+  \"gracePeriodSeconds\": 123
+}\n\nExample response:
+{
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
+}\n")]
+    RotateSecret {
+        app_id: String,
+        id: String,
+        endpoint_secret_rotate_in: Option<crate::json::JsonOf<EndpointSecretRotateIn>>,
+        #[clap(flatten)]
+        options: DestinationRotateSecretOptions,
+    },
 }
 
 impl DestinationCommands {
@@ -296,6 +333,23 @@ impl DestinationCommands {
                 let resp = client
                     .destination()
                     .patch(app_id, id, destination_patch.into_inner())
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::RotateSecret {
+                app_id,
+                id,
+                endpoint_secret_rotate_in,
+                options,
+            } => {
+                let resp = client
+                    .destination()
+                    .rotate_secret(
+                        app_id,
+                        id,
+                        endpoint_secret_rotate_in.unwrap_or_default().into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

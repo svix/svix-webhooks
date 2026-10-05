@@ -52,7 +52,10 @@ pub use self::{
     },
     background_task::{BackgroundTask, BackgroundTaskListOptions},
     connector::{Connector, ConnectorCreateOptions, ConnectorListOptions},
-    destination::{Destination, DestinationCreateOptions, DestinationListOptions},
+    destination::{
+        Destination, DestinationCreateOptions, DestinationListOptions,
+        DestinationRotateSecretOptions,
+    },
     destination_transformation::DestinationTransformation,
     endpoint::{
         Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetAttemptStatsOptions,

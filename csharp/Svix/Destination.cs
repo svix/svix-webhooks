@@ -36,6 +36,18 @@ namespace Svix
         }
     }
 
+    public class DestinationRotateSecretOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class Destination(SvixClient client)
     {
         readonly SvixClient _client = client;
@@ -420,6 +432,91 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Patch)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Rotates the signing secret (only supported for the `fifoEndpoint` destination).
+        /// </summary>
+        public async Task<DestinationSecretRotateOut> RotateSecretAsync(
+            string appId,
+            string destinationId,
+            EndpointSecretRotateIn endpointSecretRotateIn,
+            DestinationRotateSecretOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new DestinationRotateSecretOptions();
+            }
+            endpointSecretRotateIn =
+                endpointSecretRotateIn
+                ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+            try
+            {
+                var response =
+                    await _client.SvixHttpClient.SendRequestAsync<DestinationSecretRotateOut>(
+                        method: HttpMethod.Post,
+                        path: "/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate",
+                        pathParams: new Dictionary<string, string>
+                        {
+                            { "app_id", appId },
+                            { "destination_id", destinationId },
+                        },
+                        queryParams: options.QueryParams(),
+                        headerParams: options.HeaderParams(),
+                        content: endpointSecretRotateIn,
+                        cancellationToken: cancellationToken
+                    );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecretAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Rotates the signing secret (only supported for the `fifoEndpoint` destination).
+        /// </summary>
+        public DestinationSecretRotateOut RotateSecret(
+            string appId,
+            string destinationId,
+            EndpointSecretRotateIn endpointSecretRotateIn,
+            DestinationRotateSecretOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new DestinationRotateSecretOptions();
+            }
+            endpointSecretRotateIn =
+                endpointSecretRotateIn
+                ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<DestinationSecretRotateOut>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "destination_id", destinationId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    content: endpointSecretRotateIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(RotateSecret)} failed");
 
                 throw;
             }

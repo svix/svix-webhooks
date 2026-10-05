@@ -51,6 +51,7 @@ type (
 	DestinationIn                             = models.DestinationIn
 	DestinationOut                            = models.DestinationOut
 	DestinationPatch                          = models.DestinationPatch
+	DestinationSecretRotateOut                = models.DestinationSecretRotateOut
 	DestinationStatus                         = models.DestinationStatus
 	DestinationStatusIn                       = models.DestinationStatusIn
 	DestinationTransformIn                    = models.DestinationTransformIn
@@ -205,6 +206,7 @@ type (
 	SinkHttpConfigOut                         = models.SinkHttpConfigOut
 	SinkHttpConfigPatch                       = models.SinkHttpConfigPatch
 	SinkSecretOut                             = models.SinkSecretOut
+	SinkSecretRotateOut                       = models.SinkSecretRotateOut
 	SinkStatus                                = models.SinkStatus
 	SinkStatusIn                              = models.SinkStatusIn
 	SinkTransformIn                           = models.SinkTransformIn

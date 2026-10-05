@@ -1,11 +1,11 @@
 // this file is @generated
 package com.svix.kotlin
 
-import com.svix.kotlin.models.EmptyResponse
 import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.ListResponseStreamSinkOut
 import com.svix.kotlin.models.Ordering
 import com.svix.kotlin.models.SinkSecretOut
+import com.svix.kotlin.models.SinkSecretRotateOut
 import com.svix.kotlin.models.StreamSinkIn
 import com.svix.kotlin.models.StreamSinkOut
 import com.svix.kotlin.models.StreamSinkPatch
@@ -100,7 +100,7 @@ class StreamingSink(private val client: SvixHttpClient) {
     }
 
     /**
-     * Get the sink's signing secret (only supported for http sinks)
+     * Get the sink's signing secret (only supported for http sinks).
      *
      * This is used to verify the authenticity of the delivery.
      *
@@ -112,13 +112,20 @@ class StreamingSink(private val client: SvixHttpClient) {
         return client.executeRequest<Any, SinkSecretOut>("GET", url.build())
     }
 
-    /** Rotates the signing secret (only supported for http sinks). */
+    /**
+     * Rotates the signing secret (only supported for http sinks).
+     *
+     * This is used to verify the authenticity of the delivery.
+     *
+     * For more information please refer to
+     * [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+     */
     suspend fun rotateSecret(
         streamId: String,
         sinkId: String,
         endpointSecretRotateIn: EndpointSecretRotateIn,
         options: StreamingSinkRotateSecretOptions = StreamingSinkRotateSecretOptions(),
-    ): EmptyResponse {
+    ): SinkSecretRotateOut {
         val url =
             client
                 .newUrlBuilder()
@@ -126,7 +133,7 @@ class StreamingSink(private val client: SvixHttpClient) {
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
 
-        return client.executeRequest<EndpointSecretRotateIn, EmptyResponse>(
+        return client.executeRequest<EndpointSecretRotateIn, SinkSecretRotateOut>(
             "POST",
             url.build(),
             headers = headers.build(),

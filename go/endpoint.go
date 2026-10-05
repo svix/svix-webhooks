@@ -262,7 +262,7 @@ func (endpoint Endpoint) RotateSecret(
 	endpointId string,
 	endpointSecretRotateIn models.EndpointSecretRotateIn,
 	o *EndpointRotateSecretOptions,
-) error {
+) (*models.EndpointSecretOut, error) {
 	var err error
 	pathMap := map[string]string{
 		"app_id":      appId,
@@ -275,9 +275,9 @@ func (endpoint Endpoint) RotateSecret(
 	}
 	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	_, err = internal.ExecuteRequest[models.EndpointSecretRotateIn, any](
+	return internal.ExecuteRequest[models.EndpointSecretRotateIn, models.EndpointSecretOut](
 		ctx,
 		endpoint.client,
 		"POST",
@@ -287,7 +287,6 @@ func (endpoint Endpoint) RotateSecret(
 		headerMap,
 		&endpointSecretRotateIn,
 	)
-	return err
 }
 
 // Get the additional headers to be sent with the webhook.

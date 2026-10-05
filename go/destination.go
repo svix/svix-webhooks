@@ -34,6 +34,10 @@ type DestinationCreateOptions struct {
 	IdempotencyKey *string
 }
 
+type DestinationRotateSecretOptions struct {
+	IdempotencyKey *string
+}
+
 // List of all the application's destinations.
 func (destination Destination) List(
 	ctx context.Context,
@@ -188,5 +192,39 @@ func (destination Destination) Patch(
 		nil,
 		nil,
 		&destinationPatch,
+	)
+}
+
+// Rotates the signing secret (only supported for the `fifoEndpoint` destination).
+func (destination Destination) RotateSecret(
+	ctx context.Context,
+	appId string,
+	destinationId string,
+	endpointSecretRotateIn models.EndpointSecretRotateIn,
+	o *DestinationRotateSecretOptions,
+) (*models.DestinationSecretRotateOut, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id":         appId,
+		"destination_id": destinationId,
+	}
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := DestinationRotateSecretOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.EndpointSecretRotateIn, models.DestinationSecretRotateOut](
+		ctx,
+		destination.client,
+		"POST",
+		"/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate",
+		pathMap,
+		nil,
+		headerMap,
+		&endpointSecretRotateIn,
 	)
 }

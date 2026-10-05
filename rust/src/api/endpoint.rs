@@ -206,7 +206,7 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: Option<EndpointRotateSecretOptions>,
-    ) -> Result<()> {
+    ) -> Result<EndpointSecretOut> {
         let EndpointRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
@@ -217,7 +217,6 @@ impl<'a> Endpoint<'a> {
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
         .with_body_param(endpoint_secret_rotate_in)
-        .returns_nothing()
         .execute(self.cfg)
         .await
     }

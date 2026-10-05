@@ -50,6 +50,7 @@ mod cron_config;
 mod destination_in;
 mod destination_out;
 mod destination_patch;
+mod destination_secret_rotate_out;
 mod destination_status;
 mod destination_status_in;
 mod destination_transform_in;
@@ -208,6 +209,7 @@ mod sink_http_config_out;
 mod sink_http_config_patch;
 mod sink_in_common;
 mod sink_secret_out;
+mod sink_secret_rotate_out;
 mod sink_status;
 mod sink_status_in;
 mod sink_transform_in;
@@ -313,6 +315,7 @@ pub use self::{
     destination_in::{DestinationIn, DestinationInConfig},
     destination_out::{DestinationOut, DestinationOutConfig},
     destination_patch::{DestinationPatch, DestinationPatchConfig},
+    destination_secret_rotate_out::DestinationSecretRotateOut,
     destination_status::DestinationStatus,
     destination_status_in::DestinationStatusIn,
     destination_transform_in::DestinationTransformIn,
@@ -471,6 +474,7 @@ pub use self::{
     sink_http_config_patch::SinkHttpConfigPatch,
     sink_in_common::SinkInCommon,
     sink_secret_out::SinkSecretOut,
+    sink_secret_rotate_out::SinkSecretRotateOut,
     sink_status::SinkStatus,
     sink_status_in::SinkStatusIn,
     sink_transform_in::SinkTransformIn,

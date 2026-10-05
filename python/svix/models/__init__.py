@@ -48,6 +48,7 @@ from .cron_config import CronConfig
 from .destination_in import DestinationIn
 from .destination_out import DestinationOut
 from .destination_patch import DestinationPatch
+from .destination_secret_rotate_out import DestinationSecretRotateOut
 from .destination_status import DestinationStatus
 from .destination_status_in import DestinationStatusIn
 from .destination_transform_in import DestinationTransformIn
@@ -210,6 +211,7 @@ from .sink_http_config_out import SinkHttpConfigOut
 from .sink_http_config_patch import SinkHttpConfigPatch
 from .sink_in_common import SinkInCommon
 from .sink_secret_out import SinkSecretOut
+from .sink_secret_rotate_out import SinkSecretRotateOut
 from .sink_status import SinkStatus
 from .sink_status_in import SinkStatusIn
 from .sink_transform_in import SinkTransformIn
@@ -307,6 +309,7 @@ __all__ = [
     "DestinationIn",
     "DestinationOut",
     "DestinationPatch",
+    "DestinationSecretRotateOut",
     "DestinationStatus",
     "DestinationStatusIn",
     "DestinationTransformIn",
@@ -465,6 +468,7 @@ __all__ = [
     "SinkHttpConfigPatch",
     "SinkInCommon",
     "SinkSecretOut",
+    "SinkSecretRotateOut",
     "SinkStatus",
     "SinkStatusIn",
     "SinkTransformIn",

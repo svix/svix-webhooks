@@ -89,7 +89,7 @@ module Svix
         },
         body: endpoint_secret_rotate_in
       )
-      EmptyResponse.deserialize(res)
+      SinkSecretRotateOut.deserialize(res)
     end
 
   end

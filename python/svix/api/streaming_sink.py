@@ -4,10 +4,10 @@ from dataclasses import dataclass
 
 from .. import models
 from ..models import (
-    EmptyResponse,
     EndpointSecretRotateIn,
     ListResponseStreamSinkOut,
     SinkSecretOut,
+    SinkSecretRotateOut,
     StreamSinkIn,
     StreamSinkOut,
     StreamSinkPatch,
@@ -159,7 +159,7 @@ class StreamingSinkAsync(ApiBaseAsync):
         return StreamSinkOut.model_validate(response.json())
 
     async def get_secret(self, stream_id: str, sink_id: str) -> SinkSecretOut:
-        """Get the sink's signing secret (only supported for http sinks)
+        """Get the sink's signing secret (only supported for http sinks).
 
         This is used to verify the authenticity of the delivery.
 
@@ -182,8 +182,12 @@ class StreamingSinkAsync(ApiBaseAsync):
         options: StreamingSinkRotateSecretOptions = (
             StreamingSinkRotateSecretOptions()
         ),
-    ) -> EmptyResponse:
-        """Rotates the signing secret (only supported for http sinks)."""
+    ) -> SinkSecretRotateOut:
+        """Rotates the signing secret (only supported for http sinks).
+
+        This is used to verify the authenticity of the delivery.
+
+        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
         response = await self._request_asyncio(
             method="post",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate",
@@ -197,7 +201,7 @@ class StreamingSinkAsync(ApiBaseAsync):
                 exclude_unset=True, by_alias=True
             ),
         )
-        return EmptyResponse.model_validate(response.json())
+        return SinkSecretRotateOut.model_validate(response.json())
 
 
 class StreamingSink(ApiBaseSync):
@@ -297,7 +301,7 @@ class StreamingSink(ApiBaseSync):
         return StreamSinkOut.model_validate(response.json())
 
     def get_secret(self, stream_id: str, sink_id: str) -> SinkSecretOut:
-        """Get the sink's signing secret (only supported for http sinks)
+        """Get the sink's signing secret (only supported for http sinks).
 
         This is used to verify the authenticity of the delivery.
 
@@ -320,8 +324,12 @@ class StreamingSink(ApiBaseSync):
         options: StreamingSinkRotateSecretOptions = (
             StreamingSinkRotateSecretOptions()
         ),
-    ) -> EmptyResponse:
-        """Rotates the signing secret (only supported for http sinks)."""
+    ) -> SinkSecretRotateOut:
+        """Rotates the signing secret (only supported for http sinks).
+
+        This is used to verify the authenticity of the delivery.
+
+        For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/)."""
         response = self._request_sync(
             method="post",
             path="/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate",
@@ -335,4 +343,4 @@ class StreamingSink(ApiBaseSync):
                 exclude_unset=True, by_alias=True
             ),
         )
-        return EmptyResponse.model_validate(response.json())
+        return SinkSecretRotateOut.model_validate(response.json())

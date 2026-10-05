@@ -4,10 +4,10 @@ package com.svix.api;
 import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
-import com.svix.models.EmptyResponse;
 import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseStreamSinkOut;
 import com.svix.models.SinkSecretOut;
+import com.svix.models.SinkSecretRotateOut;
 import com.svix.models.StreamSinkIn;
 import com.svix.models.StreamSinkOut;
 import com.svix.models.StreamSinkPatch;
@@ -126,7 +126,7 @@ public class StreamingSink {
     }
 
     /**
-     * Get the sink's signing secret (only supported for http sinks)
+     * Get the sink's signing secret (only supported for http sinks).
      *
      * <p>This is used to verify the authenticity of the delivery.
      *
@@ -144,8 +144,15 @@ public class StreamingSink {
         return this.client.executeRequest("GET", url.build(), null, null, SinkSecretOut.class);
     }
 
-    /** Rotates the signing secret (only supported for http sinks). */
-    public EmptyResponse rotateSecret(
+    /**
+     * Rotates the signing secret (only supported for http sinks).
+     *
+     * <p>This is used to verify the authenticity of the delivery.
+     *
+     * <p>For more information please refer to [the consuming webhooks
+     * docs](https://docs.svix.com/consuming-webhooks/).
+     */
+    public SinkSecretRotateOut rotateSecret(
             final String streamId,
             final String sinkId,
             final EndpointSecretRotateIn endpointSecretRotateIn)
@@ -154,8 +161,15 @@ public class StreamingSink {
                 streamId, sinkId, endpointSecretRotateIn, new StreamingSinkRotateSecretOptions());
     }
 
-    /** Rotates the signing secret (only supported for http sinks). */
-    public EmptyResponse rotateSecret(
+    /**
+     * Rotates the signing secret (only supported for http sinks).
+     *
+     * <p>This is used to verify the authenticity of the delivery.
+     *
+     * <p>For more information please refer to [the consuming webhooks
+     * docs](https://docs.svix.com/consuming-webhooks/).
+     */
+    public SinkSecretRotateOut rotateSecret(
             final String streamId,
             final String sinkId,
             final EndpointSecretRotateIn endpointSecretRotateIn,
@@ -177,6 +191,6 @@ public class StreamingSink {
                 url.build(),
                 Headers.of(headers),
                 endpointSecretRotateIn,
-                EmptyResponse.class);
+                SinkSecretRotateOut.class);
     }
 }
