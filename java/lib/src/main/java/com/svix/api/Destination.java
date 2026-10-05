@@ -7,6 +7,8 @@ import com.svix.exceptions.ApiException;
 import com.svix.models.DestinationIn;
 import com.svix.models.DestinationOut;
 import com.svix.models.DestinationPatch;
+import com.svix.models.DestinationSecretRotateOut;
+import com.svix.models.EndpointSecretRotateIn;
 import com.svix.models.ListResponseDestinationOut;
 
 import lombok.Getter;
@@ -127,5 +129,41 @@ public class Destination {
                                         "/api/v1/app/%s/destination/%s", appId, destinationId));
         return this.client.executeRequest(
                 "PATCH", url.build(), null, destinationPatch, DestinationOut.class);
+    }
+
+    /** Rotates the signing secret (only supported for the `fifoEndpoint` destination). */
+    public DestinationSecretRotateOut rotateSecret(
+            final String appId,
+            final String destinationId,
+            final EndpointSecretRotateIn endpointSecretRotateIn)
+            throws IOException, ApiException {
+        return this.rotateSecret(
+                appId, destinationId, endpointSecretRotateIn, new DestinationRotateSecretOptions());
+    }
+
+    /** Rotates the signing secret (only supported for the `fifoEndpoint` destination). */
+    public DestinationSecretRotateOut rotateSecret(
+            final String appId,
+            final String destinationId,
+            final EndpointSecretRotateIn endpointSecretRotateIn,
+            final DestinationRotateSecretOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/destination/%s/secret/rotate",
+                                        appId, destinationId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                endpointSecretRotateIn,
+                DestinationSecretRotateOut.class);
     }
 }

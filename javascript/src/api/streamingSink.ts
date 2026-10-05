@@ -1,6 +1,5 @@
 // this file is @generated
 
-import { type EmptyResponse, EmptyResponseSerializer } from "../models/emptyResponse";
 import {
   type EndpointSecretRotateIn,
   EndpointSecretRotateInSerializer,
@@ -11,6 +10,10 @@ import {
 } from "../models/listResponseStreamSinkOut";
 import type { Ordering } from "../models/ordering";
 import { type SinkSecretOut, SinkSecretOutSerializer } from "../models/sinkSecretOut";
+import {
+  type SinkSecretRotateOut,
+  SinkSecretRotateOutSerializer,
+} from "../models/sinkSecretRotateOut";
 import { type StreamSinkIn, StreamSinkInSerializer } from "../models/streamSinkIn";
 import { type StreamSinkOut, StreamSinkOutSerializer } from "../models/streamSinkOut";
 import {
@@ -142,7 +145,7 @@ export class StreamingSink {
   }
 
   /**
-   * Get the sink's signing secret (only supported for http sinks)
+   * Get the sink's signing secret (only supported for http sinks).
    *
    * This is used to verify the authenticity of the delivery.
    *
@@ -160,13 +163,19 @@ export class StreamingSink {
     return await request.send(this.requestCtx, SinkSecretOutSerializer._fromJsonObject);
   }
 
-  /** Rotates the signing secret (only supported for http sinks). */
+  /**
+   * Rotates the signing secret (only supported for http sinks).
+   *
+   * This is used to verify the authenticity of the delivery.
+   *
+   * For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
+   */
   public async rotateSecret(
     streamId: string,
     sinkId: string,
     endpointSecretRotateIn: EndpointSecretRotateIn = {},
     options?: StreamingSinkRotateSecretOptions
-  ): Promise<EmptyResponse> {
+  ): Promise<SinkSecretRotateOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
       "/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate"
@@ -179,6 +188,9 @@ export class StreamingSink {
       EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
     );
 
-    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
+    return await request.send(
+      this.requestCtx,
+      SinkSecretRotateOutSerializer._fromJsonObject
+    );
   }
 }

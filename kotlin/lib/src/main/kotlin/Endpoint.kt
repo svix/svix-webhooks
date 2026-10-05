@@ -161,7 +161,7 @@ class Endpoint(private val client: SvixHttpClient) {
         endpointId: String,
         endpointSecretRotateIn: EndpointSecretRotateIn,
         options: EndpointRotateSecretOptions = EndpointRotateSecretOptions(),
-    ) {
+    ): EndpointSecretOut {
         val url =
             client
                 .newUrlBuilder()
@@ -169,7 +169,7 @@ class Endpoint(private val client: SvixHttpClient) {
         val headers = Headers.Builder()
         options.idempotencyKey?.let { headers.add("idempotency-key", it) }
 
-        client.executeRequest<EndpointSecretRotateIn, Boolean>(
+        return client.executeRequest<EndpointSecretRotateIn, EndpointSecretOut>(
             "POST",
             url.build(),
             headers = headers.build(),

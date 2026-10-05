@@ -388,6 +388,9 @@ pub enum EndpointCommands {
 {
   \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\",
   \"gracePeriodSeconds\": 123
+}\n\nExample response:
+{
+  \"key\": \"whsec_C2FVsBQIhrscChlQIMV+b5sSYspob7oD\"
 }\n")]
     RotateSecret {
         app_id: String,
@@ -756,7 +759,7 @@ impl EndpointCommands {
                 endpoint_secret_rotate_in,
                 options,
             } => {
-                client
+                let resp = client
                     .endpoint()
                     .rotate_secret(
                         app_id,
@@ -765,6 +768,7 @@ impl EndpointCommands {
                         Some(options.into()),
                     )
                     .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
             }
             Self::GetHeaders { app_id, id } => {
                 let resp = client.endpoint().get_headers(app_id, id).await?;

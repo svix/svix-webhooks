@@ -237,7 +237,7 @@ export class Endpoint {
     endpointId: string,
     endpointSecretRotateIn: EndpointSecretRotateIn = {},
     options?: EndpointRotateSecretOptions
-  ): Promise<void> {
+  ): Promise<EndpointSecretOut> {
     const request = new SvixRequest(
       HttpMethod.POST,
       "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate"
@@ -250,7 +250,10 @@ export class Endpoint {
       EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
     );
 
-    return await request.sendNoResponseBody(this.requestCtx);
+    return await request.send(
+      this.requestCtx,
+      EndpointSecretOutSerializer._fromJsonObject
+    );
   }
 
   /** Get the additional headers to be sent with the webhook. */

@@ -275,11 +275,11 @@ class EndpointAsync(ApiBaseAsync):
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
-    ) -> None:
+    ) -> EndpointSecretOut:
         """Rotates the endpoint's signing secret.
 
         The previous secret will remain valid for the specified grace period (default 24 hours)."""
-        await self._request_asyncio(
+        response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -292,6 +292,7 @@ class EndpointAsync(ApiBaseAsync):
                 exclude_unset=True, by_alias=True
             ),
         )
+        return EndpointSecretOut.model_validate(response.json())
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -648,11 +649,11 @@ class Endpoint(ApiBaseSync):
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
-    ) -> None:
+    ) -> EndpointSecretOut:
         """Rotates the endpoint's signing secret.
 
         The previous secret will remain valid for the specified grace period (default 24 hours)."""
-        self._request_sync(
+        response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -665,6 +666,7 @@ class Endpoint(ApiBaseSync):
                 exclude_unset=True, by_alias=True
             ),
         )
+        return EndpointSecretOut.model_validate(response.json())
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""

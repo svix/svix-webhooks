@@ -9,6 +9,8 @@ use Svix\Exception\ApiException;
 use Svix\Models\DestinationIn;
 use Svix\Models\DestinationOut;
 use Svix\Models\DestinationPatch;
+use Svix\Models\DestinationSecretRotateOut;
+use Svix\Models\EndpointSecretRotateIn;
 use Svix\Models\ListResponseDestinationOut;
 use Svix\Request\SvixHttpClient;
 
@@ -118,5 +120,24 @@ class Destination
         $res = $this->client->send($request);
 
         return DestinationOut::fromJson($res);
+    }
+
+    /**
+     * Rotates the signing secret (only supported for the `fifoEndpoint` destination).
+     *
+     * @throws ApiException
+     */
+    public function rotateSecret(
+        string $appId,
+        string $destinationId,
+        EndpointSecretRotateIn $endpointSecretRotateIn,
+        DestinationRotateSecretOptions $options = new DestinationRotateSecretOptions(),
+    ): DestinationSecretRotateOut {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/destination/{$destinationId}/secret/rotate");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($endpointSecretRotateIn));
+        $res = $this->client->send($request);
+
+        return DestinationSecretRotateOut::fromJson($res);
     }
 }

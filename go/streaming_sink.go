@@ -195,7 +195,7 @@ func (streamingSink StreamingSink) Patch(
 	)
 }
 
-// Get the sink's signing secret (only supported for http sinks)
+// Get the sink's signing secret (only supported for http sinks).
 //
 // This is used to verify the authenticity of the delivery.
 //
@@ -222,13 +222,17 @@ func (streamingSink StreamingSink) GetSecret(
 }
 
 // Rotates the signing secret (only supported for http sinks).
+//
+// This is used to verify the authenticity of the delivery.
+//
+// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
 func (streamingSink StreamingSink) RotateSecret(
 	ctx context.Context,
 	streamId string,
 	sinkId string,
 	endpointSecretRotateIn models.EndpointSecretRotateIn,
 	o *StreamingSinkRotateSecretOptions,
-) (*models.EmptyResponse, error) {
+) (*models.SinkSecretRotateOut, error) {
 	var err error
 	pathMap := map[string]string{
 		"stream_id": streamId,
@@ -243,7 +247,7 @@ func (streamingSink StreamingSink) RotateSecret(
 	if err != nil {
 		return nil, err
 	}
-	return internal.ExecuteRequest[models.EndpointSecretRotateIn, models.EmptyResponse](
+	return internal.ExecuteRequest[models.EndpointSecretRotateIn, models.SinkSecretRotateOut](
 		ctx,
 		streamingSink.client,
 		"POST",

@@ -19,6 +19,11 @@ pub struct DestinationCreateOptions {
     pub idempotency_key: Option<String>,
 }
 
+#[derive(Default)]
+pub struct DestinationRotateSecretOptions {
+    pub idempotency_key: Option<String>,
+}
+
 pub struct Destination<'a> {
     cfg: &'a Configuration,
 }
@@ -127,6 +132,29 @@ impl<'a> Destination<'a> {
         .with_path_param("app_id", app_id)
         .with_path_param("destination_id", destination_id)
         .with_body_param(destination_patch)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Rotates the signing secret (only supported for the `fifoEndpoint`
+    /// destination).
+    pub async fn rotate_secret(
+        &self,
+        app_id: String,
+        destination_id: String,
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: Option<DestinationRotateSecretOptions>,
+    ) -> Result<DestinationSecretRotateOut> {
+        let DestinationRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http::Method::POST,
+            "/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("destination_id", destination_id)
+        .with_optional_header_param("idempotency-key", idempotency_key)
+        .with_body_param(endpoint_secret_rotate_in)
         .execute(self.cfg)
         .await
     }

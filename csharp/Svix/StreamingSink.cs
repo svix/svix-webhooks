@@ -433,7 +433,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get the sink's signing secret (only supported for http sinks)
+        /// Get the sink's signing secret (only supported for http sinks).
         ///
         /// This is used to verify the authenticity of the delivery.
         ///
@@ -468,7 +468,7 @@ namespace Svix
         }
 
         /// <summary>
-        /// Get the sink's signing secret (only supported for http sinks)
+        /// Get the sink's signing secret (only supported for http sinks).
         ///
         /// This is used to verify the authenticity of the delivery.
         ///
@@ -499,8 +499,12 @@ namespace Svix
 
         /// <summary>
         /// Rotates the signing secret (only supported for http sinks).
+        ///
+        /// This is used to verify the authenticity of the delivery.
+        ///
+        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
         /// </summary>
-        public async Task<EmptyResponse> RotateSecretAsync(
+        public async Task<SinkSecretRotateOut> RotateSecretAsync(
             string streamId,
             string sinkId,
             EndpointSecretRotateIn endpointSecretRotateIn,
@@ -517,7 +521,7 @@ namespace Svix
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<SinkSecretRotateOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>
@@ -542,8 +546,12 @@ namespace Svix
 
         /// <summary>
         /// Rotates the signing secret (only supported for http sinks).
+        ///
+        /// This is used to verify the authenticity of the delivery.
+        ///
+        /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
         /// </summary>
-        public EmptyResponse RotateSecret(
+        public SinkSecretRotateOut RotateSecret(
             string streamId,
             string sinkId,
             EndpointSecretRotateIn endpointSecretRotateIn,
@@ -559,7 +567,7 @@ namespace Svix
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
+                var response = _client.SvixHttpClient.SendRequest<SinkSecretRotateOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/stream/{stream_id}/sink/{sink_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>

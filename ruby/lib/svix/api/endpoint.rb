@@ -81,7 +81,7 @@ module Svix
 
     def rotate_secret(app_id, endpoint_id, endpoint_secret_rotate_in, options = {})
       options = options.transform_keys(&:to_s)
-      @client.execute_request(
+      res = @client.execute_request(
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret/rotate",
         headers: {
@@ -89,6 +89,7 @@ module Svix
         },
         body: endpoint_secret_rotate_in
       )
+      EndpointSecretOut.deserialize(res)
     end
 
     def get_headers(app_id, endpoint_id)

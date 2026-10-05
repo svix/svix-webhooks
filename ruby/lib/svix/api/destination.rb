@@ -71,5 +71,18 @@ module Svix
       DestinationOut.deserialize(res)
     end
 
+    def rotate_secret(app_id, destination_id, endpoint_secret_rotate_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/app/#{app_id}/destination/#{destination_id}/secret/rotate",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: endpoint_secret_rotate_in
+      )
+      DestinationSecretRotateOut.deserialize(res)
+    end
+
   end
 end

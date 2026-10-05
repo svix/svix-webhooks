@@ -7,6 +7,8 @@ from ..models import (
     DestinationIn,
     DestinationOut,
     DestinationPatch,
+    DestinationSecretRotateOut,
+    EndpointSecretRotateIn,
     ListResponseDestinationOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
@@ -37,6 +39,18 @@ class DestinationListOptions(BaseOptions):
 
 @dataclass
 class DestinationCreateOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class DestinationRotateSecretOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
@@ -141,6 +155,29 @@ class DestinationAsync(ApiBaseAsync):
         )
         return DestinationOut.model_validate(response.json())
 
+    async def rotate_secret(
+        self,
+        app_id: str,
+        destination_id: str,
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: DestinationRotateSecretOptions = (DestinationRotateSecretOptions()),
+    ) -> DestinationSecretRotateOut:
+        """Rotates the signing secret (only supported for the `fifoEndpoint` destination)."""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate",
+            path_params={
+                "app_id": app_id,
+                "destination_id": destination_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=endpoint_secret_rotate_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return DestinationSecretRotateOut.model_validate(response.json())
+
 
 class Destination(ApiBaseSync):
     @property
@@ -235,3 +272,26 @@ class Destination(ApiBaseSync):
             ),
         )
         return DestinationOut.model_validate(response.json())
+
+    def rotate_secret(
+        self,
+        app_id: str,
+        destination_id: str,
+        endpoint_secret_rotate_in: EndpointSecretRotateIn,
+        options: DestinationRotateSecretOptions = (DestinationRotateSecretOptions()),
+    ) -> DestinationSecretRotateOut:
+        """Rotates the signing secret (only supported for the `fifoEndpoint` destination)."""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate",
+            path_params={
+                "app_id": app_id,
+                "destination_id": destination_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=endpoint_secret_rotate_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return DestinationSecretRotateOut.model_validate(response.json())

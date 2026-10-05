@@ -136,7 +136,7 @@ impl<'a> StreamingSink<'a> {
         .await
     }
 
-    /// Get the sink's signing secret (only supported for http sinks)
+    /// Get the sink's signing secret (only supported for http sinks).
     ///
     /// This is used to verify the authenticity of the delivery.
     ///
@@ -153,13 +153,17 @@ impl<'a> StreamingSink<'a> {
     }
 
     /// Rotates the signing secret (only supported for http sinks).
+    ///
+    /// This is used to verify the authenticity of the delivery.
+    ///
+    /// For more information please refer to [the consuming webhooks docs](https://docs.svix.com/consuming-webhooks/).
     pub async fn rotate_secret(
         &self,
         stream_id: String,
         sink_id: String,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: Option<StreamingSinkRotateSecretOptions>,
-    ) -> Result<EmptyResponse> {
+    ) -> Result<SinkSecretRotateOut> {
         let StreamingSinkRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(

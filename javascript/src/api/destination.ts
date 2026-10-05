@@ -7,6 +7,14 @@ import {
   DestinationPatchSerializer,
 } from "../models/destinationPatch";
 import {
+  type DestinationSecretRotateOut,
+  DestinationSecretRotateOutSerializer,
+} from "../models/destinationSecretRotateOut";
+import {
+  type EndpointSecretRotateIn,
+  EndpointSecretRotateInSerializer,
+} from "../models/endpointSecretRotateIn";
+import {
   type ListResponseDestinationOut,
   ListResponseDestinationOutSerializer,
 } from "../models/listResponseDestinationOut";
@@ -24,6 +32,10 @@ export interface DestinationListOptions {
 }
 
 export interface DestinationCreateOptions {
+  idempotencyKey?: string;
+}
+
+export interface DestinationRotateSecretOptions {
   idempotencyKey?: string;
 }
 
@@ -129,5 +141,30 @@ export class Destination {
     request.setBody(DestinationPatchSerializer._toJsonObject(destinationPatch));
 
     return await request.send(this.requestCtx, DestinationOutSerializer._fromJsonObject);
+  }
+
+  /** Rotates the signing secret (only supported for the `fifoEndpoint` destination). */
+  public async rotateSecret(
+    appId: string,
+    destinationId: string,
+    endpointSecretRotateIn: EndpointSecretRotateIn = {},
+    options?: DestinationRotateSecretOptions
+  ): Promise<DestinationSecretRotateOut> {
+    const request = new SvixRequest(
+      HttpMethod.POST,
+      "/api/v1/app/{app_id}/destination/{destination_id}/secret/rotate"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("destination_id", destinationId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(
+      EndpointSecretRotateInSerializer._toJsonObject(endpointSecretRotateIn)
+    );
+
+    return await request.send(
+      this.requestCtx,
+      DestinationSecretRotateOutSerializer._fromJsonObject
+    );
   }
 }

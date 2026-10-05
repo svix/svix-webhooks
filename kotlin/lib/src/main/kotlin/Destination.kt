@@ -4,6 +4,8 @@ package com.svix.kotlin
 import com.svix.kotlin.models.DestinationIn
 import com.svix.kotlin.models.DestinationOut
 import com.svix.kotlin.models.DestinationPatch
+import com.svix.kotlin.models.DestinationSecretRotateOut
+import com.svix.kotlin.models.EndpointSecretRotateIn
 import com.svix.kotlin.models.ListResponseDestinationOut
 import com.svix.kotlin.models.Ordering
 import okhttp3.Headers
@@ -18,6 +20,8 @@ data class DestinationListOptions(
 )
 
 data class DestinationCreateOptions(val idempotencyKey: String? = null)
+
+data class DestinationRotateSecretOptions(val idempotencyKey: String? = null)
 
 class Destination(private val client: SvixHttpClient) {
     val transformation: DestinationTransformation = DestinationTransformation(client)
@@ -95,6 +99,28 @@ class Destination(private val client: SvixHttpClient) {
             "PATCH",
             url.build(),
             reqBody = destinationPatch,
+        )
+    }
+
+    /** Rotates the signing secret (only supported for the `fifoEndpoint` destination). */
+    suspend fun rotateSecret(
+        appId: String,
+        destinationId: String,
+        endpointSecretRotateIn: EndpointSecretRotateIn,
+        options: DestinationRotateSecretOptions = DestinationRotateSecretOptions(),
+    ): DestinationSecretRotateOut {
+        val url =
+            client
+                .newUrlBuilder()
+                .encodedPath("/api/v1/app/$appId/destination/$destinationId/secret/rotate")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        return client.executeRequest<EndpointSecretRotateIn, DestinationSecretRotateOut>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = endpointSecretRotateIn,
         )
     }
 }
