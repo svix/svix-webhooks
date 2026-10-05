@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/svix/svix-webhooks/go/internalapi"
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/internalapi"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 const autoConfigTokenPrefixV1 = "auto_v1_"

@@ -1,7 +1,7 @@
 package svix
 
 import (
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 // Instantiates a new MessageIn object with a raw string payload.

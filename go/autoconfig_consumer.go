@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/svix/svix-webhooks/go/internalapi"
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/internalapi"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 // AutoConfigConsumer decodes an auto-configuration token for polling sink consumers.

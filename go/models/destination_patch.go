@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/svix/svix-webhooks/go/utils"
+	"github.com/svix/svix-webhooks/v2/go/utils"
 )
 
 // When creating an DestinationPatch, use the appropriate config structure based on the Type:
