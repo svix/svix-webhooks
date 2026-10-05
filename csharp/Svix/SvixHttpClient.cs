@@ -23,6 +23,18 @@ namespace Svix
             NullValueHandling = NullValueHandling.Ignore,
         };
 
+        public SvixHttpClient(
+            string token,
+            List<int> retryScheduleMilliseconds,
+            string userAgent,
+            string serverUrl,
+            int timeoutMilliseconds
+        )
+            : this(token, retryScheduleMilliseconds, userAgent, serverUrl)
+        {
+            _httpClient.Timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
+        }
+
         public ApiResponse<T> SendRequest<T>(
             HttpMethod method,
             string path,
