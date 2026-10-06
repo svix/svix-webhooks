@@ -6,8 +6,11 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+
+## Version 2.7.0
 * Libs/All: Return the new secret from `v1.endpoint.rotate-secret`, `v1.destination.rotate-secret`
   and `v1.streaming.sink.rotate-secret`
+* Libs/C#: Fix `TimeoutMilliseconds` option not being respected
 
 ## Version 2.6.2
 * Libs/(Java and Kotlin): Fix a bug that broke SDK methods where the underlying HTTP call
