@@ -6,6 +6,8 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,
+  `svix streaming events create strm_abcdef123456789 @filename.json`
 
 ## Version 2.7.0
 * Libs/All: Return the new secret from `v1.endpoint.rotate-secret`, `v1.destination.rotate-secret`
