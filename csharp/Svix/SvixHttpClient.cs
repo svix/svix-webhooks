@@ -97,7 +97,7 @@ namespace Svix
                 {
                     break;
                 }
-                Thread.Sleep(retryScheduleMilliseconds[index]);
+                await Task.Delay(retryScheduleMilliseconds[index], cancellationToken);
                 HttpRequestMessage retryRequest = BuildRequest(
                     method,
                     path,
