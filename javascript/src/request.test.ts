@@ -53,6 +53,13 @@ test("numRetries: 0 disables retries", async () => {
   assert.equal(counter.calls, 1);
 });
 
+test("numRetries: NaN is rejected", () => {
+  assert.throws(() => new Svix("token", { numRetries: NaN }), {
+    name: "TypeError",
+    message: "numRetries must not be NaN",
+  });
+});
+
 test("default retries twice after the initial request", async () => {
   const counter = { calls: 0 };
   const svx = new Svix("token", {

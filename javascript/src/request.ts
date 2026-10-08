@@ -98,6 +98,9 @@ export function createSvixRequestContext(
     };
   }
   if (options.numRetries != null) {
+    if (Number.isNaN(options.numRetries)) {
+      throw new TypeError("numRetries must not be NaN");
+    }
     return {
       baseUrl,
       token,
