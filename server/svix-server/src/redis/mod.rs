@@ -17,6 +17,28 @@ use crate::cfg::{CacheBackend, QueueBackend, SentinelConfig};
 
 pub const REDIS_CONN_TIMEOUT: Duration = Duration::from_secs(2);
 
+/// Eagerly validates a pool connection manager at startup.
+///
+/// bb8 pools are lazy: no connection is established until the first
+/// [`RedisManager::get`]. If the DSN is misconfigured -- e.g. a `rediss://`
+/// TLS DSN the server cannot negotiate, as in issue #2100 -- every connection
+/// attempt fails and `get()` surfaces a generic `bb8::RunError::TimedOut`
+/// after the pool timeout instead of the underlying error. Probing the manager
+/// directly surfaces the real error here at startup.
+async fn probe_pool_connection<M>(mgr: &M) -> Result<(), redis::RedisError>
+where
+    M: bb8::ManageConnection<Error = redis::RedisError>,
+    M::Connection: redis::aio::ConnectionLike + Send,
+{
+    let mut conn = mgr.connect().await?;
+    let pong: String = redis::cmd("PING").query_async(&mut conn).await?;
+    if pong == "PONG" {
+        Ok(())
+    } else {
+        Err((redis::ErrorKind::ResponseError, "unexpected PING response").into())
+    }
+}
+
 pub enum RedisVariant<'a> {
     Clustered,
     NonClustered,
@@ -39,6 +61,14 @@ impl RedisManager {
             RedisVariant::Clustered => {
                 let mgr = RedisClusterConnectionManager::new(dsn)
                     .expect("Error initializing redis cluster client");
+                // Bound the probe: for a black-hole DSN (SYN dropped / TLS hang)
+                // an unbounded probe would stall startup past OS timeouts, longer
+                // than the old lazy pool timeout. A hanging DSN is operationally
+                // indistinguishable from a dead one at startup.
+                tokio::time::timeout(REDIS_CONN_TIMEOUT, probe_pool_connection(&mgr))
+                    .await
+                    .expect("Error connecting to Redis cluster")
+                    .expect("Error connecting to Redis cluster");
                 let pool = bb8::Pool::builder()
                     .max_size(max_conns.into())
                     .build(mgr)
@@ -49,6 +79,14 @@ impl RedisManager {
             RedisVariant::NonClustered => {
                 let mgr =
                     RedisConnectionManager::new(dsn).expect("Error initializing redis client");
+                // Bound the probe: for a black-hole DSN (SYN dropped / TLS hang)
+                // an unbounded probe would stall startup past OS timeouts, longer
+                // than the old lazy pool timeout. A hanging DSN is operationally
+                // indistinguishable from a dead one at startup.
+                tokio::time::timeout(REDIS_CONN_TIMEOUT, probe_pool_connection(&mgr))
+                    .await
+                    .expect("Error connecting to Redis")
+                    .expect("Error connecting to Redis");
                 let pool = bb8::Pool::builder()
                     .max_size(max_conns.into())
                     .build(mgr)
@@ -77,6 +115,14 @@ impl RedisManager {
                     }),
                 )
                 .expect("Error initializing RedisSentinelConnectionManager");
+                // Bound the probe: for a black-hole DSN (SYN dropped / TLS hang)
+                // an unbounded probe would stall startup past OS timeouts, longer
+                // than the old lazy pool timeout. A hanging DSN is operationally
+                // indistinguishable from a dead one at startup.
+                tokio::time::timeout(REDIS_CONN_TIMEOUT, probe_pool_connection(&mgr))
+                    .await
+                    .expect("Error connecting to Redis sentinel")
+                    .expect("Error connecting to Redis sentinel");
                 let pool = bb8::Pool::builder()
                     .max_size(max_conns.into())
                     .build(mgr)
@@ -270,5 +316,55 @@ mod tests {
             let _: () = conn.set(key.clone(), val).await.unwrap();
             assert_eq!(conn.get::<_, usize>(&key).await.unwrap(), val);
         }
+    }
+
+    /// Regression test for issue #2100: the eager startup probe must return the
+    /// underlying connection error, never a generic pool timeout.
+    #[tokio::test]
+    async fn test_probe_returns_underlying_error_not_timeout() {
+        let mgr = bb8_redis::RedisConnectionManager::new("redis://127.0.0.1:63999/")
+            .expect("DSN must parse");
+        let err = super::probe_pool_connection(&mgr)
+            .await
+            .expect_err("probe must fail against a closed port");
+        assert_eq!(
+            err.kind(),
+            redis::ErrorKind::IoError,
+            "expected the underlying I/O error, got: {err:?}"
+        );
+        assert!(
+            !err.to_string().contains("TimedOut"),
+            "probe must not surface a pool timeout, got: {err:?}"
+        );
+    }
+
+    /// Regression test for issue #2100.
+    ///
+    /// With a broken DSN (nothing listening), pool construction must fail fast
+    /// at startup with the underlying connection error, instead of building a
+    /// lazy pool that only later panics with a generic `TimedOut`.
+    #[tokio::test]
+    #[should_panic(expected = "Error connecting to Redis")]
+    async fn test_startup_probe_surfaces_underlying_error() {
+        let dsn = "redis://127.0.0.1:63999/";
+        let backend = crate::cfg::QueueBackend::Redis(dsn);
+        let _ = RedisManager::from_queue_backend(&backend, 1).await;
+    }
+
+    /// Pins the timeout arm of the bounded startup probe: a hanging probe
+    /// (e.g. black-hole DSN) must resolve to `Elapsed` within
+    /// `REDIS_CONN_TIMEOUT` and panic with the same message as a dead DSN.
+    /// A real black-hole DSN is not reproducible in CI, so this pins the
+    /// budget constant and the Elapsed-to-panic mapping directly.
+    #[tokio::test]
+    #[should_panic(expected = "Error connecting to Redis")]
+    async fn test_probe_timeout_arm_panics_like_dead_dsn() {
+        tokio::time::timeout(
+            super::REDIS_CONN_TIMEOUT,
+            std::future::pending::<Result<(), redis::RedisError>>(),
+        )
+        .await
+        .expect("Error connecting to Redis")
+        .expect("Error connecting to Redis");
     }
 }
