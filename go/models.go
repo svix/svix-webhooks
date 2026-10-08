@@ -60,6 +60,9 @@ type (
 	DocusignConfigOut                         = models.DocusignConfigOut
 	EasypostConfig                            = models.EasypostConfig
 	EasypostConfigOut                         = models.EasypostConfigOut
+	ElasticSearchConfigIn                     = models.ElasticSearchConfigIn
+	ElasticSearchConfigOut                    = models.ElasticSearchConfigOut
+	ElasticSearchConfigPatch                  = models.ElasticSearchConfigPatch
 	EmptyResponse                             = models.EmptyResponse
 	EndpointAttemptStats                      = models.EndpointAttemptStats
 	EndpointHeadersIn                         = models.EndpointHeadersIn

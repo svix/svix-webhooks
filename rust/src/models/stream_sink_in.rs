@@ -3,7 +3,8 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     azure_blob_storage_config_in::AzureBlobStorageConfigIn, big_query_config_in::BigQueryConfigIn,
-    clickhouse_config_in::ClickhouseConfigIn, event_bridge_config_in::EventBridgeConfigIn,
+    clickhouse_config_in::ClickhouseConfigIn, elastic_search_config_in::ElasticSearchConfigIn,
+    event_bridge_config_in::EventBridgeConfigIn,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
     google_cloud_storage_config_in::GoogleCloudStorageConfigIn,
     otel_tracing_config_in::OtelTracingConfigIn, postgres_config_in::PostgresConfigIn,
@@ -96,4 +97,6 @@ pub enum StreamSinkInConfig {
     Redshift(RedshiftConfigIn),
     #[serde(rename = "postgres")]
     Postgres(PostgresConfigIn),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigIn),
 }

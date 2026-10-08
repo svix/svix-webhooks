@@ -17,12 +17,16 @@ pub enum ConnectorKind {
     DatadogTracing,
     #[serde(rename = "Discord")]
     Discord,
+    #[serde(rename = "GrafanaCloudTracing")]
+    GrafanaCloudTracing,
     #[serde(rename = "Hubspot")]
     Hubspot,
     #[serde(rename = "Inngest")]
     Inngest,
     #[serde(rename = "Loops")]
     Loops,
+    #[serde(rename = "NewRelicTracing")]
+    NewRelicTracing,
     #[serde(rename = "Otel")]
     Otel,
     #[serde(rename = "Resend")]
@@ -54,9 +58,11 @@ impl fmt::Display for ConnectorKind {
             Self::CustomerIo => "CustomerIO",
             Self::DatadogTracing => "DatadogTracing",
             Self::Discord => "Discord",
+            Self::GrafanaCloudTracing => "GrafanaCloudTracing",
             Self::Hubspot => "Hubspot",
             Self::Inngest => "Inngest",
             Self::Loops => "Loops",
+            Self::NewRelicTracing => "NewRelicTracing",
             Self::Otel => "Otel",
             Self::Resend => "Resend",
             Self::Salesforce => "Salesforce",

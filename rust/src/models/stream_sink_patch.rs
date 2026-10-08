@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_patch::AzureBlobStorageConfigPatch,
     big_query_config_patch::BigQueryConfigPatch, clickhouse_config_patch::ClickhouseConfigPatch,
+    elastic_search_config_patch::ElasticSearchConfigPatch,
     event_bridge_config_patch::EventBridgeConfigPatch,
     google_cloud_pub_sub_config_patch::GoogleCloudPubSubConfigPatch,
     google_cloud_storage_config_patch::GoogleCloudStorageConfigPatch,
@@ -82,4 +83,6 @@ pub enum StreamSinkPatchConfig {
     Redshift(RedshiftConfigPatch),
     #[serde(rename = "postgres")]
     Postgres(PostgresConfigPatch),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigPatch),
 }

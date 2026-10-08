@@ -343,6 +343,11 @@ abstract class StreamSinkInConfig implements \JsonSerializable
         return new StreamSinkInConfig\Postgres($postgres);
     }
 
+    public static function elasticSearch(ElasticSearchConfigIn $elasticSearch): StreamSinkInConfig\ElasticSearch
+    {
+        return new StreamSinkInConfig\ElasticSearch($elasticSearch);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -364,6 +369,7 @@ abstract class StreamSinkInConfig implements \JsonSerializable
             'rabbitMq' => self::rabbitMq(RabbitMqConfigIn::fromMixed($config)),
             'redshift' => self::redshift(RedshiftConfigIn::fromMixed($config)),
             'postgres' => self::postgres(PostgresConfigIn::fromMixed($config)),
+            'elasticSearch' => self::elasticSearch(ElasticSearchConfigIn::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -641,5 +647,22 @@ final class Postgres extends \Svix\Models\StreamSinkInConfig
     public function configPayload(): mixed
     {
         return $this->postgres;
+    }
+}
+
+final class ElasticSearch extends \Svix\Models\StreamSinkInConfig
+{
+    public function __construct(public readonly \Svix\Models\ElasticSearchConfigIn $elasticSearch)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'elasticSearch';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->elasticSearch;
     }
 }

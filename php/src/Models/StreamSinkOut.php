@@ -364,6 +364,11 @@ abstract class StreamSinkOutConfig implements \JsonSerializable
         return new StreamSinkOutConfig\Postgres($postgres);
     }
 
+    public static function elasticSearch(ElasticSearchConfigOut $elasticSearch): StreamSinkOutConfig\ElasticSearch
+    {
+        return new StreamSinkOutConfig\ElasticSearch($elasticSearch);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -386,6 +391,7 @@ abstract class StreamSinkOutConfig implements \JsonSerializable
             'eventBridge' => self::eventBridge(EventBridgeConfigOut::fromMixed($config)),
             'sns' => self::sns(SnsConfigOut::fromMixed($config)),
             'postgres' => self::postgres(PostgresConfigOut::fromMixed($config)),
+            'elasticSearch' => self::elasticSearch(ElasticSearchConfigOut::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -676,5 +682,22 @@ final class Postgres extends \Svix\Models\StreamSinkOutConfig
     public function configPayload(): mixed
     {
         return $this->postgres;
+    }
+}
+
+final class ElasticSearch extends \Svix\Models\StreamSinkOutConfig
+{
+    public function __construct(public readonly \Svix\Models\ElasticSearchConfigOut $elasticSearch)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'elasticSearch';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->elasticSearch;
     }
 }

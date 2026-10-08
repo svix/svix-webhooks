@@ -13,6 +13,10 @@ import {
   DestinationStatusInSerializer,
 } from "./destinationStatusIn";
 import {
+  type ElasticSearchConfigIn,
+  ElasticSearchConfigInSerializer,
+} from "./elasticSearchConfigIn";
+import {
   type EventBridgeConfigIn,
   EventBridgeConfigInSerializer,
 } from "./eventBridgeConfigIn";
@@ -160,6 +164,11 @@ interface DestinationInPostgres {
   config: PostgresConfigIn;
 }
 
+interface DestinationInElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigIn;
+}
+
 /** The destination's type and type-specific configuration. */
 export type DestinationIn = _DestinationInFields &
   (
@@ -179,6 +188,7 @@ export type DestinationIn = _DestinationInFields &
     | DestinationInRabbitMq
     | DestinationInRedshift
     | DestinationInPostgres
+    | DestinationInElasticSearch
   );
 
 export const DestinationInSerializer = {
@@ -219,6 +229,8 @@ export const DestinationInSerializer = {
           return RedshiftConfigInSerializer._fromJsonObject(object["config"]);
         case "postgres":
           return PostgresConfigInSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigInSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -291,6 +303,9 @@ export const DestinationInSerializer = {
         break;
       case "postgres":
         config = PostgresConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigInSerializer._toJsonObject(self.config);
         break;
     }
 

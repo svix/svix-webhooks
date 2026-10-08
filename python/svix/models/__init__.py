@@ -57,6 +57,9 @@ from .docusign_config import DocusignConfig
 from .docusign_config_out import DocusignConfigOut
 from .easypost_config import EasypostConfig
 from .easypost_config_out import EasypostConfigOut
+from .elastic_search_config_in import ElasticSearchConfigIn
+from .elastic_search_config_out import ElasticSearchConfigOut
+from .elastic_search_config_patch import ElasticSearchConfigPatch
 from .empty_response import EmptyResponse
 from .endpoint_attempt_stats import EndpointAttemptStats
 from .endpoint_headers_in import EndpointHeadersIn
@@ -318,6 +321,9 @@ __all__ = [
     "DocusignConfigOut",
     "EasypostConfig",
     "EasypostConfigOut",
+    "ElasticSearchConfigIn",
+    "ElasticSearchConfigOut",
+    "ElasticSearchConfigPatch",
     "EmptyResponse",
     "EndpointAttemptStats",
     "EndpointHeadersIn",

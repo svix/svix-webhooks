@@ -15,6 +15,14 @@ pub struct EventExampleIn {
     #[serde(rename = "exampleIndex")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub example_index: Option<u64>,
+
+    /// Custom payload to send as an example
+    ///
+    /// This is only available to allow-listed customers and should otherwise
+    /// not be passed. Please contact us if you need access to this
+    /// functionality
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub payload: Option<serde_json::Value>,
 }
 
 impl EventExampleIn {
@@ -22,6 +30,7 @@ impl EventExampleIn {
         Self {
             event_type,
             example_index: None,
+            payload: None,
         }
     }
 }

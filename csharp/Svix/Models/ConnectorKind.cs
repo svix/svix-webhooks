@@ -26,43 +26,49 @@ namespace Svix.Models
         [EnumMember(Value = "Discord")]
         Discord = 6,
 
+        [EnumMember(Value = "GrafanaCloudTracing")]
+        GrafanaCloudTracing = 7,
+
         [EnumMember(Value = "Hubspot")]
-        Hubspot = 7,
+        Hubspot = 8,
 
         [EnumMember(Value = "Inngest")]
-        Inngest = 8,
+        Inngest = 9,
 
         [EnumMember(Value = "Loops")]
-        Loops = 9,
+        Loops = 10,
+
+        [EnumMember(Value = "NewRelicTracing")]
+        NewRelicTracing = 11,
 
         [EnumMember(Value = "Otel")]
-        Otel = 10,
+        Otel = 12,
 
         [EnumMember(Value = "Resend")]
-        Resend = 11,
+        Resend = 13,
 
         [EnumMember(Value = "Salesforce")]
-        Salesforce = 12,
+        Salesforce = 14,
 
         [EnumMember(Value = "Segment")]
-        Segment = 13,
+        Segment = 15,
 
         [EnumMember(Value = "Sendgrid")]
-        Sendgrid = 14,
+        Sendgrid = 16,
 
         [EnumMember(Value = "Slack")]
-        Slack = 15,
+        Slack = 17,
 
         [EnumMember(Value = "Teams")]
-        Teams = 16,
+        Teams = 18,
 
         [EnumMember(Value = "TriggerDev")]
-        TriggerDev = 17,
+        TriggerDev = 19,
 
         [EnumMember(Value = "Windmill")]
-        Windmill = 18,
+        Windmill = 20,
 
         [EnumMember(Value = "Zapier")]
-        Zapier = 19,
+        Zapier = 21,
     }
 }

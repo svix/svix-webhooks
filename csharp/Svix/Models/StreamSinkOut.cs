@@ -170,6 +170,10 @@ namespace Svix.Models
         public static StreamSinkOutConfig Postgres(PostgresConfigOut postgresConfigOut) =>
             new(postgresConfigOut, ConfigType.Postgres);
 
+        public static StreamSinkOutConfig ElasticSearch(
+            ElasticSearchConfigOut elasticSearchConfigOut
+        ) => new(elasticSearchConfigOut, ConfigType.ElasticSearch);
+
         private enum ConfigType
         {
             [EnumMember(Value = "poller")]
@@ -222,6 +226,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "postgres")]
             Postgres,
+
+            [EnumMember(Value = "elasticSearch")]
+            ElasticSearch,
         }
 
         public TResult Match<TResult>(
@@ -241,7 +248,8 @@ namespace Svix.Models
             Func<SqsConfigOut, TResult> onSqs,
             Func<EventBridgeConfigOut, TResult> onEventBridge,
             Func<SnsConfigOut, TResult> onSns,
-            Func<PostgresConfigOut, TResult> onPostgres
+            Func<PostgresConfigOut, TResult> onPostgres,
+            Func<ElasticSearchConfigOut, TResult> onElasticSearch
         )
         {
             return _type switch
@@ -269,6 +277,7 @@ namespace Svix.Models
                 ConfigType.EventBridge => onEventBridge((EventBridgeConfigOut)_value),
                 ConfigType.Sns => onSns((SnsConfigOut)_value),
                 ConfigType.Postgres => onPostgres((PostgresConfigOut)_value),
+                ConfigType.ElasticSearch => onElasticSearch((ElasticSearchConfigOut)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -291,7 +300,8 @@ namespace Svix.Models
             Action<SqsConfigOut>? onSqs = null,
             Action<EventBridgeConfigOut>? onEventBridge = null,
             Action<SnsConfigOut>? onSns = null,
-            Action<PostgresConfigOut>? onPostgres = null
+            Action<PostgresConfigOut>? onPostgres = null,
+            Action<ElasticSearchConfigOut>? onElasticSearch = null
         )
         {
             switch (_type)
@@ -396,6 +406,12 @@ namespace Svix.Models
                     if (onPostgres != null)
                     {
                         onPostgres((PostgresConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.ElasticSearch:
+                    if (onElasticSearch != null)
+                    {
+                        onElasticSearch((ElasticSearchConfigOut)_value);
                     }
                     break;
                 default:
@@ -551,6 +567,8 @@ namespace Svix.Models
                     StreamSinkOutConfig.EventBridge(ToObj<EventBridgeConfigOut>(c)),
                 ["sns"] = c => StreamSinkOutConfig.Sns(ToObj<SnsConfigOut>(c)),
                 ["postgres"] = c => StreamSinkOutConfig.Postgres(ToObj<PostgresConfigOut>(c)),
+                ["elasticSearch"] = c =>
+                    StreamSinkOutConfig.ElasticSearch(ToObj<ElasticSearchConfigOut>(c)),
             };
     }
 }

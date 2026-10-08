@@ -10,6 +10,9 @@ export interface MessageIn {
    * JSON payload to send as the request body of the webhook.
    *
    * We also support sending non-JSON payloads. Please contact us for more information.
+   *
+   * The serialized byte-length of this value should be under 1MiB. Please contact us
+   * if you need to send payloads large than 1MiB.
    */
   payload: any;
   /** List of free-form identifiers that endpoints can filter by */

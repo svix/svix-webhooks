@@ -26,6 +26,7 @@ const (
 	ADVANCEDENDPOINTTYPE_REDSHIFT             AdvancedEndpointType = "redshift"
 	ADVANCEDENDPOINTTYPE_OTEL_TRACING         AdvancedEndpointType = "otelTracing"
 	ADVANCEDENDPOINTTYPE_POSTGRES             AdvancedEndpointType = "postgres"
+	ADVANCEDENDPOINTTYPE_ELASTIC_SEARCH       AdvancedEndpointType = "elasticSearch"
 )
 
 var allowedAdvancedEndpointType = []AdvancedEndpointType{
@@ -45,6 +46,7 @@ var allowedAdvancedEndpointType = []AdvancedEndpointType{
 	"redshift",
 	"otelTracing",
 	"postgres",
+	"elasticSearch",
 }
 
 func (v *AdvancedEndpointType) UnmarshalJSON(src []byte) error {
@@ -79,4 +81,5 @@ var AdvancedEndpointTypeFromString = map[string]AdvancedEndpointType{
 	"redshift":           ADVANCEDENDPOINTTYPE_REDSHIFT,
 	"otelTracing":        ADVANCEDENDPOINTTYPE_OTEL_TRACING,
 	"postgres":           ADVANCEDENDPOINTTYPE_POSTGRES,
+	"elasticSearch":      ADVANCEDENDPOINTTYPE_ELASTIC_SEARCH,
 }

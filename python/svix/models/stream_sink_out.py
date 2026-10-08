@@ -9,6 +9,7 @@ from .azure_blob_storage_config_out import AzureBlobStorageConfigOut
 from .big_query_config_out import BigQueryConfigOut
 from .clickhouse_config_out import ClickhouseConfigOut
 from .common import BaseModel
+from .elastic_search_config_out import ElasticSearchConfigOut
 from .event_bridge_config_out import EventBridgeConfigOut
 from .google_cloud_pub_sub_config_out import GoogleCloudPubSubConfigOut
 from .google_cloud_storage_config_out import GoogleCloudStorageConfigOut
@@ -71,6 +72,7 @@ class StreamSinkOut(BaseModel):
         t.Literal["eventBridge"],
         t.Literal["sns"],
         t.Literal["postgres"],
+        t.Literal["elasticSearch"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -89,6 +91,7 @@ class StreamSinkOut(BaseModel):
         EventBridgeConfigOut,
         SnsConfigOut,
         PostgresConfigOut,
+        ElasticSearchConfigOut,
     ]
 
     @model_validator(mode="wrap")
@@ -141,6 +144,10 @@ class StreamSinkOut(BaseModel):
             output.config = SnsConfigOut.model_validate(data.get("config", {}))
         elif output.type == "postgres":
             output.config = PostgresConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "elasticSearch":
+            output.config = ElasticSearchConfigOut.model_validate(
+                data.get("config", {})
+            )
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

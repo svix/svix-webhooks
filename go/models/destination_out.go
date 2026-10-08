@@ -12,6 +12,7 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigOut
 //   - "bigQuery": Use BigQueryConfigOut
 //   - "clickhouse": Use ClickhouseConfigOut
+//   - "elasticSearch": Use ElasticSearchConfigOut
 //   - "eventBridge": Use EventBridgeConfigOut
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigOut
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
@@ -61,6 +62,7 @@ const (
 	DestinationOutTypeEventBridge        DestinationOutType = "eventBridge"
 	DestinationOutTypeSns                DestinationOutType = "sns"
 	DestinationOutTypePostgres           DestinationOutType = "postgres"
+	DestinationOutTypeElasticSearch      DestinationOutType = "elasticSearch"
 )
 
 type DestinationOutConfig interface {
@@ -83,6 +85,7 @@ func (SqsConfigOut) isDestinationOutConfig()                {}
 func (EventBridgeConfigOut) isDestinationOutConfig()        {}
 func (SnsConfigOut) isDestinationOutConfig()                {}
 func (PostgresConfigOut) isDestinationOutConfig()           {}
+func (ElasticSearchConfigOut) isDestinationOutConfig()      {}
 
 func (i *DestinationOut) UnmarshalJSON(data []byte) error {
 	type Alias DestinationOut
@@ -108,6 +111,10 @@ func (i *DestinationOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -194,4 +201,5 @@ var DestinationOutTypeFromString = map[string]DestinationOutType{
 	"eventBridge":        DestinationOutTypeEventBridge,
 	"sns":                DestinationOutTypeSns,
 	"postgres":           DestinationOutTypePostgres,
+	"elasticSearch":      DestinationOutTypeElasticSearch,
 }

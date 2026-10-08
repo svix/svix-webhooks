@@ -12,6 +12,7 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigIn
 //   - "bigQuery": Use BigQueryConfigIn
 //   - "clickhouse": Use ClickhouseConfigIn
+//   - "elasticSearch": Use ElasticSearchConfigIn
 //   - "eventBridge": Use EventBridgeConfigIn
 //   - "fifoEndpoint": Use FifoEndpointConfigIn
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigIn
@@ -72,6 +73,7 @@ const (
 	DestinationInTypeRabbitMq           DestinationInType = "rabbitMq"
 	DestinationInTypeRedshift           DestinationInType = "redshift"
 	DestinationInTypePostgres           DestinationInType = "postgres"
+	DestinationInTypeElasticSearch      DestinationInType = "elasticSearch"
 )
 
 type DestinationInConfig interface {
@@ -94,6 +96,7 @@ func (SnowflakeConfigIn) isDestinationInConfig()          {}
 func (RabbitMqConfigIn) isDestinationInConfig()           {}
 func (RedshiftConfigIn) isDestinationInConfig()           {}
 func (PostgresConfigIn) isDestinationInConfig()           {}
+func (ElasticSearchConfigIn) isDestinationInConfig()      {}
 
 func (i *DestinationIn) UnmarshalJSON(data []byte) error {
 	type Alias DestinationIn
@@ -119,6 +122,10 @@ func (i *DestinationIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -205,4 +212,5 @@ var DestinationInTypeFromString = map[string]DestinationInType{
 	"rabbitMq":           DestinationInTypeRabbitMq,
 	"redshift":           DestinationInTypeRedshift,
 	"postgres":           DestinationInTypePostgres,
+	"elasticSearch":      DestinationInTypeElasticSearch,
 }

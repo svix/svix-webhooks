@@ -128,6 +128,13 @@ sealed class DestinationPatchConfig {
             Json.encodeToJsonElement(PostgresConfigPatch.serializer(), postgres)
     }
 
+    @VariantName("elasticSearch")
+    data class ElasticSearch(val elasticSearch: ElasticSearchConfigPatch) :
+        DestinationPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(ElasticSearchConfigPatch.serializer(), elasticSearch)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> DestinationPatchConfig>(
@@ -223,6 +230,15 @@ sealed class DestinationPatchConfig {
                     { config ->
                         Postgres(
                             Json.decodeFromJsonElement(PostgresConfigPatch.serializer(), config)
+                        )
+                    },
+                "elasticSearch" to
+                    { config ->
+                        ElasticSearch(
+                            Json.decodeFromJsonElement(
+                                ElasticSearchConfigPatch.serializer(),
+                                config,
+                            )
                         )
                     },
             )

@@ -5,6 +5,7 @@ require "json"
 require_relative "./azure_blob_storage_config_patch"
 require_relative "./big_query_config_patch"
 require_relative "./clickhouse_config_patch"
+require_relative "./elastic_search_config_patch"
 require_relative "./event_bridge_config_patch"
 require_relative "./google_cloud_pub_sub_config_patch"
 require_relative "./google_cloud_storage_config_patch"
@@ -81,6 +82,9 @@ module Svix
 
     class Postgres < PostgresConfigPatch
     end
+
+    class ElasticSearch < ElasticSearchConfigPatch
+    end
   end
 
   class StreamSinkPatch
@@ -112,7 +116,8 @@ module Svix
       StreamSinkPatchConfig::Snowflake => "snowflake",
       StreamSinkPatchConfig::RabbitMq => "rabbitMq",
       StreamSinkPatchConfig::Redshift => "redshift",
-      StreamSinkPatchConfig::Postgres => "postgres"
+      StreamSinkPatchConfig::Postgres => "postgres",
+      StreamSinkPatchConfig::ElasticSearch => "elasticSearch"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

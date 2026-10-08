@@ -25,10 +25,6 @@
         {
             "url": "https://api.au.svix.com",
             "description": "The Svix Australia region"
-        },
-        {
-            "url": "https://api.in.svix.com",
-            "description": "The Svix India region"
         }
     ],
     "paths": {
@@ -11928,52 +11924,52 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.endpoint.sendExample(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    eventType: \"user.signup\",\n    exampleIndex: 1,\n  }\n);"
+                        "source": "const response = await svix.endpoint.sendExample(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    eventType: \"user.signup\",\n    exampleIndex: 1,\n    payload: {},\n  }\n);"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.endpoint.sendExample(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    eventType: \"user.signup\",\n    exampleIndex: 1,\n  }\n);"
+                        "source": "const response = await svix.endpoint.sendExample(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    eventType: \"user.signup\",\n    exampleIndex: 1,\n    payload: {},\n  }\n);"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.endpoint.send_example(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EventExampleIn(\n        event_type=\"user.signup\",\n        example_index=1,\n    ),\n)"
+                        "source": "response = svix.endpoint.send_example(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EventExampleIn(\n        event_type=\"user.signup\",\n        example_index=1,\n        payload={},\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.endpoint.send_example(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EventExampleIn(\n        event_type=\"user.signup\",\n        example_index=1,\n    ),\n)"
+                        "source": "response = await svix.endpoint.send_example(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EventExampleIn(\n        event_type=\"user.signup\",\n        example_index=1,\n        payload={},\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.Endpoint.SendExample(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEventExampleIn{EventType: \"user.signup\", ExampleIndex: new(uint64(1))},\n\tnil,\n)"
+                        "source": "response, err := svix.Endpoint.SendExample(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEventExampleIn{EventType: \"user.signup\", ExampleIndex: new(uint64(1)), Payload: nil},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.endpoint.sendExample(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EventExampleIn(eventType = \"user.signup\", exampleIndex = 1u),\n    )"
+                        "source": "val response =\n    svix.endpoint.sendExample(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n        EventExampleIn(eventType = \"user.signup\", exampleIndex = 1u, payload = mapOf()),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEndpoint()\n        .sendExample(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EventExampleIn().eventType(\"user.signup\").exampleIndex(1L));"
+                        "source": "var response = svix.getEndpoint()\n        .sendExample(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EventExampleIn().eventType(\"user.signup\").exampleIndex(1L).payload(Map.of()));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .endpoint\n  .send_example(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {eventType: \"user.signup\", exampleIndex: 1}\n  )"
+                        "source": "response = svix\n  .endpoint\n  .send_example(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {eventType: \"user.signup\", exampleIndex: 1, payload: {}}\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .endpoint()\n    .send_example(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EventExampleIn {\n            event_type: \"user.signup\".to_string(),\n            example_index: Some(1),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .endpoint()\n    .send_example(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EventExampleIn {\n            event_type: \"user.signup\".to_string(),\n            example_index: Some(1),\n            payload: Some(serde_json::json!({})),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.Endpoint.SendExample(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EventExampleIn { EventType = \"user.signup\", ExampleIndex = 1 }\n);"
+                        "source": "var response = svix.Endpoint.SendExample(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EventExampleIn\n    {\n        EventType = \"user.signup\",\n        ExampleIndex = 1,\n        Payload = new Dictionary<string, string> { },\n    }\n);"
                     },
                     {
                         "lang": "PHP",
@@ -11983,12 +11979,12 @@
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix endpoint send-example \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"eventType\": \"user.signup\",\n    \"exampleIndex\": 1\n  }'"
+                        "source": "svix endpoint send-example \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"eventType\": \"user.signup\",\n    \"exampleIndex\": 1,\n    \"payload\": {}\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/send-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"exampleIndex\": 1\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/send-example' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventType\": \"user.signup\",\n    \"exampleIndex\": 1,\n    \"payload\": {}\n  }'"
                     }
                 ]
             }
@@ -47856,9 +47852,11 @@
                     "CustomerIO",
                     "DatadogTracing",
                     "Discord",
+                    "GrafanaCloudTracing",
                     "Hubspot",
                     "Inngest",
                     "Loops",
+                    "NewRelicTracing",
                     "Otel",
                     "Resend",
                     "Salesforce",
@@ -48615,6 +48613,13 @@
                         "format": "uint",
                         "minimum": 0,
                         "default": 0
+                    },
+                    "payload": {
+                        "description": "Custom payload to send as an example\n\nThis is only available to allow-listed customers and should otherwise not be passed. Please\ncontact us if you need access to this functionality",
+                        "type": "object",
+                        "default": null,
+                        "additionalProperties": true,
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -50049,7 +50054,8 @@
                     "rabbitMq",
                     "redshift",
                     "otelTracing",
-                    "postgres"
+                    "postgres",
+                    "elasticSearch"
                 ]
             },
             "EnvironmentOut": {
@@ -51154,7 +51160,7 @@
                         "example": "user.signup"
                     },
                     "payload": {
-                        "description": "JSON payload to send as the request body of the webhook.\n\nWe also support sending non-JSON payloads. Please contact us for more information.",
+                        "description": "JSON payload to send as the request body of the webhook.\n\nWe also support sending non-JSON payloads. Please contact us for more information.\n\nThe serialized byte-length of this value should be under 1MiB. Please contact us\nif you need to send payloads large than 1MiB.",
                         "type": "object",
                         "additionalProperties": true,
                         "example": {
@@ -52794,6 +52800,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ElasticSearchConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -53276,6 +53300,35 @@
                     "url"
                 ]
             },
+            "ElasticSearchConfigIn": {
+                "description": "Configuration parameters for defining an ElasticSearch/OpenSearch sink.",
+                "type": "object",
+                "properties": {
+                    "indexName": {
+                        "description": "Name of the index to write to\n\nThis can also be a data stream on sufficiently-new versions of ElasticSearch/OpenSearch",
+                        "type": "string"
+                    },
+                    "url": {
+                        "description": "Base URL to send indexing requests\n\nThis should not include the /{index}/_bulk suffix.",
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "apiKey": {
+                        "description": "API key for authentication for ElasticSearch\n\nIf not passed, any username:password embedded in the URL will be used. If none is passed,\nthe indexing will be done unauthenticated.",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "refresh": {
+                        "description": "If true, Elasticsearch refreshes the affected shards to make this operation visible to search.",
+                        "type": "boolean",
+                        "default": false
+                    }
+                },
+                "required": [
+                    "indexName",
+                    "url"
+                ]
+            },
             "DestinationOut": {
                 "type": "object",
                 "properties": {
@@ -53649,6 +53702,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ElasticSearchConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -54012,6 +54083,26 @@
                 },
                 "required": [
                     "tableName",
+                    "url"
+                ]
+            },
+            "ElasticSearchConfigOut": {
+                "type": "object",
+                "properties": {
+                    "indexName": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "refresh": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "indexName",
+                    "refresh",
                     "url"
                 ]
             },
@@ -54388,6 +54479,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ElasticSearchConfigPatch"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -54685,6 +54794,24 @@
                     },
                     "sslRootCert": {
                         "type": "string"
+                    }
+                }
+            },
+            "ElasticSearchConfigPatch": {
+                "type": "object",
+                "properties": {
+                    "indexName": {
+                        "type": "string"
+                    },
+                    "url": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "apiKey": {
+                        "type": "string"
+                    },
+                    "refresh": {
+                        "type": "boolean"
                     }
                 }
             },
@@ -55077,7 +55204,9 @@
                         "example": "user.signup"
                     },
                     "payload": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 3145728
                     }
                 },
                 "required": [
@@ -55247,7 +55376,8 @@
                     "rabbitMq",
                     "postgres",
                     "sns",
-                    "sqs"
+                    "sqs",
+                    "elasticSearch"
                 ]
             },
             "StreamTransformationSimulateOut": {
@@ -55497,6 +55627,24 @@
                             "data",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/ElasticSearchSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -55718,6 +55866,36 @@
                 },
                 "required": [
                     "rows"
+                ]
+            },
+            "ElasticSearchSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "documents": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ElasticSearchSimulatedDocument"
+                        }
+                    }
+                },
+                "required": [
+                    "documents"
+                ]
+            },
+            "ElasticSearchSimulatedDocument": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "document": {
+                        "type": "object",
+                        "additionalProperties": true
+                    }
+                },
+                "required": [
+                    "document",
+                    "id"
                 ]
             },
             "ListResponse_StreamSinkOut_": {
@@ -56137,6 +56315,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ElasticSearchConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -56491,6 +56687,24 @@
                             },
                             "config": {
                                 "$ref": "#/components/schemas/PostgresConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ElasticSearchConfigIn"
                             }
                         },
                         "required": [
@@ -56869,6 +57083,24 @@
                             },
                             "config": {
                                 "$ref": "#/components/schemas/PostgresConfigPatch"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "elasticSearch"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/ElasticSearchConfigPatch"
                             }
                         },
                         "required": [
@@ -58000,6 +58232,20 @@
                             "kind": {
                                 "type": "string",
                                 "enum": [
+                                    "GrafanaCloudTracing"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "kind"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "kind": {
+                                "type": "string",
+                                "enum": [
                                     "Hubspot"
                                 ]
                             }
@@ -58029,6 +58275,20 @@
                                 "type": "string",
                                 "enum": [
                                     "Loops"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "kind"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "kind": {
+                                "type": "string",
+                                "enum": [
+                                    "NewRelicTracing"
                                 ]
                             }
                         },
@@ -58375,7 +58635,8 @@
                 "type": "object",
                 "properties": {
                     "oneTimeToken": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 256
                     }
                 },
                 "required": [

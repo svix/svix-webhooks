@@ -9,6 +9,7 @@ from .big_query_config_patch import BigQueryConfigPatch
 from .clickhouse_config_patch import ClickhouseConfigPatch
 from .common import BaseModel
 from .destination_status_in import DestinationStatusIn
+from .elastic_search_config_patch import ElasticSearchConfigPatch
 from .event_bridge_config_patch import EventBridgeConfigPatch
 from .google_cloud_pub_sub_config_patch import GoogleCloudPubSubConfigPatch
 from .google_cloud_storage_config_patch import GoogleCloudStorageConfigPatch
@@ -56,6 +57,7 @@ class DestinationPatch(BaseModel):
         t.Literal["rabbitMq"],
         t.Literal["redshift"],
         t.Literal["postgres"],
+        t.Literal["elasticSearch"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -74,6 +76,7 @@ class DestinationPatch(BaseModel):
         RabbitMqConfigPatch,
         RedshiftConfigPatch,
         PostgresConfigPatch,
+        ElasticSearchConfigPatch,
     ]
 
     @model_validator(mode="wrap")
@@ -128,6 +131,10 @@ class DestinationPatch(BaseModel):
             output.config = RedshiftConfigPatch.model_validate(data.get("config", {}))
         elif output.type == "postgres":
             output.config = PostgresConfigPatch.model_validate(data.get("config", {}))
+        elif output.type == "elasticSearch":
+            output.config = ElasticSearchConfigPatch.model_validate(
+                data.get("config", {})
+            )
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

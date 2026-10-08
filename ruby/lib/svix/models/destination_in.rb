@@ -6,6 +6,7 @@ require_relative "./azure_blob_storage_config_in"
 require_relative "./big_query_config_in"
 require_relative "./clickhouse_config_in"
 require_relative "./destination_status_in"
+require_relative "./elastic_search_config_in"
 require_relative "./event_bridge_config_in"
 require_relative "./fifo_endpoint_config_in"
 require_relative "./google_cloud_pub_sub_config_in"
@@ -81,6 +82,9 @@ module Svix
 
     class Postgres < PostgresConfigIn
     end
+
+    class ElasticSearch < ElasticSearchConfigIn
+    end
   end
 
   # The destination's type and type-specific configuration.
@@ -131,7 +135,8 @@ module Svix
       DestinationInConfig::Snowflake => "snowflake",
       DestinationInConfig::RabbitMq => "rabbitMq",
       DestinationInConfig::Redshift => "redshift",
-      DestinationInConfig::Postgres => "postgres"
+      DestinationInConfig::Postgres => "postgres",
+      DestinationInConfig::ElasticSearch => "elasticSearch"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert
