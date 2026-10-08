@@ -896,7 +896,7 @@ wheels = [
 
 [[package]]
 name = "svix"
-version = "2.7.0"
+version = "2.8.0"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
