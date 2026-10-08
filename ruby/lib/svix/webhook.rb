@@ -3,20 +3,27 @@
 module Svix
   class Webhook
 
-    # `secret` is the raw key as an array of bytes. It is used as the HMAC key
-    # as-is, unlike the string accepted by `new`, which is base64-decoded.
+    # `secret` is the raw key as an array of bytes, used as the HMAC key as-is.
     def self.new_using_raw_bytes(secret, tolerance: DEFAULT_TOLERANCE)
-      self.new(SECRET_PREFIX + Base64.strict_encode64(secret.pack("C*")), tolerance: tolerance)
+      self.new(raw_secret: secret.pack("C*"), tolerance: tolerance)
     end
 
+    # `secret` is the base64-encoded signing secret, with or without the
+    # `whsec_` prefix. Pass `raw_secret:` instead to use a binary string as the
+    # key as-is.
+    #
     # `tolerance` is the maximum difference allowed, in seconds, between the
     # webhook's timestamp and the current time. Defaults to 5 minutes.
-    def initialize(secret, tolerance: DEFAULT_TOLERANCE)
-      if secret.start_with?(SECRET_PREFIX)
-        secret = secret[SECRET_PREFIX.length..-1]
+    def initialize(secret = nil, raw_secret: nil, tolerance: DEFAULT_TOLERANCE)
+      if !secret.nil? && !raw_secret.nil?
+        raise ArgumentError, "pass either secret or raw_secret, not both"
+      elsif !secret.nil?
+        @secret = Base64.decode64(secret.delete_prefix(SECRET_PREFIX))
+      elsif !raw_secret.nil?
+        @secret = raw_secret.b
+      else
+        raise ArgumentError, "must pass secret or raw_secret"
       end
-
-      @secret = Base64.decode64(secret)
 
       if @secret.empty?
         raise EmptyWebhookSecretError, "Webhook secret must not be blank"

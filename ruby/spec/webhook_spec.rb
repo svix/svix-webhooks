@@ -58,6 +58,20 @@ describe Svix::Webhook do
       wh.verify(testPayload.payload, testPayload.headers)
     end
 
+    it "is the same as new(raw_secret:)" do
+      raw_key = Base64.decode64(DEFAULT_SECRET)
+      testPayload = TestPayload.new
+
+      wh = Svix::Webhook.new(raw_secret: raw_key)
+
+      wh.verify(testPayload.payload, testPayload.headers)
+    end
+
+    it "requires exactly one of secret and raw_secret" do
+      expect { Svix::Webhook.new }.to raise_error(ArgumentError)
+      expect { Svix::Webhook.new(DEFAULT_SECRET, raw_secret: "key") }.to raise_error(ArgumentError)
+    end
+
     it "signs the same as the equivalent base64 secret" do
       raw_key = Array.new(32) { |i| (i * 37 + 200) % 256 }
       from_raw = Svix::Webhook.new_using_raw_bytes(raw_key)
