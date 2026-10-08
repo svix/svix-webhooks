@@ -6,8 +6,16 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+
+## Version 2.8.0
 * CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,
   `svix streaming events create strm_abcdef123456789 @filename.json`
+* Libs/C#: Honor cancellation duration wait for retry (use `Task.Delay` instead of `Thread.Sleep`)
+  in `Async` methods
+* Libs/Ruby: Fix `Svix::Webhook.new_using_raw_bytes` to actually accept raw key bytes instead of
+  base64 encoded bytes
+* Libs/Go: Make `svix.Message().GetOrCreate()` work by changing an accidental pointer receiver
+  (inconsistent with all other methods) to a value receiver, and allow passing `nil` for options
 
 ## Version 2.7.0
 * Libs/All: Return the new secret from `v1.endpoint.rotate-secret`, `v1.destination.rotate-secret`
