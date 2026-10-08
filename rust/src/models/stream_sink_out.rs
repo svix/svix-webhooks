@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     big_query_config_out::BigQueryConfigOut, clickhouse_config_out::ClickhouseConfigOut,
+    elastic_search_config_out::ElasticSearchConfigOut,
     event_bridge_config_out::EventBridgeConfigOut,
     google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
@@ -98,4 +99,6 @@ pub enum StreamSinkOutConfig {
     Sns(SnsConfigOut),
     #[serde(rename = "postgres")]
     Postgres(PostgresConfigOut),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigOut),
 }

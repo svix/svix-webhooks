@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     big_query_config_out::BigQueryConfigOut, clickhouse_config_out::ClickhouseConfigOut,
-    destination_status::DestinationStatus, event_bridge_config_out::EventBridgeConfigOut,
+    destination_status::DestinationStatus, elastic_search_config_out::ElasticSearchConfigOut,
+    event_bridge_config_out::EventBridgeConfigOut,
     google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
     otel_tracing_config_out::OtelTracingConfigOut, postgres_config_out::PostgresConfigOut,
@@ -96,4 +97,6 @@ pub enum DestinationOutConfig {
     Sns(SnsConfigOut),
     #[serde(rename = "postgres")]
     Postgres(PostgresConfigOut),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigOut),
 }

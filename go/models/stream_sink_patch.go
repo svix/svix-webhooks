@@ -13,6 +13,7 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigPatch
 //   - "bigQuery": Use BigQueryConfigPatch
 //   - "clickhouse": Use ClickhouseConfigPatch
+//   - "elasticSearch": Use ElasticSearchConfigPatch
 //   - "eventBridge": Use EventBridgeConfigPatch
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigPatch
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
@@ -56,6 +57,7 @@ const (
 	StreamSinkPatchTypeRabbitMq           StreamSinkPatchType = "rabbitMq"
 	StreamSinkPatchTypeRedshift           StreamSinkPatchType = "redshift"
 	StreamSinkPatchTypePostgres           StreamSinkPatchType = "postgres"
+	StreamSinkPatchTypeElasticSearch      StreamSinkPatchType = "elasticSearch"
 )
 
 type StreamSinkPatchConfig interface {
@@ -78,6 +80,7 @@ func (SnowflakeConfigPatch) isStreamSinkPatchConfig()          {}
 func (RabbitMqConfigPatch) isStreamSinkPatchConfig()           {}
 func (RedshiftConfigPatch) isStreamSinkPatchConfig()           {}
 func (PostgresConfigPatch) isStreamSinkPatchConfig()           {}
+func (ElasticSearchConfigPatch) isStreamSinkPatchConfig()      {}
 
 func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkPatch
@@ -103,6 +106,10 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -189,4 +196,5 @@ var StreamSinkPatchTypeFromString = map[string]StreamSinkPatchType{
 	"rabbitMq":           StreamSinkPatchTypeRabbitMq,
 	"redshift":           StreamSinkPatchTypeRedshift,
 	"postgres":           StreamSinkPatchTypePostgres,
+	"elasticSearch":      StreamSinkPatchTypeElasticSearch,
 }

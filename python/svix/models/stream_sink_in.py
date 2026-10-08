@@ -8,6 +8,7 @@ from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
 from .big_query_config_in import BigQueryConfigIn
 from .clickhouse_config_in import ClickhouseConfigIn
 from .common import BaseModel
+from .elastic_search_config_in import ElasticSearchConfigIn
 from .event_bridge_config_in import EventBridgeConfigIn
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
 from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
@@ -70,6 +71,7 @@ class StreamSinkIn(BaseModel):
         t.Literal["rabbitMq"],
         t.Literal["redshift"],
         t.Literal["postgres"],
+        t.Literal["elasticSearch"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -88,6 +90,7 @@ class StreamSinkIn(BaseModel):
         RabbitMqConfigIn,
         RedshiftConfigIn,
         PostgresConfigIn,
+        ElasticSearchConfigIn,
     ]
 
     @model_validator(mode="wrap")
@@ -138,6 +141,8 @@ class StreamSinkIn(BaseModel):
             output.config = RedshiftConfigIn.model_validate(data.get("config", {}))
         elif output.type == "postgres":
             output.config = PostgresConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "elasticSearch":
+            output.config = ElasticSearchConfigIn.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

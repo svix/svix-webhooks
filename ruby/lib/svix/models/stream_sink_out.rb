@@ -5,6 +5,7 @@ require "json"
 require_relative "./azure_blob_storage_config_out"
 require_relative "./big_query_config_out"
 require_relative "./clickhouse_config_out"
+require_relative "./elastic_search_config_out"
 require_relative "./event_bridge_config_out"
 require_relative "./google_cloud_pub_sub_config_out"
 require_relative "./google_cloud_storage_config_out"
@@ -97,6 +98,9 @@ module Svix
 
     class Postgres < PostgresConfigOut
     end
+
+    class ElasticSearch < ElasticSearchConfigOut
+    end
   end
 
   class StreamSinkOut
@@ -151,7 +155,8 @@ module Svix
       StreamSinkOutConfig::Sqs => "sqs",
       StreamSinkOutConfig::EventBridge => "eventBridge",
       StreamSinkOutConfig::Sns => "sns",
-      StreamSinkOutConfig::Postgres => "postgres"
+      StreamSinkOutConfig::Postgres => "postgres",
+      StreamSinkOutConfig::ElasticSearch => "elasticSearch"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

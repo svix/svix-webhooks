@@ -257,6 +257,21 @@ public abstract class StreamSinkInConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("elasticSearch")
+    public static class ElasticSearch extends StreamSinkInConfig {
+        private final ElasticSearchConfigIn elasticSearch;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(elasticSearch);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkInConfig create(JsonNode config);
@@ -288,6 +303,9 @@ public abstract class StreamSinkInConfig {
         TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfigIn.class)));
         TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfigIn.class)));
         TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigIn.class)));
+        TY_M.put(
+                "elasticSearch",
+                c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigIn.class)));
     }
 
     public static StreamSinkInConfig fromTypeAndConfig(String type, JsonNode config) {

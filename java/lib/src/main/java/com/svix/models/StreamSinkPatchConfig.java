@@ -257,6 +257,21 @@ public abstract class StreamSinkPatchConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("elasticSearch")
+    public static class ElasticSearch extends StreamSinkPatchConfig {
+        private final ElasticSearchConfigPatch elasticSearch;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(elasticSearch);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkPatchConfig create(JsonNode config);
@@ -294,6 +309,9 @@ public abstract class StreamSinkPatchConfig {
         TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfigPatch.class)));
         TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfigPatch.class)));
         TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigPatch.class)));
+        TY_M.put(
+                "elasticSearch",
+                c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigPatch.class)));
     }
 
     public static StreamSinkPatchConfig fromTypeAndConfig(String type, JsonNode config) {

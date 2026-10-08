@@ -14,10 +14,15 @@ class EventExampleIn implements \JsonSerializable
      * @param int|null $exampleIndex If the event type schema contains an array of examples, chooses which one to send.
      *
      * Defaults to the first example. Ignored if the schema doesn't contain an array of examples.
+     * @param array|null $payload Custom payload to send as an example
+     *
+     * This is only available to allow-listed customers and should otherwise not be passed. Please
+     * contact us if you need access to this functionality
      */
     private function __construct(
         public readonly string $eventType,
         public readonly ?int $exampleIndex = null,
+        public readonly ?array $payload = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -32,6 +37,7 @@ class EventExampleIn implements \JsonSerializable
         return new self(
             eventType: $eventType,
             exampleIndex: null,
+            payload: null,
             setFields: ['eventType' => true]
         );
     }
@@ -44,6 +50,20 @@ class EventExampleIn implements \JsonSerializable
         return new self(
             eventType: $this->eventType,
             exampleIndex: $exampleIndex,
+            payload: $this->payload,
+            setFields: $setFields
+        );
+    }
+
+    public function withPayload(?array $payload): self
+    {
+        $setFields = $this->setFields;
+        $setFields['payload'] = true;
+
+        return new self(
+            eventType: $this->eventType,
+            exampleIndex: $this->exampleIndex,
+            payload: $payload,
             setFields: $setFields
         );
     }
@@ -56,6 +76,9 @@ class EventExampleIn implements \JsonSerializable
         if (null !== $this->exampleIndex) {
             $data['exampleIndex'] = $this->exampleIndex;
         }
+        if (isset($this->setFields['payload'])) {
+            $data['payload'] = $this->payload;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -67,7 +90,8 @@ class EventExampleIn implements \JsonSerializable
     {
         return new self(
             eventType: \Svix\Utils::deserializeString($data, 'eventType', true, 'EventExampleIn'),
-            exampleIndex: \Svix\Utils::deserializeInt($data, 'exampleIndex', false, 'EventExampleIn')
+            exampleIndex: \Svix\Utils::deserializeInt($data, 'exampleIndex', false, 'EventExampleIn'),
+            payload: \Svix\Utils::getValFromJson($data, 'payload', false, 'EventExampleIn')
         );
     }
 

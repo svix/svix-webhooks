@@ -10,6 +10,10 @@ import {
 } from "./clickhouseConfigOut";
 import { type DestinationStatus, DestinationStatusSerializer } from "./destinationStatus";
 import {
+  type ElasticSearchConfigOut,
+  ElasticSearchConfigOutSerializer,
+} from "./elasticSearchConfigOut";
+import {
   type EventBridgeConfigOut,
   EventBridgeConfigOutSerializer,
 } from "./eventBridgeConfigOut";
@@ -138,6 +142,11 @@ interface DestinationOutPostgres {
   config: PostgresConfigOut;
 }
 
+interface DestinationOutElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigOut;
+}
+
 export type DestinationOut = _DestinationOutFields &
   (
     | DestinationOutPollingEndpoint
@@ -156,6 +165,7 @@ export type DestinationOut = _DestinationOutFields &
     | DestinationOutEventBridge
     | DestinationOutSns
     | DestinationOutPostgres
+    | DestinationOutElasticSearch
   );
 
 export const DestinationOutSerializer = {
@@ -196,6 +206,8 @@ export const DestinationOutSerializer = {
           return SnsConfigOutSerializer._fromJsonObject(object["config"]);
         case "postgres":
           return PostgresConfigOutSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -271,6 +283,9 @@ export const DestinationOutSerializer = {
         break;
       case "postgres":
         config = PostgresConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

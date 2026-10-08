@@ -13,6 +13,7 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigPatch
 //   - "bigQuery": Use BigQueryConfigPatch
 //   - "clickhouse": Use ClickhouseConfigPatch
+//   - "elasticSearch": Use ElasticSearchConfigPatch
 //   - "eventBridge": Use EventBridgeConfigPatch
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigPatch
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
@@ -56,6 +57,7 @@ const (
 	DestinationPatchTypeRabbitMq           DestinationPatchType = "rabbitMq"
 	DestinationPatchTypeRedshift           DestinationPatchType = "redshift"
 	DestinationPatchTypePostgres           DestinationPatchType = "postgres"
+	DestinationPatchTypeElasticSearch      DestinationPatchType = "elasticSearch"
 )
 
 type DestinationPatchConfig interface {
@@ -78,6 +80,7 @@ func (SnowflakeConfigPatch) isDestinationPatchConfig()          {}
 func (RabbitMqConfigPatch) isDestinationPatchConfig()           {}
 func (RedshiftConfigPatch) isDestinationPatchConfig()           {}
 func (PostgresConfigPatch) isDestinationPatchConfig()           {}
+func (ElasticSearchConfigPatch) isDestinationPatchConfig()      {}
 
 func (i *DestinationPatch) UnmarshalJSON(data []byte) error {
 	type Alias DestinationPatch
@@ -103,6 +106,10 @@ func (i *DestinationPatch) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -189,4 +196,5 @@ var DestinationPatchTypeFromString = map[string]DestinationPatchType{
 	"rabbitMq":           DestinationPatchTypeRabbitMq,
 	"redshift":           DestinationPatchTypeRedshift,
 	"postgres":           DestinationPatchTypePostgres,
+	"elasticSearch":      DestinationPatchTypeElasticSearch,
 }

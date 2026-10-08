@@ -162,6 +162,10 @@ namespace Svix.Models
         public static DestinationPatchConfig Postgres(PostgresConfigPatch postgresConfigPatch) =>
             new(postgresConfigPatch, ConfigType.Postgres);
 
+        public static DestinationPatchConfig ElasticSearch(
+            ElasticSearchConfigPatch elasticSearchConfigPatch
+        ) => new(elasticSearchConfigPatch, ConfigType.ElasticSearch);
+
         private enum ConfigType
         {
             [EnumMember(Value = "pollingEndpoint")]
@@ -211,6 +215,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "postgres")]
             Postgres,
+
+            [EnumMember(Value = "elasticSearch")]
+            ElasticSearch,
         }
 
         public TResult Match<TResult>(
@@ -229,7 +236,8 @@ namespace Svix.Models
             Func<SnowflakeConfigPatch, TResult> onSnowflake,
             Func<RabbitMqConfigPatch, TResult> onRabbitMq,
             Func<RedshiftConfigPatch, TResult> onRedshift,
-            Func<PostgresConfigPatch, TResult> onPostgres
+            Func<PostgresConfigPatch, TResult> onPostgres,
+            Func<ElasticSearchConfigPatch, TResult> onElasticSearch
         )
         {
             return _type switch
@@ -256,6 +264,7 @@ namespace Svix.Models
                 ConfigType.RabbitMq => onRabbitMq((RabbitMqConfigPatch)_value),
                 ConfigType.Redshift => onRedshift((RedshiftConfigPatch)_value),
                 ConfigType.Postgres => onPostgres((PostgresConfigPatch)_value),
+                ConfigType.ElasticSearch => onElasticSearch((ElasticSearchConfigPatch)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -277,7 +286,8 @@ namespace Svix.Models
             Action<SnowflakeConfigPatch>? onSnowflake = null,
             Action<RabbitMqConfigPatch>? onRabbitMq = null,
             Action<RedshiftConfigPatch>? onRedshift = null,
-            Action<PostgresConfigPatch>? onPostgres = null
+            Action<PostgresConfigPatch>? onPostgres = null,
+            Action<ElasticSearchConfigPatch>? onElasticSearch = null
         )
         {
             switch (_type)
@@ -376,6 +386,12 @@ namespace Svix.Models
                     if (onPostgres != null)
                     {
                         onPostgres((PostgresConfigPatch)_value);
+                    }
+                    break;
+                case ConfigType.ElasticSearch:
+                    if (onElasticSearch != null)
+                    {
+                        onElasticSearch((ElasticSearchConfigPatch)_value);
                     }
                     break;
                 default:
@@ -525,6 +541,8 @@ namespace Svix.Models
             ["rabbitMq"] = c => DestinationPatchConfig.RabbitMq(ToObj<RabbitMqConfigPatch>(c)),
             ["redshift"] = c => DestinationPatchConfig.Redshift(ToObj<RedshiftConfigPatch>(c)),
             ["postgres"] = c => DestinationPatchConfig.Postgres(ToObj<PostgresConfigPatch>(c)),
+            ["elasticSearch"] = c =>
+                DestinationPatchConfig.ElasticSearch(ToObj<ElasticSearchConfigPatch>(c)),
         };
     }
 }

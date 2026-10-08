@@ -257,6 +257,21 @@ public abstract class DestinationOutConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("elasticSearch")
+    public static class ElasticSearch extends DestinationOutConfig {
+        private final ElasticSearchConfigOut elasticSearch;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(elasticSearch);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         DestinationOutConfig create(JsonNode config);
@@ -290,6 +305,9 @@ public abstract class DestinationOutConfig {
                 "eventBridge", c -> new EventBridge(m.convertValue(c, EventBridgeConfigOut.class)));
         TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsConfigOut.class)));
         TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigOut.class)));
+        TY_M.put(
+                "elasticSearch",
+                c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigOut.class)));
     }
 
     public static DestinationOutConfig fromTypeAndConfig(String type, JsonNode config) {

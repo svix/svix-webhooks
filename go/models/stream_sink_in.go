@@ -11,6 +11,7 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigIn
 //   - "bigQuery": Use BigQueryConfigIn
 //   - "clickhouse": Use ClickhouseConfigIn
+//   - "elasticSearch": Use ElasticSearchConfigIn
 //   - "eventBridge": Use EventBridgeConfigIn
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigIn
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigIn
@@ -67,6 +68,7 @@ const (
 	StreamSinkInTypeRabbitMq           StreamSinkInType = "rabbitMq"
 	StreamSinkInTypeRedshift           StreamSinkInType = "redshift"
 	StreamSinkInTypePostgres           StreamSinkInType = "postgres"
+	StreamSinkInTypeElasticSearch      StreamSinkInType = "elasticSearch"
 )
 
 type StreamSinkInConfig interface {
@@ -89,6 +91,7 @@ func (SnowflakeConfigIn) isStreamSinkInConfig()          {}
 func (RabbitMqConfigIn) isStreamSinkInConfig()           {}
 func (RedshiftConfigIn) isStreamSinkInConfig()           {}
 func (PostgresConfigIn) isStreamSinkInConfig()           {}
+func (ElasticSearchConfigIn) isStreamSinkInConfig()      {}
 
 func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkIn
@@ -114,6 +117,10 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -200,4 +207,5 @@ var StreamSinkInTypeFromString = map[string]StreamSinkInType{
 	"rabbitMq":           StreamSinkInTypeRabbitMq,
 	"redshift":           StreamSinkInTypeRedshift,
 	"postgres":           StreamSinkInTypePostgres,
+	"elasticSearch":      StreamSinkInTypeElasticSearch,
 }

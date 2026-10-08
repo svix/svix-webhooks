@@ -9,6 +9,13 @@ export interface EventExampleIn {
    * Defaults to the first example. Ignored if the schema doesn't contain an array of examples.
    */
   exampleIndex?: number;
+  /**
+   * Custom payload to send as an example
+   *
+   * This is only available to allow-listed customers and should otherwise not be passed. Please
+   * contact us if you need access to this functionality
+   */
+  payload?: any | null;
 }
 
 export const EventExampleInSerializer = {
@@ -16,6 +23,7 @@ export const EventExampleInSerializer = {
     return {
       eventType: object["eventType"],
       exampleIndex: object["exampleIndex"],
+      payload: object["payload"],
     };
   },
 
@@ -23,6 +31,7 @@ export const EventExampleInSerializer = {
     return {
       eventType: self.eventType,
       exampleIndex: self.exampleIndex,
+      payload: self.payload,
     };
   },
 };

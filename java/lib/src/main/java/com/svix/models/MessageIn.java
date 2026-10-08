@@ -82,6 +82,9 @@ public class MessageIn {
      *
      * <p>We also support sending non-JSON payloads. Please contact us for more information.
      *
+     * <p>The serialized byte-length of this value should be under 1MiB. Please contact us if you
+     * need to send payloads large than 1MiB.
+     *
      * @return payload
      */
     @javax.annotation.Nonnull

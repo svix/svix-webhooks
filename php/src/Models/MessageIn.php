@@ -15,6 +15,9 @@ class MessageIn implements \JsonSerializable
      * @param array       $payload   JSON payload to send as the request body of the webhook.
      *
      * We also support sending non-JSON payloads. Please contact us for more information.
+     *
+     * The serialized byte-length of this value should be under 1MiB. Please contact us
+     * if you need to send payloads large than 1MiB.
      * @param list<string>|null  $channels    List of free-form identifiers that endpoints can filter by
      * @param ApplicationIn|null $application Optionally creates a new application alongside the message.
      *

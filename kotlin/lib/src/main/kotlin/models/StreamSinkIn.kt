@@ -147,6 +147,12 @@ sealed class StreamSinkInConfig {
             Json.encodeToJsonElement(PostgresConfigIn.serializer(), postgres)
     }
 
+    @VariantName("elasticSearch")
+    data class ElasticSearch(val elasticSearch: ElasticSearchConfigIn) : StreamSinkInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(ElasticSearchConfigIn.serializer(), elasticSearch)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkInConfig>(
@@ -233,6 +239,12 @@ sealed class StreamSinkInConfig {
                 "postgres" to
                     { config ->
                         Postgres(Json.decodeFromJsonElement(PostgresConfigIn.serializer(), config))
+                    },
+                "elasticSearch" to
+                    { config ->
+                        ElasticSearch(
+                            Json.decodeFromJsonElement(ElasticSearchConfigIn.serializer(), config)
+                        )
                     },
             )
 

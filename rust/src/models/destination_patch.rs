@@ -6,7 +6,9 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_patch::AzureBlobStorageConfigPatch,
     big_query_config_patch::BigQueryConfigPatch, clickhouse_config_patch::ClickhouseConfigPatch,
-    destination_status_in::DestinationStatusIn, event_bridge_config_patch::EventBridgeConfigPatch,
+    destination_status_in::DestinationStatusIn,
+    elastic_search_config_patch::ElasticSearchConfigPatch,
+    event_bridge_config_patch::EventBridgeConfigPatch,
     google_cloud_pub_sub_config_patch::GoogleCloudPubSubConfigPatch,
     google_cloud_storage_config_patch::GoogleCloudStorageConfigPatch,
     otel_tracing_config_patch::OtelTracingConfigPatch, postgres_config_patch::PostgresConfigPatch,
@@ -82,4 +84,6 @@ pub enum DestinationPatchConfig {
     Redshift(RedshiftConfigPatch),
     #[serde(rename = "postgres")]
     Postgres(PostgresConfigPatch),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigPatch),
 }

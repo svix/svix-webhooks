@@ -9,6 +9,10 @@ import {
   ClickhouseConfigOutSerializer,
 } from "./clickhouseConfigOut";
 import {
+  type ElasticSearchConfigOut,
+  ElasticSearchConfigOutSerializer,
+} from "./elasticSearchConfigOut";
+import {
   type EventBridgeConfigOut,
   EventBridgeConfigOutSerializer,
 } from "./eventBridgeConfigOut";
@@ -146,6 +150,11 @@ interface StreamSinkOutPostgres {
   config: PostgresConfigOut;
 }
 
+interface StreamSinkOutElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigOut;
+}
+
 export type StreamSinkOut = _StreamSinkOutFields &
   (
     | StreamSinkOutPoller
@@ -165,6 +174,7 @@ export type StreamSinkOut = _StreamSinkOutFields &
     | StreamSinkOutEventBridge
     | StreamSinkOutSns
     | StreamSinkOutPostgres
+    | StreamSinkOutElasticSearch
   );
 
 export const StreamSinkOutSerializer = {
@@ -208,6 +218,8 @@ export const StreamSinkOutSerializer = {
           return SnsConfigOutSerializer._fromJsonObject(object["config"]);
         case "postgres":
           return PostgresConfigOutSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -286,6 +298,9 @@ export const StreamSinkOutSerializer = {
         break;
       case "postgres":
         config = PostgresConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

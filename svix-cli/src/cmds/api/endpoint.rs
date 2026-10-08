@@ -651,7 +651,8 @@ pub enum EndpointCommands {
     #[command(after_help = "Example body:
 {
   \"eventType\": \"user.signup\",
-  \"exampleIndex\": 123
+  \"exampleIndex\": 123,
+  \"payload\": {\"key\": \"...\"}
 }\n\nExample response:
 {
   \"eventId\": \"unique-identifier\",

@@ -59,6 +59,9 @@ mod docusign_config;
 mod docusign_config_out;
 mod easypost_config;
 mod easypost_config_out;
+mod elastic_search_config_in;
+mod elastic_search_config_out;
+mod elastic_search_config_patch;
 mod empty_response;
 mod endpoint_attempt_stats;
 mod endpoint_headers_in;
@@ -324,6 +327,9 @@ pub use self::{
     docusign_config_out::DocusignConfigOut,
     easypost_config::EasypostConfig,
     easypost_config_out::EasypostConfigOut,
+    elastic_search_config_in::ElasticSearchConfigIn,
+    elastic_search_config_out::ElasticSearchConfigOut,
+    elastic_search_config_patch::ElasticSearchConfigPatch,
     empty_response::EmptyResponse,
     endpoint_attempt_stats::EndpointAttemptStats,
     endpoint_headers_in::EndpointHeadersIn,

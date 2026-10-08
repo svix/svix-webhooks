@@ -12,6 +12,7 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigOut
 //   - "bigQuery": Use BigQueryConfigOut
 //   - "clickhouse": Use ClickhouseConfigOut
+//   - "elasticSearch": Use ElasticSearchConfigOut
 //   - "eventBridge": Use EventBridgeConfigOut
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigOut
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
@@ -62,6 +63,7 @@ const (
 	StreamSinkOutTypeEventBridge        StreamSinkOutType = "eventBridge"
 	StreamSinkOutTypeSns                StreamSinkOutType = "sns"
 	StreamSinkOutTypePostgres           StreamSinkOutType = "postgres"
+	StreamSinkOutTypeElasticSearch      StreamSinkOutType = "elasticSearch"
 )
 
 type StreamSinkOutConfig interface {
@@ -84,6 +86,7 @@ func (SqsConfigOut) isStreamSinkOutConfig()                {}
 func (EventBridgeConfigOut) isStreamSinkOutConfig()        {}
 func (SnsConfigOut) isStreamSinkOutConfig()                {}
 func (PostgresConfigOut) isStreamSinkOutConfig()           {}
+func (ElasticSearchConfigOut) isStreamSinkOutConfig()      {}
 
 func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkOut
@@ -109,6 +112,10 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -197,4 +204,5 @@ var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"eventBridge":        StreamSinkOutTypeEventBridge,
 	"sns":                StreamSinkOutTypeSns,
 	"postgres":           StreamSinkOutTypePostgres,
+	"elasticSearch":      StreamSinkOutTypeElasticSearch,
 }

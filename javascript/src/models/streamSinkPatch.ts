@@ -12,6 +12,10 @@ import {
   ClickhouseConfigPatchSerializer,
 } from "./clickhouseConfigPatch";
 import {
+  type ElasticSearchConfigPatch,
+  ElasticSearchConfigPatchSerializer,
+} from "./elasticSearchConfigPatch";
+import {
   type EventBridgeConfigPatch,
   EventBridgeConfigPatchSerializer,
 } from "./eventBridgeConfigPatch";
@@ -146,6 +150,11 @@ interface StreamSinkPatchPostgres {
   config: PostgresConfigPatch;
 }
 
+interface StreamSinkPatchElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigPatch;
+}
+
 export type StreamSinkPatch = _StreamSinkPatchFields &
   (
     | StreamSinkPatchPoller
@@ -164,6 +173,7 @@ export type StreamSinkPatch = _StreamSinkPatchFields &
     | StreamSinkPatchRabbitMq
     | StreamSinkPatchRedshift
     | StreamSinkPatchPostgres
+    | StreamSinkPatchElasticSearch
   );
 
 export const StreamSinkPatchSerializer = {
@@ -206,6 +216,8 @@ export const StreamSinkPatchSerializer = {
           return RedshiftConfigPatchSerializer._fromJsonObject(object["config"]);
         case "postgres":
           return PostgresConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -278,6 +290,9 @@ export const StreamSinkPatchSerializer = {
         break;
       case "postgres":
         config = PostgresConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 
