@@ -8,7 +8,7 @@ use url::Url;
 const BRIDGE_USER_AGENT: HeaderValue =
     HeaderValue::from_static(concat!("Svix-Bridge/", env!("CARGO_PKG_VERSION")));
 
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 #[serde(tag = "type")]
 pub enum HttpOutputOpts {
     // Single-variant enum so we can require the "type": "http" field in deserialization
