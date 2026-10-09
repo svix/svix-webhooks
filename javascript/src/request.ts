@@ -88,7 +88,7 @@ export function createSvixRequestContext(
   const baseUrl: string =
     options.serverUrl?.replace(/\/+$/, "") ?? regionalUrl ?? "https://api.svix.com";
 
-  if (options.retryScheduleInMs) {
+  if (options.retryScheduleInMs != null) {
     return {
       baseUrl,
       token,
@@ -97,7 +97,10 @@ export function createSvixRequestContext(
       fetch: options.fetch,
     };
   }
-  if (options.numRetries) {
+  if (options.numRetries != null) {
+    if (Number.isNaN(options.numRetries)) {
+      throw new TypeError("numRetries must not be NaN");
+    }
     return {
       baseUrl,
       token,
