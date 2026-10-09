@@ -9,7 +9,10 @@ use figment::{
     providers::{Env, Format, Toml},
 };
 use ipnet::IpNet;
-use serde::{Deserialize, Deserializer};
+use serde::{
+    Deserialize, Deserializer,
+    de::{SeqAccess, Visitor},
+};
 use tracing::Level;
 use url::Url;
 use validator::{Validate, ValidationError};
@@ -30,34 +33,65 @@ where
     Ok(Encryption::new(key))
 }
 
-#[derive(Deserialize)]
-#[serde(untagged)]
-enum RetryScheduleDeserializer {
-    Array(Vec<u64>),
-    Legacy(String),
-}
-
+/// Deserializes the `retry_schedule` setting, which accepts either an array of seconds
+/// (e.g. `[5, 300]`) or a comma-separated string of seconds (e.g. `"5,300"`, the legacy format).
+///
+/// Parsing is done explicitly instead of via an untagged serde enum so that a misconfigured
+/// value fails with a clear, actionable error message instead of
+/// "data did not match any variant of untagged enum".
+/// See <https://github.com/svix/svix-webhooks/issues/1435>.
 fn deserialize_retry_schedule<'de, D>(deserializer: D) -> Result<Vec<Duration>, D::Error>
 where
     D: Deserializer<'de>,
 {
-    let buf = RetryScheduleDeserializer::deserialize(deserializer)?;
-    match buf {
-        RetryScheduleDeserializer::Array(buf) => {
-            Ok(buf.into_iter().map(|x| Duration::new(x, 0)).collect())
+    struct RetryScheduleVisitor;
+
+    impl<'de> Visitor<'de> for RetryScheduleVisitor {
+        type Value = Vec<Duration>;
+
+        fn expecting(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+            formatter.write_str(
+                "an array of seconds (e.g. `[5, 300]`) or a comma-separated string of seconds (e.g. `\"5,300\"`)",
+            )
         }
-        RetryScheduleDeserializer::Legacy(buf) => Ok(buf
-            .split(',')
-            .filter_map(|x| {
-                let x = x.trim();
-                if x.is_empty() {
-                    None
-                } else {
-                    Some(Duration::new(x.parse().expect("Error parsing duration"), 0))
-                }
-            })
-            .collect()),
+
+        fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+        where
+            A: SeqAccess<'de>,
+        {
+            let mut schedule = Vec::with_capacity(seq.size_hint().unwrap_or(0));
+            while let Some(secs) = seq.next_element::<u64>()? {
+                schedule.push(Duration::from_secs(secs));
+            }
+            Ok(schedule)
+        }
+
+        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+        where
+            E: serde::de::Error,
+        {
+            value
+                .split(',')
+                .filter_map(|entry| {
+                    let entry = entry.trim();
+                    if entry.is_empty() {
+                        None
+                    } else {
+                        Some(entry)
+                    }
+                })
+                .map(|entry| {
+                    entry.parse::<u64>().map(Duration::from_secs).map_err(|_| {
+                        E::custom(format!(
+                            "invalid entry {entry:?} in `retry_schedule`: expected a number of seconds"
+                        ))
+                    })
+                })
+                .collect()
+        }
     }
+
+    deserializer.deserialize_any(RetryScheduleVisitor)
 }
 
 fn deserialize_hours<'de, D>(deserializer: D) -> Result<Duration, D::Error>
@@ -324,6 +358,11 @@ impl<'de> Deserialize<'de> for ProxyAddr {
 }
 
 fn validate_config_complete(config: &ConfigurationInner) -> Result<(), ValidationError> {
+    // Validate `db_dsn` up front so a misconfigured database fails fast with a clear, actionable
+    // error instead of panicking later when the server tries to connect.
+    // See <https://github.com/svix/svix-webhooks/issues/1435>.
+    validate_db_dsn(&config.db_dsn)?;
+
     match config.cache_type {
         CacheType::None | CacheType::Memory => {}
         CacheType::Redis | CacheType::RedisCluster => {
@@ -408,6 +447,33 @@ fn validate_config_complete(config: &ConfigurationInner) -> Result<(), Validatio
     }
 
     Ok(())
+}
+
+/// Checks that the given DSN is a well-formed PostgreSQL DSN, mirroring the check the database
+/// layer performs when connecting (see `db::connect`, which only accepts the `postgres` and
+/// `postgresql` URL schemes and panics otherwise).
+///
+/// Without this check a misconfigured `db_dsn` only fails later with a panic whose message
+/// doesn't name the setting (`Fail to parse database URL`), or echoes the DSN -- credentials
+/// included -- back in the panic message (`db_dsn format not recognized. ...`).
+/// See <https://github.com/svix/svix-webhooks/issues/1435>.
+fn validate_db_dsn(dsn: &str) -> Result<(), ValidationError> {
+    let is_postgres_dsn = Url::parse(dsn)
+        .map(|url| url.scheme() == "postgres" || url.scheme() == "postgresql")
+        .unwrap_or(false);
+
+    if is_postgres_dsn {
+        Ok(())
+    } else {
+        Err(ValidationError {
+            code: Cow::from("invalid_dsn"),
+            message: Some(Cow::from(
+                "invalid `db_dsn`: expected a PostgreSQL DSN URL, e.g. \
+                 `postgresql://user:password@host:5432/dbname`",
+            )),
+            params: HashMap::new(),
+        })
+    }
 }
 
 impl ConfigurationInner {
@@ -637,14 +703,19 @@ pub fn load() -> anyhow::Result<Arc<ConfigurationInner>> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
+    use std::{sync::Arc, time::Duration};
 
     use figment::{
         Figment,
         providers::{Format as _, Toml},
     };
+    use serde::Deserialize;
+    use validator::Validate;
 
-    use super::{CacheBackend, CacheType, QueueBackend, QueueType, load, try_extract};
+    use super::{
+        CacheBackend, CacheType, ConfigurationInner, QueueBackend, QueueType,
+        deserialize_retry_schedule, load, try_extract, validate_db_dsn,
+    };
     use crate::core::security::{JWTAlgorithm, JwtSigningConfig};
 
     #[test]
@@ -704,5 +775,141 @@ jwt_algorithm = "HS512"
             actual,
             JwtSigningConfig::Advanced(JWTAlgorithm::HS512(_))
         ));
+    }
+
+    /// Extracts just the `retry_schedule` field through the real deserializer.
+    fn extract_retry_schedule(raw_toml: &str) -> Result<Vec<Duration>, String> {
+        #[derive(Deserialize)]
+        struct RetryScheduleOnly {
+            #[serde(deserialize_with = "deserialize_retry_schedule")]
+            retry_schedule: Vec<Duration>,
+        }
+
+        Figment::new()
+            .merge(Toml::string(raw_toml))
+            .extract::<RetryScheduleOnly>()
+            .map(|wrapper| wrapper.retry_schedule)
+            .map_err(|e| e.to_string())
+    }
+
+    #[test]
+    fn test_deserialize_retry_schedule_array() {
+        let actual = extract_retry_schedule("retry_schedule = [5, 300]").unwrap();
+        assert_eq!(
+            actual,
+            vec![Duration::from_secs(5), Duration::from_secs(300)]
+        );
+    }
+
+    #[test]
+    fn test_deserialize_retry_schedule_legacy_string() {
+        let actual = extract_retry_schedule(r#"retry_schedule = "5,300""#).unwrap();
+        assert_eq!(
+            actual,
+            vec![Duration::from_secs(5), Duration::from_secs(300)]
+        );
+
+        // Whitespace and trailing commas are tolerated, as before
+        let actual = extract_retry_schedule(r#"retry_schedule = "5, 300, ""#).unwrap();
+        assert_eq!(
+            actual,
+            vec![Duration::from_secs(5), Duration::from_secs(300)]
+        );
+    }
+
+    #[test]
+    fn test_deserialize_retry_schedule_rejects_wrong_type() {
+        // Previously: "data did not match any variant of untagged enum RetryScheduleDeserializer"
+        let err = extract_retry_schedule("retry_schedule = true").unwrap_err();
+        assert!(
+            err.contains("array of seconds"),
+            "error should describe the accepted formats, got: {err}"
+        );
+
+        let err = extract_retry_schedule("retry_schedule = 5")
+            .unwrap_err()
+            .to_string();
+        assert!(
+            err.contains("array of seconds"),
+            "error should describe the accepted formats, got: {err}"
+        );
+    }
+
+    #[test]
+    fn test_deserialize_retry_schedule_rejects_bad_entry() {
+        // Previously this panicked with "Error parsing duration"; now it must be a proper
+        // error naming the offending entry.
+        let err = extract_retry_schedule(r#"retry_schedule = "5,foo,300""#).unwrap_err();
+        assert!(
+            err.contains("\"foo\"") && err.contains("number of seconds"),
+            "error should name the offending entry, got: {err}"
+        );
+    }
+
+    #[test]
+    fn test_validate_db_dsn() {
+        assert!(validate_db_dsn("postgres://user:password@localhost/db").is_ok());
+        assert!(validate_db_dsn("postgresql://user:password@localhost:5432/db").is_ok());
+
+        for bad_dsn in ["", "not-a-url", "mysql://root:secret@localhost/db"] {
+            let err = validate_db_dsn(bad_dsn).unwrap_err().to_string();
+            assert!(
+                err.contains("db_dsn") && err.contains("PostgreSQL"),
+                "error should be actionable, got: {err}"
+            );
+            // The error must never echo the DSN back: it may contain credentials
+            assert!(
+                !err.contains("secret"),
+                "error must not leak the DSN, got: {err}"
+            );
+        }
+    }
+
+    /// Builds a [`Figment`] from the default config plus test overrides, without touching
+    /// process environment variables (unlike [`load`], which depends on `SVIX_*` env vars).
+    fn test_figment(extra_toml: &str) -> Figment {
+        Figment::new()
+            .merge(Toml::string(super::DEFAULTS))
+            .merge(Toml::string(
+                "jwt_secret = \"test-secret\"\nqueue_type = \"memory\"\n",
+            ))
+            .merge(Toml::string(extra_toml))
+    }
+
+    fn extract_test_config(extra_toml: &str) -> ConfigurationInner {
+        try_extract(test_figment(extra_toml)).expect("test config must extract")
+    }
+
+    #[test]
+    fn test_config_rejects_misconfigured_db_dsn() {
+        // A misconfigured `db_dsn` must fail at config load time with an actionable error,
+        // instead of panicking later when the server tries to connect.
+        // See <https://github.com/svix/svix-webhooks/issues/1435>.
+        let config = extract_test_config("db_dsn = \"mysql://root:s3cret@localhost/db\"");
+        let err = config
+            .validate()
+            .expect_err("misconfigured db_dsn must fail validation")
+            .to_string();
+        assert!(
+            err.contains("db_dsn") && err.contains("PostgreSQL"),
+            "unexpected error: {err}"
+        );
+        assert!(
+            !err.contains("s3cret"),
+            "validation error must not leak DSN credentials: {err}"
+        );
+    }
+
+    #[test]
+    fn test_config_accepts_postgres_db_dsn() {
+        for dsn in [
+            "postgres://user:password@localhost/db",
+            "postgresql://user:password@localhost:5432/db",
+        ] {
+            let config = extract_test_config(&format!("db_dsn = {dsn:?}"));
+            config
+                .validate()
+                .expect("valid postgres db_dsn must pass validation");
+        }
     }
 }
