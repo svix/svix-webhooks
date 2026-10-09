@@ -1,6 +1,7 @@
 // This file is @generated
 package com.svix.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -50,6 +51,7 @@ public class AutoConfigSinkType {
 
 @Getter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class AutoConfigSinkTypeSurrogate {
     @JsonProperty("type")
     String type;

@@ -1,6 +1,7 @@
 // This file is @generated
 package com.svix.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -12,8 +13,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.svix.MaybeUnset;
 import com.svix.Utils;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -34,33 +37,105 @@ import java.util.Map;
 @JsonSerialize(using = StreamSinkPatchSerializer.class)
 @JsonDeserialize(using = StreamSinkPatchDeserializer.class)
 public class StreamSinkPatch {
-    private String uid;
-    private SinkStatusIn status;
-    private Short batchSize;
-    private Short maxWaitSecs;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private MaybeUnset<String> uid;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private MaybeUnset<SinkStatusIn> status;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private MaybeUnset<Short> batchSize;
+
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private MaybeUnset<Short> maxWaitSecs;
+
     private List<String> eventTypes;
     private List<String> channels;
     private Map<String, String> metadata;
     private StreamSinkPatchConfig config;
 
     public StreamSinkPatch uid(String uid) {
-        this.uid = uid;
+        this.uid = new MaybeUnset<>(uid);
         return this;
+    }
+
+    public String getUid() {
+        if (this.uid == null) {
+            return null;
+        }
+        return this.uid.getValue();
+    }
+
+    public void setUid(String uid) {
+        this.uid = new MaybeUnset<>(uid);
+    }
+
+    MaybeUnset<String> uidOrUnset() {
+        return this.uid;
     }
 
     public StreamSinkPatch status(SinkStatusIn status) {
-        this.status = status;
+        this.status = new MaybeUnset<>(status);
         return this;
+    }
+
+    public SinkStatusIn getStatus() {
+        if (this.status == null) {
+            return null;
+        }
+        return this.status.getValue();
+    }
+
+    public void setStatus(SinkStatusIn status) {
+        this.status = new MaybeUnset<>(status);
+    }
+
+    MaybeUnset<SinkStatusIn> statusOrUnset() {
+        return this.status;
     }
 
     public StreamSinkPatch batchSize(Short batchSize) {
-        this.batchSize = batchSize;
+        this.batchSize = new MaybeUnset<>(batchSize);
         return this;
     }
 
+    public Short getBatchSize() {
+        if (this.batchSize == null) {
+            return null;
+        }
+        return this.batchSize.getValue();
+    }
+
+    public void setBatchSize(Short batchSize) {
+        this.batchSize = new MaybeUnset<>(batchSize);
+    }
+
+    MaybeUnset<Short> batchSizeOrUnset() {
+        return this.batchSize;
+    }
+
     public StreamSinkPatch maxWaitSecs(Short maxWaitSecs) {
-        this.maxWaitSecs = maxWaitSecs;
+        this.maxWaitSecs = new MaybeUnset<>(maxWaitSecs);
         return this;
+    }
+
+    public Short getMaxWaitSecs() {
+        if (this.maxWaitSecs == null) {
+            return null;
+        }
+        return this.maxWaitSecs.getValue();
+    }
+
+    public void setMaxWaitSecs(Short maxWaitSecs) {
+        this.maxWaitSecs = new MaybeUnset<>(maxWaitSecs);
+    }
+
+    MaybeUnset<Short> maxWaitSecsOrUnset() {
+        return this.maxWaitSecs;
     }
 
     public StreamSinkPatch eventTypes(List<String> eventTypes) {
@@ -94,18 +169,19 @@ public class StreamSinkPatch {
 
 @Getter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class StreamSinkPatchSurrogate {
     @JsonProperty("uid")
-    String uid;
+    MaybeUnset<String> uid;
 
     @JsonProperty("status")
-    SinkStatusIn status;
+    MaybeUnset<SinkStatusIn> status;
 
     @JsonProperty("batchSize")
-    Short batchSize;
+    MaybeUnset<Short> batchSize;
 
     @JsonProperty("maxWaitSecs")
-    Short maxWaitSecs;
+    MaybeUnset<Short> maxWaitSecs;
 
     @JsonProperty("eventTypes")
     List<String> eventTypes;
@@ -123,10 +199,10 @@ class StreamSinkPatchSurrogate {
     JsonNode config;
 
     StreamSinkPatchSurrogate(StreamSinkPatch o, String type, JsonNode config) {
-        this.uid = o.getUid();
-        this.status = o.getStatus();
-        this.batchSize = o.getBatchSize();
-        this.maxWaitSecs = o.getMaxWaitSecs();
+        this.uid = o.uidOrUnset();
+        this.status = o.statusOrUnset();
+        this.batchSize = o.batchSizeOrUnset();
+        this.maxWaitSecs = o.maxWaitSecsOrUnset();
         this.eventTypes = o.getEventTypes();
         this.channels = o.getChannels();
         this.metadata = o.getMetadata();
@@ -168,10 +244,10 @@ class StreamSinkPatchDeserializer extends StdDeserializer<StreamSinkPatch> {
             throws IOException {
         StreamSinkPatchSurrogate surrogate =
                 p.getCodec().readValue(p, StreamSinkPatchSurrogate.class);
-        String uid = surrogate.getUid();
-        SinkStatusIn status = surrogate.getStatus();
-        Short batchSize = surrogate.getBatchSize();
-        Short maxWaitSecs = surrogate.getMaxWaitSecs();
+        MaybeUnset<String> uid = surrogate.getUid();
+        MaybeUnset<SinkStatusIn> status = surrogate.getStatus();
+        MaybeUnset<Short> batchSize = surrogate.getBatchSize();
+        MaybeUnset<Short> maxWaitSecs = surrogate.getMaxWaitSecs();
         List<String> eventTypes = surrogate.getEventTypes();
         List<String> channels = surrogate.getChannels();
         Map<String, String> metadata = surrogate.getMetadata();
