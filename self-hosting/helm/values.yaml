@@ -1,0 +1,109 @@
+backend:
+  name: "backend"
+  replicaCount: 1
+  service:
+    type: ClusterIP
+    port: 8071
+  image:
+    repository: svix/svix-server
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 4
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  env:
+    WAIT_FOR: "true"
+    SVIX_ENVIRONMENT: "staging" #
+    SVIX_LOG_FORMAT: "json"
+    SVIX_CACHE_TYPE: "redis"
+    SVIX_ENDPOINT_HTTPS_ONLY: "true"
+    # Remove all PostgreSQL client environment variables
+  secrets:
+    jwtSecret: "your-super-secret-jwt-token"
+    mainSecret: "your-super-secret-jwt-token"
+    dbDsn: "postgresql://postgres:postgres@svix-pgbouncer:5432/postgres"
+    redisDsn: "redis://svix-redis:6379"
+  healthcheck:
+    type: "http"
+    path: "/api/v1/health"
+    port: 8071
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+postgres:
+  name: "postgres"
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: "13.4"
+  env: 
+    POSTGRES_PASSWORD: postgres
+    POSTGRES_DB: postgres
+    # Remove all custom PostgreSQL configuration
+  secretName: "svix-postgres-secret"
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+    claimName: "postgres-data1"
+  healthcheck:
+    command: ["pg_isready", "-U", "postgres"]
+    interval: 10s
+    timeout: 5s
+    retries: 60
+
+pgbouncer:
+  name: "pgbouncer"
+  replicaCount: 1
+  image:
+    repository: edoburu/pgbouncer
+    tag: "1.15.0"  # Same as Docker Compose
+  env:
+    MAX_CLIENT_CONN: "500"
+  service:
+    type: ClusterIP
+    port: 5432
+  healthcheck:
+    command: ["pg_isready", "-h", "localhost"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+redis:
+  name: "redis"
+  replicaCount: 1
+  image:
+    repository: redis
+    tag: "7-alpine"
+  env:
+    REDIS_PASSWORD: ""
+  config:
+    save: "60 500"
+    appendonly: "yes"
+    appendfsync: "everysec"
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+    claimName: "redis-data1"
+  service:
+    type: ClusterIP
+    port: 6379
+  healthcheck:
+    command: ["redis-cli", "ping"]
+    interval: 1s
+    timeout: 1s
+    retries: 600
+

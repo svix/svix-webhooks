@@ -1,0 +1,37 @@
+1. Get the application URL by running these commands:
+{{- if contains "NodePort" .Values.backend.service.type }}
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "svix.fullname" . }}-{{ .Values.backend.name }})
+  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
+  echo http://$NODE_IP:$NODE_PORT
+{{- else if contains "LoadBalancer" .Values.backend.service.type }}
+     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
+        You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "svix.fullname" . }}-{{ .Values.backend.name }}'
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "svix.fullname" . }}-{{ .Values.backend.name }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.backend.service.port | default 8071 }}
+{{- else if contains "ClusterIP" .Values.backend.service.type }}
+  kubectl port-forward --namespace {{ .Release.Namespace }} svc/{{ include "svix.fullname" . }}-{{ .Values.backend.name }} {{ .Values.backend.service.port | default 8071 }}:{{ .Values.backend.service.port | default 8071 }}
+  echo "Visit http://127.0.0.1:{{ .Values.backend.service.port | default 8071 }} to use your application"
+{{- end }}
+
+2. Get the Svix API token:
+   kubectl get secret --namespace {{ .Release.Namespace }} {{ include "svix.fullname" . }}-jwt-secret -o jsonpath="{.data.jwt-secret}" | base64 -d
+
+3. Check the status of your deployment:
+   kubectl get pods --namespace {{ .Release.Namespace }} -l app.kubernetes.io/component=backend
+
+4. View the logs:
+   kubectl logs --namespace {{ .Release.Namespace }} -l app.kubernetes.io/component=backend
+
+5. Access the database:
+   kubectl exec --namespace {{ .Release.Namespace }} -it deployment/{{ include "svix.fullname" . }}-{{ .Values.postgres.name }} -- psql -U postgres
+
+6. Access Redis:
+   kubectl exec --namespace {{ .Release.Namespace }} -it deployment/{{ include "svix.fullname" . }}-{{ .Values.redis.name }} -- redis-cli
+
+7. PostgreSQL is running on:
+   kubectl get svc --namespace {{ .Release.Namespace }} {{ include "svix.fullname" . }}-{{ .Values.postgres.name }}
+
+8. Redis is running on:
+   kubectl get svc --namespace {{ .Release.Namespace }} {{ include "svix.fullname" . }}-{{ .Values.redis.name }}
+
+For more information, visit: https://docs.svix.com/ 
