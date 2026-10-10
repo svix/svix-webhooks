@@ -69,7 +69,7 @@ mod publish_options {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct RabbitMqInputOpts {
     /// Connection string for RabbitMQ.
     pub uri: String,

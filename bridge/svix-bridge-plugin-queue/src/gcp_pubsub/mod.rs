@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use crate::error::Result;
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Debug, Clone, Default, Deserialize)]
 pub struct GcpPubSubInputOpts {
     pub subscription_id: String,
     pub credentials_file: Option<PathBuf>,

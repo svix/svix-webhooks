@@ -1,6 +1,6 @@
 use std::{
     borrow::Cow, collections::HashMap, convert::Infallible, fmt, io::Error, net::SocketAddr,
-    num::NonZeroUsize,
+    num::NonZeroUsize, sync::Arc,
 };
 
 use anyhow::anyhow;
@@ -15,7 +15,7 @@ use svix_bridge_types::{
 };
 use tracing::Level;
 
-use crate::http_output::HttpOutputOpts;
+use crate::{http_output::HttpOutputOpts, runtime::JsExecutor};
 
 pub enum EitherReceiver {
     Webhook(WebhookReceiverConfig),
@@ -72,7 +72,11 @@ pub struct Config {
     pub http_listen_address: SocketAddr,
     #[serde(default = "default_transformation_worker_count")]
     pub transformation_worker_count: NonZeroUsize,
+    #[serde(default)]
+    pub js_engine: JsExecutor,
 }
+
+pub type Configuration = Arc<Config>;
 
 impl Config {
     /// Build a Config from yaml source.
@@ -124,6 +128,10 @@ impl Config {
 
         Ok(cfg)
     }
+
+    pub fn into_configuration(self) -> Configuration {
+        Arc::new(self)
+    }
 }
 
 fn default_http_listen_address() -> SocketAddr {
@@ -174,7 +182,7 @@ pub enum LogFormat {
 }
 
 /// Config for reading messages from plugins and forwarding to Svix.
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 pub struct WebhookSenderConfig {
     pub name: String,
     pub input: SenderInputOpts,
@@ -183,6 +191,7 @@ pub struct WebhookSenderConfig {
     pub output: SenderOutputOpts,
 }
 
+#[derive(Clone)]
 pub enum SenderInputOpts {
     #[cfg(feature = "kafka")]
     Kafka(KafkaInputOpts),
@@ -265,7 +274,7 @@ impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
 }
 
 /// Config for receiving webhooks and forwarding them to plugins.
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct WebhookReceiverConfig {
     pub name: String,
     pub input: ReceiverInputOpts,
@@ -274,6 +283,7 @@ pub struct WebhookReceiverConfig {
     pub output: ReceiverOutputOpts,
 }
 
+#[derive(Clone)]
 #[allow(clippy::large_enum_variant)] // we're talking a couple hundred bytes only
 pub enum ReceiverOutputOpts {
     Http(HttpOutputOpts),
@@ -375,7 +385,7 @@ impl PollerInputOpts {
 }
 
 /// Config for fetching from HTTP endpoints and forwarding them to plugins.
-#[derive(Deserialize)]
+#[derive(Clone, Deserialize)]
 pub struct PollerReceiverConfig {
     pub name: String,
     pub input: PollerInputOpts,

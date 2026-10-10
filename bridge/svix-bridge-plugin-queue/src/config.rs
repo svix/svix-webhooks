@@ -59,7 +59,7 @@ pub async fn into_receiver_output(
 }
 
 // TODO: feature flag the variants, thread the features down through to generic-queue
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum QueueInputOpts {
     #[serde(rename = "gcp-pubsub")]
