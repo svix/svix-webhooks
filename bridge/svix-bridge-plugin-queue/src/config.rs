@@ -105,6 +105,7 @@ mod tests {
             consumer_group: "".to_string(),
             consumer_name: "".to_string(),
             ack_deadline_ms: 2_000,
+            dlq_config: None,
         });
 
         let err = into_sender_input(
@@ -153,5 +154,35 @@ mod tests {
                 .expect("invalid config didn't result in error"),
             crate::error::Error::Generic(msg) if msg == "redis only supports json formatted transformations"
         ));
+    }
+
+    #[test]
+    fn redis_input_opts_deserializes_dlq_config() {
+        let opts: RedisInputOpts = serde_json::from_value(serde_json::json!({
+            "dsn": "redis://localhost:6379/",
+            "max_connections": 4,
+            "queue_key": "my_queue",
+            "consumer_group": "my_group",
+            "consumer_name": "my_consumer",
+            "dlq_config": {
+                "queue_key": "my_queue_dlq",
+                "max_receives": 5,
+            },
+        }))
+        .unwrap();
+        let dlq = opts.dlq_config.expect("dlq_config should be set");
+        assert_eq!(dlq.queue_key, "my_queue_dlq");
+        assert_eq!(dlq.max_receives, 5);
+
+        // Absent is fine too -- no DLQ by default.
+        let opts: RedisInputOpts = serde_json::from_value(serde_json::json!({
+            "dsn": "redis://localhost:6379/",
+            "max_connections": 4,
+            "queue_key": "my_queue",
+            "consumer_group": "my_group",
+            "consumer_name": "my_consumer",
+        }))
+        .unwrap();
+        assert!(opts.dlq_config.is_none());
     }
 }
