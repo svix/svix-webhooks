@@ -105,6 +105,7 @@ mod tests {
             delayed_queue_key: None,
             consumer_group: "".to_string(),
             consumer_name: "".to_string(),
+            payload_key: "payload".to_string(),
             ack_deadline_ms: 2_000,
         });
 
@@ -135,6 +136,7 @@ mod tests {
             max_connections: 0,
             queue_key: "".to_string(),
             delayed_queue_key: None,
+            payload_key: "payload".to_string(),
             ack_deadline_ms: 2_000,
         });
 
@@ -173,5 +175,30 @@ mod tests {
         }))
         .unwrap();
         assert_eq!(opts.consume_prefetch_count, None);
+    }
+
+    #[test]
+    fn redis_opts_deserialize_payload_key() {
+        let opts: RedisInputOpts = serde_json::from_value(serde_json::json!({
+            "dsn": "redis://localhost:6379/",
+            "max_connections": 4,
+            "queue_key": "my_queue",
+            "consumer_group": "my_group",
+            "consumer_name": "my_consumer",
+            "payload_key": "custom_payload",
+        }))
+        .unwrap();
+        assert_eq!(opts.payload_key, "custom_payload");
+
+        // Defaults to "payload" when absent.
+        let opts: RedisInputOpts = serde_json::from_value(serde_json::json!({
+            "dsn": "redis://localhost:6379/",
+            "max_connections": 4,
+            "queue_key": "my_queue",
+            "consumer_group": "my_group",
+            "consumer_name": "my_consumer",
+        }))
+        .unwrap();
+        assert_eq!(opts.payload_key, "payload");
     }
 }
