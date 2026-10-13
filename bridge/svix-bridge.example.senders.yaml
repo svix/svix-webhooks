@@ -58,6 +58,8 @@ senders:
       consumer_tag: "my-consumer-001"
       # Optional: default true
       requeue_on_nack: false
+      # Optional (default: unset, no limit on in-flight unacknowledged messages)
+      consume_prefetch_count: 10
     # Optional - when unset, messages from the queue will be sent to Svix as-is.
     transformation: |
       function handler(input) {

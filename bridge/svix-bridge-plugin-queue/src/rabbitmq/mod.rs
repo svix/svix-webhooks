@@ -85,6 +85,9 @@ pub struct RabbitMqInputOpts {
     pub consume_args: Option<backends::rabbitmq::FieldTable>,
     #[serde(default = "default_requeue")]
     pub requeue_on_nack: bool,
+    /// The number of unacknowledged messages the consumer may have in flight at once.
+    #[serde(default)]
+    pub consume_prefetch_count: Option<u16>,
 }
 
 fn default_requeue() -> bool {
@@ -117,7 +120,7 @@ pub async fn consumer(cfg: &RabbitMqInputOpts) -> Result<DynConsumer> {
         consumer_tag: cfg.consumer_tag.clone().unwrap_or_default(),
         consume_options: cfg.consume_opts.unwrap_or_default(),
         consume_arguments: cfg.consume_args.clone().unwrap_or_default(),
-        consume_prefetch_count: None,
+        consume_prefetch_count: cfg.consume_prefetch_count,
         requeue_on_nack: cfg.requeue_on_nack,
     })
     .build_consumer()

@@ -38,6 +38,7 @@ fn get_test_plugin(
             consume_opts: None,
             consume_args: None,
             requeue_on_nack: false,
+            consume_prefetch_count: None,
         }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,

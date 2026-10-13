@@ -89,6 +89,7 @@ mod tests {
     use super::{into_receiver_output, into_sender_input};
     use crate::{
         config::{QueueInputOpts, QueueOutputOpts},
+        rabbitmq::RabbitMqInputOpts,
         redis::{RedisInputOpts, RedisOutputOpts},
     };
 
@@ -153,5 +154,24 @@ mod tests {
                 .expect("invalid config didn't result in error"),
             crate::error::Error::Generic(msg) if msg == "redis only supports json formatted transformations"
         ));
+    }
+
+    #[test]
+    fn rabbitmq_input_opts_deserializes_consume_prefetch_count() {
+        let opts: RabbitMqInputOpts = serde_json::from_value(serde_json::json!({
+            "uri": "amqp://guest:guest@localhost:5672/%2f",
+            "queue_name": "my-queue",
+            "consume_prefetch_count": 10,
+        }))
+        .unwrap();
+        assert_eq!(opts.consume_prefetch_count, Some(10));
+
+        // Absent is fine too, and doesn't default to some arbitrary limit.
+        let opts: RabbitMqInputOpts = serde_json::from_value(serde_json::json!({
+            "uri": "amqp://guest:guest@localhost:5672/%2f",
+            "queue_name": "my-queue",
+        }))
+        .unwrap();
+        assert_eq!(opts.consume_prefetch_count, None);
     }
 }
