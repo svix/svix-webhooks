@@ -120,6 +120,8 @@ senders:
       queue_dsn: "http://localhost:19324/000000000000/local"
       # Optional (default: false)
       override_endpoint: true
+      # Optional (default: unset, uses SQS's own max of 1,048,576 bytes)
+      max_payload_size: 262144
     # Optional - when unset, messages from the queue will be sent to Svix as-is.
     transformation: |
       function handler(input) {
