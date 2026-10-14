@@ -128,6 +128,12 @@ background_migrations_enabled = true
 # testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`
 # whitelist_subnets = []
 
+
+# Hostnames to whitelist for outbound webhooks. Note that allowing a name here will bypass any
+# IP filtering, and should only be done for hostnames which are fully in your control and
+# when your DNS configuration is fully-trusted.
+# whitelist_names = []
+
 # Maximum number of concurrent worker tasks to spawn (0 is unlimited)
 worker_max_tasks = 500
 

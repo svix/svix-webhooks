@@ -1003,7 +1003,7 @@ pub async fn queue_handler(
 
     let webhook_client = WebhookClient::new(
         cfg.whitelist_subnets.clone(),
-        Some(Arc::new(vec!["backend".to_owned()])),
+        cfg.whitelist_names.clone(),
         cfg.dangerous_disable_tls_verification,
         cfg.proxy_config.as_ref(),
     );
