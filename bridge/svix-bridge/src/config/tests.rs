@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 #[cfg(feature = "kafka")]
 use svix_bridge_plugin_kafka::{KafkaAutoOffsetReset, KafkaInputOpts, KafkaTransformationInput};
-use svix_bridge_plugin_queue::config::{QueueInputOpts, RabbitMqInputOpts};
+use svix_bridge_plugin_queue::config::RabbitMqInputOpts;
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
 use super::{Config, ReceiverInput, SenderInputOpts};
@@ -367,7 +367,7 @@ senders:
     )
     .unwrap();
 
-    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+    let SenderInputOpts::Kafka(KafkaInputOpts {
         transformation_input,
         ..
     }) = &config.senders[0].input
@@ -412,14 +412,14 @@ senders:
     )
     .unwrap();
 
-    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+    let SenderInputOpts::Kafka(KafkaInputOpts {
         auto_offset_reset: default_auto_offset_reset,
         ..
     }) = &config.senders[0].input
     else {
         panic!("Expected Kafka input");
     };
-    let SenderInputOpts::Kafka(KafkaInputOpts::Inner {
+    let SenderInputOpts::Kafka(KafkaInputOpts {
         auto_offset_reset: explicit_auto_offset_reset,
         ..
     }) = &config.senders[1].input
@@ -463,7 +463,7 @@ kafka_security_protocol: "plaintext"
     )
     .unwrap();
 
-    let KafkaInputOpts::Inner {
+    let KafkaInputOpts {
         idempotency_namespace,
         ..
     } = config;
@@ -629,9 +629,9 @@ fn test_variable_substitution_repeated_lookups() {
 
     if let WebhookSenderConfig {
         input:
-            SenderInputOpts::Queue(QueueInputOpts::RabbitMQ(RabbitMqInputOpts {
+            SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
-            })),
+            }),
         output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
         ..
     } = &cfg.senders[0]
@@ -645,9 +645,9 @@ fn test_variable_substitution_repeated_lookups() {
 
     if let WebhookSenderConfig {
         input:
-            SenderInputOpts::Queue(QueueInputOpts::RabbitMQ(RabbitMqInputOpts {
+            SenderInputOpts::RabbitMQ(RabbitMqInputOpts {
                 uri, queue_name, ..
-            })),
+            }),
         output: SenderOutputOpts::Svix(SvixSenderOutputOpts { token, .. }),
         ..
     } = &cfg.senders[1]

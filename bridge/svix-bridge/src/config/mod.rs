@@ -3,12 +3,14 @@ use std::{
     num::NonZeroUsize,
 };
 
-use anyhow::anyhow;
 use serde::Deserialize;
 use shellexpand::LookupError;
 #[cfg(feature = "kafka")]
 use svix_bridge_plugin_kafka::{KafkaInputOpts, KafkaOutputOpts};
-use svix_bridge_plugin_queue::config::{QueueInputOpts, QueueOutputOpts};
+use svix_bridge_plugin_queue::config::{
+    GcpPubSubInputOpts, GcpPubSubOutputOpts, RabbitMqInputOpts, RabbitMqOutputOpts, RedisInputOpts,
+    RedisOutputOpts, SqsInputOpts, SqsOutputOpts,
+};
 use svix_bridge_types::{
     ReceiverInputOpts, ReceiverOutput, SenderInput, SenderOutputOpts, SvixOptions,
     TransformationConfig, svix::api::Svix,
@@ -18,9 +20,17 @@ use tracing::Level;
 use crate::http_output::HttpOutputOpts;
 
 #[derive(Deserialize, Debug)]
-#[serde(untagged)]
+#[serde(tag = "type", rename_all = "kebab-case")]
 pub enum ReceiverInput {
-    SvixWebhook(ReceiverInputOpts),
+    Webhook {
+        path_id: String,
+        #[serde(default)]
+        verification: svix_bridge_types::WebhookVerifier,
+    },
+    SvixWebhook {
+        path_id: String,
+        endpoint_secret: String,
+    },
     SvixMessagePoller(PollerInputOpts),
 }
 
@@ -47,9 +57,27 @@ impl From<Receiver> for EitherReceiver {
             output,
         } = value;
         match input {
-            ReceiverInput::SvixWebhook(input) => Self::Webhook(WebhookReceiverConfig {
+            ReceiverInput::SvixWebhook {
+                path_id,
+                endpoint_secret,
+            } => Self::Webhook(WebhookReceiverConfig {
                 name,
-                input,
+                input: ReceiverInputOpts::SvixWebhook {
+                    path_id,
+                    endpoint_secret,
+                },
+                transformation,
+                output,
+            }),
+            ReceiverInput::Webhook {
+                path_id,
+                verification,
+            } => Self::Webhook(WebhookReceiverConfig {
+                name,
+                input: ReceiverInputOpts::Webhook {
+                    path_id,
+                    verification,
+                },
                 transformation,
                 output,
             }),
@@ -193,31 +221,57 @@ pub struct WebhookSenderConfig {
 }
 
 #[derive(Deserialize)]
-#[serde(untagged)]
+#[serde(tag = "type", rename_all = "lowercase")]
 pub enum SenderInputOpts {
     #[cfg(feature = "kafka")]
     Kafka(KafkaInputOpts),
-    Queue(QueueInputOpts),
+    #[serde(rename = "gcp-pubsub")]
+    GcpPubSub(GcpPubSubInputOpts),
+    RabbitMQ(RabbitMqInputOpts),
+    Redis(RedisInputOpts),
+    Sqs(SqsInputOpts),
 }
 
 impl WebhookSenderConfig {
     pub fn into_sender_input(self) -> anyhow::Result<Box<dyn SenderInput>> {
-        Ok(match self.input {
+        use SenderInputOpts as S;
+
+        let queue = match self.input {
             #[cfg(feature = "kafka")]
-            SenderInputOpts::Kafka(input_opts) => svix_bridge_plugin_kafka::into_sender_input(
+            S::Kafka(input_opts) => {
+                return Ok(svix_bridge_plugin_kafka::into_sender_input(
+                    self.name,
+                    input_opts,
+                    self.transformation,
+                    self.output,
+                )?);
+            }
+            S::GcpPubSub(input_opts) => svix_bridge_plugin_queue::into_sender_input(
                 self.name,
                 input_opts,
                 self.transformation,
                 self.output,
-            )?,
-            SenderInputOpts::Queue(input_opts) => svix_bridge_plugin_queue::into_sender_input(
+            ),
+            S::RabbitMQ(input_opts) => svix_bridge_plugin_queue::into_sender_input(
                 self.name,
                 input_opts,
                 self.transformation,
                 self.output,
-            )
-            .map_err(|e| anyhow!("{e}"))?,
-        })
+            ),
+            S::Redis(input_opts) => svix_bridge_plugin_queue::into_sender_input(
+                self.name,
+                input_opts,
+                self.transformation,
+                self.output,
+            ),
+            S::Sqs(input_opts) => svix_bridge_plugin_queue::into_sender_input(
+                self.name,
+                input_opts,
+                self.transformation,
+                self.output,
+            ),
+        };
+        queue.map_err(|e| anyhow::anyhow!("{e}"))
     }
 }
 
@@ -240,74 +294,92 @@ impl TryFrom<WebhookSenderConfig> for Box<dyn SenderInput> {
 }
 
 /// Config for receiving webhooks and forwarding them to plugins.
-#[derive(Deserialize)]
 pub struct WebhookReceiverConfig {
     pub name: String,
     pub input: ReceiverInputOpts,
-    #[serde(default)]
     pub transformation: Option<TransformationConfig>,
     pub output: ReceiverOutputOpts,
 }
 
 #[derive(Deserialize)]
-#[serde(untagged)]
+#[serde(tag = "type", rename_all = "lowercase")]
 #[allow(clippy::large_enum_variant)] // we're talking a couple hundred bytes only
 pub enum ReceiverOutputOpts {
     Http(HttpOutputOpts),
     #[cfg(feature = "kafka")]
     Kafka(KafkaOutputOpts),
-    Queue(QueueOutputOpts),
+    #[serde(rename = "gcp-pubsub")]
+    GcpPubSub(GcpPubSubOutputOpts),
+    RabbitMQ(RabbitMqOutputOpts),
+    Redis(RedisOutputOpts),
+    Sqs(SqsOutputOpts),
 }
 
-impl WebhookReceiverConfig {
-    pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
-        match self.output {
-            ReceiverOutputOpts::Http(opts) => opts.into_receiver_output(self.name),
+impl ReceiverOutputOpts {
+    async fn into_receiver_output(
+        self,
+        name: String,
+        transformation: Option<&TransformationConfig>,
+    ) -> anyhow::Result<Box<dyn ReceiverOutput>> {
+        match self {
+            ReceiverOutputOpts::Http(opts) => opts.into_receiver_output(name),
             #[cfg(feature = "kafka")]
             ReceiverOutputOpts::Kafka(opts) => {
-                svix_bridge_plugin_kafka::into_receiver_output(self.name, opts).map_err(Into::into)
+                svix_bridge_plugin_kafka::into_receiver_output(name, opts).map_err(Into::into)
             }
-            ReceiverOutputOpts::Queue(x) => svix_bridge_plugin_queue::into_receiver_output(
-                self.name.clone(),
-                x,
-                self.transformation.as_ref(),
-            )
-            .await
-            .map_err(Into::into),
+            ReceiverOutputOpts::GcpPubSub(x) => {
+                svix_bridge_plugin_queue::into_receiver_output(name, x, transformation)
+                    .await
+                    .map_err(Into::into)
+            }
+            ReceiverOutputOpts::RabbitMQ(x) => {
+                svix_bridge_plugin_queue::into_receiver_output(name, x, transformation)
+                    .await
+                    .map_err(Into::into)
+            }
+            ReceiverOutputOpts::Redis(x) => {
+                svix_bridge_plugin_queue::into_receiver_output(name, x, transformation)
+                    .await
+                    .map_err(Into::into)
+            }
+            ReceiverOutputOpts::Sqs(x) => {
+                svix_bridge_plugin_queue::into_receiver_output(name, x, transformation)
+                    .await
+                    .map_err(Into::into)
+            }
         }
     }
 }
 
+impl WebhookReceiverConfig {
+    pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
+        self.output
+            .into_receiver_output(self.name, self.transformation.as_ref())
+            .await
+    }
+}
+
 #[derive(Clone, Deserialize, Debug)]
-#[serde(tag = "type", rename_all = "kebab-case")]
-pub enum PollerInputOpts {
-    SvixMessagePoller {
-        /// Identifies this client, allowing the server to track progress during iteration.
-        /// Processes should not share a consumer id. Only exclusive access is permitted.
-        consumer_id: String,
-        /// The app portion of the polling endpoint, e.g. `app_XXXX`
-        app_id: String,
-        /// The poller portion of the polling endpoint, e.g. `poll_XXXX`
-        sink_id: String,
-        /// The auth token for the polling endpoint
-        token: String,
-        #[serde(default)]
-        svix_options: Option<SvixOptions>,
-    },
+pub struct PollerInputOpts {
+    /// Identifies this client, allowing the server to track progress during iteration.
+    /// Processes should not share a consumer id. Only exclusive access is permitted.
+    pub consumer_id: String,
+    /// The app portion of the polling endpoint, e.g. `app_XXXX`
+    pub app_id: String,
+    /// The poller portion of the polling endpoint, e.g. `poll_XXXX`
+    pub sink_id: String,
+    /// The auth token for the polling endpoint
+    pub token: String,
+    #[serde(default)]
+    pub svix_options: Option<SvixOptions>,
 }
 
 impl PollerInputOpts {
     pub fn svix_client(&self) -> Option<Svix> {
-        match self {
-            PollerInputOpts::SvixMessagePoller {
-                token,
-                svix_options,
-                ..
-            } => Some(Svix::new(
-                token.clone(),
-                svix_options.clone().map(Into::into),
-            )),
-        }
+        Some(Svix::new(
+            self.token.clone(),
+            self.svix_options.clone().map(Into::into),
+        ))
     }
 }
 
@@ -323,22 +395,10 @@ pub struct PollerReceiverConfig {
 }
 
 impl PollerReceiverConfig {
-    // FIXME: duplicate from WebhookReceiverConfig. Extract/refactor as TryFrom ReceiverOutputOpts?
     pub async fn into_receiver_output(self) -> anyhow::Result<Box<dyn ReceiverOutput>> {
-        match self.output {
-            ReceiverOutputOpts::Http(opts) => opts.into_receiver_output(self.name),
-            #[cfg(feature = "kafka")]
-            ReceiverOutputOpts::Kafka(opts) => {
-                svix_bridge_plugin_kafka::into_receiver_output(self.name, opts).map_err(Into::into)
-            }
-            ReceiverOutputOpts::Queue(x) => svix_bridge_plugin_queue::into_receiver_output(
-                self.name.clone(),
-                x,
-                self.transformation.as_ref(),
-            )
+        self.output
+            .into_receiver_output(self.name, self.transformation.as_ref())
             .await
-            .map_err(Into::into),
-        }
     }
 }
 
