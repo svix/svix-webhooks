@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+* Bump MSRV to 1.96
+* Replace `serde_yaml` with `serde_saphyr` for parsing configuration; please let us know if you encounter any config files that fail to parse
 
 ## Version 1.100.0
 * Add an opt-in Kafka record envelope for JSON transformations

@@ -5,7 +5,7 @@ use svix_bridge_plugin_kafka::{KafkaAutoOffsetReset, KafkaInputOpts, KafkaTransf
 use svix_bridge_plugin_queue::config::{QueueInputOpts, RabbitMqInputOpts};
 use svix_bridge_types::{SenderOutputOpts, SvixSenderOutputOpts};
 
-use super::{Config, SenderInputOpts};
+use super::{Config, ReceiverInput, SenderInputOpts};
 use crate::config::{LogFormat, LogLevel, WebhookSenderConfig};
 
 /// This is meant to be a kitchen sink config, hitting as many possible
@@ -288,7 +288,7 @@ receivers:
 
 #[test]
 fn test_sender_parses_ok() {
-    let conf: Result<WebhookSenderConfig, _> = serde_yaml::from_str(
+    let conf: Result<WebhookSenderConfig, _> = serde_saphyr::from_str(
         r#"
 name: "from-rabbit-local-to-svix"
 input:
@@ -307,7 +307,7 @@ output:
 
 #[test]
 fn test_senders_parses_ok() {
-    let conf: Result<Vec<WebhookSenderConfig>, _> = serde_yaml::from_str(
+    let conf: Result<Vec<WebhookSenderConfig>, _> = serde_saphyr::from_str(
         r#"
 
 - name: "from-rabbit-local-to-svix"
@@ -343,14 +343,14 @@ fn test_senders_parses_ok() {
 
 #[test]
 fn test_omnibus_parses_ok() {
-    let conf: Result<Config, _> = serde_yaml::from_str(OMNIBUS);
+    let conf: Result<Config, _> = serde_saphyr::from_str(OMNIBUS);
     conf.unwrap();
 }
 
 #[cfg(feature = "kafka")]
 #[test]
 fn test_kafka_transformation_input_defaults_to_payload() {
-    let config: Config = serde_yaml::from_str(
+    let config: Config = serde_saphyr::from_str(
         r#"
 senders:
   - name: "kafka-example"
@@ -384,7 +384,7 @@ senders:
 #[cfg(feature = "kafka")]
 #[test]
 fn test_kafka_auto_offset_reset_parses_ok() {
-    let config: Config = serde_yaml::from_str(
+    let config: Config = serde_saphyr::from_str(
         r#"
 senders:
   - name: "kafka-default"
@@ -434,7 +434,7 @@ senders:
 #[cfg(feature = "kafka")]
 #[test]
 fn test_kafka_auto_offset_reset_rejects_invalid_value() {
-    let config = serde_yaml::from_str::<KafkaInputOpts>(
+    let config = serde_saphyr::from_str::<KafkaInputOpts>(
         r#"
 type: "kafka"
 kafka_bootstrap_brokers: "localhost:9094"
@@ -451,7 +451,7 @@ kafka_security_protocol: "plaintext"
 #[cfg(feature = "kafka")]
 #[test]
 fn test_kafka_idempotency_namespace_parses_ok() {
-    let config = serde_yaml::from_str::<KafkaInputOpts>(
+    let config = serde_saphyr::from_str::<KafkaInputOpts>(
         r#"
 type: "kafka"
 kafka_bootstrap_brokers: "localhost:9094"
@@ -472,7 +472,7 @@ kafka_security_protocol: "plaintext"
 
 #[test]
 fn test_empty() {
-    let conf: Config = serde_yaml::from_str("").unwrap();
+    let conf: Config = serde_saphyr::from_str("").unwrap();
     assert!(conf.senders.is_empty());
     assert!(conf.receivers.is_empty());
     assert_eq!(conf.http_listen_address, "0.0.0.0:5000".parse().unwrap());
@@ -489,7 +489,7 @@ fn test_receivers_example() {
         env!("CARGO_MANIFEST_DIR"),
         "/../svix-bridge.example.receivers.yaml"
     );
-    let conf: Config = serde_yaml::from_slice(&std::fs::read(fp).unwrap()).unwrap();
+    let conf: Config = serde_saphyr::from_slice(&std::fs::read(fp).unwrap()).unwrap();
     assert!(conf.senders.is_empty());
     assert!(!conf.receivers.is_empty());
 }
@@ -502,7 +502,7 @@ fn test_senders_example() {
         env!("CARGO_MANIFEST_DIR"),
         "/../svix-bridge.example.senders.yaml"
     );
-    let conf: Config = serde_yaml::from_slice(&std::fs::read(fp).unwrap()).unwrap();
+    let conf: Config = serde_saphyr::from_slice(&std::fs::read(fp).unwrap()).unwrap();
     assert!(!conf.senders.is_empty());
     assert!(conf.receivers.is_empty());
 }
@@ -586,9 +586,11 @@ fn test_variable_substitution_missing_numeric_var_is_err() {
     "#;
     let vars = HashMap::new();
     let err = Config::from_src(src, Some(&vars)).err().unwrap();
-    let want = "Failed to parse config: opentelemetry.sample_ratio: invalid type: \
-                    string \"${OTEL_SAMPLE_RATIO}\", expected f64 at line 6 column 23";
-    assert_eq!(want, err.to_string());
+    let want = "Failed to parse config: error: line 6 column 23: invalid floating point";
+    assert!(
+        err.to_string().starts_with(want),
+        "Expected {err:?} to start with {want:?}"
+    )
 }
 
 /// This is probably a given, but we should expect a single variable can be referenced multiple
@@ -803,7 +805,9 @@ fn test_pollers_parse_ok() {
           routing_key: "example"
           "#;
     // Should not be an error
-    let _cfg = Config::from_src(src, None).unwrap();
+    let cfg = Config::from_src(src, None).unwrap();
+    assert_eq!(cfg.receivers.len(), 1);
+    std::assert_matches!(cfg.receivers[0].input, ReceiverInput::SvixMessagePoller(_));
 }
 
 #[test]
