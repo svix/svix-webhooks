@@ -1,6 +1,7 @@
 // This file is @generated
 package com.svix.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -94,6 +95,7 @@ public class StreamSinkIn {
 
 @Getter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class StreamSinkInSurrogate {
     @JsonProperty("uid")
     String uid;
