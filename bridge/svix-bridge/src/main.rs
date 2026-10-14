@@ -356,9 +356,11 @@ async fn main() -> Result<()> {
     let (webhook_receivers, poller_receivers): (
         Vec<WebhookReceiverConfig>,
         Vec<PollerReceiverConfig>,
-    ) = cfg.receivers.iter().partition_map(|either| match either {
-        EitherReceiver::Webhook(x) => Either::Left(x.to_owned()),
-        EitherReceiver::Poller(y) => Either::Right(y.to_owned()),
+    ) = cfg.receivers.iter().cloned().partition_map(|receiver| {
+        match EitherReceiver::from(receiver) {
+            EitherReceiver::Webhook(x) => Either::Left(x),
+            EitherReceiver::Poller(y) => Either::Right(y),
+        }
     });
 
     let webhook_receivers_fut = webhook_receiver::run(

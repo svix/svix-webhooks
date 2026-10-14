@@ -1,4 +1,3 @@
-use serde::Deserialize;
 use svix_bridge_types::{
     ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig, TransformerInputFormat,
 };
@@ -14,10 +13,11 @@ pub use crate::{
 
 pub fn into_sender_input(
     name: String,
-    input_opts: QueueInputOpts,
+    input_opts: impl Into<QueueInputOpts>,
     transformation: Option<TransformationConfig>,
     output: SenderOutputOpts,
 ) -> Result<Box<dyn SenderInput>, &'static str> {
+    let input_opts = input_opts.into();
     // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
     if matches!(input_opts, QueueInputOpts::Redis(_))
         && transformation
@@ -38,10 +38,11 @@ pub fn into_sender_input(
 
 pub async fn into_receiver_output(
     name: String,
-    opts: QueueOutputOpts,
+    opts: impl Into<QueueOutputOpts>,
     // Annoying to have to pass this, but certain backends (redis) only work with certain transformations (json).
     transformation: Option<&TransformationConfig>,
 ) -> Result<Box<dyn ReceiverOutput>, crate::Error> {
+    let opts = opts.into();
     // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
     if matches!(opts, QueueOutputOpts::Redis(_))
         && transformation
@@ -59,25 +60,69 @@ pub async fn into_receiver_output(
 }
 
 // TODO: feature flag the variants, thread the features down through to generic-queue
-#[derive(Debug, Deserialize, Clone)]
-#[serde(tag = "type", rename_all = "lowercase")]
+#[derive(Clone, Debug)]
 pub enum QueueInputOpts {
-    #[serde(rename = "gcp-pubsub")]
     GcpPubSub(GcpPubSubInputOpts),
     RabbitMQ(RabbitMqInputOpts),
     Redis(RedisInputOpts),
     Sqs(SqsInputOpts),
 }
 
-#[derive(Clone, Debug, Deserialize)]
+impl From<GcpPubSubInputOpts> for QueueInputOpts {
+    fn from(value: GcpPubSubInputOpts) -> Self {
+        Self::GcpPubSub(value)
+    }
+}
+
+impl From<RabbitMqInputOpts> for QueueInputOpts {
+    fn from(value: RabbitMqInputOpts) -> Self {
+        Self::RabbitMQ(value)
+    }
+}
+
+impl From<RedisInputOpts> for QueueInputOpts {
+    fn from(value: RedisInputOpts) -> Self {
+        Self::Redis(value)
+    }
+}
+
+impl From<SqsInputOpts> for QueueInputOpts {
+    fn from(value: SqsInputOpts) -> Self {
+        Self::Sqs(value)
+    }
+}
+
+#[derive(Clone, Debug)]
 #[allow(clippy::large_enum_variant)] // Largest variant isn't _that_ big
-#[serde(tag = "type", rename_all = "lowercase")]
 pub enum QueueOutputOpts {
-    #[serde(rename = "gcp-pubsub")]
     GcpPubSub(GcpPubSubOutputOpts),
     RabbitMQ(RabbitMqOutputOpts),
     Redis(RedisOutputOpts),
     Sqs(SqsOutputOpts),
+}
+
+impl From<GcpPubSubOutputOpts> for QueueOutputOpts {
+    fn from(value: GcpPubSubOutputOpts) -> Self {
+        Self::GcpPubSub(value)
+    }
+}
+
+impl From<RabbitMqOutputOpts> for QueueOutputOpts {
+    fn from(value: RabbitMqOutputOpts) -> Self {
+        Self::RabbitMQ(value)
+    }
+}
+
+impl From<RedisOutputOpts> for QueueOutputOpts {
+    fn from(value: RedisOutputOpts) -> Self {
+        Self::Redis(value)
+    }
+}
+
+impl From<SqsOutputOpts> for QueueOutputOpts {
+    fn from(value: SqsOutputOpts) -> Self {
+        Self::Sqs(value)
+    }
 }
 
 #[cfg(test)]

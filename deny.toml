@@ -22,8 +22,6 @@ ignore = [
     "RUSTSEC-2025-0141",
     # smartstring (dependency of deno) is unmaintained
     "RUSTSEC-2026-0249",
-    # unsafe-libyaml (dependency of serde_yaml) is unmaintained
-    "RUSTSEC-2024-0449",
 ]
 
 [licenses]

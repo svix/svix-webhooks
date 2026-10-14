@@ -31,8 +31,8 @@ reqwest = { version = "0.13.4", features = ["json"] }
 rquickjs = { version = "0.14.0", features = ["allocator", "std", "chrono", "loader", "macro", "phf", "bytes", "futures", "parallel", "array-buffer"] }
 rquickjs-serde = "0.8.0"
 serde.workspace = true
+serde-saphyr = "2"
 serde_json.workspace = true
-serde_yaml = "0.9"
 shellexpand = { version = "3.1.0", default-features = false, features = ["base-0"] }
 svix-bridge-plugin-kafka = { optional = true, path = "../svix-bridge-plugin-kafka" }
 svix-bridge-plugin-queue = { path = "../svix-bridge-plugin-queue" }

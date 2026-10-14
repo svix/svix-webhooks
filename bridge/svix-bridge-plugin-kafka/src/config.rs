@@ -9,46 +9,42 @@ use crate::{KafkaProducer, Result, input::KafkaConsumer};
 
 #[derive(Clone, Deserialize)]
 #[serde(tag = "type")]
-pub enum KafkaInputOpts {
-    // Single-variant enum so we can require the "type": "kafka" field in deserialization
-    #[serde(rename = "kafka")]
-    Inner {
-        /// Comma-separated list of addresses.
-        ///
-        /// Example: `localhost:9094`
-        #[serde(rename = "kafka_bootstrap_brokers")]
-        bootstrap_brokers: String,
+pub struct KafkaInputOpts {
+    /// Comma-separated list of addresses.
+    ///
+    /// Example: `localhost:9094`
+    #[serde(rename = "kafka_bootstrap_brokers")]
+    pub bootstrap_brokers: String,
 
-        /// The consumer group ID, used to track the stream offset between restarts
-        /// (due to host maintenance, upgrades, crashes, etc.).
-        #[serde(rename = "kafka_group_id")]
-        group_id: String,
+    /// The consumer group ID, used to track the stream offset between restarts
+    /// (due to host maintenance, upgrades, crashes, etc.).
+    #[serde(rename = "kafka_group_id")]
+    pub group_id: String,
 
-        /// The topic to listen to.
-        #[serde(rename = "kafka_topic")]
-        topic: String,
+    /// The topic to listen to.
+    #[serde(rename = "kafka_topic")]
+    pub topic: String,
 
-        /// The input passed to JSON transformations.
-        #[serde(rename = "kafka_transformation_input", default)]
-        transformation_input: KafkaTransformationInput,
+    /// The input passed to JSON transformations.
+    #[serde(rename = "kafka_transformation_input", default)]
+    pub transformation_input: KafkaTransformationInput,
 
-        /// The value for 'auto.offset.reset' in the kafka config.
-        #[serde(rename = "kafka_auto_offset_reset", default)]
-        auto_offset_reset: KafkaAutoOffsetReset,
+    /// The value for 'auto.offset.reset' in the kafka config.
+    #[serde(rename = "kafka_auto_offset_reset", default)]
+    pub auto_offset_reset: KafkaAutoOffsetReset,
 
-        /// A namespace for idempotency keys from independent Kafka sources.
-        #[serde(rename = "kafka_idempotency_namespace")]
-        idempotency_namespace: Option<String>,
+    /// A namespace for idempotency keys from independent Kafka sources.
+    #[serde(rename = "kafka_idempotency_namespace")]
+    pub idempotency_namespace: Option<String>,
 
-        /// The value for 'security.protocol' in the kafka config.
-        #[serde(flatten)]
-        security_protocol: KafkaSecurityProtocol,
+    /// The value for 'security.protocol' in the kafka config.
+    #[serde(flatten)]
+    pub security_protocol: KafkaSecurityProtocol,
 
-        /// The 'debug' config value for rdkafka - enables more verbose logging
-        /// for the selected 'contexts'
-        #[serde(rename = "kafka_debug_contexts")]
-        debug_contexts: Option<String>,
-    },
+    /// The 'debug' config value for rdkafka - enables more verbose logging
+    /// for the selected 'contexts'
+    #[serde(rename = "kafka_debug_contexts")]
+    pub debug_contexts: Option<String>,
 }
 
 #[derive(Clone, Copy, Default, Deserialize)]
@@ -61,7 +57,7 @@ pub enum KafkaTransformationInput {
 
 impl KafkaInputOpts {
     pub(crate) fn create_consumer(self) -> KafkaResult<StreamConsumer> {
-        let Self::Inner {
+        let Self {
             bootstrap_brokers,
             group_id,
             auto_offset_reset,
@@ -100,34 +96,30 @@ pub enum KafkaAutoOffsetReset {
 
 #[derive(Clone, Deserialize)]
 #[serde(tag = "type")]
-pub enum KafkaOutputOpts {
-    // Single-variant enum so we can require the "type": "kafka" field in deserialization
-    #[serde(rename = "kafka")]
-    Inner {
-        /// Comma-separated list of addresses.
-        ///
-        /// Example: `localhost:9094`
-        #[serde(rename = "kafka_bootstrap_brokers")]
-        bootstrap_brokers: String,
+pub struct KafkaOutputOpts {
+    /// Comma-separated list of addresses.
+    ///
+    /// Example: `localhost:9094`
+    #[serde(rename = "kafka_bootstrap_brokers")]
+    pub bootstrap_brokers: String,
 
-        /// The topic to listen to.
-        #[serde(rename = "kafka_topic")]
-        topic: String,
+    /// The topic to listen to.
+    #[serde(rename = "kafka_topic")]
+    pub topic: String,
 
-        /// The value for 'security.protocol' in the kafka config.
-        #[serde(flatten)]
-        security_protocol: KafkaSecurityProtocol,
+    /// The value for 'security.protocol' in the kafka config.
+    #[serde(flatten)]
+    pub security_protocol: KafkaSecurityProtocol,
 
-        /// The 'debug' config value for rdkafka - enables more verbose logging
-        /// for the selected 'contexts'
-        #[serde(rename = "kafka_debug_contexts")]
-        debug_contexts: Option<String>,
-    },
+    /// The 'debug' config value for rdkafka - enables more verbose logging
+    /// for the selected 'contexts'
+    #[serde(rename = "kafka_debug_contexts")]
+    pub debug_contexts: Option<String>,
 }
 
 impl KafkaOutputOpts {
     pub(crate) fn create_producer(self) -> KafkaResult<FutureProducer> {
-        let Self::Inner {
+        let Self {
             bootstrap_brokers,
             security_protocol,
             debug_contexts,
