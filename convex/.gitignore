@@ -1,0 +1,19 @@
+.DS_Store
+.idea
+*.local
+*.log
+/.vscode/
+/docs/.vitepress/cache
+dist
+dist-ssr
+explorations
+node_modules
+.eslintcache
+
+# npm pack output
+*.tgz
+*.tsbuildinfo
+
+# Local Convex backend
+.convex
+.env.local
