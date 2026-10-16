@@ -97,7 +97,7 @@ impl KafkaConsumer {
                 TransformerInputFormat::Json => {
                     let json_payload =
                         serde_json::from_slice(payload).map_err(Error::Deserialization)?;
-                    let KafkaInputOpts::Inner {
+                    let KafkaInputOpts {
                         transformation_input,
                         ..
                     } = &self.opts;
@@ -126,7 +126,7 @@ impl KafkaConsumer {
 
         let CreateMessageRequest { app_id, message } = payload;
 
-        let KafkaInputOpts::Inner {
+        let KafkaInputOpts {
             group_id,
             idempotency_namespace,
             topic,
@@ -183,7 +183,7 @@ impl KafkaConsumer {
         // `ClientConfig::create` does blocking I/O.
         // Same for subscribe, most likely.
         let consumer = spawn_blocking(move || {
-            let KafkaInputOpts::Inner { topic, .. } = &opts;
+            let KafkaInputOpts { topic, .. } = &opts;
             let topic = topic.clone();
 
             let consumer = opts.create_consumer()?;
@@ -274,7 +274,7 @@ impl SenderInput for KafkaConsumer {
         let mut fails: u64 = 0;
         let mut last_fail = Instant::now();
 
-        let KafkaInputOpts::Inner { topic, .. } = &self.opts;
+        let KafkaInputOpts { topic, .. } = &self.opts;
         tracing::info!(topic, "Starting to listen for messages");
 
         loop {

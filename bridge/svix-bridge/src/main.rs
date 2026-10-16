@@ -363,7 +363,7 @@ async fn main() -> Result<()> {
     ) = cfg
         .receivers
         .into_iter()
-        .partition_map(|either| match either {
+        .partition_map(|receiver| match EitherReceiver::from(receiver) {
             EitherReceiver::Webhook(x) => Either::Left(x),
             EitherReceiver::Poller(y) => Either::Right(y),
         });
