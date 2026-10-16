@@ -231,6 +231,12 @@ pub struct ConfigurationInner {
     /// testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`
     pub whitelist_subnets: Option<Arc<Vec<IpNet>>>,
 
+    /// Hostnames to whitelist for outbound webhooks. Note that allowing a name here will bypass any
+    /// IP filtering, and should only be done for hostnames which are fully in your control and
+    /// when your DNS configuration is fully-trusted.
+    #[serde(default)]
+    pub whitelist_names: Option<Arc<Vec<String>>>,
+
     /// Maximum number of concurrent worker tasks to spawn (0 is unlimited)
     pub worker_max_tasks: u16,
 
