@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Return the new secret from `v1.endpoint.rotate-secret`
 * Add `opentelemetry_logs_enabled` to optionally send log events to the configured OpenTelemetry collector (`opentelemetry_address`), in addition to stdout. Disabled by default. Exported log records include the fields of their enclosing spans as attributes
 
 ## Version 1.101.0

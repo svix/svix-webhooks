@@ -253,7 +253,7 @@ async fn test_endpoint_create_update_and_delete() {
                 regular_app.id, regular_endp.id
             ),
             EndpointSecretRotateIn::default(),
-            StatusCode::NO_CONTENT,
+            StatusCode::OK,
         )
         .await
         .unwrap();
