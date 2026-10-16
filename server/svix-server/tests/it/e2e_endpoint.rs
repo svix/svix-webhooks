@@ -863,17 +863,19 @@ async fn test_endpoint_secret_get_and_rotation() {
         .await
         .unwrap();
 
-    client
-        .post_without_response(
+    let new_secret: EndpointSecretOut = client
+        .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             json!({ "key": null }),
-            StatusCode::NO_CONTENT,
+            StatusCode::OK,
         )
         .await
         .unwrap();
 
-    assert_ne!(
-        former_secret,
+    assert_ne!(former_secret, new_secret);
+
+    assert_eq!(
+        new_secret,
         client
             .get(
                 &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
@@ -1006,7 +1008,7 @@ async fn test_endpoint_rotate_max() {
             .post_without_response(
                 &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
                 json!({ "key": null }),
-                StatusCode::NO_CONTENT,
+                StatusCode::OK,
             )
             .await
             .unwrap();
@@ -1048,18 +1050,10 @@ async fn test_endpoint_rotate_max() {
         .into_endpoint_secret(&Encryption::new_noop())
         .unwrap();
 
-    client
-        .post_without_response(
+    let actual_secret: EndpointSecretOut = client
+        .post(
             &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/rotate/"),
             json!({ "key": new_secret }),
-            StatusCode::NO_CONTENT,
-        )
-        .await
-        .unwrap();
-
-    let actual_secret: EndpointSecretOut = client
-        .get(
-            &format!("api/v1/app/{app_id}/endpoint/{endp_id}/secret/"),
             StatusCode::OK,
         )
         .await
@@ -1088,18 +1082,10 @@ async fn test_endpoint_rotate_signing_e2e() {
         .await
         .unwrap();
 
-    client
-        .post_without_response(
+    let secret2: EndpointSecretOut = client
+        .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             json!({ "key": null }),
-            StatusCode::NO_CONTENT,
-        )
-        .await
-        .unwrap();
-
-    let secret2: EndpointSecretOut = client
-        .get(
-            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -1112,18 +1098,10 @@ async fn test_endpoint_rotate_signing_e2e() {
         .into_endpoint_secret(&Encryption::new_noop())
         .unwrap();
 
-    client
-        .post_without_response(
+    let secret3: EndpointSecretOut = client
+        .post(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", endp.id),
             json!({ "key": secret3_key }),
-            StatusCode::NO_CONTENT,
-        )
-        .await
-        .unwrap();
-
-    let secret3: EndpointSecretOut = client
-        .get(
-            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", endp.id),
             StatusCode::OK,
         )
         .await
@@ -1278,19 +1256,11 @@ async fn test_endpoint_secret_config() {
     assert!(key1.starts_with("whpk_"));
 
     // Rotate to asymmetric
-    client
-        .post_without_response(
+    let key2 = client
+        .post::<_, EndpointSecretOutTest>(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             json!({ "key": null }),
             StatusCode::NO_CONTENT,
-        )
-        .await
-        .unwrap();
-
-    let key2 = client
-        .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
-            StatusCode::OK,
         )
         .await
         .unwrap()
@@ -1343,7 +1313,7 @@ async fn test_custom_endpoint_secret() {
             json!({
                 "key": "whsk_6Xb/dCcHpPea21PS1N9VY/NZW723CEc77N4rJCubMbfVKIDij2HKpMKkioLlX0dRqSKJp4AJ6p9lMicMFs6Kvg==",
             }),
-            StatusCode::NO_CONTENT,
+            StatusCode::OK,
         )
         .await
         .unwrap();
@@ -1415,18 +1385,10 @@ async fn test_endpoint_secret_encryption() {
     assert_eq!(secret, secret2);
 
     // Generate a new encrypted secret
-    client
-        .post_without_response(
+    let secret2 = client
+        .post::<_, EndpointSecretOutTest>(
             &format!("api/v1/app/{app_id}/endpoint/{}/secret/rotate/", ep.id),
             json!({ "key": secret }),
-            StatusCode::NO_CONTENT,
-        )
-        .await
-        .unwrap();
-
-    let secret2 = client
-        .get::<EndpointSecretOutTest>(
-            &format!("api/v1/app/{app_id}/endpoint/{}/secret/", ep.id),
             StatusCode::OK,
         )
         .await
