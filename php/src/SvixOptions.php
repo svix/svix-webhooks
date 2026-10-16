@@ -32,7 +32,7 @@ class SvixOptions
          * List of delays to wait before each retry attempt.
          * Takes precedence over `numRetries`.
          */
-        public ?array $retryScheduleMs = [60, 120, 240],
+        public ?array $retryScheduleMs = null,
     ) {
     }
 
@@ -43,7 +43,7 @@ class SvixOptions
             serverUrl: Utils::getServerUrlFromToken($token),
             timeoutMs: 30000,
             numRetries: 2,
-            retryScheduleMs: [60, 120, 240],
+            retryScheduleMs: null,
         );
     }
 }

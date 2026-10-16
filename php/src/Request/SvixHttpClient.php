@@ -16,7 +16,7 @@ use Svix\Version;
 class SvixHttpClient
 {
     /** @var int[] Retry schedule in milliseconds - defines sleep time before each retry attempt */
-    private array $retryScheduleMs = [50, 100];
+    private array $retryScheduleMs = [];
 
     public function __construct(
         private string $baseUrl,
@@ -27,6 +27,14 @@ class SvixHttpClient
         // Strip trailing slashes so that `https://api.svix.com/` does not
         // produce request URLs such as `https://api.svix.com//api/v1/app`.
         $this->baseUrl = rtrim($baseUrl, '/');
+
+        if ($opts->retryScheduleMs !== null) {
+            $this->retryScheduleMs = $opts->retryScheduleMs;
+        } else {
+            for ($i = 0; $i < ($opts->numRetries ?? 2); $i++) {
+                $this->retryScheduleMs[] = 50 * 2 ** $i;
+            }
+        }
     }
 
     public function newReq(
