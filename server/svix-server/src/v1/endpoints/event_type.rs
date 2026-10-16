@@ -8,6 +8,7 @@ use aide::axum::{
 use axum::{
     Json,
     extract::{Path, State},
+    response::NoContent,
 };
 use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
@@ -26,8 +27,8 @@ use crate::{
     error::{HttpError, Result, http_error_on_conflict},
     v1::utils::{
         EventTypeNamePath, IteratorDirection, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn,
-        ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery, apply_pagination, openapi_tag,
+        ModelOut, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery, apply_pagination, openapi_tag,
         patch::{
             UnrequiredField, UnrequiredNullableField, patch_field_non_nullable,
             patch_field_nullable,
