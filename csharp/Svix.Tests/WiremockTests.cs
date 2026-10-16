@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Svix.Models;
 using WireMock.RequestBuilders;
 using WireMock.ResponseBuilders;
@@ -16,6 +19,10 @@ namespace Svix.Tests
         private readonly string baseUrl;
         private static readonly string applicationOutJsonStr =
             """{"name":"Test name","id":"app_2raC7cFHmm6rLPcBjbVgeGQOnzr","createdAt":"2025-01-13T17:00:32.241022Z","updatedAt":"2025-02-04T20:50:59.911308Z","metadata":{}}""";
+        private static readonly string orderJsonStr =
+            """{"orderId":42,"paid":true,"items":[{"sku":"a1","price":9.5}],"note":"x"}""";
+        private static readonly string orderJsonWithCommentsStr =
+            """{ /* order */ "orderId": 42, "paid": true, "items": [{ "sku": "a1", "price": 9.5 },], "note": "x", }""";
         private SvixClient client;
 
         public SerializationTests()
@@ -236,6 +243,181 @@ namespace Svix.Tests
             string expected_json_body = """
                 {"eventType":"event.type","payload":{},"transformationsParams":{"rawPayload":"not json","headers":{"content-type":"nonstandard/content_type"}}}
                 """;
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
+        }
+
+        // Names the theory rows, so a failing row shows which payload type it was
+        public record NamedPayload(string Name, object Value)
+        {
+            public override string ToString() => Name;
+        }
+
+        public static IEnumerable<object[]> PayloadsHoldingOrderJson()
+        {
+            // System.Text.Json values (by default, ASP.NET Core binds an `object` body to a JsonElement)
+            yield return new object[]
+            {
+                new NamedPayload(
+                    "JsonElement",
+                    System.Text.Json.JsonSerializer.Deserialize<object>(orderJsonStr)
+                ),
+            };
+            yield return new object[]
+            {
+                new NamedPayload("JsonDocument", JsonDocument.Parse(orderJsonStr)),
+            };
+            yield return new object[]
+            {
+                new NamedPayload("JsonObject", JsonNode.Parse(orderJsonStr)),
+            };
+            yield return new object[]
+            {
+                new NamedPayload(
+                    "Dictionary<string, object>",
+                    System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(
+                        orderJsonStr
+                    )
+                ),
+            };
+            yield return new object[]
+            {
+                new NamedPayload(
+                    "Dictionary<string, JsonNode>",
+                    System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, JsonNode>>(
+                        orderJsonStr
+                    )
+                ),
+            };
+            // System.Text.Json values read from JSON with comments and trailing commas
+            yield return new object[]
+            {
+                new NamedPayload(
+                    "JsonElement read with comments",
+                    System.Text.Json.JsonSerializer.Deserialize<object>(
+                        orderJsonWithCommentsStr,
+                        new JsonSerializerOptions
+                        {
+                            ReadCommentHandling = JsonCommentHandling.Skip,
+                            AllowTrailingCommas = true,
+                        }
+                    )
+                ),
+            };
+            yield return new object[]
+            {
+                new NamedPayload(
+                    "JsonDocument read with comments",
+                    JsonDocument.Parse(
+                        orderJsonWithCommentsStr,
+                        new JsonDocumentOptions
+                        {
+                            CommentHandling = JsonCommentHandling.Skip,
+                            AllowTrailingCommas = true,
+                        }
+                    )
+                ),
+            };
+            // Payload types that are already supported must keep the same output
+            yield return new object[] { new NamedPayload("JObject", JObject.Parse(orderJsonStr)) };
+            yield return new object[]
+            {
+                new NamedPayload(
+                    "anonymous object",
+                    new
+                    {
+                        orderId = 42,
+                        paid = true,
+                        items = new[] { new { sku = "a1", price = 9.5 } },
+                        note = "x",
+                    }
+                ),
+            };
+        }
+
+        [Theory]
+        [MemberData(nameof(PayloadsHoldingOrderJson))]
+        public void PayloadIsSerializedAsItsJson(NamedPayload payload)
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app/app_asd123/msg"))
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody(
+                            """{"id":"msg_asd13","eventType":"event.type","payload":{},"timestamp":"2025-01-13T17:00:32.241022Z"}"""
+                        )
+                );
+
+            client.Message.Create(
+                "app_asd123",
+                new MessageIn { EventType = "order.created", Payload = payload.Value }
+            );
+
+            string expected_json_body =
+                $$"""{"eventType":"order.created","payload":{{orderJsonStr}}}""";
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
+        }
+
+        [Fact]
+        public void NestedSystemTextJsonValuesAreSerializedAsTheirJson()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app/app_asd123/msg"))
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody(
+                            """{"id":"msg_asd13","eventType":"event.type","payload":{},"timestamp":"2025-01-13T17:00:32.241022Z"}"""
+                        )
+                );
+            var element = System.Text.Json.JsonSerializer.Deserialize<object>(orderJsonStr);
+
+            client.Message.Create(
+                "app_asd123",
+                new MessageIn
+                {
+                    EventType = "order.created",
+                    Payload = new
+                    {
+                        order = element,
+                        nullableOrder = (JsonElement?)element,
+                        list = new List<object> { element },
+                        map = new Dictionary<string, object> { { "node", JsonNode.Parse("[1]") } },
+                    },
+                }
+            );
+
+            string expected_json_body =
+                """{"eventType":"order.created","payload":{"order":"""
+                + orderJsonStr
+                + ""","nullableOrder":"""
+                + orderJsonStr
+                + ""","list":["""
+                + orderJsonStr
+                + """],"map":{"node":[1]}}}""";
+            Assert.Equal(1, stub.LogEntries.Count);
+            Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
+        }
+
+        [Fact]
+        public void SystemTextJsonValueIsSerializedAsItsJsonInPatchRequest()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/event-type/order.created"))
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody(
+                            """{"name":"order.created","description":"d","deprecated":false,"createdAt":"2025-01-13T17:00:32.241022Z","updatedAt":"2025-01-13T17:00:32.241022Z"}"""
+                        )
+                );
+            using var schemas = JsonDocument.Parse(orderJsonStr);
+
+            client.EventType.Patch("order.created", new EventTypePatch { Schemas = schemas });
+
+            string expected_json_body = $$"""{"schemas":{{orderJsonStr}}}""";
             Assert.Equal(1, stub.LogEntries.Count);
             Assert.Equal(expected_json_body, stub.LogEntries[0].RequestMessage.Body);
         }

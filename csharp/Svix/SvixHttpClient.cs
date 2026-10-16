@@ -17,10 +17,14 @@ namespace Svix
         private readonly string serverUrl = serverUrl.TrimEnd('/');
         private readonly HttpClient _httpClient = new();
         private readonly string _token = token;
-        private readonly JsonSerializerSettings patchJsonOptions = new();
+        private readonly JsonSerializerSettings patchJsonOptions = new()
+        {
+            Converters = { new SystemTextJsonConverter() },
+        };
         private readonly JsonSerializerSettings JsonOptions = new()
         {
             NullValueHandling = NullValueHandling.Ignore,
+            Converters = { new SystemTextJsonConverter() },
         };
 
         public SvixHttpClient(
