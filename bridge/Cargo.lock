@@ -4133,6 +4133,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "rquickjs-serde"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "976f3350570a1d8611442e491a617c5373f9b9d24ae98c735345f7d3eb8f03bd"
+dependencies = [
+ "rquickjs",
+ "serde",
+]
+
+[[package]]
 name = "rquickjs-sys"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4821,6 +4831,7 @@ dependencies = [
  "opentelemetry_sdk",
  "reqwest",
  "rquickjs",
+ "rquickjs-serde",
  "rust-executable-metadata",
  "serde",
  "serde_json",

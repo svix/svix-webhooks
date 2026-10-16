@@ -21,11 +21,7 @@ pub enum ScriptError {
     #[error("internal error setting up the JavaScript interpreter: {0}")]
     InternalError(rquickjs::Error),
     #[error("unable to serialize input: {0}")]
-    InvalidInput(serde_json::Error),
-    #[error("unable to deserialize output: {0}")]
-    InvalidOutputDecoding(rquickjs::Error),
-    #[error("script failed to return an output")]
-    NoOutput,
+    InvalidInput(rquickjs_serde::Error),
     #[error("exception raised by JavaScript code: {message:?} {}", stack.as_deref().unwrap_or(""))]
     ExecutionException {
         message: String,
@@ -103,21 +99,16 @@ fn set_timeout<'js>(
 
 fn handle_caught_error(e: rquickjs::CaughtError<'_>) -> ScriptError {
     match e {
-        rquickjs::CaughtError::Exception(exc) => {
-            if exc.message().as_deref() == Some("interrupted") {
-                return ScriptError::ProcessTimeout;
-            }
-            if exc.message().as_deref() == Some("out of memory") {
-                ScriptError::OutOfMemory
-            } else {
-                ScriptError::ExecutionException {
-                    message: exc
-                        .message()
-                        .unwrap_or_else(|| "<unknown error>".to_string()),
-                    stack: exc.stack(),
-                }
-            }
-        }
+        rquickjs::CaughtError::Exception(exc) => match exc.message().as_deref() {
+            Some("interrupted") => ScriptError::ProcessTimeout,
+            Some("out of memory") => ScriptError::OutOfMemory,
+            _ => ScriptError::ExecutionException {
+                message: exc
+                    .message()
+                    .unwrap_or_else(|| "<unknown error>".to_string()),
+                stack: exc.stack(),
+            },
+        },
         rquickjs::CaughtError::Error(err) => {
             let stringified = format!("{err:?}");
             ScriptError::ExecutionException {
@@ -126,7 +117,8 @@ fn handle_caught_error(e: rquickjs::CaughtError<'_>) -> ScriptError {
             }
         }
         rquickjs::CaughtError::Value(v) => {
-            // OOM is represented by raising `null` as an exception. who knows why.
+            // OOM is represented by raising `null` as an exception, instead of some dedicated
+            // singleton
             if v.is_null() {
                 ScriptError::OutOfMemory
             } else {
@@ -192,13 +184,8 @@ async fn run_script_inner(
     context
         .with(move |ctx| {
             let globals = ctx.globals();
-            // JSONify and then immediate parse because we use the serde_json RawValue feature,
-            // which makes `rquickjs-serde` upset
-            let jsonified = serde_json::to_string(&input).map_err(ScriptError::InvalidInput)?;
-            let serialized = ctx
-                .json_parse(jsonified)
-                .catch(&ctx)
-                .map_err(handle_caught_error)?;
+            let serialized =
+                rquickjs_serde::to_value(ctx, &input).map_err(ScriptError::InvalidInput)?;
             globals
                 .set("script_input", serialized)
                 .map_err(ScriptError::InternalError)?;
@@ -250,27 +237,12 @@ async fn run_script_inner(
                 .map_err(|_| ScriptError::InvalidPromise)?;
 
             tracing::debug_span!("rquickjs_deserialize").in_scope(|| {
-                // this is kind of derpy, but rquickjs-serde has a lot of bugs
-                let stringified = ctx
-                    .json_stringify(value)
-                    .and_then(|opt| match opt {
-                        Some(val) => match val.to_string() {
-                            Ok(v) => Ok(Some(v)),
-                            Err(e) => Err(e),
-                        },
-                        None => Ok(None),
-                    })
-                    .map_err(ScriptError::InvalidOutputDecoding)?;
-
-                match stringified {
-                    Some(str) => match serde_json::from_str(&str) {
-                        Ok(value) => Ok(TransformerOutput::Object(value)),
-                        Err(e) => {
-                            tracing::warn!(?e, "transformer output was not a JSON object");
-                            Ok(TransformerOutput::Invalid)
-                        }
-                    },
-                    None => Err(ScriptError::NoOutput),
+                match rquickjs_serde::from_value(value) {
+                    Ok(value) => Ok(TransformerOutput::Object(value)),
+                    Err(e) => {
+                        tracing::warn!(?e, "transformer output was not a JSON object");
+                        Ok(TransformerOutput::Invalid)
+                    }
                 }
             })
         })
@@ -288,7 +260,10 @@ async fn run_script_inner(
 
 #[cfg(test)]
 mod tests {
-    use std::time::{Duration, Instant};
+    use std::{
+        assert_matches,
+        time::{Duration, Instant},
+    };
 
     use serde_json::json;
     use svix_bridge_types::{TransformerInput, TransformerOutput};
@@ -330,15 +305,25 @@ mod tests {
         let res = run_script_inner(json!({}).into(), src, MAX_RUNTIME)
             .await
             .unwrap();
-        match res {
-            TransformerOutput::Invalid => (),
-            TransformerOutput::Object(_) => panic!("got unexpected return value"),
-        }
+        assert_matches!(res, TransformerOutput::Invalid);
     }
 
     #[tokio::test]
-    // FIXME: serde decodes arrays with keys like "0", "1"... in this situation, failing the test.
-    #[ignore]
+    async fn test_invalid_output_string() {
+        let src = r#"
+        function handler(input) {
+            return "hello, dolly";
+        }
+        "#
+        .to_string();
+
+        let res = run_script_inner(json!({}).into(), src, MAX_RUNTIME)
+            .await
+            .unwrap();
+        assert_matches!(res, TransformerOutput::Invalid);
+    }
+
+    #[tokio::test]
     async fn test_invalid_output_array() {
         let src = r#"
         function handler(input) {
@@ -349,12 +334,7 @@ mod tests {
         let res = run_script_inner(json!({}).into(), src, MAX_RUNTIME)
             .await
             .unwrap();
-        match res {
-            TransformerOutput::Invalid => (),
-            TransformerOutput::Object(_) => {
-                panic!("got unexpected return value");
-            }
-        }
+        assert_matches!(res, TransformerOutput::Invalid);
     }
 
     /// Receives a string input, parses as JSON in js, then returns the result back to rust.
@@ -373,12 +353,8 @@ mod tests {
         )
         .await
         .unwrap();
-        match res {
-            TransformerOutput::Object(v) => {
-                assert_eq!(v["x"].as_i64(), Some(123));
-            }
-            TransformerOutput::Invalid => (),
-        }
+        let v = res.unwrap();
+        assert_eq!(v["x"].as_i64(), Some(123));
     }
 
     /// Take the string input and just add it to a field in the returned object.
@@ -398,12 +374,8 @@ mod tests {
         )
         .await
         .unwrap();
-        match res {
-            TransformerOutput::Object(v) => {
-                assert_eq!(v["payload"].as_str(), Some("Hello World"));
-            }
-            TransformerOutput::Invalid => (),
-        }
+        let v = res.unwrap();
+        assert_eq!(v["payload"].as_str(), Some("Hello World"));
     }
 
     #[tokio::test]

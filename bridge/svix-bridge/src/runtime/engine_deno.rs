@@ -78,6 +78,8 @@ pub(super) fn run_script_inner(
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use serde_json::json;
     use svix_bridge_types::{TransformerInput, TransformerOutput};
 
@@ -94,13 +96,11 @@ mod tests {
         .to_string();
         let mut rt = build_runtime();
         let res = run_script_inner(&mut rt, json!({ "y": 456 }).into(), src).unwrap();
-        match res {
-            TransformerOutput::Object(v) => {
-                assert_eq!(v["x"].as_i64(), Some(123));
-                assert_eq!(v["y"].as_i64(), Some(456));
-            }
-            TransformerOutput::Invalid => panic!("got unexpected return value"),
-        }
+        let TransformerOutput::Object(v) = res else {
+            panic!("got unexpected return value");
+        };
+        assert_eq!(v["x"].as_i64(), Some(123));
+        assert_eq!(v["y"].as_i64(), Some(456));
     }
 
     #[test]
@@ -114,14 +114,11 @@ mod tests {
 
         let mut rt = build_runtime();
         let res = run_script_inner(&mut rt, json!({}).into(), src).unwrap();
-        match res {
-            TransformerOutput::Invalid => (),
-            TransformerOutput::Object(_) => panic!("got unexpected return value"),
-        }
+        assert_matches!(res, TransformerOutput::Invalid);
     }
 
     #[test]
-    // FIXME: serde decodes arrays with keys like "0", "1"... in this situation, failing the test.
+    // FIXME: serde_v8 decodes arrays with keys like "0", "1"... in this situation, failing the test.
     #[ignore]
     fn test_invalid_output_array() {
         let src = r#"
@@ -132,12 +129,7 @@ mod tests {
         .to_string();
         let mut rt = build_runtime();
         let res = run_script_inner(&mut rt, json!({}).into(), src).unwrap();
-        match res {
-            TransformerOutput::Invalid => (),
-            TransformerOutput::Object(_) => {
-                panic!("got unexpected return value");
-            }
-        }
+        assert_matches!(res, TransformerOutput::Invalid);
     }
 
     /// Receives a string input, parses as JSON in js, then returns the result back to rust.
@@ -156,12 +148,8 @@ mod tests {
             src,
         )
         .unwrap();
-        match res {
-            TransformerOutput::Object(v) => {
-                assert_eq!(v["x"].as_i64(), Some(123));
-            }
-            TransformerOutput::Invalid => (),
-        }
+        let v = res.unwrap();
+        assert_eq!(v["x"].as_i64(), Some(123));
     }
 
     /// Take the string input and just add it to a field in the returned object.
@@ -181,12 +169,8 @@ mod tests {
             src,
         )
         .unwrap();
-        match res {
-            TransformerOutput::Object(v) => {
-                assert_eq!(v["payload"].as_str(), Some("Hello World"));
-            }
-            TransformerOutput::Invalid => (),
-        }
+        let v = res.unwrap();
+        assert_eq!(v["payload"].as_str(), Some("Hello World"));
     }
 
     #[tokio::test]

@@ -115,6 +115,16 @@ pub enum TransformerOutput {
     Invalid,
 }
 
+impl TransformerOutput {
+    #[cfg(debug_assertions)]
+    pub fn unwrap(self) -> JsObject {
+        let Self::Object(v) = self else {
+            panic!("Got invalid output from transformation");
+        };
+        v
+    }
+}
+
 impl TransformerJob {
     pub fn new(script: String, input: TransformerInput) -> (Self, TransformerCallbackRx) {
         let (callback_tx, callback_rx) = oneshot::channel();
