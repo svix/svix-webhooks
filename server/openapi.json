@@ -4718,8 +4718,15 @@
                     "required": true
                 },
                 "responses": {
-                    "204": {
-                        "description": "no content"
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointSecretOut"
+                                }
+                            }
+                        },
+                        "description": ""
                     },
                     "401": {
                         "content": {
