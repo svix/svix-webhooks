@@ -7,7 +7,7 @@ use aide::axum::{
     ApiRouter,
     routing::{get, get_with},
 };
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{Json, extract::State, http::StatusCode, response::NoContent};
 use sea_orm::{ConnectionTrait, DatabaseBackend, query::Statement};
 use serde::{Deserialize, Serialize};
 use svix_server_derive::aide_annotate;
@@ -16,7 +16,7 @@ use crate::{
     AppState,
     core::cache::{CacheBehavior, CacheKey, CacheValue, kv_def},
     queue::QueueTask,
-    v1::utils::{NoContent, openapi_tag},
+    v1::utils::openapi_tag,
 };
 
 async fn ping() -> NoContent {
