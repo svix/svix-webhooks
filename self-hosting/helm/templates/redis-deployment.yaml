@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "svix.fullname" . }}-{{ .Values.redis.name }}
+  labels:
+    {{- include "svix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  replicas: {{ .Values.redis.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "svix.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: redis
+  template:
+    metadata:
+      labels:
+        {{- include "svix.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+    spec:
+      containers:
+        - name: {{ .Values.redis.name }}
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          ports:
+            - name: redis
+              containerPort: 6379
+              protocol: TCP
+          command:
+            - redis-server
+            - --save
+            - {{ .Values.redis.config.save | quote }}
+            - --appendonly
+            - {{ .Values.redis.config.appendonly | quote }}
+            - --appendfsync
+            - {{ .Values.redis.config.appendfsync | quote }}
+          env:
+            {{- range $key, $value := .Values.redis.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          livenessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.redis.healthcheck.command | nindent 16 }}
+            initialDelaySeconds: 30
+            periodSeconds: {{ .Values.redis.healthcheck.interval | replace "s" "" | atoi }}
+            timeoutSeconds: {{ .Values.redis.healthcheck.timeout | replace "s" "" | atoi }}
+            failureThreshold: {{ .Values.redis.healthcheck.retries }}
+          readinessProbe:
+            exec:
+              command:
+                {{- toYaml .Values.redis.healthcheck.command | nindent 16 }}
+            initialDelaySeconds: 5
+            periodSeconds: {{ .Values.redis.healthcheck.interval | replace "s" "" | atoi }}
+            timeoutSeconds: {{ .Values.redis.healthcheck.timeout | replace "s" "" | atoi }}
+            failureThreshold: 3
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          {{- if .Values.redis.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.redis.persistence.claimName }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }} 
