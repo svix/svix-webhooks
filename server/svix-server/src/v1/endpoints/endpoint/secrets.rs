@@ -38,6 +38,11 @@ pub struct SigningKeysData {
     pub old_keys: Option<ExpiringSigningKeys>,
 }
 
+pub struct NewSigningKeysData {
+    pub current_key: EndpointSecretInternal,
+    pub old_keys: ExpiringSigningKeys,
+}
+
 /// Takes in a `SigningKeysData` corresponding to the latest 'current_key / old_keys' for the endpoint/sink,
 /// and produces a new `SigningKeysData` by performing a key rotation.
 ///
@@ -47,7 +52,7 @@ pub fn rotate_key(
     new_key: Option<EndpointSecret>,
     cfg: &ConfigurationInner,
     grace_period: Duration,
-) -> Result<SigningKeysData> {
+) -> Result<NewSigningKeysData> {
     let now = Utc::now();
     let last_key = current_data
         .current_key
@@ -81,13 +86,13 @@ pub fn rotate_key(
         .into());
     }
 
-    Ok(SigningKeysData {
-        current_key: Some(if let Some(key) = new_key {
+    Ok(NewSigningKeysData {
+        current_key: if let Some(key) = new_key {
             EndpointSecretInternal::from_endpoint_secret(key, &cfg.encryption)?
         } else {
             generate_secret(&cfg.encryption, &cfg.default_signature_type)?
-        }),
-        old_keys: Some(ExpiringSigningKeys(unexpired_old_keys)),
+        },
+        old_keys: ExpiringSigningKeys(unexpired_old_keys),
     })
 }
 
@@ -142,8 +147,8 @@ pub(super) async fn rotate_endpoint_secret(
     )?;
 
     let endp = endpoint::ActiveModel {
-        key: Set(new_data.current_key.unwrap()),
-        old_keys: Set(new_data.old_keys),
+        key: Set(new_data.current_key),
+        old_keys: Set(Some(new_data.old_keys)),
         ..endp.into()
     };
     let endp = endp.update(db).await?;
