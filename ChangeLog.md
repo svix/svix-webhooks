@@ -23,7 +23,8 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Version 2.7.0
 * Libs/All: Return the new secret from `v1.endpoint.rotate-secret`, `v1.destination.rotate-secret`
-  and `v1.streaming.sink.rotate-secret`
+  and `v1.streaming.sink.rotate-secret` (if you are using the open-source Svix Server,
+  please upgrade it to server v1.102.0 before upgrading the SDK)
 * Libs/C#: Fix `TimeoutMilliseconds` option not being respected
 
 ## Version 2.6.2
