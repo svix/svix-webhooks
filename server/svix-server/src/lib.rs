@@ -178,6 +178,9 @@ pub async fn run_with_prefix(
         | CacheBackend::RedisCluster(_)
         | CacheBackend::RedisSentinel(_, _) => {
             let mgr = RedisManager::from_cache_backend(&cache_backend).await;
+            if cfg.redis_startup_probe_enabled {
+                mgr.probe().await;
+            }
             cache::redis::new(mgr)
         }
     };

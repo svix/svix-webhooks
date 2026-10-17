@@ -78,6 +78,10 @@ db_pool_max_size = 100
 # Higher values can significantly increase performance if your database can handle it.
 redis_pool_max_size = 100
 
+# Whether to probe the Redis connection on server startup, failing fast if it is
+# unreachable. Can be disabled to skip the probe, e.g. in tests.
+redis_startup_probe_enabled = true
+
 # What kind of message queue to use. Supported: memory, redis, rediscluster
 # Redis backends must have a redis_dsn or queue_dsn configured, and it's highly recommended to
 # enable persistence in redis so that a server restart doesn't wipe the queue.
