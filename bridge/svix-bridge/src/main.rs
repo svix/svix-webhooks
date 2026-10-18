@@ -1,7 +1,7 @@
 use std::{
     io::{Error, Result},
     path::PathBuf,
-    sync::LazyLock,
+    sync::{Arc, LazyLock},
     time::Duration,
 };
 
@@ -264,16 +264,13 @@ async fn main() -> Result<()> {
             let fp = config_search_paths
                 .into_iter()
                 .find(|x| x.exists())
-                .expect("config file path");
-            std::fs::read_to_string(&fp).map_err(|e| {
-                let p = fp.into_os_string().into_string().expect("config file path");
-                Error::other(format!("Failed to read {p}: {e}"))
-            })
+                .expect("Failed to find config file in any searched paths");
+            fs_err::read_to_string(&fp)
         }?,
     };
 
     let vars = std::env::vars().collect();
-    let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?;
+    let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?.into_configuration();
     let otel_tracer_provider = setup_tracing(&cfg);
     setup_metrics(&cfg);
     tracing::info!("starting");
@@ -309,43 +306,47 @@ async fn main() -> Result<()> {
     // I'd rather not do this, mostly to help keep things more unit test friendly; channels can
     // help keep the coupling more loose, with less stateful baggage.
     // Starting with this just to keep the JS executor stuff here in the binary.
-    tokio::spawn(async move {
-        tracing::info!(
-            "Starting JS Transformation Workers: {}",
-            cfg.transformation_worker_count
-        );
+    tokio::spawn({
+        let cfg = Arc::clone(&cfg);
+        async move {
+            tracing::info!(
+                "Starting JS Transformation Workers: {}",
+                cfg.transformation_worker_count
+            );
 
-        deno_core::JsRuntime::init_platform(None, false);
-        let pooler: runtime::JsPooler = runtime::JsPooler::new(cfg.transformation_worker_count);
+            deno_core::JsRuntime::init_platform(None, false);
+            let pooler: runtime::JsPooler =
+                runtime::JsPooler::new(cfg.transformation_worker_count, cfg.js_engine);
 
-        while let Some(TransformerJob {
-            input,
-            script,
-            callback_tx,
-        }) = xform_rx.recv().await
-        {
-            let tp = pooler.clone();
-            tokio::spawn(async move {
-                let out = tp.run_script(input, script).await;
-                // FIXME: seeing this Err case come up during load testing.
-                //   Seems like we shouldn't be hitting this so easily while the process is not terminating.
-                //   Regularly there are group error log lines that show up right at the end of an
-                //   `oha` run, POSTing to receivers. Need to investigate why.
-                if callback_tx
-                    .send(out.map_err(|e| tracing::error!("{:?}", e)))
-                    .is_err()
-                {
-                    // If the callback fails, the plugin is likely unwinding/dropping.
-                    // Not a whole lot we can do about that.
-                    tracing::error!("failed to send js output back to caller");
-                }
-            });
+            while let Some(TransformerJob {
+                input,
+                script,
+                callback_tx,
+            }) = xform_rx.recv().await
+            {
+                let tp = pooler.clone();
+                tokio::spawn(async move {
+                    let out = tp.run_script(input, script).await;
+                    // FIXME: seeing this Err case come up during load testing.
+                    //   Seems like we shouldn't be hitting this so easily while the process is not terminating.
+                    //   Regularly there are group error log lines that show up right at the end of an
+                    //   `oha` run, POSTing to receivers. Need to investigate why.
+                    if callback_tx
+                        .send(out.map_err(|e| tracing::error!("{:?}", e)))
+                        .is_err()
+                    {
+                        // If the callback fails, the plugin is likely unwinding/dropping.
+                        // Not a whole lot we can do about that.
+                        tracing::error!("failed to send js output back to caller");
+                    }
+                });
+            }
         }
     });
 
     let mut senders = Vec::with_capacity(cfg.senders.len());
-    for sc in cfg.senders {
-        let mut sender: Box<dyn SenderInput> = sc.try_into().map_err(Error::other)?;
+    for sc in &cfg.senders {
+        let mut sender: Box<dyn SenderInput> = sc.to_owned().try_into().map_err(Error::other)?;
         sender.set_transformer(Some(xform_tx.clone()));
         senders.push(sender);
     }
@@ -360,16 +361,17 @@ async fn main() -> Result<()> {
     let (webhook_receivers, poller_receivers): (
         Vec<WebhookReceiverConfig>,
         Vec<PollerReceiverConfig>,
-    ) = cfg
-        .receivers
-        .into_iter()
-        .partition_map(|either| match either {
-            EitherReceiver::Webhook(x) => Either::Left(x),
-            EitherReceiver::Poller(y) => Either::Right(y),
-        });
+    ) = cfg.receivers.iter().partition_map(|either| match either {
+        EitherReceiver::Webhook(x) => Either::Left(x.to_owned()),
+        EitherReceiver::Poller(y) => Either::Right(y.to_owned()),
+    });
 
-    let webhook_receivers_fut =
-        webhook_receiver::run(cfg.http_listen_address, webhook_receivers, xform_tx.clone());
+    let webhook_receivers_fut = webhook_receiver::run(
+        cfg.http_listen_address,
+        webhook_receivers,
+        xform_tx.clone(),
+        Arc::clone(&cfg),
+    );
 
     let mut pollers: Vec<Box<dyn PollerInput>> = Vec::with_capacity(poller_receivers.len());
     for poller_cfg in poller_receivers {
