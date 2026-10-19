@@ -6,6 +6,9 @@
 # The log format that all output will follow. Supported: default, json
 #log_format: "json"
 
+# Which backend to use for transformations. Supported: quick-js, deno
+js_engine: "quick-js"
+
 # Optional: configures an OTEL exporter forwarding spans to the specified collector
 opentelemetry:
   address: "http://localhost:1234"

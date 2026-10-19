@@ -1,7 +1,7 @@
 use omniqueue::{DynConsumer, DynProducer, QueueConsumer as _, QueueProducer as _, backends};
 use serde::Deserialize;
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct SqsInputOpts {
     pub queue_dsn: String,
     #[serde(default)]

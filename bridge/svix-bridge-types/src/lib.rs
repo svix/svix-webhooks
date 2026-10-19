@@ -60,7 +60,7 @@ where
     }
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Clone)]
 #[serde(untagged)]
 pub enum TransformerInput {
     /// Transformations accept arbitrary json here, not restricted to an Object type.
@@ -105,7 +105,7 @@ pub struct TransformerJob {
     pub script: String,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum TransformerOutput {
     /// A successfully transformed payload.
     // Both senders and receivers require a map type (Object) but have different requirements which
@@ -113,6 +113,16 @@ pub enum TransformerOutput {
     Object(JsObject),
     /// For cases where the JS script executes successfully but produces an unexpected output.
     Invalid,
+}
+
+impl TransformerOutput {
+    #[cfg(debug_assertions)]
+    pub fn unwrap(self) -> JsObject {
+        let Self::Object(v) = self else {
+            panic!("Got invalid output from transformation");
+        };
+        v
+    }
 }
 
 impl TransformerJob {
@@ -229,13 +239,13 @@ impl From<SvixOptions> for _SvixOptions {
     }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(tag = "type", rename_all = "lowercase")]
 pub enum SenderOutputOpts {
     Svix(SvixSenderOutputOpts),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct SvixSenderOutputOpts {
     /// Svix API token for the client.
     pub token: String,

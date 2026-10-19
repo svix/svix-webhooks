@@ -7,7 +7,7 @@ use std::{
 
 use axum::{
     Router,
-    extract::{FromRequestParts, Path, State},
+    extract::{Extension, FromRequestParts, Path, State},
     http::{self, request},
     routing::{get, post},
 };
@@ -24,7 +24,8 @@ use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
 use crate::{
-    config::{PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig},
+    config::{Configuration, PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig},
+    runtime::JsExecutor,
     webhook_receiver::types::SerializablePayload,
 };
 
@@ -54,12 +55,16 @@ struct HealthResponse {
     pub status: &'static str,
     pub version: &'static str,
     pub uptime: u64,
+    pub js_backend: JsExecutor,
 }
-async fn health_handler() -> impl axum::response::IntoResponse {
+async fn health_handler(
+    Extension(configuration): Extension<Configuration>,
+) -> impl axum::response::IntoResponse {
     let health_response = HealthResponse {
         status: "OK",
         version: env!("CARGO_PKG_VERSION"),
         uptime: get_uptime_seconds(),
+        js_backend: configuration.js_engine,
     };
     axum::Json(health_response)
 }
@@ -67,13 +72,14 @@ pub async fn run(
     listen_addr: SocketAddr,
     routes: Vec<WebhookReceiverConfig>,
     transformer_tx: TransformerTx,
+    configuration: Configuration,
 ) -> std::io::Result<()> {
     LazyLock::force(&START_TIME);
     let state = InternalState::from_receiver_configs(routes, transformer_tx)
         .await
         .map_err(std::io::Error::other)?;
 
-    let router = router().with_state(state);
+    let router = router().with_state(state).layer(Extension(configuration));
 
     tracing::info!("Listening on: {listen_addr}");
     let listener = tokio::net::TcpListener::bind(listen_addr).await.unwrap();

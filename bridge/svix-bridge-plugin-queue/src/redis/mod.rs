@@ -3,7 +3,7 @@ use serde::Deserialize;
 
 use crate::error::Result;
 
-#[derive(Debug, Default, Deserialize)]
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct RedisInputOpts {
     pub dsn: String,
     pub max_connections: u16,
