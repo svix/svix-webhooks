@@ -1,8 +1,12 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.101.0
 * Add an rquickjs backend for transformations, alongside the Deno backend. In a future version, Deno will be removed. This backend is *significantly* faster for most programs, but does not include some of the node.js APIs that Deno supports. Please test your applications against it by setting `js_engine = "quick-js"` in your Bridge config.
 * Switch from `jemalloc` to `mimalloc` as the global allocator
+* Add `consume_prefetch_count` to RabbitMQ queue plugin (thanks @stackedbyaradhya)
+* Remove [compromised eMudhra CA certificates](https://emudhra.we-have-a-problem.com/) from TLS trust store
 
 ## Version 1.100.0
 * Add an opt-in Kafka record envelope for JSON transformations
