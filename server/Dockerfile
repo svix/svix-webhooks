@@ -51,7 +51,7 @@ ARG WRITE_EXECUTABLE_METADATA="1"
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260918-slim AS prod
+FROM docker.io/debian:trixie-20261005-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
@@ -70,6 +70,8 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/
     apt-get install -y \
         ca-certificates=20250419 \
         --no-install-recommends
+    # disable compromised emsign certificates
+    sed -i  -e '/emSign.*3/ s/^/!/' /etc/ca-certificates.conf
     update-ca-certificates
 EOF
 
