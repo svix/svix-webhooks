@@ -65,7 +65,7 @@ RUN touch ./*/src/lib.rs && touch ./*/src/main.rs
 RUN cargo build --release --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260918-slim AS prod
+FROM docker.io/debian:trixie-20261005-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
@@ -83,6 +83,8 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/
     apt-get update -q
     apt-get upgrade -y
     apt-get install --no-install-recommends -y ca-certificates=20250419
+    # disable compromised emsign certificates
+    sed -i  -e '/emSign.*G3/ s/^/!/' -e '/Comodo_AAA_Services_root.crt/ s/^/!/' /etc/ca-certificates.conf
     update-ca-certificates
 EOF
 
