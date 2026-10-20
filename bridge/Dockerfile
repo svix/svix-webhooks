@@ -84,7 +84,7 @@ RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/
     apt-get upgrade -y
     apt-get install --no-install-recommends -y ca-certificates=20250419
     # disable compromised emsign certificates
-    sed -i  -e '/emSign.*3/ s/^/!/' /etc/ca-certificates.conf
+    sed -i  -e '/emSign.*G3/ s/^/!/' -e '/Comodo_AAA_Services_root.crt/ s/^/!/' /etc/ca-certificates.conf
     update-ca-certificates
 EOF
 
