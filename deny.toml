@@ -78,7 +78,8 @@ allow-git = [
     "https://github.com/svix/hyper.git",
     "https://github.com/svix/omniqueue-rs.git",
     "https://github.com/svix/rust-executable-metadata.git",
-    "https://github.com/svix-jbrown/sqlx.git",
+    # TODO: remove this after upgrade to seaorm 2 / sqlx 0.9
+    "https://github.com/svix/sqlx.git",
 ]
 # there are several projects in here, so it's okay if we don't use them all
 unused-allowed-source = "allow"
