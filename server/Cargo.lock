@@ -4965,8 +4965,7 @@ dependencies = [
 [[package]]
 name = "sqlx"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fefb893899429669dcdd979aff487bd78f4064e5e7907e4269081e0ef7d97dc"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "sqlx-core",
  "sqlx-macros",
@@ -4978,8 +4977,7 @@ dependencies = [
 [[package]]
 name = "sqlx-core"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee6798b1838b6a0f69c007c133b8df5866302197e404e8b6ee8ed3e3a5e68dc6"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -5009,14 +5007,13 @@ dependencies = [
  "tokio-stream",
  "tracing",
  "url",
- "webpki-roots 0.26.11",
+ "webpki-roots",
 ]
 
 [[package]]
 name = "sqlx-macros"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2d452988ccaacfbf5e0bdbc348fb91d7c8af5bee192173ac3636b5fb6e6715d"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -5028,8 +5025,7 @@ dependencies = [
 [[package]]
 name = "sqlx-macros-core"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "19a9c1841124ac5a61741f96e1d9e2ec77424bf323962dd894bdb93f37d5219b"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "dotenvy",
  "either",
@@ -5053,8 +5049,7 @@ dependencies = [
 [[package]]
 name = "sqlx-mysql"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa003f0038df784eb8fecbbac13affe3da23b45194bd57dba231c8f48199c526"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "atoi",
  "base64 0.22.1",
@@ -5096,8 +5091,7 @@ dependencies = [
 [[package]]
 name = "sqlx-postgres"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "db58fcd5a53cf07c184b154801ff91347e4c30d17a3562a635ff028ad5deda46"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "atoi",
  "base64 0.22.1",
@@ -5134,8 +5128,7 @@ dependencies = [
 [[package]]
 name = "sqlx-sqlite"
 version = "0.8.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c2d12fe70b2c1b4401038055f90f151b78208de1f9f89a7dbfd41587a10c3eea"
+source = "git+https://github.com/svix-jbrown/sqlx.git?rev=a1c5687a3bc61e90d18cfb89b850fd5905b4db7f#a1c5687a3bc61e90d18cfb89b850fd5905b4db7f"
 dependencies = [
  "atoi",
  "chrono",
@@ -6268,15 +6261,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58ec80e73fd8baf57bf0d9615554c75348bda990d6d5bbeab964dd068319fecb"
 dependencies = [
  "rustls-pki-types",
-]
-
-[[package]]
-name = "webpki-roots"
-version = "0.26.11"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "521bc38abb08001b01866da9f51eb7c5d647a19260e00054a8c7fd5f9e57f7a9"
-dependencies = [
- "webpki-roots 1.0.10",
 ]
 
 [[package]]
