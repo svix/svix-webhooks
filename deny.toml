@@ -24,6 +24,8 @@ ignore = [
     "RUSTSEC-2026-0249",
     # unsafe-libyaml (dependency of serde_yaml) is unmaintained
     "RUSTSEC-2024-0449",
+    # sqlx 0.8.x depends on an un-fixed version of webpki-roots and has a policy of not doing backports
+    "RUSTSEC-2026-0381",
 ]
 
 [licenses]
