@@ -7,6 +7,7 @@ use std::{
 
 use clap::Parser;
 use itertools::{Either, Itertools};
+use mimalloc::MiMalloc;
 use opentelemetry::{InstrumentationScope, trace::TracerProvider as _};
 use opentelemetry_otlp::WithExportConfig as _;
 use opentelemetry_sdk::{
@@ -15,8 +16,6 @@ use opentelemetry_sdk::{
 };
 use svix_bridge_types::{PollerInput, SenderInput, TransformerJob};
 use svix_ksuid::{KsuidLike as _, KsuidMs};
-#[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
-use tikv_jemallocator::Jemalloc;
 use tracing_subscriber::{layer::SubscriberExt as _, util::SubscriberInitExt as _};
 
 use self::config::Config;
@@ -29,17 +28,13 @@ mod runtime;
 mod webhook_receiver;
 
 use crate::{
-    allocator::{get_allocator_stat_mibs, get_allocator_stats},
+    allocator::get_allocator_stats,
     config::{EitherReceiver, PollerReceiverConfig, WebhookReceiverConfig},
     metrics::CommonMetrics,
 };
 
-#[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 #[global_allocator]
-static GLOBAL: Jemalloc = Jemalloc;
-
-#[cfg(all(target_env = "msvc", feature = "jemalloc"))]
-compile_error!("jemalloc cannot be enabled on msvc");
+static GLOBAL: MiMalloc = MiMalloc;
 
 // Seems like it would be useful to be able to configure this.
 // In some docker setups, hostname is sometimes the container id, and advertising this can be
@@ -278,20 +273,20 @@ async fn main() -> Result<()> {
     tokio::spawn(async move {
         let mut interval = tokio::time::interval(Duration::from_secs(15));
         let metrics = CommonMetrics::new(&opentelemetry::global::meter("svix.com"));
-        match get_allocator_stat_mibs() {
-            Ok(mibs) => {
-                tracing::debug!("Common Metrics Collection: Started");
+        tracing::debug!("Common Metrics Collection: Started");
 
-                loop {
-                    interval.tick().await;
+        loop {
+            interval.tick().await;
 
-                    if let Ok(Some((allocated, resident))) = get_allocator_stats(true, &mibs) {
-                        metrics.record_mem_allocated(allocated as _);
-                        metrics.record_mem_resident(resident as _);
-                    }
+            let stats = match get_allocator_stats() {
+                Ok(stats) => stats,
+                Err(err) => {
+                    tracing::debug!(?err, "failed to fetch allocator stats");
+                    continue;
                 }
-            }
-            Err(e) => tracing::error!("Unable to get allocator stats mibs: {e}"),
+            };
+            metrics.record_mem_allocated(stats.allocated as _);
+            metrics.record_mem_resident(stats.resident as _);
         }
     });
 
