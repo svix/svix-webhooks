@@ -108,4 +108,30 @@ class BasicTest {
             svix.application.delete(appOut.id)
         }
     }
+
+    @Test
+    fun testServerUrlTrailingSlashesAreStripped() {
+        val opts1 = SvixOptions(serverUrl = "https://api.example.com/")
+        assertEquals("https://api.example.com", opts1.serverUrl)
+        assertEquals("https://api.example.com", opts1.baseUrl)
+
+        val opts2 = SvixOptions(baseUrl = "https://api.example.com///")
+        assertEquals("https://api.example.com", opts2.baseUrl)
+        assertEquals("https://api.example.com", opts2.serverUrl)
+
+        val opts3 = SvixOptions(baseUrl = "https://api.example.com/prefix/")
+        assertEquals("https://api.example.com/prefix", opts3.baseUrl)
+
+        val opts4 = SvixOptions(baseUrl = "https://api.example.com")
+        assertEquals("https://api.example.com", opts4.baseUrl)
+    }
+
+    @Test
+    fun testDefaultAndRegionalServerUrls() {
+        val defaultSvx = Svix("token")
+        assertEquals("https://api.svix.com", defaultSvx.httpClient.baseUrl.toString().trimEnd('/'))
+
+        val regionalSvx = Svix("testsk.eu")
+        assertEquals("https://api.eu.svix.com", regionalSvx.httpClient.baseUrl.toString().trimEnd('/'))
+    }
 }

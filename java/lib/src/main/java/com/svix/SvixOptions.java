@@ -14,4 +14,8 @@ public final class SvixOptions {
     private String serverUrl;
     private final List<Long> retrySchedule = Arrays.asList(50L, 100L, 200L);
     private boolean debug = false;
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl == null ? null : serverUrl.replaceAll("/+$", "");
+    }
 }

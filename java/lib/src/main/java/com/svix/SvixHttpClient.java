@@ -36,6 +36,10 @@ public class SvixHttpClient {
                 .port(baseUrl.port());
     }
 
+    public HttpUrl getBaseUrl() {
+        return baseUrl;
+    }
+
     public <Req, Res> Res executeRequest(
             String method, HttpUrl url, Headers headers, Req reqBody, Class<Res> responseClass)
             throws ApiException, IOException {

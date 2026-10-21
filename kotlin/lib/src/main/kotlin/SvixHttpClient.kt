@@ -26,7 +26,7 @@ internal fun baseUrlFromToken(token: String): String {
 open class SvixHttpClient
 internal constructor(
     token: String,
-    private val baseUrl: HttpUrl,
+    val baseUrl: HttpUrl,
     private val retrySchedule: List<Long>,
 ) {
     private val defaultHeaders: Map<String, String>
