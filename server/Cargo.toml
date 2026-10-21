@@ -23,7 +23,7 @@ uninlined_format_args = "warn"
 [workspace.package]
 edition = "2021"
 license = "MIT"
-version = "1.102.0"
+version = "1.102.1"
 # keep this in sync with .github/workflows/server-ci.yml
 rust-version = "1.88"
 
