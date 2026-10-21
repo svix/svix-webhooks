@@ -33,7 +33,6 @@ pub struct RedisInputOpts {
     pub consumer_name: String,
     #[serde(default = "default_ack_deadline_ms")]
     pub ack_deadline_ms: i64,
-    #[serde(default)]
     pub dlq_config: Option<DeadLetterQueueConfig>,
 }
 
