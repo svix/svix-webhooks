@@ -500,6 +500,8 @@ pub enum CacheBackend<'a> {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum LogLevel {
+    Error,
+    Warn,
     Info,
     Debug,
     Trace,
@@ -564,6 +566,8 @@ impl std::fmt::Display for Environment {
 impl fmt::Display for LogLevel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Error => Level::ERROR,
+            Self::Warn => Level::WARN,
             Self::Info => Level::INFO,
             Self::Debug => Level::DEBUG,
             Self::Trace => Level::TRACE,
