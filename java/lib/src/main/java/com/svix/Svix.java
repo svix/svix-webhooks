@@ -54,8 +54,6 @@ public class Svix {
                 default:
                     options.setServerUrl(SvixOptions.DEFAULT_URL);
             }
-        } else {
-            options.setServerUrl(options.getServerUrl());
         }
 
         HttpUrl parsedUrl = HttpUrl.parse(options.getServerUrl());

@@ -12,6 +12,7 @@ import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.JsonPrimitive
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class BasicTest {
     companion object {
@@ -111,27 +112,64 @@ class BasicTest {
 
     @Test
     fun testServerUrlTrailingSlashesAreStripped() {
-        val opts1 = SvixOptions(serverUrl = "https://api.example.com/")
-        assertEquals("https://api.example.com", opts1.serverUrl)
-        assertEquals("https://api.example.com", opts1.baseUrl)
+        val client1 = SvixHttpClient("token", "https://api.example.com/".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals("https://api.example.com/", client1.baseUrl.toString())
 
-        val opts2 = SvixOptions(baseUrl = "https://api.example.com///")
-        assertEquals("https://api.example.com", opts2.baseUrl)
-        assertEquals("https://api.example.com", opts2.serverUrl)
+        val client2 = SvixHttpClient("token", "https://api.example.com///".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals("https://api.example.com/", client2.baseUrl.toString())
 
-        val opts3 = SvixOptions(baseUrl = "https://api.example.com/prefix/")
-        assertEquals("https://api.example.com/prefix", opts3.baseUrl)
+        val client3 = SvixHttpClient("token", "https://api.example.com/prefix/".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals("https://api.example.com/prefix", client3.baseUrl.toString())
 
-        val opts4 = SvixOptions(baseUrl = "https://api.example.com")
-        assertEquals("https://api.example.com", opts4.baseUrl)
+        val client4 = SvixHttpClient("token", "https://api.example.com/prefix///".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals("https://api.example.com/prefix", client4.baseUrl.toString())
+
+        val client5 = SvixHttpClient("token", "https://api.example.com/prefix".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals("https://api.example.com/prefix", client5.baseUrl.toString())
+
+        val client6 = SvixHttpClient("token", "https://api.example.com".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals("https://api.example.com/", client6.baseUrl.toString())
     }
 
     @Test
     fun testDefaultAndRegionalServerUrls() {
-        val defaultSvx = Svix("token")
-        assertEquals("https://api.svix.com", defaultSvx.httpClient.baseUrl.toString().trimEnd('/'))
+        val defaultUrl = baseUrlFromToken("token").toHttpUrlOrNull()!!
+        val defaultClient = SvixHttpClient("token", defaultUrl, listOf(50L))
+        assertEquals("https://api.svix.com/", defaultClient.baseUrl.toString())
 
-        val regionalSvx = Svix("testsk.eu")
-        assertEquals("https://api.eu.svix.com", regionalSvx.httpClient.baseUrl.toString().trimEnd('/'))
+        val regionalUrl = baseUrlFromToken("testsk.eu").toHttpUrlOrNull()!!
+        val regionalClient = SvixHttpClient("testsk.eu", regionalUrl, listOf(50L))
+        assertEquals("https://api.eu.svix.com/", regionalClient.baseUrl.toString())
+    }
+
+    @Test
+    fun testConstructedRequestUrls() {
+        val defaultUrl = baseUrlFromToken("token").toHttpUrlOrNull()!!
+        val defaultClient = SvixHttpClient("token", defaultUrl, listOf(50L))
+        assertEquals(
+            "https://api.svix.com/api/v1/app",
+            defaultClient.newUrlBuilder().encodedPath("/api/v1/app").build().toString(),
+        )
+
+        val regionalUrl = baseUrlFromToken("testsk.eu").toHttpUrlOrNull()!!
+        val regionalClient = SvixHttpClient("testsk.eu", regionalUrl, listOf(50L))
+        assertEquals(
+            "https://api.eu.svix.com/api/v1/app",
+            regionalClient.newUrlBuilder().encodedPath("/api/v1/app").build().toString(),
+        )
+
+        val customClient =
+            SvixHttpClient("token", "https://api.example.com/".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals(
+            "https://api.example.com/api/v1/app",
+            customClient.newUrlBuilder().encodedPath("/api/v1/app").build().toString(),
+        )
+
+        val customMultiClient =
+            SvixHttpClient("token", "https://api.example.com///".toHttpUrlOrNull()!!, listOf(50L))
+        assertEquals(
+            "https://api.example.com/api/v1/app",
+            customMultiClient.newUrlBuilder().encodedPath("/api/v1/app").build().toString(),
+        )
     }
 }

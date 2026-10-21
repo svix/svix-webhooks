@@ -23,7 +23,11 @@ public class SvixHttpClient {
             HttpUrl rawBaseUrl, Map<String, String> defaultHeaders, List<Long> retrySchedule) {
         String path = rawBaseUrl.encodedPath();
         if (path.length() > 1 && path.endsWith("/")) {
-            this.baseUrl = rawBaseUrl.newBuilder().encodedPath(path.substring(0, path.length() - 1)).build();
+            String trimmedPath = path.replaceAll("/+$", "");
+            this.baseUrl =
+                    rawBaseUrl.newBuilder()
+                            .encodedPath(trimmedPath.isEmpty() ? "/" : trimmedPath)
+                            .build();
         } else {
             this.baseUrl = rawBaseUrl;
         }

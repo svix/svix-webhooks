@@ -4,7 +4,6 @@ package com.svix.kotlin
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class Svix(token: String, options: SvixOptions = SvixOptions()) {
-    val httpClient: SvixHttpClient
     val application: Application
     val authentication: Authentication
     val autoconfigSubscription: AutoconfigSubscription
@@ -26,7 +25,7 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
     init {
         val baseUrl = options.baseUrl ?: baseUrlFromToken(token)
         val parsedUrl = baseUrl.toHttpUrlOrNull() ?: throw Exception("Invalid base url")
-        httpClient = SvixHttpClient(token, parsedUrl, options.retrySchedule)
+        val httpClient = SvixHttpClient(token, parsedUrl, options.retrySchedule)
 
         application = Application(httpClient)
         authentication = Authentication(httpClient)

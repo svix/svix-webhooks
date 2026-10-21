@@ -31,7 +31,8 @@ internal constructor(
 ) {
     val baseUrl: HttpUrl =
         if (rawBaseUrl.encodedPath.length > 1 && rawBaseUrl.encodedPath.endsWith('/')) {
-            rawBaseUrl.newBuilder().encodedPath(rawBaseUrl.encodedPath.trimEnd('/')).build()
+            val trimmedPath = rawBaseUrl.encodedPath.trimEnd('/')
+            rawBaseUrl.newBuilder().encodedPath(if (trimmedPath.isEmpty()) "/" else trimmedPath).build()
         } else {
             rawBaseUrl
         }
