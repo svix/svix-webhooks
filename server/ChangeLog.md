@@ -6,6 +6,9 @@
 ## Version 1.102.0
 * Return the new secret from `v1.endpoint.rotate-secret`
 * Add `opentelemetry_logs_enabled` to optionally send log events to the configured OpenTelemetry collector (`opentelemetry_address`), in addition to stdout. Disabled by default. Exported log records include the fields of their enclosing spans as attributes
+* **(Breaking)** Remove the default-allowlist for the host name `backend` and add the new `whitelist_names` config value for people who want to retain it.
+  If you rely on sending webhooks to a server with a private IP and the name `backend`, add `whitelist_names = ["backend"]` to your configuration.
+  Thank you to external researcher Sricharan Pedhiti for reporting this low-severity issue.
 
 ## Version 1.101.0
 * Add `v1.message.bulk-expunge-content` endpoint

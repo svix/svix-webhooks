@@ -6,9 +6,6 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
-* Server: **(Breaking)** Remove the default-allowlist for the host name `backend` and add the new `whitelist_names` config value for people who want to retain it.
-  If you rely on sending webhooks to a server with a private IP and the name `backend`, add `whitelist_names = ["backend"]` to your configuration.
-  Thank you to external researcher Sricharan Pedhiti for reporting this low-severity issue.
 * Libs/All: Update to latest Svix Cloud API, including adding ElasticSearch support for Advanced Destinations
 
 ## Version 2.8.0
