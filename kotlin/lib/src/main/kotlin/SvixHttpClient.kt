@@ -26,9 +26,15 @@ internal fun baseUrlFromToken(token: String): String {
 open class SvixHttpClient
 internal constructor(
     token: String,
-    val baseUrl: HttpUrl,
+    rawBaseUrl: HttpUrl,
     private val retrySchedule: List<Long>,
 ) {
+    val baseUrl: HttpUrl =
+        if (rawBaseUrl.encodedPath.length > 1 && rawBaseUrl.encodedPath.endsWith('/')) {
+            rawBaseUrl.newBuilder().encodedPath(rawBaseUrl.encodedPath.trimEnd('/')).build()
+        } else {
+            rawBaseUrl
+        }
     private val defaultHeaders: Map<String, String>
     private val client: OkHttpClient = OkHttpClient()
     private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
