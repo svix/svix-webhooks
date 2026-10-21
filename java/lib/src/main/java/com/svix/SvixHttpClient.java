@@ -20,8 +20,17 @@ public class SvixHttpClient {
     private final ObjectMapper objectMapper;
 
     public SvixHttpClient(
-            HttpUrl baseUrl, Map<String, String> defaultHeaders, List<Long> retrySchedule) {
-        this.baseUrl = baseUrl;
+            HttpUrl rawBaseUrl, Map<String, String> defaultHeaders, List<Long> retrySchedule) {
+        String path = rawBaseUrl.encodedPath();
+        if (path.length() > 1 && path.endsWith("/")) {
+            String trimmedPath = path.replaceAll("/+$", "");
+            this.baseUrl =
+                    rawBaseUrl.newBuilder()
+                            .encodedPath(trimmedPath.isEmpty() ? "/" : trimmedPath)
+                            .build();
+        } else {
+            this.baseUrl = rawBaseUrl;
+        }
         this.defaultHeaders = defaultHeaders;
         this.retrySchedule = retrySchedule;
         this.client = new OkHttpClient();
@@ -34,6 +43,10 @@ public class SvixHttpClient {
                 .scheme(baseUrl.scheme())
                 .host(baseUrl.host())
                 .port(baseUrl.port());
+    }
+
+    public HttpUrl getBaseUrl() {
+        return baseUrl;
     }
 
     public <Req, Res> Res executeRequest(
