@@ -92,7 +92,7 @@ async fn health(
 ) -> (StatusCode, Json<HealthReport>) {
     // SELECT 1 FROM any table
     let database: HealthStatus = db
-        .execute(Statement::from_string(
+        .execute_raw(Statement::from_string(
             DatabaseBackend::Postgres,
             "SELECT 1".to_owned(),
         ))

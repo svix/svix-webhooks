@@ -3,7 +3,7 @@
 
 use std::time::Duration;
 
-use sqlx::{PgPool, Row as _};
+use sqlx::{AssertSqlSafe, PgPool, Row as _};
 
 use crate::cfg::Configuration;
 
@@ -80,7 +80,10 @@ fn is_concurrent_create_table_error(err: &sqlx::Error) -> bool {
 /// Run `CREATE TABLE IF NOT EXISTS`, treating a concurrent-create race as success.
 #[doc(hidden)]
 pub async fn create_table_if_not_exists(pool: &PgPool, sql: &str) -> Result<(), sqlx::Error> {
-    match sqlx::query(sql).execute(pool).await {
+    match sqlx::query(AssertSqlSafe(sql.to_owned()))
+        .execute(pool)
+        .await
+    {
         Ok(_) => Ok(()),
         Err(e) if is_concurrent_create_table_error(&e) => Ok(()),
         Err(e) => Err(e),
@@ -145,7 +148,7 @@ async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<(), sql
             if let Some(stmts) = migration.cleanup_sql {
                 tracing::info!(id = migration.id, "Running cleanup before retry");
                 for stmt in stmts {
-                    if let Err(e) = sqlx::query(stmt).execute(pool).await {
+                    if let Err(e) = sqlx::query(AssertSqlSafe(*stmt)).execute(pool).await {
                         let _ = sqlx::query(
                             "UPDATE _svix_background_migrations SET last_error = $1 WHERE id = $2",
                         )
@@ -180,7 +183,7 @@ async fn apply(pool: &PgPool, migration: &BackgroundMigration) -> Result<(), sql
 
     let apply_result: Result<(), sqlx::Error> = async {
         for stmt in migration.apply_sql {
-            sqlx::query(stmt).execute(pool).await?;
+            sqlx::query(AssertSqlSafe(*stmt)).execute(pool).await?;
         }
         Ok(())
     }
@@ -311,7 +314,7 @@ async fn revert_inner(
     tracing::info!(id = migration.id, "Reverting background migration");
     if let Some(statements) = statements {
         for stmt in statements {
-            if let Err(e) = sqlx::query(stmt).execute(pool).await {
+            if let Err(e) = sqlx::query(AssertSqlSafe(*stmt)).execute(pool).await {
                 let _ = sqlx::query(
                     "UPDATE _svix_background_migrations SET last_error = $1 WHERE id = $2",
                 )

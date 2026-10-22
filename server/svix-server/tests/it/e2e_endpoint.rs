@@ -1613,7 +1613,7 @@ async fn test_legacy_endpoint_secret() {
         .unwrap();
 
     // Set the raw value to the database (like legacy)
-    db.execute(Statement::from_sql_and_values(
+    db.execute_raw(Statement::from_sql_and_values(
         DatabaseBackend::Postgres,
         "UPDATE endpoint SET key = $1 WHERE id = $2",
         vec![raw_key.clone().into(), endp_1.id.clone().into()],
@@ -1660,7 +1660,7 @@ async fn test_endpoint_secret_encryption_in_database() {
         .unwrap();
 
     let secret_encrypted: Option<QueryResult> = db
-        .query_one(Statement::from_sql_and_values(
+        .query_one_raw(Statement::from_sql_and_values(
             DatabaseBackend::Postgres,
             "SELECT key FROM endpoint WHERE id = $1",
             vec![ep.id.clone().into()],
@@ -1681,7 +1681,7 @@ async fn test_endpoint_secret_encryption_in_database() {
         .unwrap();
 
     let secret_clear: Option<QueryResult> = db
-        .query_one(Statement::from_sql_and_values(
+        .query_one_raw(Statement::from_sql_and_values(
             DatabaseBackend::Postgres,
             "SELECT key FROM endpoint WHERE id = $1",
             vec![ep.id.clone().into()],
