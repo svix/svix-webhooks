@@ -1,6 +1,7 @@
 // This file is @generated
 package com.svix.models;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -131,6 +132,7 @@ public class StreamSinkOut {
 
 @Getter
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class StreamSinkOutSurrogate {
     @JsonProperty("id")
     String id;
