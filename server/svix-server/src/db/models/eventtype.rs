@@ -104,11 +104,20 @@ pub fn schema_example() -> serde_json::Value {
     })
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
 pub struct Schema(HashMap<String, Json>);
 json_wrapper!(Schema);
 
 impl Schema {
+    pub fn validate(&self) -> Result<(), validator::ValidationError> {
+        let opts = schema_validator_options();
+        match self.0.values().find_map(|schema| opts.build(schema).err()) {
+            Some(error) => Err(validator::ValidationError::new("invalid_schema")
+                .with_message(error.to_string().into())),
+            None => Ok(()),
+        }
+    }
+
     pub fn example(&self) -> Option<&serde_json::Value> {
         self.0
             .get("1")
@@ -144,21 +153,64 @@ impl JsonSchema for Schema {
     }
 }
 
-impl<'de> Deserialize<'de> for Schema {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: serde::Deserializer<'de>,
-    {
-        let inner: HashMap<String, Json> = Deserialize::deserialize(deserializer)?;
+/// Refuses every `$ref` outside the schema itself, so tenant schemas cannot make the server fetch URLs or read files.
+struct NoExternalRefs;
 
-        // JSONSchema doesn't implement (De)Serialize, so we have to
-        // manually enforce the values are valid JSON schemas
+impl jsonschema::Retrieve for NoExternalRefs {
+    fn retrieve(
+        &self,
+        uri: &jsonschema::Uri<String>,
+    ) -> std::result::Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync>> {
+        Err(format!("external `$ref` is not allowed: {uri}").into())
+    }
+}
 
-        let opts = jsonschema::Validator::options().with_draft(Draft::Draft7);
-        if let Some(error) = inner.values().find_map(|schema| opts.build(schema).err()) {
-            return Err(serde::de::Error::custom(error));
+/// Draft 7 options for compiling tenant-supplied schemas. Use this instead of `jsonschema::Validator::options()`.
+pub fn schema_validator_options() -> jsonschema::ValidationOptions<'static> {
+    jsonschema::Validator::options()
+        .with_draft(Draft::Draft7)
+        .with_retriever(NoExternalRefs)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Schema;
+
+    fn schema_with_ref(external_ref: &str) -> Schema {
+        serde_json::from_value(serde_json::json!({
+            "1": {
+                "type": "object",
+                "properties": { "a": { "$ref": external_ref } }
+            }
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn test_external_refs_are_not_retrieved() {
+        let manifest = concat!("file://", env!("CARGO_MANIFEST_DIR"), "/Cargo.toml");
+        for external_ref in ["http://127.0.0.1:1/schema.json", manifest] {
+            let err = schema_with_ref(external_ref)
+                .validate()
+                .expect_err("external $ref must be rejected");
+            assert!(
+                err.to_string().contains("external `$ref` is not allowed"),
+                "unexpected error for {external_ref}: {err}"
+            );
         }
+    }
 
-        Ok(Self(inner))
+    #[test]
+    fn test_internal_refs_still_resolve() {
+        let schemas: Schema = serde_json::from_value(serde_json::json!({
+            "1": {
+                "definitions": { "id": { "type": "string" } },
+                "type": "object",
+                "properties": { "a": { "$ref": "#/definitions/id" } }
+            }
+        }))
+        .unwrap();
+
+        schemas.validate().unwrap();
     }
 }
