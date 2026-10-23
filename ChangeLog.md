@@ -16,6 +16,9 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
   retries of a request
 * Libs/JavaScript: Requests now time out after 15 seconds by default (previously there was no
   timeout unless `requestTimeout` was set)
+* Libs/(Go, Java, Kotlin, PHP and Ruby): Change the default request timeout to 15 seconds, matching the
+  other SDKs (previously 60s for Go, 30s for PHP, 60s per connect/read/write for Ruby, and no overall
+  timeout for Java and Kotlin)
 
 ## Version 2.8.0
 * CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,

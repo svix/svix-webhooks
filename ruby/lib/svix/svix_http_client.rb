@@ -8,6 +8,8 @@ require "securerandom"
 
 module Svix
   class SvixHttpClient
+    TIMEOUT_SECONDS = 15
+
     def initialize(token, base_url)
       @token = token
       # Strip trailing slashes so that `https://api.svix.com/` does not
@@ -28,6 +30,9 @@ module Svix
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = (uri.scheme == "https")
+      http.open_timeout = TIMEOUT_SECONDS
+      http.read_timeout = TIMEOUT_SECONDS
+      http.write_timeout = TIMEOUT_SECONDS
 
       # Dynamically select the request class based on method
       request_class = case method.to_s.upcase

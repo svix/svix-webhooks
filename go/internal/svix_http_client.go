@@ -38,7 +38,7 @@ func DefaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 	return SvixHttpClient{
 		DefaultHeaders: map[string]string{},
 		HTTPClient: &http.Client{
-			Timeout:   60 * time.Second,
+			Timeout:   15 * time.Second,
 			Transport: tr,
 		},
 		RetrySchedule: []time.Duration{50 * time.Millisecond, 100 * time.Millisecond, 200 * time.Millisecond},

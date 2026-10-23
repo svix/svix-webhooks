@@ -95,7 +95,7 @@ class SvixHttpClient
 
             $request = new \GuzzleHttp\Psr7\Request($req->method, $uri, $headers, $req->body, '1.1');
 
-            $timeoutSeconds = $this->opts->timeoutMs !== null ? $this->opts->timeoutMs / 1000.0 : 30.0;
+            $timeoutSeconds = $this->opts->timeoutMs !== null ? $this->opts->timeoutMs / 1000.0 : 15.0;
             $options = ["timeout" => $timeoutSeconds];
 
             try {

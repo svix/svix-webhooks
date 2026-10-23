@@ -10,6 +10,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
+import java.time.Duration
 import java.util.UUID
 
 internal fun baseUrlFromToken(token: String): String {
@@ -38,7 +39,8 @@ internal constructor(
             rawBaseUrl
         }
     private val defaultHeaders: Map<String, String>
-    private val client: OkHttpClient = OkHttpClient()
+    private val client: OkHttpClient =
+        OkHttpClient.Builder().callTimeout(Duration.ofSeconds(15)).build()
     private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
 
     init {

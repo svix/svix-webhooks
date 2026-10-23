@@ -6,6 +6,7 @@ import com.svix.exceptions.ApiException;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,7 +34,7 @@ public class SvixHttpClient {
         }
         this.defaultHeaders = defaultHeaders;
         this.retrySchedule = retrySchedule;
-        this.client = new OkHttpClient();
+        this.client = new OkHttpClient.Builder().callTimeout(Duration.ofSeconds(15)).build();
 
         this.objectMapper = Utils.getObjectMapper();
     }
