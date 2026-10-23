@@ -41,7 +41,7 @@ func DefaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 			Timeout:   60 * time.Second,
 			Transport: tr,
 		},
-		RetrySchedule: []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
+		RetrySchedule: []time.Duration{50 * time.Millisecond, 100 * time.Millisecond, 200 * time.Millisecond},
 		BaseURL:       defaultBaseUrl,
 		Debug:         false,
 	}

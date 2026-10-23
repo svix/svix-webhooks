@@ -11,6 +11,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/All: Update to latest Svix Cloud API, including adding ElasticSearch support for Advanced Destinations
 * Libs/(C#, Go, Java, JavaScript, Kotlin, PHP, Ruby and Rust): Retry requests that fail due to
   timeouts or other network errors (connection failures, DNS errors, etc.), not just 5xx responses
+* Libs/Go: Fix the default retry schedule being 50µs, 100µs and 200µs instead of 50ms, 100ms and 200ms
 
 ## Version 2.8.0
 * CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,
