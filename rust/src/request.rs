@@ -34,7 +34,8 @@ pub(crate) struct Request {
     no_return_type: bool,
     path_params: Vec<(&'static str, String)>,
     header_params: BTreeMap<&'static str, String>,
-    // TODO: multiple body params are possible technically, but not supported here.
+    // TODO: multiple body params are possible technically, but not supported
+    // here.
     serialized_body: Option<String>,
 }
 
@@ -99,12 +100,12 @@ impl Request {
 
     pub async fn execute<T: DeserializeOwned>(self, conf: &Configuration) -> Result<T, Error> {
         match self.execute_with_backoff(conf).await? {
-            // This is a hack; if there's no_ret_type, T is (), but serde_json gives an
-            // error when deserializing "" into (), so deserialize 'null' into it
-            // instead.
-            // An alternate option would be to require T: Default, and then return
-            // T::default() here instead since () implements that, but then we'd
-            // need to impl default for all models.
+            // This is a hack; if there's no_ret_type, T is (), but serde_json
+            // gives an error when deserializing "" into (), so deserialize
+            // 'null' into it instead.
+            // An alternate option would be to require T: Default, and then
+            // return T::default() here instead since () implements that, but
+            // then we'd need to impl default for all models.
             None => Ok(serde_json::from_str("null").expect("serde null value")),
             Some(bytes) => Ok(serde_json::from_slice(&bytes).map_err(Error::generic)?),
         }
