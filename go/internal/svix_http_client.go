@@ -168,6 +168,13 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 		if err == nil && resp.StatusCode < 500 {
 			break
 		}
+		// don't retry if the caller cancelled the request or its deadline passed
+		if request.Context().Err() != nil {
+			break
+		}
+		if resp != nil {
+			resp.Body.Close()
+		}
 		if bodyBytes != nil {
 			request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
 		}

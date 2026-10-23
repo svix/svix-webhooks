@@ -262,3 +262,121 @@ func Test_executeRequestStripsTrailingSlashFromBaseURL(t *testing.T) {
 		t.Errorf("expected path %q, got %q", expected, requestedPath)
 	}
 }
+
+func Test_executeRequestWithRetriesOnNetworkErrors(t *testing.T) {
+	tests := []struct {
+		name string
+		// how the server fails the first request
+		failFirst func(w http.ResponseWriter, r *http.Request)
+		// client-side request timeout
+		clientTimeout time.Duration
+		// timeout on the request context
+		contextTimeout time.Duration
+		expectedCalls  int32
+		expectSuccess  bool
+	}{
+		{
+			name: "connection dropped is retried",
+			failFirst: func(w http.ResponseWriter, r *http.Request) {
+				conn, _, err := w.(http.Hijacker).Hijack()
+				if err != nil {
+					t.Errorf("failed to hijack connection: %v", err)
+					return
+				}
+				_ = conn.Close()
+			},
+			expectedCalls: 2,
+			expectSuccess: true,
+		},
+		{
+			name: "client timeout is retried",
+			failFirst: func(w http.ResponseWriter, r *http.Request) {
+				select {
+				case <-time.After(time.Second):
+				case <-r.Context().Done():
+				}
+			},
+			clientTimeout: 100 * time.Millisecond,
+			expectedCalls: 2,
+			expectSuccess: true,
+		},
+		{
+			name: "cancelled context is not retried",
+			failFirst: func(w http.ResponseWriter, r *http.Request) {
+				select {
+				case <-time.After(time.Second):
+				case <-r.Context().Done():
+				}
+			},
+			contextTimeout: 100 * time.Millisecond,
+			expectedCalls:  1,
+			expectSuccess:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Given ... a test server that fails the first request
+			var requestCount int32
+			var lastRetryCount atomic.Value
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				count := atomic.AddInt32(&requestCount, 1)
+				lastRetryCount.Store(r.Header.Get("svix-retry-count"))
+				if count == 1 {
+					tt.failFirst(w, r)
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				err := json.NewEncoder(w).Encode(models.MessageOut{Id: "msg_123"})
+				if err != nil {
+					t.Errorf("failed to encode json - error: %v", err)
+				}
+			}))
+			defer server.Close()
+
+			// And ... a svix http client
+			client := &SvixHttpClient{
+				HTTPClient:     &http.Client{Timeout: tt.clientTimeout},
+				BaseURL:        server.URL,
+				RetrySchedule:  []time.Duration{10 * time.Millisecond, 10 * time.Millisecond},
+				DefaultHeaders: map[string]string{},
+			}
+
+			ctx := context.Background()
+			if tt.contextTimeout > 0 {
+				var cancel context.CancelFunc
+				ctx, cancel = context.WithTimeout(ctx, tt.contextTimeout)
+				defer cancel()
+			}
+
+			// When ... we execute a request
+			req, err := http.NewRequestWithContext(ctx, "POST", server.URL+"/api/v1/app/test_app/msg", bytes.NewBufferString(`{"eventType":"a"}`))
+			if err != nil {
+				t.Fatalf("Failed to create request: %v", err)
+			}
+			resp, err := executeRequestWithRetries(client, req)
+
+			// Then ... the request succeeds or fails as expected
+			if tt.expectSuccess {
+				if err != nil {
+					t.Fatalf("request failed: %v", err)
+				}
+				_ = resp.Body.Close()
+				if resp.StatusCode != http.StatusOK {
+					t.Errorf("Expected status 200, got %d", resp.StatusCode)
+				}
+				if got := lastRetryCount.Load(); got != "1" {
+					t.Errorf("Expected svix-retry-count 1 on the retry, got %v", got)
+				}
+			} else if err == nil {
+				_ = resp.Body.Close()
+				t.Fatal("Expected request to fail")
+			}
+
+			// And ... the server saw the expected number of requests
+			if got := atomic.LoadInt32(&requestCount); got != tt.expectedCalls {
+				t.Errorf("Expected %d requests, got %d", tt.expectedCalls, got)
+			}
+		})
+	}
+}

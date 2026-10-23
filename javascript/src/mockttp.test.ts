@@ -170,6 +170,50 @@ test("mockttp tests", async (t) => {
     assert(after - before >= retryScheduleInMs.reduce((prev, curr) => prev + curr, 0));
   });
 
+  await t.test("test retry on connection reset", async () => {
+    const resetMock = await mockServer.forGet("/api/v1/app").once().thenResetConnection();
+    const okMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.list();
+
+    assert.equal((await resetMock.getSeenRequests()).length, 1);
+    const retries = await okMock.getSeenRequests();
+    assert.equal(retries.length, 1);
+    assert.equal(retries[0].headers["svix-retry-count"], "1");
+  });
+
+  await t.test("test retry on timeout", async () => {
+    const timeoutMock = await mockServer.forGet("/api/v1/app").once().thenTimeout();
+    const okMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url, requestTimeout: 100 });
+
+    await svx.application.list();
+
+    assert.equal((await timeoutMock.getSeenRequests()).length, 1);
+    assert.equal((await okMock.getSeenRequests()).length, 1);
+  });
+
+  await t.test("test timeout applies to each retry attempt", async () => {
+    const retryScheduleInMs = [10, 10];
+    const endpointMock = await mockServer.forGet("/api/v1/app").thenTimeout();
+    const svx = new Svix("token", {
+      serverUrl: mockServer.url,
+      requestTimeout: 100,
+      retryScheduleInMs,
+    });
+
+    await assert.rejects(svx.application.list());
+
+    // every attempt actually reaches the server instead of being aborted immediately
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, retryScheduleInMs.length + 1);
+  });
+
   await t.test("no body in response does not return anything", async () => {
     const endpointMock = await mockServer
       .forDelete("/api/v1/app/app1")

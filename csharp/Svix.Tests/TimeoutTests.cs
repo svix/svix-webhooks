@@ -41,7 +41,7 @@ namespace Svix.Tests
         [Theory]
         [InlineData(false)]
         [InlineData(true)]
-        public async Task ConfiguredTimeoutIsAppliedWithoutRetrying(bool sync)
+        public async Task ConfiguredTimeoutIsAppliedAndRetried(bool sync)
         {
             RespondWithDelay(2000);
             var client = new SvixClient("", new SvixOptions(stub.Url, 500));
@@ -59,7 +59,40 @@ namespace Svix.Tests
 
             // WireMock records requests after the delayed response is built.
             await Task.Delay(2200);
-            Assert.Equal(1, RequestCount);
+            // 1 initial request + 3 retries (default retry schedule)
+            Assert.Equal(4, RequestCount);
+        }
+
+        [Theory]
+        [InlineData(false)]
+        [InlineData(true)]
+        public async Task TimedOutRequestIsRetriedAndSucceeds(bool sync)
+        {
+            // The first request is slower than the client timeout, later ones respond immediately
+            stub.Given(Request.Create().WithPath("/api/v1/app/app1").UsingGet())
+                .InScenario("timeout")
+                .WillSetStateTo("responsive")
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody(applicationOutJsonStr)
+                        .WithDelay(1000)
+                );
+            stub.Given(Request.Create().WithPath("/api/v1/app/app1").UsingGet())
+                .InScenario("timeout")
+                .WhenStateIs("responsive")
+                .RespondWith(Response.Create().WithStatusCode(200).WithBody(applicationOutJsonStr));
+            var client = new SvixClient("", new SvixOptions(stub.Url, 300, new List<int> { 1500 }));
+
+            var application = sync
+                ? client.Application.Get("app1")
+                : await client.Application.GetAsync("app1");
+
+            Assert.Equal("app1", application.Id);
+            Assert.Equal(2, RequestCount);
+            var retry = stub.LogEntries.Last().RequestMessage;
+            Assert.Equal("1", retry.Headers!["svix-retry-count"].ToString());
         }
 
         [Theory]

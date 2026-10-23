@@ -4,13 +4,16 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.options
+import com.github.tomakehurst.wiremock.http.Fault
 import com.svix.kotlin.SvixOptions
 import com.svix.kotlin.exceptions.ApiException
 import com.svix.kotlin.models.*
 import kotlin.time.Instant
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.*
+import java.io.IOException
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class WiremockTests {
@@ -333,6 +336,47 @@ class WiremockTests {
                     .withHeader("svix-retry-count", equalTo("$retryCount")),
             )
         }
+    }
+
+    @Test
+    fun retryOnNetworkError() {
+        val svx = testClient()
+        // Initial attempts have their connection reset, our first retry succeeds. (OkHttp may
+        // itself transparently retry a reset connection, which is why we match on the header
+        // rather than on the number of requests.)
+        wireMockServer.stubFor(
+            WireMock.get(urlPathEqualTo("/api/v1/app"))
+                .withHeader("svix-retry-count", absent())
+                .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER))
+        )
+        wireMockServer.stubFor(
+            WireMock.get(urlPathEqualTo("/api/v1/app"))
+                .withHeader("svix-retry-count", equalTo("1"))
+                .willReturn(WireMock.ok().withBodyFile("ListResponseApplicationOut.json"))
+        )
+
+        runBlocking { svx.application.list() }
+
+        wireMockServer.verify(
+            1,
+            getRequestedFor(urlPathEqualTo("/api/v1/app")).withHeader("svix-retry-count", equalTo("1")),
+        )
+    }
+
+    @Test
+    fun networkErrorThrownAfterRetriesExhausted() {
+        val svx = testClient()
+        wireMockServer.stubFor(
+            WireMock.get(urlPathEqualTo("/api/v1/app"))
+                .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER))
+        )
+
+        runBlocking { assertFailsWith<IOException> { svx.application.list() } }
+
+        // every retry in the default schedule was attempted
+        wireMockServer.verify(
+            getRequestedFor(urlPathEqualTo("/api/v1/app")).withHeader("svix-retry-count", equalTo("3"))
+        )
     }
 
     @Test

@@ -73,6 +73,21 @@ namespace Svix.Tests
             }
         }
 
+        [Theory]
+        [InlineData(400)]
+        [InlineData(404)]
+        [InlineData(422)]
+        public void ClientErrorsAreNotRetried(int statusCode)
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(Response.Create().WithStatusCode(statusCode).WithBody("{}"));
+
+            var error = Assert.Throws<ApiException>(() => client.Application.List());
+
+            Assert.Equal(statusCode, error.ErrorCode);
+            Assert.Single(stub.LogEntries);
+        }
+
         [Fact]
         public async Task CancellationDuringRetryDelayAbortsTheCall()
         {

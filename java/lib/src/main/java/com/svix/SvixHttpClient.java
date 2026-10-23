@@ -105,22 +105,26 @@ public class SvixHttpClient {
     }
 
     private Response executeRequestWithRetry(Request request, String body) throws IOException {
-        Response response = client.newCall(request).execute();
-
-        int retryCount = 0;
-        while (response.code() >= 500 && retryCount < retrySchedule.size()) {
-            response.close();
+        Request currentRequest = request;
+        for (int retryCount = 0; retryCount < retrySchedule.size(); retryCount++) {
+            try {
+                Response response = client.newCall(currentRequest).execute();
+                if (response.code() < 500) {
+                    return response;
+                }
+                response.close();
+            } catch (IOException e) {
+                // Network errors (timeouts, connection failures, etc.) are retried
+            }
 
             // Use LockSupport for precise parking instead of Thread.sleep
             LockSupport.parkNanos(retrySchedule.get(retryCount) * 1_000_000); // Convert ms to ns
 
-            Request retryRequest =
+            currentRequest =
                     request.newBuilder()
                             .header("svix-retry-count", String.valueOf(retryCount + 1))
                             .build();
-            response = client.newCall(retryRequest).execute();
-            retryCount++;
         }
-        return response;
+        return client.newCall(currentRequest).execute();
     }
 }

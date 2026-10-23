@@ -9,6 +9,8 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/(Java and Kotlin): Strip trailing slashes from server URLs
 * Libs/Python: Retry on HTTP 423 and on I/O errors; add test coverage for SvixAsync
 * Libs/All: Update to latest Svix Cloud API, including adding ElasticSearch support for Advanced Destinations
+* Libs/(C#, Go, Java, JavaScript, Kotlin, PHP, Ruby and Rust): Retry requests that fail due to
+  timeouts or other network errors (connection failures, DNS errors, etc.), not just 5xx responses
 
 ## Version 2.8.0
 * CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,

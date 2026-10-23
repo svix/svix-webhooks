@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Svix\Request;
 
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Exception\ResponseException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -116,7 +116,9 @@ class SvixHttpClient
                 }
 
                 return $this->filterResponseForErrors($result);
-            } catch (RequestException $e) {
+            } catch (TransferException $e) {
+                // TransferException covers both RequestException and ConnectException
+                // (timeouts, DNS failures, refused connections, etc.)
                 $response = null;
                 if ($e instanceof ResponseException) {
                     $response = $e->getResponse();

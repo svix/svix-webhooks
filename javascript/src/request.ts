@@ -240,8 +240,8 @@ export class SvixRequest {
           ...this.headerParams,
         },
         credentials: isCredentialsSupported ? "same-origin" : undefined,
-        signal: ctx.timeout !== undefined ? AbortSignal.timeout(ctx.timeout) : undefined,
       },
+      ctx.timeout,
       ctx.retryScheduleInMs,
       ctx.retryScheduleInMs?.[0],
       ctx.retryScheduleInMs?.length ?? ctx.numRetries,
@@ -283,6 +283,7 @@ type SvixRequestInit = RequestInit & {
 async function sendWithRetry(
   url: URL,
   init: SvixRequestInit,
+  timeout: number | undefined,
   retryScheduleInMs?: number[],
   nextInterval = 50,
   triesLeft = 2,
@@ -293,7 +294,10 @@ async function sendWithRetry(
     new Promise((resolve) => setTimeout(resolve, interval));
 
   try {
-    const response = await fetchImpl(url, init);
+    // A fresh signal per attempt, so the timeout applies to each attempt separately
+    // rather than to all attempts combined.
+    const signal = timeout !== undefined ? AbortSignal.timeout(timeout) : undefined;
+    const response = await fetchImpl(url, { ...init, signal });
     if (triesLeft <= 0 || response.status < 500) {
       return response;
     }
@@ -309,6 +313,7 @@ async function sendWithRetry(
   return await sendWithRetry(
     url,
     init,
+    timeout,
     retryScheduleInMs,
     nextInterval,
     --triesLeft,

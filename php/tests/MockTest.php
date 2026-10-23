@@ -476,6 +476,42 @@ class MockTest extends TestCase
         }
     }
 
+    public function testRetryOnConnectionError(): void
+    {
+        // Guzzle raises ConnectException for timeouts, DNS failures, refused connections, etc.
+        $this->mockHandler->append(
+            new ConnectException('cURL error 28: Operation timed out', new Request('GET', '/api/v1/app')),
+            new Response(200, [], ListResAppOut)
+        );
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        $response = $svx->application->list();
+
+        $this->assertInstanceOf(ListResponseApplicationOut::class, $response);
+        $this->assertCount(2, $this->requestHistory, 'Expected exactly 2 requests (1 initial + 1 retry)');
+    }
+
+    public function testConnectionErrorThrownAfterRetriesExhausted(): void
+    {
+        $this->mockHandler->append(
+            new ConnectException('cURL error 28: Operation timed out', new Request('GET', '/api/v1/app')),
+            new ConnectException('cURL error 28: Operation timed out', new Request('GET', '/api/v1/app')),
+            new ConnectException('cURL error 28: Operation timed out', new Request('GET', '/api/v1/app'))
+        );
+
+        $svx = new \Svix\Svix("super_secret", httpClient: $this->httpClient);
+
+        try {
+            $svx->application->list();
+            $this->fail('Expected an ApiException');
+        } catch (\Svix\Exception\ApiException $e) {
+            $this->assertEquals(0, $e->status_code);
+            $this->assertStringContainsString('Operation timed out', $e->body);
+        }
+        $this->assertCount(3, $this->requestHistory, 'Expected exactly 3 requests (1 initial + 2 retries)');
+    }
+
     public function testEmptyAppPortalAccessInBody(): void
     {
         $this->mockHandler->append(new Response(200, [], AppPortalAccessOut));

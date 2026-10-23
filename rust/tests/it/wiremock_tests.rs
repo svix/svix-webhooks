@@ -1,3 +1,9 @@
+use std::{
+    io::{Read, Write},
+    net::TcpListener,
+    time::Duration,
+};
+
 use serde_json::json;
 use svix::{
     api::{MessageListOptions, Svix, SvixOptions},
@@ -202,4 +208,86 @@ async fn test_cmg_with_content_default() {
 
     assert_eq!(response.payload, json!({ "m": "FILTERED" }));
     mock_server.verify().await;
+}
+
+const APPLICATION_OUT: &str = r#"{"uid":"unique-identifier","name":"My first application","throttleRate":0,"id":"app_1srOrx2ZWZBpBUvZwXKQmoEYga2","createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z","metadata":{"property1":"string","property2":"string"}}"#;
+
+#[tokio::test]
+async fn test_timeout_is_retried() {
+    let mock_server = MockServer::start().await;
+
+    // The first request is slower than the client timeout, later ones respond
+    // immediately
+    Mock::given(method("GET"))
+        .and(path("/api/v1/app/app1"))
+        .respond_with(
+            ResponseTemplate::new(200)
+                .set_body_string(APPLICATION_OUT)
+                .set_delay(Duration::from_secs(1)),
+        )
+        .up_to_n_times(1)
+        .with_priority(1)
+        .mount(&mock_server)
+        .await;
+    Mock::given(method("GET"))
+        .and(path("/api/v1/app/app1"))
+        .respond_with(ResponseTemplate::new(200).set_body_string(APPLICATION_OUT))
+        .mount(&mock_server)
+        .await;
+
+    let svx = Svix::new(
+        "token".to_owned(),
+        Some(SvixOptions {
+            server_url: Some(mock_server.uri()),
+            timeout: Some(Duration::from_millis(100)),
+            retry_schedule: Some(vec![Duration::from_millis(10)]),
+            ..Default::default()
+        }),
+    );
+    svx.application().get("app1".to_owned()).await.unwrap();
+
+    let requests = mock_server.received_requests().await.unwrap();
+    assert_eq!(2, requests.len());
+    assert_eq!("1", requests[1].headers["svix-retry-count"]);
+}
+
+#[tokio::test]
+async fn test_connection_error_is_retried() {
+    // A server that drops the first connection without responding, and responds
+    // normally after
+    let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+    let addr = listener.local_addr().unwrap();
+    let server = std::thread::spawn(move || {
+        let (first, _) = listener.accept().unwrap();
+        drop(first);
+
+        let (mut stream, _) = listener.accept().unwrap();
+        let mut request = Vec::new();
+        let mut buf = [0; 1024];
+        while !request.windows(4).any(|w| w == b"\r\n\r\n") {
+            let n = stream.read(&mut buf).unwrap();
+            request.extend_from_slice(&buf[..n]);
+        }
+        write!(
+            stream,
+            "HTTP/1.1 200 OK\r\ncontent-type: application/json\r\ncontent-length: {}\r\nconnection: close\r\n\r\n{}",
+            APPLICATION_OUT.len(),
+            APPLICATION_OUT
+        )
+        .unwrap();
+        String::from_utf8(request).unwrap()
+    });
+
+    let svx = Svix::new(
+        "token".to_owned(),
+        Some(SvixOptions {
+            server_url: Some(format!("http://{addr}")),
+            retry_schedule: Some(vec![Duration::from_millis(10)]),
+            ..Default::default()
+        }),
+    );
+    svx.application().get("app1".to_owned()).await.unwrap();
+
+    let retried_request = server.join().unwrap().to_lowercase();
+    assert!(retried_request.contains("svix-retry-count: 1\r\n"));
 }

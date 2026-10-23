@@ -3,6 +3,7 @@
 require "cgi"
 require "uri"
 require "net/http"
+require "openssl"
 require "securerandom"
 
 module Svix
@@ -90,20 +91,31 @@ module Svix
       end
     end
 
-    private def execute_request_with_retries(request, http)
-      res = http.request(request)
+    # Network-level errors (timeouts, connection failures, etc.) that are retried
+    RETRYABLE_ERRORS = [
+      Timeout::Error,
+      SocketError,
+      SystemCallError,
+      IOError,
+      Net::ProtocolError,
+      Net::HTTPBadResponse,
+      OpenSSL::SSL::SSLError
+    ].freeze
 
+    private def execute_request_with_retries(request, http)
       [0.05, 0.1, 0.2].each_with_index do |sleep_duration, index|
-        unless Integer(res.code) >= 500
-          break
+        begin
+          res = http.request(request)
+          return res unless Integer(res.code) >= 500
+        rescue *RETRYABLE_ERRORS
+          # retried below
         end
 
         sleep(sleep_duration)
         request["svix-retry-count"] = index + 1
-        res = http.request(request)
       end
 
-      res
+      http.request(request)
     end
 
     private def encode_query_params(query_params = {})

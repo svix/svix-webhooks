@@ -163,10 +163,12 @@ impl Request {
             let res = if let Some(duration) = conf.timeout {
                 tokio::time::timeout(duration, request_fut)
                     .await
-                    .map_err(|_| Error::Timeout {
-                        elapsed: Some(start.elapsed()),
-                        timeout: Some(duration),
-                    })?
+                    .unwrap_or_else(|_| {
+                        Err(Error::Timeout {
+                            elapsed: Some(start.elapsed()),
+                            timeout: Some(duration),
+                        })
+                    })
             } else {
                 request_fut.await
             };
