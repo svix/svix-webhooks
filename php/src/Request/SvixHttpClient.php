@@ -67,6 +67,8 @@ class SvixHttpClient
         $maxRetries = count($this->retryScheduleMs);
         $attempt = 0;
         $lastException = null;
+        // Same request id for all attempts, so retries can be correlated
+        $reqId = (string)random_int(0, PHP_INT_MAX);
 
         while ($attempt <= $maxRetries) {
 
@@ -74,8 +76,12 @@ class SvixHttpClient
             $headers = array_merge([
                 'Authorization' => 'Bearer ' . $this->token,
                 'User-Agent' => 'svix-libs/' . Version::VERSION . '/php' . ' php/' . phpversion() . ' ' . php_uname('s') . '/' . php_uname('m'),
-                'svix-req-id' => (string)random_int(0, PHP_INT_MAX),
+                'svix-req-id' => $reqId,
             ], $req->headerParams);
+
+            if ($attempt > 0) {
+                $headers['svix-retry-count'] = (string)$attempt;
+            }
 
             if ($req->body !== null) {
                 $headers['Content-Type'] = 'application/json';
