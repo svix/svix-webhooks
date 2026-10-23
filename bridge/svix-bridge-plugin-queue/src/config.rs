@@ -91,6 +91,7 @@ mod tests {
         config::{QueueInputOpts, QueueOutputOpts},
         rabbitmq::RabbitMqInputOpts,
         redis::{RedisInputOpts, RedisOutputOpts},
+        sqs::{SqsInputOpts, SqsOutputOpts},
     };
 
     // FIXME: can't support raw payload access for redis because it requires JSON internally.
@@ -173,5 +174,22 @@ mod tests {
         }))
         .unwrap();
         assert_eq!(opts.consume_prefetch_count, None);
+    }
+
+    #[test]
+    fn sqs_opts_deserialize_max_payload_size() {
+        let opts: SqsInputOpts = serde_json::from_value(serde_json::json!({
+            "queue_dsn": "http://localhost:9324/000000000000/local",
+            "max_payload_size": 262_144,
+        }))
+        .unwrap();
+        assert_eq!(opts.max_payload_size, Some(262_144));
+
+        let opts: SqsOutputOpts = serde_json::from_value(serde_json::json!({
+            "queue_dsn": "http://localhost:9324/000000000000/local",
+            "max_payload_size": 262_144,
+        }))
+        .unwrap();
+        assert_eq!(opts.max_payload_size, Some(262_144));
     }
 }
