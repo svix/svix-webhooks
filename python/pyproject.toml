@@ -64,6 +64,7 @@ packages = ["svix"]
 dev = [
     "httpretty>=1,<2",
     "mypy",
+    "pytest-asyncio>=1,<2",
     "pytest-docker==3.*",
     "pytest-httpserver>=1.0.7,<2",
     "pytest-httpx>=0.22,<1.0",

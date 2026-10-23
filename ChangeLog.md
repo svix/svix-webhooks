@@ -7,6 +7,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 * Libs/(Java and Kotlin): Strip trailing slashes from server URLs
+* Libs/Python: Retry on HTTP 423 and on I/O errors; add test coverage for SvixAsync
 * Libs/All: Update to latest Svix Cloud API, including adding ElasticSearch support for Advanced Destinations
 
 ## Version 2.8.0
