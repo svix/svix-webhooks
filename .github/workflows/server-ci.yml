@@ -48,7 +48,7 @@ jobs:
       - name: Install cargo sort
         uses: taiki-e/install-action@4cef1412cce204788f482e778a0b9187f9626a29 # v2.87.21
         with:
-          tool: cargo-sort
+          tool: cargo-sort@2.1.3
 
       - name: Run cargo sort
         run: cargo sort --workspace --check --check-format
