@@ -174,7 +174,7 @@ class ApiBaseAsync(ApiBase):
                 break
 
             await asyncio.sleep(sleep_time)
-            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
+            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count + 1)
             response = await self._attempt_request(httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
@@ -217,7 +217,7 @@ class ApiBaseSync(ApiBase):
                 break
 
             time.sleep(sleep_time)
-            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
+            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count + 1)
             response = self._attempt_request(httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
