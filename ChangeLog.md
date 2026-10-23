@@ -14,6 +14,8 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/Go: Fix the default retry schedule being 50µs, 100µs and 200µs instead of 50ms, 100ms and 200ms
 * Libs/PHP: Send the `svix-retry-count` header on retries, and reuse the same `svix-req-id` across
   retries of a request
+* Libs/JavaScript: Requests now time out after 15 seconds by default (previously there was no
+  timeout unless `requestTimeout` was set)
 
 ## Version 2.8.0
 * CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,

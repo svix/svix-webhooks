@@ -38,7 +38,7 @@ export type SvixRequestContext = {
   /** The 'bearer' scheme access token */
   token: string;
   /** Time in milliseconds to wait for requests to get a response. */
-  timeout?: number;
+  timeout: number;
   /**
    * Custom fetch implementation to use for HTTP requests.
    * Useful for testing, adding custom middleware, or running in non-standard environments.
@@ -79,11 +79,14 @@ const REGIONS = [
   { region: "au", url: "https://api.au.svix.com" },
 ];
 
+const DEFAULT_REQUEST_TIMEOUT_MS = 15_000;
+
 /** Shared by `Svix` and `api_internal` so the latter need not import the package barrel. */
 export function createSvixRequestContext(
   token: string,
   options: SvixRequestContextOptions = {}
 ): SvixRequestContext {
+  const timeout = options.requestTimeout ?? DEFAULT_REQUEST_TIMEOUT_MS;
   const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
   const baseUrl: string =
     options.serverUrl?.replace(/\/+$/, "") ?? regionalUrl ?? "https://api.svix.com";
@@ -92,7 +95,7 @@ export function createSvixRequestContext(
     return {
       baseUrl,
       token,
-      timeout: options.requestTimeout,
+      timeout,
       retryScheduleInMs: options.retryScheduleInMs,
       fetch: options.fetch,
     };
@@ -104,7 +107,7 @@ export function createSvixRequestContext(
     return {
       baseUrl,
       token,
-      timeout: options.requestTimeout,
+      timeout,
       numRetries: options.numRetries,
       fetch: options.fetch,
     };
@@ -112,7 +115,7 @@ export function createSvixRequestContext(
   return {
     baseUrl,
     token,
-    timeout: options.requestTimeout,
+    timeout,
     fetch: options.fetch,
   };
 }
@@ -283,7 +286,7 @@ type SvixRequestInit = RequestInit & {
 async function sendWithRetry(
   url: URL,
   init: SvixRequestInit,
-  timeout: number | undefined,
+  timeout: number,
   retryScheduleInMs?: number[],
   nextInterval = 50,
   triesLeft = 2,
@@ -296,8 +299,10 @@ async function sendWithRetry(
   try {
     // A fresh signal per attempt, so the timeout applies to each attempt separately
     // rather than to all attempts combined.
-    const signal = timeout !== undefined ? AbortSignal.timeout(timeout) : undefined;
-    const response = await fetchImpl(url, { ...init, signal });
+    const response = await fetchImpl(url, {
+      ...init,
+      signal: AbortSignal.timeout(timeout),
+    });
     if (triesLeft <= 0 || response.status < 500) {
       return response;
     }
