@@ -258,9 +258,16 @@ def _filter_response_for_errors_response(
     if 200 <= response.status_code <= 299:
         return response
     else:
-        if response.status_code == 422:
-            raise HTTPValidationError.init_exception(
-                response.json(), response.status_code
+        try:
+            body = response.json()
+        except ValueError:
+            body = None
+        if not isinstance(body, dict):
+            # Non-JSON error bodies (e.g. an HTML 502 page from a proxy)
+            raise HttpError.init_exception(
+                {"code": "", "detail": response.text}, response.status_code
             )
+        if response.status_code == 422:
+            raise HTTPValidationError.init_exception(body, response.status_code)
         else:
-            raise HttpError.init_exception(response.json(), response.status_code)
+            raise HttpError.init_exception(body, response.status_code)
