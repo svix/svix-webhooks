@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: © 2022 Svix Authors
 // SPDX-License-Identifier: MIT
 use futures::future::join_all;
-use sqlx::PgPool;
+use sqlx::{AssertSqlSafe, PgPool};
 use svix_server::db::background_migrations::{
     BackgroundMigration, create_table_if_not_exists, ensure_table, run_migrations, run_with_pool,
     try_revert,
@@ -302,11 +302,13 @@ async fn test_revert_unapplied_migration_errors() {
 async fn test_ensure_table_concurrent_create_from_absent() {
     let pool = test_pool_with_conns(20).await;
     let schema = format!("svix_ensure_race_{}", std::process::id());
-    sqlx::query(&format!("DROP SCHEMA IF EXISTS {schema} CASCADE"))
-        .execute(&pool)
-        .await
-        .unwrap();
-    sqlx::query(&format!("CREATE SCHEMA {schema}"))
+    sqlx::query(AssertSqlSafe(format!(
+        "DROP SCHEMA IF EXISTS {schema} CASCADE"
+    )))
+    .execute(&pool)
+    .await
+    .unwrap();
+    sqlx::query(AssertSqlSafe(format!("CREATE SCHEMA {schema}")))
         .execute(&pool)
         .await
         .unwrap();
@@ -335,7 +337,7 @@ async fn test_ensure_table_concurrent_create_from_absent() {
     .unwrap();
     assert!(exists);
 
-    sqlx::query(&format!("DROP SCHEMA {schema} CASCADE"))
+    sqlx::query(AssertSqlSafe(format!("DROP SCHEMA {schema} CASCADE")))
         .execute(&pool)
         .await
         .unwrap();

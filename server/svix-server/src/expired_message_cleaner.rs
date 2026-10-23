@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 
 use sea_orm::{
     ConnectionTrait, DatabaseConnection, DbErr, ExecResult, QueryResult, Statement,
-    TransactionTrait, UpdateResult,
+    TransactionTrait,
 };
 
 use crate::error::{Error, Result};
@@ -18,8 +18,8 @@ async fn exec_without_timeout(pool: &DatabaseConnection, stmt: Statement) -> DbR
         "SET LOCAL statement_timeout=0;",
     );
     let tx = pool.begin().await?;
-    let _ = tx.execute(increase_timeout).await?;
-    let res = tx.execute(stmt).await?;
+    let _ = tx.execute_raw(increase_timeout).await?;
+    let res = tx.execute_raw(stmt).await?;
     tx.commit().await?;
     Ok(res)
 }
@@ -32,8 +32,8 @@ async fn query_one_without_timeout(
         "SET LOCAL statement_timeout=0;",
     );
     let tx = pool.begin().await?;
-    let _ = tx.execute(increase_timeout).await?;
-    let res = tx.query_one(stmt).await?;
+    let _ = tx.execute_raw(increase_timeout).await?;
+    let res = tx.query_one_raw(stmt).await?;
     tx.commit().await?;
     Ok(res)
 }
@@ -44,7 +44,7 @@ pub async fn clean_expired_messages(
     pool: &DatabaseConnection,
     limit: u32,
     enable_legacy_message_cleaner: bool,
-) -> DbResult<UpdateResult> {
+) -> DbResult<u64> {
     // See the docs for [`has_message_payloads_pending_expiry`] for background on the legacy cleaner.
     let legacy_row_count = if enable_legacy_message_cleaner {
         let legacy_res = {
@@ -85,11 +85,9 @@ pub async fn clean_expired_messages(
     "#,
         [limit.into()],
     );
-    let res = pool.execute(stmt).await?;
+    let res = pool.execute_raw(stmt).await?;
 
-    Ok(UpdateResult {
-        rows_affected: legacy_row_count + res.rows_affected(),
-    })
+    Ok(legacy_row_count + res.rows_affected())
 }
 
 /// Checks to see if the message table has any non-null payloads requiring expiry.
@@ -147,7 +145,7 @@ pub async fn expired_message_cleaner_loop(pool: &DatabaseConnection) -> Result<(
                 tracing::error!("{}", err);
                 sleep_time = Some(ON_ERROR);
             }
-            Ok(UpdateResult { rows_affected }) => {
+            Ok(rows_affected) => {
                 if rows_affected > 0 {
                     tracing::debug!(elapsed =? start.elapsed(), "expired {} payloads", rows_affected);
                 }
