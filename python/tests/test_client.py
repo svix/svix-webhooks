@@ -252,6 +252,9 @@ def test_retries_on_http_500(httpx_mock):
     res = svix_api.application.list()
     assert res.iterator == "app_3EXsi4X5ClkrXn5GqkzvpnNvwqj"
     assert len(calls) == 2
+    reqs = httpx_mock.get_requests()
+    assert "svix-retry-count" not in reqs[0].headers
+    assert reqs[1].headers["svix-retry-count"] == "1"
 
 
 def test_retries_on_http_423(httpx_mock):
