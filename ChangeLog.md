@@ -9,6 +9,16 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/(Java and Kotlin): Strip trailing slashes from server URLs
 * Libs/Python: Retry on HTTP 423 and on I/O errors; add test coverage for SvixAsync
 * Libs/All: Update to latest Svix Cloud API, including adding ElasticSearch support for Advanced Destinations
+* Libs/(C#, Go, Java, JavaScript, Kotlin, PHP, Ruby and Rust): Retry requests that fail due to
+  timeouts or other network errors (connection failures, DNS errors, etc.), not just 5xx responses
+* Libs/Go: Fix the default retry schedule being 50µs, 100µs and 200µs instead of 50ms, 100ms and 200ms
+* Libs/PHP: Send the `svix-retry-count` header on retries, and reuse the same `svix-req-id` across
+  retries of a request
+* Libs/JavaScript: Requests now time out after 15 seconds by default (previously there was no
+  timeout unless `requestTimeout` was set)
+* Libs/(Go, Java, Kotlin, PHP and Ruby): Change the default request timeout to 15 seconds, matching the
+  other SDKs (previously 60s for Go, 30s for PHP, 60s per connect/read/write for Ruby, and no overall
+  timeout for Java and Kotlin)
 
 ## Version 2.8.0
 * CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,

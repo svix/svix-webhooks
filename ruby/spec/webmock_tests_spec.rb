@@ -436,6 +436,37 @@ describe "API Client" do
     end
   end
 
+  it "retries on timeout" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_timeout.then
+      .to_return(status: 200, body: ListResponseAppOut_JSON)
+
+    svx.application.list
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").twice)
+    expect(WebMock).to(
+      have_requested(:get, "#{host}/api/v1/app").with(headers: {"Svix-Retry-Count" => "1"}).once
+    )
+  end
+
+  it "retries on connection error" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_raise(Errno::ECONNREFUSED).then
+      .to_return(status: 200, body: ListResponseAppOut_JSON)
+
+    svx.application.list
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").twice)
+  end
+
+  it "raises a Timeout::Error after retries are exhausted" do
+    stub_request(:get, "#{host}/api/v1/app").to_timeout
+
+    expect { svx.application.list }.to(raise_error(Timeout::Error))
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").times(4))
+  end
+
   it "struct enum with extra fields" do
     json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"cron","config":{"contentType":"test","payload":"boom","schedule":"* * * * *"}}'
     source_in = Svix::IngestSourceIn.new(

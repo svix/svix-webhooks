@@ -94,15 +94,25 @@ namespace Svix
                 headerParams,
                 content
             );
-            var response = await _httpClient.SendAsync(request, cancellationToken);
             for (var index = 0; index < retryScheduleMilliseconds.Count; index++)
             {
-                if ((int)response.StatusCode < 500)
+                try
                 {
-                    break;
+                    var response = await _httpClient.SendAsync(request, cancellationToken);
+                    if ((int)response.StatusCode < 500)
+                    {
+                        return await FilterResponseForErrors<T>(response, cancellationToken);
+                    }
+                    response.Dispose();
                 }
+                // Network errors are retried
+                catch (HttpRequestException) { }
+                // HttpClient.Timeout surfaces as TaskCanceledException; only retry it if the
+                // caller didn't cancel the request themselves
+                catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested) { }
+
                 await Task.Delay(retryScheduleMilliseconds[index], cancellationToken);
-                HttpRequestMessage retryRequest = BuildRequest(
+                request = BuildRequest(
                     method,
                     path,
                     req_id,
@@ -111,10 +121,10 @@ namespace Svix
                     headerParams,
                     content
                 );
-                retryRequest.Headers.Add("svix-retry-count", (index + 1).ToString());
-                response = await _httpClient.SendAsync(retryRequest, cancellationToken);
+                request.Headers.Add("svix-retry-count", (index + 1).ToString());
             }
-            return await FilterResponseForErrors<T>(response, cancellationToken);
+            var lastResponse = await _httpClient.SendAsync(request, cancellationToken);
+            return await FilterResponseForErrors<T>(lastResponse, cancellationToken);
         }
 
         async Task<ApiResponse<T>> FilterResponseForErrors<T>(

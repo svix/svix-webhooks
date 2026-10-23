@@ -9,6 +9,8 @@ import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
+import java.time.Duration
 import java.util.UUID
 
 internal fun baseUrlFromToken(token: String): String {
@@ -37,7 +39,8 @@ internal constructor(
             rawBaseUrl
         }
     private val defaultHeaders: Map<String, String>
-    private val client: OkHttpClient = OkHttpClient()
+    private val client: OkHttpClient =
+        OkHttpClient.Builder().callTimeout(Duration.ofSeconds(15)).build()
     private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
 
     init {
@@ -106,22 +109,22 @@ internal constructor(
     }
 
     suspend fun executeRequestWithRetry(request: Request): Response {
-
-        var res = client.newCall(request).execute()
-
-        if (res.code >= 500) {
-            retrySchedule.forEachIndexed { index, sleepTime ->
-                run {
-                    delay(sleepTime)
-                    val newReq =
-                        request
-                            .newBuilder()
-                            .header("svix-retry-count", (index + 1).toString())
-                            .build()
-                    res = client.newCall(newReq).execute()
+        var currentRequest = request
+        retrySchedule.forEachIndexed { index, sleepTime ->
+            try {
+                val res = client.newCall(currentRequest).execute()
+                if (res.code < 500) {
+                    return res
                 }
+                res.close()
+            } catch (e: IOException) {
+                // Network errors (timeouts, connection failures, etc.) are retried
             }
+
+            delay(sleepTime)
+            currentRequest =
+                request.newBuilder().header("svix-retry-count", (index + 1).toString()).build()
         }
-        return res
+        return client.newCall(currentRequest).execute()
     }
 }

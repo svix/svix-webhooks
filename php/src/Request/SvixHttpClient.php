@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Svix\Request;
 
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\TransferException;
 use GuzzleHttp\Exception\ResponseException;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -67,6 +67,8 @@ class SvixHttpClient
         $maxRetries = count($this->retryScheduleMs);
         $attempt = 0;
         $lastException = null;
+        // Same request id for all attempts, so retries can be correlated
+        $reqId = (string)random_int(0, PHP_INT_MAX);
 
         while ($attempt <= $maxRetries) {
 
@@ -74,8 +76,12 @@ class SvixHttpClient
             $headers = array_merge([
                 'Authorization' => 'Bearer ' . $this->token,
                 'User-Agent' => 'svix-libs/' . Version::VERSION . '/php' . ' php/' . phpversion() . ' ' . php_uname('s') . '/' . php_uname('m'),
-                'svix-req-id' => (string)random_int(0, PHP_INT_MAX),
+                'svix-req-id' => $reqId,
             ], $req->headerParams);
+
+            if ($attempt > 0) {
+                $headers['svix-retry-count'] = (string)$attempt;
+            }
 
             if ($req->body !== null) {
                 $headers['Content-Type'] = 'application/json';
@@ -89,7 +95,7 @@ class SvixHttpClient
 
             $request = new \GuzzleHttp\Psr7\Request($req->method, $uri, $headers, $req->body, '1.1');
 
-            $timeoutSeconds = $this->opts->timeoutMs !== null ? $this->opts->timeoutMs / 1000.0 : 30.0;
+            $timeoutSeconds = $this->opts->timeoutMs !== null ? $this->opts->timeoutMs / 1000.0 : 15.0;
             $options = ["timeout" => $timeoutSeconds];
 
             try {
@@ -116,7 +122,9 @@ class SvixHttpClient
                 }
 
                 return $this->filterResponseForErrors($result);
-            } catch (RequestException $e) {
+            } catch (TransferException $e) {
+                // TransferException covers both RequestException and ConnectException
+                // (timeouts, DNS failures, refused connections, etc.)
                 $response = null;
                 if ($e instanceof ResponseException) {
                     $response = $e->getResponse();

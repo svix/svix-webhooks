@@ -38,10 +38,10 @@ func DefaultSvixHttpClient(defaultBaseUrl string) SvixHttpClient {
 	return SvixHttpClient{
 		DefaultHeaders: map[string]string{},
 		HTTPClient: &http.Client{
-			Timeout:   60 * time.Second,
+			Timeout:   15 * time.Second,
 			Transport: tr,
 		},
-		RetrySchedule: []time.Duration{50 * time.Microsecond, 100 * time.Microsecond, 200 * time.Microsecond},
+		RetrySchedule: []time.Duration{50 * time.Millisecond, 100 * time.Millisecond, 200 * time.Millisecond},
 		BaseURL:       defaultBaseUrl,
 		Debug:         false,
 	}
@@ -167,6 +167,13 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 	for try := 0; try < len(client.RetrySchedule); try++ {
 		if err == nil && resp.StatusCode < 500 {
 			break
+		}
+		// don't retry if the caller cancelled the request or its deadline passed
+		if request.Context().Err() != nil {
+			break
+		}
+		if resp != nil {
+			resp.Body.Close()
 		}
 		if bodyBytes != nil {
 			request.Body = io.NopCloser(bytes.NewReader(bodyBytes))
