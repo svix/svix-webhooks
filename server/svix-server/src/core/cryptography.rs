@@ -91,7 +91,7 @@ impl Encryption {
             let nonce = &ciphertext[..Self::NONCE_SIZE];
             let ciphertext = &ciphertext[Self::NONCE_SIZE..];
             let nonce = XNonce::try_from(nonce)
-                .map_err(|_| crate::error::Error::generic("Encryption nfailed"))?;
+                .map_err(|_| crate::error::Error::generic("Encryptionn failed"))?;
             cipher
                 .decrypt(&nonce, ciphertext)
                 .map_err(|_| crate::error::Error::generic("Encryption failed"))
