@@ -6,8 +6,11 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+
+## Version 2.9.1
 * Libs/JavaScript: Throw `ApiException` (with the raw response text as `body`) instead of a
   `SyntaxError` when a 4xx error response body is not JSON
+* CLI: Rebuild Docker image for CVE-2026-111497
 
 ## Version 2.9.0
 * Libs/(Java and Kotlin): Strip trailing slashes from server URLs
