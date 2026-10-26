@@ -261,10 +261,21 @@ async function filterResponseForErrors(response: Response): Promise<Response> {
 
   const responseBody = await response.text();
 
+  // A 4xx can come from a proxy or load balancer in front of the API (e.g. an
+  // HTML 413 page) or have an empty body. Parsing that would throw a
+  // SyntaxError and lose the status code, so fall back to the raw text, as
+  // for 5xx responses below.
+  let parsedBody: unknown;
+  try {
+    parsedBody = JSON.parse(responseBody);
+  } catch {
+    throw new ApiException(response.status, responseBody, response.headers);
+  }
+
   if (response.status === 422) {
     throw new ApiException<HTTPValidationError>(
       response.status,
-      JSON.parse(responseBody) as HTTPValidationError,
+      parsedBody as HTTPValidationError,
       response.headers
     );
   }
@@ -272,7 +283,7 @@ async function filterResponseForErrors(response: Response): Promise<Response> {
   if (response.status >= 400 && response.status <= 499) {
     throw new ApiException<HttpErrorOut>(
       response.status,
-      JSON.parse(responseBody) as HttpErrorOut,
+      parsedBody as HttpErrorOut,
       response.headers
     );
   }

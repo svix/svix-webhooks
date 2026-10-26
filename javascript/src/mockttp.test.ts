@@ -266,6 +266,34 @@ test("mockttp tests", async (t) => {
     assert.equal(requests.length, 2);
   });
 
+  await t.test("non-JSON 4xx body returns ApiException", async () => {
+    const htmlPage = "<html><body><h1>413 Request Entity Too Large</h1></body></html>";
+    const endpointMock = await mockServer.forGet("/api/v1/app").thenReply(413, htmlPage);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await assert.rejects(svx.application.list(), (e: unknown) => {
+      assert(e instanceof ApiException);
+      assert.equal(e.code, 413);
+      assert.equal(e.body, htmlPage);
+      return true;
+    });
+
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, 1);
+  });
+
+  await t.test("empty 422 body returns ApiException", async () => {
+    await mockServer.forGet("/api/v1/app").thenReply(422, "");
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await assert.rejects(svx.application.list(), (e: unknown) => {
+      assert(e instanceof ApiException);
+      assert.equal(e.code, 422);
+      assert.equal(e.body, "");
+      return true;
+    });
+  });
+
   await t.test("sub-resource works", async () => {
     const endpointMock = await mockServer
       .forGet("/api/v1/operational-webhook/endpoint")
