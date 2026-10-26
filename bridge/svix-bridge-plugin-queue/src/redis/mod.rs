@@ -3,6 +3,24 @@ use serde::Deserialize;
 
 use crate::error::Result;
 
+// wrapper because omniqueue::backends::redis::DeadLetterQueueConfig doesn't implement Deserialize
+#[derive(Clone, Debug, Deserialize)]
+pub struct DeadLetterQueueConfig {
+    /// The name of the dead letter queue (a plain Redis list).
+    pub queue_key: String,
+    /// The number of times a message may be received before being sent to the dead letter queue.
+    pub max_receives: usize,
+}
+
+impl From<DeadLetterQueueConfig> for backends::redis::DeadLetterQueueConfig {
+    fn from(value: DeadLetterQueueConfig) -> Self {
+        Self {
+            queue_key: value.queue_key,
+            max_receives: value.max_receives,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Deserialize)]
 pub struct RedisInputOpts {
     pub dsn: String,
@@ -15,6 +33,7 @@ pub struct RedisInputOpts {
     pub consumer_name: String,
     #[serde(default = "default_ack_deadline_ms")]
     pub ack_deadline_ms: i64,
+    pub dlq_config: Option<DeadLetterQueueConfig>,
 }
 
 fn default_reinsert_on_nack() -> bool {
@@ -54,7 +73,7 @@ pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
         // FIXME: expose in config?
         payload_key: "payload".to_string(),
         ack_deadline_ms: cfg.ack_deadline_ms,
-        dlq_config: None,
+        dlq_config: cfg.dlq_config.clone().map(Into::into),
         sentinel_config: None,
     })
     .build_consumer()

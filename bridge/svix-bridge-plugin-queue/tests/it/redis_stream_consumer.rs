@@ -35,6 +35,7 @@ fn get_test_plugin(
             consumer_group: "test_cg".to_owned(),
             consumer_name: "test_cn".to_owned(),
             ack_deadline_ms: 2_000,
+            dlq_config: None,
         }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,
