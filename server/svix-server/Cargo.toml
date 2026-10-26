@@ -31,7 +31,7 @@ bb8 = "0.9.0"
 bb8-redis = "0.24.0"
 blake2 = "0.10.4"
 bytes = "1.1.0"
-chacha20poly1305 = "0.10.1"
+chacha20poly1305 = "0.11.0"
 chrono = { version = "0.4.26", features = ["serde"] }
 clap = { version = "4.1.8", features = ["derive"] }
 crc = "3"
@@ -56,7 +56,7 @@ indexmap = "2.6.0"
 ipnet = { version = "2.5", features = ["serde"] }
 itertools = "0.15.0"
 jsonschema = "0.50.0"
-jwt-simple = "0.11.6"
+jwt-simple = "0.15.0"
 lapin = "4.10.0"
 num_enum = "0.7.2"
 omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "acb40983ed65f6cbebb19c05d590249306674a33", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
