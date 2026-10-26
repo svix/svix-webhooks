@@ -6,7 +6,7 @@ use std::fmt::Debug;
 use base64::{Engine, engine::general_purpose::STANDARD};
 use chacha20poly1305::{
     Key, XChaCha20Poly1305, XNonce,
-    aead::{Aead, KeyInit},
+    aead::{Aead, Generate, KeyInit},
 };
 use ed25519_compact::*;
 
@@ -67,16 +67,15 @@ impl Encryption {
     }
 
     pub fn new(key: [u8; 32]) -> Self {
-        Self(Some(Key::from_slice(&key).to_owned()))
+        Self(Some(Key::from(key).to_owned()))
     }
 
     pub fn encrypt(&self, data: &[u8]) -> Result<Vec<u8>> {
         if let Some(main_key) = self.0.as_ref() {
             let cipher = XChaCha20Poly1305::new(main_key);
-            let nonce: [u8; Self::NONCE_SIZE] = rand::random();
-            let nonce = XNonce::from_slice(&nonce);
+            let nonce = XNonce::generate();
             let mut ciphertext = cipher
-                .encrypt(nonce, data)
+                .encrypt(&nonce, data)
                 .map_err(|_| crate::error::Error::generic("Encryption failed"))?;
             let mut ret = nonce.to_vec();
             ret.append(&mut ciphertext);
@@ -91,8 +90,10 @@ impl Encryption {
             let cipher = XChaCha20Poly1305::new(main_key);
             let nonce = &ciphertext[..Self::NONCE_SIZE];
             let ciphertext = &ciphertext[Self::NONCE_SIZE..];
+            let nonce = XNonce::try_from(nonce)
+                .map_err(|_| crate::error::Error::generic("Encryptionn failed"))?;
             cipher
-                .decrypt(XNonce::from_slice(nonce), ciphertext)
+                .decrypt(&nonce, ciphertext)
                 .map_err(|_| crate::error::Error::generic("Encryption failed"))
         } else {
             Ok(ciphertext.to_vec())

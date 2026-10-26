@@ -3,6 +3,8 @@
 ## Unreleased
 * Bump dependencies to SeaORM 2 and sqlx 0.9
 * Increase MSRV to 1.94.0
+* Bump dependencies for RUSTSEC-2026-0387
+* **(Breaking)** HMAC-based JWT secrets now must be at least 12 bytes long
 
 ## Version 1.102.1
 * Remove [compromised eMudhra CA certificates](https://emudhra.we-have-a-problem.com/) from TLS trust store

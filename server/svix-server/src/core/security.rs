@@ -243,17 +243,17 @@ pub enum JWTAlgorithm {
 }
 
 pub enum RS256 {
-    Public(RS256PublicKey),
+    Public(Box<RS256PublicKey>),
     Pair(Box<RS256KeyPair>),
 }
 
 pub enum RS384 {
-    Public(RS384PublicKey),
+    Public(Box<RS384PublicKey>),
     Pair(Box<RS384KeyPair>),
 }
 
 pub enum RS512 {
-    Public(RS512PublicKey),
+    Public(Box<RS512PublicKey>),
     Pair(Box<RS512KeyPair>),
 }
 
@@ -390,7 +390,7 @@ where
     if let Ok(pair) = RS256KeyPair::from_pem(&key) {
         Ok(RS256::Pair(Box::new(pair)))
     } else if let Ok(public) = RS256PublicKey::from_pem(&key) {
-        Ok(RS256::Public(public))
+        Ok(RS256::Public(Box::new(public)))
     } else {
         Err(serde::de::Error::custom("could not deserialize key"))
     }
@@ -404,7 +404,7 @@ where
     if let Ok(pair) = RS384KeyPair::from_pem(&key) {
         Ok(RS384::Pair(Box::new(pair)))
     } else if let Ok(public) = RS384PublicKey::from_pem(&key) {
-        Ok(RS384::Public(public))
+        Ok(RS384::Public(Box::new(public)))
     } else {
         Err(serde::de::Error::custom("could not deserialize key"))
     }
@@ -418,7 +418,7 @@ where
     if let Ok(pair) = RS512KeyPair::from_pem(&key) {
         Ok(RS512::Pair(Box::new(pair)))
     } else if let Ok(public) = RS512PublicKey::from_pem(&key) {
-        Ok(RS512::Public(public))
+        Ok(RS512::Public(Box::new(public)))
     } else {
         Err(serde::de::Error::custom("could not deserialize key"))
     }

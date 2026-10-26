@@ -19,7 +19,7 @@ fn test_environment_parsing() {
 #[allow(clippy::result_large_err)]
 fn test_expired_message_cleaner_parsing() {
     figment::Jail::expect_with(|jail| {
-        jail.set_env("SVIX_JWT_SECRET", "x");
+        jail.set_env("SVIX_JWT_SECRET", "some-long-secret-value");
 
         // Defaults to enabled
         let cfg = load().unwrap();
@@ -37,7 +37,7 @@ fn test_expired_message_cleaner_parsing() {
 #[allow(clippy::result_large_err)]
 fn test_retry_schedule_parsing() {
     figment::Jail::expect_with(|jail| {
-        jail.set_env("SVIX_JWT_SECRET", "x");
+        jail.set_env("SVIX_JWT_SECRET", "some-long-secret-value");
 
         // Multi item
         jail.set_env("SVIX_RETRY_SCHEDULE", "[1,2]");
@@ -67,7 +67,7 @@ fn test_retry_schedule_parsing() {
 #[allow(clippy::result_large_err)]
 fn test_retry_schedule_parsing_legacy() {
     figment::Jail::expect_with(|jail| {
-        jail.set_env("SVIX_JWT_SECRET", "x");
+        jail.set_env("SVIX_JWT_SECRET", "some-long-secret-value");
 
         // Multi item
         jail.set_env("SVIX_RETRY_SCHEDULE", "1,2");
@@ -88,7 +88,7 @@ fn test_retry_schedule_parsing_legacy() {
 fn test_proxy_addr_from_env_parsing() {
     figment::Jail::expect_with(|jail| {
         jail.set_env("SVIX_QUEUE_TYPE", "memory");
-        jail.set_env("SVIX_JWT_SECRET", "x");
+        jail.set_env("SVIX_JWT_SECRET", "some-long-secret-value");
         jail.set_env("SVIX_PROXY_ADDR", "socks5://127.0.0.1");
 
         let cfg = load().unwrap();
