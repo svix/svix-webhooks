@@ -1,7 +1,8 @@
 services:
   backend:
     environment:
-      SVIX_JWT_SECRET: "x"
+      # this has to be a real-enough value to satisfy the security checks in jsonwebtoken
+      SVIX_JWT_SECRET: "67660AA2A79F4974BF72FF802433C238"
   pgbouncer:
     ports:
       - "8079:5432" # Needed for sqlx
