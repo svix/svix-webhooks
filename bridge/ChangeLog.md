@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Change Docker images to be based on wolfi instead of debian
 
 ## Version 1.101.1
 * Rebuild Docker image for CVE-2026-111497
