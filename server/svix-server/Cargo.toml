@@ -56,7 +56,7 @@ indexmap = "2.6.0"
 ipnet = { version = "2.5", features = ["serde"] }
 itertools = "0.15.0"
 jsonschema = "0.50.0"
-jwt-simple = "0.15.0"
+jwt-simple = { version = "0.15.0", default-features = false, features = ["pure-rust"] }
 lapin = "4.10.0"
 num_enum = "0.7.2"
 omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "acb40983ed65f6cbebb19c05d590249306674a33", default-features = false, features = ["in_memory", "rabbitmq-with-message-ids", "redis_cluster", "redis_sentinel", "beta"] }
