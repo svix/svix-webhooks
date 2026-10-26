@@ -43,9 +43,20 @@ sealed class IngestSourceInConfig {
             Json.encodeToJsonElement(AdobeSignConfig.serializer(), adobeSign)
     }
 
+    @VariantName("ascend")
+    data class Ascend(val ascend: AscendConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(AscendConfig.serializer(), ascend)
+    }
+
     @VariantName("beehiiv")
     data class Beehiiv(val beehiiv: SvixConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfig.serializer(), beehiiv)
+    }
+
+    @VariantName("bitbucket")
+    data class Bitbucket(val bitbucket: BitbucketConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(BitbucketConfig.serializer(), bitbucket)
     }
 
     @VariantName("brex")
@@ -224,6 +235,12 @@ sealed class IngestSourceInConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(TelnyxConfig.serializer(), telnyx)
     }
 
+    @VariantName("tricentis-qtest")
+    data class TricentisQtest(val tricentisQtest: TricentisQtestConfig) : IngestSourceInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(TricentisQtestConfig.serializer(), tricentisQtest)
+    }
+
     @VariantName("vapi")
     data class Vapi(val vapi: VapiConfig) : IngestSourceInConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(VapiConfig.serializer(), vapi)
@@ -267,9 +284,17 @@ sealed class IngestSourceInConfig {
                     { config ->
                         AdobeSign(Json.decodeFromJsonElement(AdobeSignConfig.serializer(), config))
                     },
+                "ascend" to
+                    { config ->
+                        Ascend(Json.decodeFromJsonElement(AscendConfig.serializer(), config))
+                    },
                 "beehiiv" to
                     { config ->
                         Beehiiv(Json.decodeFromJsonElement(SvixConfig.serializer(), config))
+                    },
+                "bitbucket" to
+                    { config ->
+                        Bitbucket(Json.decodeFromJsonElement(BitbucketConfig.serializer(), config))
                     },
                 "brex" to
                     { config ->
@@ -406,6 +431,12 @@ sealed class IngestSourceInConfig {
                 "telnyx" to
                     { config ->
                         Telnyx(Json.decodeFromJsonElement(TelnyxConfig.serializer(), config))
+                    },
+                "tricentis-qtest" to
+                    { config ->
+                        TricentisQtest(
+                            Json.decodeFromJsonElement(TricentisQtestConfig.serializer(), config)
+                        )
                     },
                 "vapi" to
                     { config ->

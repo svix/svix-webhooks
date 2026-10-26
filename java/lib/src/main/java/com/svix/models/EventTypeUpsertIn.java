@@ -11,7 +11,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 @ToString
@@ -20,6 +22,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypeUpsertIn {
     @JsonProperty private String description;
+    @JsonProperty private Map<String, String> descriptionTranslations;
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
     @JsonProperty private Object schemas;
@@ -45,6 +48,35 @@ public class EventTypeUpsertIn {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public EventTypeUpsertIn descriptionTranslations(Map<String, String> descriptionTranslations) {
+        this.descriptionTranslations = descriptionTranslations;
+        return this;
+    }
+
+    public EventTypeUpsertIn putDescriptionTranslationsItem(
+            String key, String descriptionTranslationsItem) {
+        if (this.descriptionTranslations == null) {
+            this.descriptionTranslations = new HashMap<>();
+        }
+        this.descriptionTranslations.put(key, descriptionTranslationsItem);
+
+        return this;
+    }
+
+    /**
+     * Translated descriptions keyed by BCP 47 language tag.
+     *
+     * @return descriptionTranslations
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getDescriptionTranslations() {
+        return descriptionTranslations;
+    }
+
+    public void setDescriptionTranslations(Map<String, String> descriptionTranslations) {
+        this.descriptionTranslations = descriptionTranslations;
     }
 
     public EventTypeUpsertIn archived(Boolean archived) {

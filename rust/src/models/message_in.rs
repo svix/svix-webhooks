@@ -6,6 +6,8 @@ use super::application_in::ApplicationIn;
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct MessageIn {
     /// Optional unique identifier for the message
+    ///
+    /// This should not contain the '.' character
     #[serde(rename = "eventId")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event_id: Option<String>,

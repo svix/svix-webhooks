@@ -145,6 +145,12 @@ sealed class StreamSinkOutConfig {
             Json.encodeToJsonElement(ElasticSearchConfigOut.serializer(), elasticSearch)
     }
 
+    @VariantName("postHog")
+    data class PostHog(val postHog: PostHogConfigOut) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostHogConfigOut.serializer(), postHog)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkOutConfig>(
@@ -238,6 +244,10 @@ sealed class StreamSinkOutConfig {
                         ElasticSearch(
                             Json.decodeFromJsonElement(ElasticSearchConfigOut.serializer(), config)
                         )
+                    },
+                "postHog" to
+                    { config ->
+                        PostHog(Json.decodeFromJsonElement(PostHogConfigOut.serializer(), config))
                     },
             )
 

@@ -171,6 +171,9 @@ namespace Svix.Models
             ElasticSearchConfigOut elasticSearchConfigOut
         ) => new(elasticSearchConfigOut, ConfigType.ElasticSearch);
 
+        public static DestinationOutConfig PostHog(PostHogConfigOut postHogConfigOut) =>
+            new(postHogConfigOut, ConfigType.PostHog);
+
         private enum ConfigType
         {
             [EnumMember(Value = "pollingEndpoint")]
@@ -223,6 +226,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "elasticSearch")]
             ElasticSearch,
+
+            [EnumMember(Value = "postHog")]
+            PostHog,
         }
 
         public TResult Match<TResult>(
@@ -242,7 +248,8 @@ namespace Svix.Models
             Func<EventBridgeConfigOut, TResult> onEventBridge,
             Func<SnsConfigOut, TResult> onSns,
             Func<PostgresConfigOut, TResult> onPostgres,
-            Func<ElasticSearchConfigOut, TResult> onElasticSearch
+            Func<ElasticSearchConfigOut, TResult> onElasticSearch,
+            Func<PostHogConfigOut, TResult> onPostHog
         )
         {
             return _type switch
@@ -270,6 +277,7 @@ namespace Svix.Models
                 ConfigType.Sns => onSns((SnsConfigOut)_value),
                 ConfigType.Postgres => onPostgres((PostgresConfigOut)_value),
                 ConfigType.ElasticSearch => onElasticSearch((ElasticSearchConfigOut)_value),
+                ConfigType.PostHog => onPostHog((PostHogConfigOut)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -292,7 +300,8 @@ namespace Svix.Models
             Action<EventBridgeConfigOut>? onEventBridge = null,
             Action<SnsConfigOut>? onSns = null,
             Action<PostgresConfigOut>? onPostgres = null,
-            Action<ElasticSearchConfigOut>? onElasticSearch = null
+            Action<ElasticSearchConfigOut>? onElasticSearch = null,
+            Action<PostHogConfigOut>? onPostHog = null
         )
         {
             switch (_type)
@@ -397,6 +406,12 @@ namespace Svix.Models
                     if (onElasticSearch != null)
                     {
                         onElasticSearch((ElasticSearchConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.PostHog:
+                    if (onPostHog != null)
+                    {
+                        onPostHog((PostHogConfigOut)_value);
                     }
                     break;
                 default:
@@ -555,6 +570,7 @@ namespace Svix.Models
                 ["postgres"] = c => DestinationOutConfig.Postgres(ToObj<PostgresConfigOut>(c)),
                 ["elasticSearch"] = c =>
                     DestinationOutConfig.ElasticSearch(ToObj<ElasticSearchConfigOut>(c)),
+                ["postHog"] = c => DestinationOutConfig.PostHog(ToObj<PostHogConfigOut>(c)),
             };
     }
 }

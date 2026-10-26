@@ -99,12 +99,13 @@ pub async fn exec(
     for typ in USER_EVENT_TYPES {
         let event_type_in = EventTypeIn {
             name: format!("user.{typ}"),
-            description: "".to_string(),
+            description: "".to_owned(),
             schemas: Some(schema_example()),
             archived: None,
             deprecated: None,
             feature_flags: None,
             group_name: None,
+            description_translations: None,
         };
         let res = client.event_type().create(event_type_in, None).await;
 

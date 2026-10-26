@@ -284,6 +284,7 @@ macro_rules! impl_query_param_value {
 impl_query_param_value!(bool);
 impl_query_param_value!(u64);
 impl_query_param_value!(String);
+impl_query_param_value!(models::ArchiveStatus);
 impl_query_param_value!(models::BackgroundTaskStatus);
 impl_query_param_value!(models::BackgroundTaskType);
 impl_query_param_value!(models::ConnectorProduct);

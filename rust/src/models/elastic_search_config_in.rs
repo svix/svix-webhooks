@@ -1,6 +1,8 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
+use super::elastic_search_operation::ElasticSearchOperation;
+
 /// Configuration parameters for defining an ElasticSearch/OpenSearch sink.
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ElasticSearchConfigIn {
@@ -28,6 +30,12 @@ pub struct ElasticSearchConfigIn {
     /// operation visible to search.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refresh: Option<bool>,
+
+    /// The operation to use when indexing.
+    ///
+    /// If not passed, this defaults to `create`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub operation: Option<ElasticSearchOperation>,
 }
 
 impl ElasticSearchConfigIn {
@@ -37,6 +45,7 @@ impl ElasticSearchConfigIn {
             url,
             api_key: None,
             refresh: None,
+            operation: None,
         }
     }
 }

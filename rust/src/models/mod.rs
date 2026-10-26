@@ -15,6 +15,9 @@ mod application_in;
 mod application_out;
 mod application_patch;
 mod application_token_expire_in;
+mod archive_status;
+mod ascend_config;
+mod ascend_config_out;
 mod authentication_source;
 mod auto_config_out;
 mod auto_config_sink_type;
@@ -28,6 +31,8 @@ mod background_task_type;
 mod big_query_config_in;
 mod big_query_config_out;
 mod big_query_config_patch;
+mod bitbucket_config;
+mod bitbucket_config_out;
 mod bulk_expunge_contents_in;
 mod bulk_expunge_contents_out;
 mod bulk_expunge_status;
@@ -62,6 +67,7 @@ mod easypost_config_out;
 mod elastic_search_config_in;
 mod elastic_search_config_out;
 mod elastic_search_config_patch;
+mod elastic_search_operation;
 mod empty_response;
 mod endpoint_attempt_stats;
 mod endpoint_headers_in;
@@ -182,6 +188,9 @@ mod polling_endpoint_message_out;
 mod polling_endpoint_out;
 mod port_io_config;
 mod port_io_config_out;
+mod post_hog_config_in;
+mod post_hog_config_out;
+mod post_hog_config_patch;
 mod postgres_config_in;
 mod postgres_config_out;
 mod postgres_config_patch;
@@ -251,6 +260,8 @@ mod tailscale_config;
 mod tailscale_config_out;
 mod telnyx_config;
 mod telnyx_config_out;
+mod tricentis_qtest_config;
+mod tricentis_qtest_config_out;
 mod vapi_config;
 mod vapi_config_out;
 mod veriff_config;
@@ -283,6 +294,9 @@ pub use self::{
     application_out::ApplicationOut,
     application_patch::ApplicationPatch,
     application_token_expire_in::ApplicationTokenExpireIn,
+    archive_status::ArchiveStatus,
+    ascend_config::AscendConfig,
+    ascend_config_out::AscendConfigOut,
     authentication_source::AuthenticationSource,
     auto_config_out::AutoConfigOut,
     auto_config_sink_type::AutoConfigSinkType,
@@ -296,6 +310,8 @@ pub use self::{
     big_query_config_in::BigQueryConfigIn,
     big_query_config_out::BigQueryConfigOut,
     big_query_config_patch::BigQueryConfigPatch,
+    bitbucket_config::BitbucketConfig,
+    bitbucket_config_out::BitbucketConfigOut,
     bulk_expunge_contents_in::BulkExpungeContentsIn,
     bulk_expunge_contents_out::BulkExpungeContentsOut,
     bulk_expunge_status::BulkExpungeStatus,
@@ -330,6 +346,7 @@ pub use self::{
     elastic_search_config_in::ElasticSearchConfigIn,
     elastic_search_config_out::ElasticSearchConfigOut,
     elastic_search_config_patch::ElasticSearchConfigPatch,
+    elastic_search_operation::ElasticSearchOperation,
     empty_response::EmptyResponse,
     endpoint_attempt_stats::EndpointAttemptStats,
     endpoint_headers_in::EndpointHeadersIn,
@@ -450,6 +467,9 @@ pub use self::{
     polling_endpoint_out::PollingEndpointOut,
     port_io_config::PortIoConfig,
     port_io_config_out::PortIoConfigOut,
+    post_hog_config_in::PostHogConfigIn,
+    post_hog_config_out::PostHogConfigOut,
+    post_hog_config_patch::PostHogConfigPatch,
     postgres_config_in::PostgresConfigIn,
     postgres_config_out::PostgresConfigOut,
     postgres_config_patch::PostgresConfigPatch,
@@ -519,6 +539,8 @@ pub use self::{
     tailscale_config_out::TailscaleConfigOut,
     telnyx_config::TelnyxConfig,
     telnyx_config_out::TelnyxConfigOut,
+    tricentis_qtest_config::TricentisQtestConfig,
+    tricentis_qtest_config_out::TricentisQtestConfigOut,
     vapi_config::VapiConfig,
     vapi_config_out::VapiConfigOut,
     veriff_config::VeriffConfig,

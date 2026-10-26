@@ -335,6 +335,11 @@ abstract class DestinationPatchConfig implements \JsonSerializable
         return new DestinationPatchConfig\ElasticSearch($elasticSearch);
     }
 
+    public static function postHog(PostHogConfigPatch $postHog): DestinationPatchConfig\PostHog
+    {
+        return new DestinationPatchConfig\PostHog($postHog);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -357,6 +362,7 @@ abstract class DestinationPatchConfig implements \JsonSerializable
             'redshift' => self::redshift(RedshiftConfigPatch::fromMixed($config)),
             'postgres' => self::postgres(PostgresConfigPatch::fromMixed($config)),
             'elasticSearch' => self::elasticSearch(ElasticSearchConfigPatch::fromMixed($config)),
+            'postHog' => self::postHog(PostHogConfigPatch::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -651,5 +657,22 @@ final class ElasticSearch extends \Svix\Models\DestinationPatchConfig
     public function configPayload(): mixed
     {
         return $this->elasticSearch;
+    }
+}
+
+final class PostHog extends \Svix\Models\DestinationPatchConfig
+{
+    public function __construct(public readonly \Svix\Models\PostHogConfigPatch $postHog)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'postHog';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->postHog;
     }
 }

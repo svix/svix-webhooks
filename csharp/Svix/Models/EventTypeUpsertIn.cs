@@ -9,6 +9,9 @@ namespace Svix.Models
         [JsonProperty("description", Required = Required.Always)]
         public required string Description { get; set; }
 
+        [JsonProperty("descriptionTranslations")]
+        public Dictionary<string, string>? DescriptionTranslations { get; set; } = null;
+
         [JsonProperty("archived")]
         public bool? Archived { get; set; } = null;
 
@@ -30,6 +33,7 @@ namespace Svix.Models
 
             sb.Append("class EventTypeUpsertIn {\n");
             sb.Append("  Description: ").Append(Description).Append('\n');
+            sb.Append("  DescriptionTranslations: ").Append(DescriptionTranslations).Append('\n');
             sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
             sb.Append("  Schemas: ").Append(Schemas).Append('\n');

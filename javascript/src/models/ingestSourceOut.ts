@@ -7,6 +7,11 @@ import {
   type AirwallexConfigOut,
   AirwallexConfigOutSerializer,
 } from "./airwallexConfigOut";
+import { type AscendConfigOut, AscendConfigOutSerializer } from "./ascendConfigOut";
+import {
+  type BitbucketConfigOut,
+  BitbucketConfigOutSerializer,
+} from "./bitbucketConfigOut";
 import {
   type CheckbookConfigOut,
   CheckbookConfigOutSerializer,
@@ -34,6 +39,10 @@ import {
   TailscaleConfigOutSerializer,
 } from "./tailscaleConfigOut";
 import { type TelnyxConfigOut, TelnyxConfigOutSerializer } from "./telnyxConfigOut";
+import {
+  type TricentisQtestConfigOut,
+  TricentisQtestConfigOutSerializer,
+} from "./tricentisQtestConfigOut";
 import { type VapiConfigOut, VapiConfigOutSerializer } from "./vapiConfigOut";
 import { type VeriffConfigOut, VeriffConfigOutSerializer } from "./veriffConfigOut";
 import { type VgsConfigOut, VgsConfigOutSerializer } from "./vgsConfigOut";
@@ -69,9 +78,19 @@ interface IngestSourceOutAdobeSign {
   config: AdobeSignConfigOut;
 }
 
+interface IngestSourceOutAscend {
+  type: "ascend";
+  config: AscendConfigOut;
+}
+
 interface IngestSourceOutBeehiiv {
   type: "beehiiv";
   config: SvixConfigOut;
+}
+
+interface IngestSourceOutBitbucket {
+  type: "bitbucket";
+  config: BitbucketConfigOut;
 }
 
 interface IngestSourceOutBrex {
@@ -244,6 +263,11 @@ interface IngestSourceOutTelnyx {
   config: TelnyxConfigOut;
 }
 
+interface IngestSourceOutTricentisQtest {
+  type: "tricentis-qtest";
+  config: TricentisQtestConfigOut;
+}
+
 interface IngestSourceOutVapi {
   type: "vapi";
   config: VapiConfigOut;
@@ -279,7 +303,9 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutGenericWebhook
     | IngestSourceOutCron
     | IngestSourceOutAdobeSign
+    | IngestSourceOutAscend
     | IngestSourceOutBeehiiv
+    | IngestSourceOutBitbucket
     | IngestSourceOutBrex
     | IngestSourceOutCheckbook
     | IngestSourceOutClerk
@@ -314,6 +340,7 @@ export type IngestSourceOut = _IngestSourceOutFields &
     | IngestSourceOutZoom
     | IngestSourceOutTailscale
     | IngestSourceOutTelnyx
+    | IngestSourceOutTricentisQtest
     | IngestSourceOutVapi
     | IngestSourceOutOpenAi
     | IngestSourceOutRender
@@ -334,8 +361,12 @@ export const IngestSourceOutSerializer = {
           return CronConfigSerializer._fromJsonObject(object["config"]);
         case "adobe-sign":
           return AdobeSignConfigOutSerializer._fromJsonObject(object["config"]);
+        case "ascend":
+          return AscendConfigOutSerializer._fromJsonObject(object["config"]);
         case "beehiiv":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
+        case "bitbucket":
+          return BitbucketConfigOutSerializer._fromJsonObject(object["config"]);
         case "brex":
           return SvixConfigOutSerializer._fromJsonObject(object["config"]);
         case "checkbook":
@@ -404,6 +435,8 @@ export const IngestSourceOutSerializer = {
           return TailscaleConfigOutSerializer._fromJsonObject(object["config"]);
         case "telnyx":
           return TelnyxConfigOutSerializer._fromJsonObject(object["config"]);
+        case "tricentis-qtest":
+          return TricentisQtestConfigOutSerializer._fromJsonObject(object["config"]);
         case "vapi":
           return VapiConfigOutSerializer._fromJsonObject(object["config"]);
         case "open-ai":
@@ -447,8 +480,14 @@ export const IngestSourceOutSerializer = {
       case "adobe-sign":
         config = AdobeSignConfigOutSerializer._toJsonObject(self.config);
         break;
+      case "ascend":
+        config = AscendConfigOutSerializer._toJsonObject(self.config);
+        break;
       case "beehiiv":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "bitbucket":
+        config = BitbucketConfigOutSerializer._toJsonObject(self.config);
         break;
       case "brex":
         config = SvixConfigOutSerializer._toJsonObject(self.config);
@@ -551,6 +590,9 @@ export const IngestSourceOutSerializer = {
         break;
       case "telnyx":
         config = TelnyxConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "tricentis-qtest":
+        config = TricentisQtestConfigOutSerializer._toJsonObject(self.config);
         break;
       case "vapi":
         config = VapiConfigOutSerializer._toJsonObject(self.config);

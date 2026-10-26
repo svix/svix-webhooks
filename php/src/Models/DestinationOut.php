@@ -364,6 +364,11 @@ abstract class DestinationOutConfig implements \JsonSerializable
         return new DestinationOutConfig\ElasticSearch($elasticSearch);
     }
 
+    public static function postHog(PostHogConfigOut $postHog): DestinationOutConfig\PostHog
+    {
+        return new DestinationOutConfig\PostHog($postHog);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -386,6 +391,7 @@ abstract class DestinationOutConfig implements \JsonSerializable
             'sns' => self::sns(SnsConfigOut::fromMixed($config)),
             'postgres' => self::postgres(PostgresConfigOut::fromMixed($config)),
             'elasticSearch' => self::elasticSearch(ElasticSearchConfigOut::fromMixed($config)),
+            'postHog' => self::postHog(PostHogConfigOut::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -680,5 +686,22 @@ final class ElasticSearch extends \Svix\Models\DestinationOutConfig
     public function configPayload(): mixed
     {
         return $this->elasticSearch;
+    }
+}
+
+final class PostHog extends \Svix\Models\DestinationOutConfig
+{
+    public function __construct(public readonly \Svix\Models\PostHogConfigOut $postHog)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'postHog';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->postHog;
     }
 }

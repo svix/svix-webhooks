@@ -19,6 +19,7 @@ module Svix
           "iterator" => options["iterator"],
           "order" => options["order"],
           "include_archived" => options["include_archived"],
+          "archive_status" => options["archive_status"],
           "with_content" => options["with_content"]
         }
       )

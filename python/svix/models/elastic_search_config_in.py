@@ -2,6 +2,7 @@
 import typing as t
 
 from .common import BaseModel
+from .elastic_search_operation import ElasticSearchOperation
 
 
 class ElasticSearchConfigIn(BaseModel):
@@ -25,3 +26,8 @@ class ElasticSearchConfigIn(BaseModel):
 
     refresh: t.Optional[bool] = None
     """If true, Elasticsearch refreshes the affected shards to make this operation visible to search."""
+
+    operation: t.Optional[ElasticSearchOperation] = None
+    """The operation to use when indexing.
+
+    If not passed, this defaults to `create`."""

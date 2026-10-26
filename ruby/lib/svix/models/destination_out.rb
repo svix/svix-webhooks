@@ -11,6 +11,7 @@ require_relative "./event_bridge_config_out"
 require_relative "./google_cloud_pub_sub_config_out"
 require_relative "./google_cloud_storage_config_out"
 require_relative "./otel_tracing_config_out"
+require_relative "./post_hog_config_out"
 require_relative "./postgres_config_out"
 require_relative "./rabbit_mq_config_out"
 require_relative "./redshift_config_out"
@@ -85,6 +86,9 @@ module Svix
 
     class ElasticSearch < ElasticSearchConfigOut
     end
+
+    class PostHog < PostHogConfigOut
+    end
   end
 
   class DestinationOut
@@ -139,7 +143,8 @@ module Svix
       DestinationOutConfig::EventBridge => "eventBridge",
       DestinationOutConfig::Sns => "sns",
       DestinationOutConfig::Postgres => "postgres",
-      DestinationOutConfig::ElasticSearch => "elasticSearch"
+      DestinationOutConfig::ElasticSearch => "elasticSearch",
+      DestinationOutConfig::PostHog => "postHog"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

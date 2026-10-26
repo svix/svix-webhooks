@@ -2,7 +2,11 @@
 import { type ApplicationIn, ApplicationInSerializer } from "./applicationIn";
 
 export interface MessageIn {
-  /** Optional unique identifier for the message */
+  /**
+   * Optional unique identifier for the message
+   *
+   * This should not contain the '.' character
+   */
   eventId?: string | null;
   /** The event type's name */
   eventType: string;

@@ -13,6 +13,7 @@ from .event_bridge_config_patch import EventBridgeConfigPatch
 from .google_cloud_pub_sub_config_patch import GoogleCloudPubSubConfigPatch
 from .google_cloud_storage_config_patch import GoogleCloudStorageConfigPatch
 from .otel_tracing_config_patch import OtelTracingConfigPatch
+from .post_hog_config_patch import PostHogConfigPatch
 from .postgres_config_patch import PostgresConfigPatch
 from .rabbit_mq_config_patch import RabbitMqConfigPatch
 from .redshift_config_patch import RedshiftConfigPatch
@@ -58,6 +59,7 @@ class StreamSinkPatch(BaseModel):
         t.Literal["redshift"],
         t.Literal["postgres"],
         t.Literal["elasticSearch"],
+        t.Literal["postHog"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -77,6 +79,7 @@ class StreamSinkPatch(BaseModel):
         RedshiftConfigPatch,
         PostgresConfigPatch,
         ElasticSearchConfigPatch,
+        PostHogConfigPatch,
     ]
 
     @model_validator(mode="wrap")
@@ -135,6 +138,8 @@ class StreamSinkPatch(BaseModel):
             output.config = ElasticSearchConfigPatch.model_validate(
                 data.get("config", {})
             )
+        elif output.type == "postHog":
+            output.config = PostHogConfigPatch.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

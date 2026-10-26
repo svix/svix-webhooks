@@ -21,6 +21,7 @@ public class ElasticSearchConfigOut {
     @JsonProperty private String indexName;
     @JsonProperty private URI url;
     @JsonProperty private Boolean refresh;
+    @JsonProperty private ElasticSearchOperation operation;
 
     public ElasticSearchConfigOut() {}
 
@@ -79,6 +80,25 @@ public class ElasticSearchConfigOut {
 
     public void setRefresh(Boolean refresh) {
         this.refresh = refresh;
+    }
+
+    public ElasticSearchConfigOut operation(ElasticSearchOperation operation) {
+        this.operation = operation;
+        return this;
+    }
+
+    /**
+     * Get operation
+     *
+     * @return operation
+     */
+    @javax.annotation.Nonnull
+    public ElasticSearchOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(ElasticSearchOperation operation) {
+        this.operation = operation;
     }
 
     /**

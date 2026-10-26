@@ -8,7 +8,9 @@ from .common import BaseModel
 
 class MessageIn(BaseModel):
     event_id: t.Optional[str] = None
-    """Optional unique identifier for the message"""
+    """Optional unique identifier for the message
+
+    This should not contain the '.' character"""
 
     event_type: str
     """The event type's name"""

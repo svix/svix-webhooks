@@ -11,6 +11,7 @@ require_relative "./event_bridge_config_patch"
 require_relative "./google_cloud_pub_sub_config_patch"
 require_relative "./google_cloud_storage_config_patch"
 require_relative "./otel_tracing_config_patch"
+require_relative "./post_hog_config_patch"
 require_relative "./postgres_config_patch"
 require_relative "./rabbit_mq_config_patch"
 require_relative "./redshift_config_patch"
@@ -85,6 +86,9 @@ module Svix
 
     class ElasticSearch < ElasticSearchConfigPatch
     end
+
+    class PostHog < PostHogConfigPatch
+    end
   end
 
   class DestinationPatch
@@ -117,7 +121,8 @@ module Svix
       DestinationPatchConfig::RabbitMq => "rabbitMq",
       DestinationPatchConfig::Redshift => "redshift",
       DestinationPatchConfig::Postgres => "postgres",
-      DestinationPatchConfig::ElasticSearch => "elasticSearch"
+      DestinationPatchConfig::ElasticSearch => "elasticSearch",
+      DestinationPatchConfig::PostHog => "postHog"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

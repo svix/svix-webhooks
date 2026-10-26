@@ -34,6 +34,7 @@ public class MessageEndpointOut {
     @JsonProperty private Set<String> channels;
     @JsonProperty private OffsetDateTime createdAt;
     @JsonProperty private OffsetDateTime updatedAt;
+    @JsonProperty private OffsetDateTime expiry;
 
     public MessageEndpointOut() {}
 
@@ -302,6 +303,25 @@ public class MessageEndpointOut {
 
     public void setUpdatedAt(OffsetDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public MessageEndpointOut expiry(OffsetDateTime expiry) {
+        this.expiry = expiry;
+        return this;
+    }
+
+    /**
+     * When the endpoint expires, if ever. No messages are sent to the endpoint after this time.
+     *
+     * @return expiry
+     */
+    @javax.annotation.Nullable
+    public OffsetDateTime getExpiry() {
+        return expiry;
+    }
+
+    public void setExpiry(OffsetDateTime expiry) {
+        this.expiry = expiry;
     }
 
     /**

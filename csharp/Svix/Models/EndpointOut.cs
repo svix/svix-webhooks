@@ -39,6 +39,9 @@ namespace Svix.Models
         [JsonProperty("updatedAt", Required = Required.Always)]
         public required DateTime UpdatedAt { get; set; }
 
+        [JsonProperty("expiry")]
+        public DateTime? Expiry { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -55,6 +58,7 @@ namespace Svix.Models
             sb.Append("  Channels: ").Append(Channels).Append('\n');
             sb.Append("  CreatedAt: ").Append(CreatedAt).Append('\n');
             sb.Append("  UpdatedAt: ").Append(UpdatedAt).Append('\n');
+            sb.Append("  Expiry: ").Append(Expiry).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

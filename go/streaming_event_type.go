@@ -24,8 +24,15 @@ type StreamingEventTypeListOptions struct {
 
 	// The sorting order of the returned items
 	Order *models.Ordering
-	// Include archived (deleted but not expunged) items in the response.
+	// Include archived items in the response.
+	//
+	// Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
 	IncludeArchived *bool
+
+	// Which items to include based on whether they are archived.
+	//
+	// Defaults to `active`.
+	ArchiveStatus *models.ArchiveStatus
 }
 
 type StreamingEventTypeCreateOptions struct {
@@ -33,7 +40,7 @@ type StreamingEventTypeCreateOptions struct {
 }
 
 type StreamingEventTypeDeleteOptions struct {
-	// By default, event types are archived when "deleted". With this flag, they are deleted entirely.
+	// Entirely delete the event type, rather than archiving it.
 	Expunge *bool
 }
 
@@ -52,6 +59,7 @@ func (streamingEventType StreamingEventType) List(
 	internal.SerializeParamToMap("iterator", o.Iterator, queryMap, &err)
 	internal.SerializeParamToMap("order", o.Order, queryMap, &err)
 	internal.SerializeParamToMap("include_archived", o.IncludeArchived, queryMap, &err)
+	internal.SerializeParamToMap("archive_status", o.ArchiveStatus, queryMap, &err)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +144,10 @@ func (streamingEventType StreamingEventType) Upsert(
 	)
 }
 
-// Delete an event type.
+// Archive an event type.
+//
+// An event type can be unarchived with the
+// [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
 func (streamingEventType StreamingEventType) Delete(
 	ctx context.Context,
 	name string,

@@ -5,6 +5,8 @@ require "json"
 module Svix
   class MessageIn
     # Optional unique identifier for the message
+    #
+    # This should not contain the '.' character
     attr_accessor :event_id
     # The event type's name
     attr_accessor :event_type

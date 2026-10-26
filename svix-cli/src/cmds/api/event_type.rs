@@ -18,9 +18,17 @@ pub struct EventTypeListOptions {
     #[arg(long)]
     pub order: Option<Ordering>,
 
-    /// When `true` archived (deleted but not expunged) items are included in the response.
+    /// Include archived items in the response.
+    ///
+    /// Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
     #[arg(long)]
     pub include_archived: Option<bool>,
+
+    /// Which items to include based on whether they are archived.
+    ///
+    /// Defaults to `active`.
+    #[arg(long)]
+    pub archive_status: Option<ArchiveStatus>,
 
     /// When `true` the full item (including the schema) is included in the response.
     #[arg(long)]
@@ -34,6 +42,7 @@ impl From<EventTypeListOptions> for svix::api::EventTypeListOptions {
             iterator,
             order,
             include_archived,
+            archive_status,
             with_content,
         } = value;
         Self {
@@ -41,6 +50,7 @@ impl From<EventTypeListOptions> for svix::api::EventTypeListOptions {
             iterator,
             order,
             include_archived,
+            archive_status,
             with_content,
         }
     }
@@ -111,6 +121,11 @@ pub enum EventTypeCommands {
   \"data\": [{
     \"name\": \"user.signup\",
     \"description\": \"A user has signed up\",
+    \"descriptionTranslations\": {
+      \"en\": \"A user has signed up\",
+      \"es\": \"Un usuario se ha registrado\",
+      \"pt-BR\": \"Um usuário se cadastrou\"
+    },
     \"archived\": false,
     \"deprecated\": true,
     \"schemas\": {
@@ -162,6 +177,11 @@ pub enum EventTypeCommands {
 {
   \"name\": \"user.signup\",
   \"description\": \"A user has signed up\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": false,
   \"deprecated\": true,
   \"schemas\": {
@@ -188,6 +208,11 @@ pub enum EventTypeCommands {
 {
   \"name\": \"user.signup\",
   \"description\": \"A user has signed up\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": false,
   \"deprecated\": true,
   \"schemas\": {
@@ -324,6 +349,11 @@ pub enum EventTypeCommands {
 {
   \"name\": \"user.signup\",
   \"description\": \"A user has signed up\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": false,
   \"deprecated\": true,
   \"schemas\": {
@@ -363,6 +393,11 @@ pub enum EventTypeCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"A user has signed up\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": false,
   \"deprecated\": true,
   \"schemas\": {
@@ -389,6 +424,11 @@ pub enum EventTypeCommands {
 {
   \"name\": \"user.signup\",
   \"description\": \"A user has signed up\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": false,
   \"deprecated\": true,
   \"schemas\": {
@@ -424,7 +464,7 @@ pub enum EventTypeCommands {
     /// Endpoints already configured to filter on an event type will continue to do so after archival.
     /// However, new messages can not be sent with it and endpoints can not filter on it.
     /// An event type can be unarchived with the
-    /// [create operation](#operation/create_event_type_api_v1_event_type__post).
+    /// [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",
@@ -450,6 +490,11 @@ pub enum EventTypeCommands {
     #[command(after_help = "Example body:
 {
   \"description\": \"...\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": true,
   \"deprecated\": true,
   \"schemas\": {
@@ -474,6 +519,11 @@ pub enum EventTypeCommands {
 {
   \"name\": \"user.signup\",
   \"description\": \"A user has signed up\",
+  \"descriptionTranslations\": {
+    \"en\": \"A user has signed up\",
+    \"es\": \"Un usuario se ha registrado\",
+    \"pt-BR\": \"Um usuário se cadastrou\"
+  },
   \"archived\": false,
   \"deprecated\": true,
   \"schemas\": {

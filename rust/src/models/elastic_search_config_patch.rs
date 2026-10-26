@@ -3,6 +3,8 @@
 use js_option::JsOption;
 use serde::{Deserialize, Serialize};
 
+use super::elastic_search_operation::ElasticSearchOperation;
+
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct ElasticSearchConfigPatch {
     #[serde(rename = "indexName")]
@@ -18,6 +20,9 @@ pub struct ElasticSearchConfigPatch {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub refresh: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub operation: Option<ElasticSearchOperation>,
 }
 
 impl ElasticSearchConfigPatch {
@@ -27,6 +32,7 @@ impl ElasticSearchConfigPatch {
             url: None,
             api_key: None,
             refresh: None,
+            operation: None,
         }
     }
 }

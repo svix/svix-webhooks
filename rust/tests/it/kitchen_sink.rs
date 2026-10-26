@@ -40,15 +40,7 @@ async fn test_endpoint_crud() {
     if let Err(e) = client
         .event_type()
         .create(
-            EventTypeIn {
-                name: "event.started".to_owned(),
-                description: "Something started".to_owned(),
-                archived: None,
-                deprecated: None,
-                feature_flags: None,
-                group_name: None,
-                schemas: None,
-            },
+            EventTypeIn::new("event.started".to_owned(), "Something started".to_owned()),
             None,
         )
         .await
@@ -59,15 +51,7 @@ async fn test_endpoint_crud() {
     if let Err(e) = client
         .event_type()
         .create(
-            EventTypeIn {
-                name: "event.ended".to_owned(),
-                description: "Something ended".to_owned(),
-                archived: None,
-                deprecated: None,
-                feature_flags: None,
-                group_name: None,
-                schemas: None,
-            },
+            EventTypeIn::new("event.ended".to_owned(), "Something ended".to_owned()),
             None,
         )
         .await

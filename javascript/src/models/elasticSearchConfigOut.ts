@@ -1,9 +1,14 @@
 // this file is @generated
+import {
+  type ElasticSearchOperation,
+  ElasticSearchOperationSerializer,
+} from "./elasticSearchOperation";
 
 export interface ElasticSearchConfigOut {
   indexName: string;
   url: string;
   refresh: boolean;
+  operation: ElasticSearchOperation;
 }
 
 export const ElasticSearchConfigOutSerializer = {
@@ -12,6 +17,7 @@ export const ElasticSearchConfigOutSerializer = {
       indexName: object["indexName"],
       url: object["url"],
       refresh: object["refresh"],
+      operation: ElasticSearchOperationSerializer._fromJsonObject(object["operation"]),
     };
   },
 
@@ -20,6 +26,7 @@ export const ElasticSearchConfigOutSerializer = {
       indexName: self.indexName,
       url: self.url,
       refresh: self.refresh,
+      operation: ElasticSearchOperationSerializer._toJsonObject(self.operation),
     };
   },
 };

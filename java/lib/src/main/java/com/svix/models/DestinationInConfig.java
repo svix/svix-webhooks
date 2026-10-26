@@ -272,6 +272,21 @@ public abstract class DestinationInConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postHog")
+    public static class PostHog extends DestinationInConfig {
+        private final PostHogConfigIn postHog;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postHog);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         DestinationInConfig create(JsonNode config);
@@ -308,6 +323,7 @@ public abstract class DestinationInConfig {
         TY_M.put(
                 "elasticSearch",
                 c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigIn.class)));
+        TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigIn.class)));
     }
 
     public static DestinationInConfig fromTypeAndConfig(String type, JsonNode config) {

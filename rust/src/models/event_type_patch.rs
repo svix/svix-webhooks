@@ -8,6 +8,11 @@ pub struct EventTypePatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
+    /// Translated descriptions keyed by BCP 47 language tag.
+    #[serde(rename = "descriptionTranslations")]
+    #[serde(default, skip_serializing_if = "JsOption::is_undefined")]
+    pub description_translations: JsOption<std::collections::BTreeMap<String, String>>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archived: Option<bool>,
 
@@ -31,6 +36,7 @@ impl EventTypePatch {
     pub fn new() -> Self {
         Self {
             description: None,
+            description_translations: JsOption::Undefined,
             archived: None,
             deprecated: None,
             schemas: JsOption::Undefined,

@@ -10,9 +10,11 @@ class MessageIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null $eventId   Optional unique identifier for the message
-     * @param string      $eventType The event type's name
-     * @param array       $payload   JSON payload to send as the request body of the webhook.
+     * @param string|null $eventId Optional unique identifier for the message
+     *
+     * This should not contain the '.' character
+     * @param string $eventType The event type's name
+     * @param array  $payload   JSON payload to send as the request body of the webhook.
      *
      * We also support sending non-JSON payloads. Please contact us for more information.
      *

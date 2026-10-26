@@ -5,6 +5,11 @@ use serde::{Deserialize, Serialize};
 pub struct EventTypeUpsertIn {
     pub description: String,
 
+    /// Translated descriptions keyed by BCP 47 language tag.
+    #[serde(rename = "descriptionTranslations")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description_translations: Option<std::collections::BTreeMap<String, String>>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archived: Option<bool>,
 
@@ -29,6 +34,7 @@ impl EventTypeUpsertIn {
     pub fn new(description: String) -> Self {
         Self {
             description,
+            description_translations: None,
             archived: None,
             deprecated: None,
             schemas: None,

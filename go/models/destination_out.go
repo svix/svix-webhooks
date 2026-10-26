@@ -18,6 +18,7 @@ import (
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
 //   - "otelTracing": Use OtelTracingConfigOut
 //   - "postgres": Use PostgresConfigOut
+//   - "postHog": Use PostHogConfigOut
 //   - "rabbitMq": Use RabbitMqConfigOut
 //   - "redshift": Use RedshiftConfigOut
 //   - "amazonS3": Use S3ConfigOut
@@ -63,6 +64,7 @@ const (
 	DestinationOutTypeSns                DestinationOutType = "sns"
 	DestinationOutTypePostgres           DestinationOutType = "postgres"
 	DestinationOutTypeElasticSearch      DestinationOutType = "elasticSearch"
+	DestinationOutTypePostHog            DestinationOutType = "postHog"
 )
 
 type DestinationOutConfig interface {
@@ -86,6 +88,7 @@ func (EventBridgeConfigOut) isDestinationOutConfig()        {}
 func (SnsConfigOut) isDestinationOutConfig()                {}
 func (PostgresConfigOut) isDestinationOutConfig()           {}
 func (ElasticSearchConfigOut) isDestinationOutConfig()      {}
+func (PostHogConfigOut) isDestinationOutConfig()            {}
 
 func (i *DestinationOut) UnmarshalJSON(data []byte) error {
 	type Alias DestinationOut
@@ -135,6 +138,10 @@ func (i *DestinationOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "postgres":
 		var c PostgresConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postHog":
+		var c PostHogConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
@@ -202,4 +209,5 @@ var DestinationOutTypeFromString = map[string]DestinationOutType{
 	"sns":                DestinationOutTypeSns,
 	"postgres":           DestinationOutTypePostgres,
 	"elasticSearch":      DestinationOutTypeElasticSearch,
+	"postHog":            DestinationOutTypePostHog,
 }

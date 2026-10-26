@@ -2,6 +2,7 @@
 import typing as t
 
 from .common import BaseModel
+from .elastic_search_operation import ElasticSearchOperation
 
 
 class ElasticSearchConfigPatch(BaseModel):
@@ -12,3 +13,5 @@ class ElasticSearchConfigPatch(BaseModel):
     api_key: t.Optional[str] = None
 
     refresh: t.Optional[bool] = None
+
+    operation: t.Optional[ElasticSearchOperation] = None

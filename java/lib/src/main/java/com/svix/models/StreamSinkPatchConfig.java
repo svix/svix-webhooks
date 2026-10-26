@@ -272,6 +272,21 @@ public abstract class StreamSinkPatchConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postHog")
+    public static class PostHog extends StreamSinkPatchConfig {
+        private final PostHogConfigPatch postHog;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postHog);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkPatchConfig create(JsonNode config);
@@ -312,6 +327,7 @@ public abstract class StreamSinkPatchConfig {
         TY_M.put(
                 "elasticSearch",
                 c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigPatch.class)));
+        TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigPatch.class)));
     }
 
     public static StreamSinkPatchConfig fromTypeAndConfig(String type, JsonNode config) {

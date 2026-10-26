@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin
 
+import com.svix.kotlin.models.ArchiveStatus
 import com.svix.kotlin.models.EventTypeImportOpenApiIn
 import com.svix.kotlin.models.EventTypeImportOpenApiOut
 import com.svix.kotlin.models.EventTypeIn
@@ -18,8 +19,18 @@ data class EventTypeListOptions(
     val iterator: String? = null,
     /** The sorting order of the returned items */
     val order: Ordering? = null,
-    /** When `true` archived (deleted but not expunged) items are included in the response. */
+    /**
+     * Include archived items in the response.
+     *
+     * Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
+     */
     val includeArchived: Boolean? = null,
+    /**
+     * Which items to include based on whether they are archived.
+     *
+     * Defaults to `active`.
+     */
+    val archiveStatus: ArchiveStatus? = null,
     /** When `true` the full item (including the schema) is included in the response. */
     val withContent: Boolean? = null,
 )
@@ -47,6 +58,9 @@ class EventType(private val client: SvixHttpClient) {
         options.order?.let { url.addQueryParameter("order", serializeQueryParam(it)) }
         options.includeArchived?.let {
             url.addQueryParameter("include_archived", serializeQueryParam(it))
+        }
+        options.archiveStatus?.let {
+            url.addQueryParameter("archive_status", serializeQueryParam(it))
         }
 
         url.addQueryParameter(
@@ -123,8 +137,8 @@ class EventType(private val client: SvixHttpClient) {
      *
      * Endpoints already configured to filter on an event type will continue to do so after
      * archival. However, new messages can not be sent with it and endpoints can not filter on it.
-     * An event type can be unarchived with the
-     * [create operation](#operation/create_event_type_api_v1_event_type__post).
+     * An event type can be unarchived with the [patch operation](#operation/v1.event-type.patch) by
+     * setting `archived` to `false`.
      */
     suspend fun delete(
         eventTypeName: String,

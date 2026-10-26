@@ -18,6 +18,7 @@ import (
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
 //   - "otelTracing": Use OtelTracingConfigOut
 //   - "postgres": Use PostgresConfigOut
+//   - "postHog": Use PostHogConfigOut
 //   - "rabbitMq": Use RabbitMqConfigOut
 //   - "redshift": Use RedshiftConfigOut
 //   - "amazonS3": Use S3ConfigOut
@@ -64,6 +65,7 @@ const (
 	StreamSinkOutTypeSns                StreamSinkOutType = "sns"
 	StreamSinkOutTypePostgres           StreamSinkOutType = "postgres"
 	StreamSinkOutTypeElasticSearch      StreamSinkOutType = "elasticSearch"
+	StreamSinkOutTypePostHog            StreamSinkOutType = "postHog"
 )
 
 type StreamSinkOutConfig interface {
@@ -87,6 +89,7 @@ func (EventBridgeConfigOut) isStreamSinkOutConfig()        {}
 func (SnsConfigOut) isStreamSinkOutConfig()                {}
 func (PostgresConfigOut) isStreamSinkOutConfig()           {}
 func (ElasticSearchConfigOut) isStreamSinkOutConfig()      {}
+func (PostHogConfigOut) isStreamSinkOutConfig()            {}
 
 func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkOut
@@ -136,6 +139,10 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "postgres":
 		var c PostgresConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postHog":
+		var c PostHogConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
@@ -205,4 +212,5 @@ var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"sns":                StreamSinkOutTypeSns,
 	"postgres":           StreamSinkOutTypePostgres,
 	"elasticSearch":      StreamSinkOutTypeElasticSearch,
+	"postHog":            StreamSinkOutTypePostHog,
 }

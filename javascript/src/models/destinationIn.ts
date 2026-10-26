@@ -36,6 +36,7 @@ import {
   type OtelTracingConfigIn,
   OtelTracingConfigInSerializer,
 } from "./otelTracingConfigIn";
+import { type PostHogConfigIn, PostHogConfigInSerializer } from "./postHogConfigIn";
 import { type PostgresConfigIn, PostgresConfigInSerializer } from "./postgresConfigIn";
 import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
 import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
@@ -169,6 +170,11 @@ interface DestinationInElasticSearch {
   config: ElasticSearchConfigIn;
 }
 
+interface DestinationInPostHog {
+  type: "postHog";
+  config: PostHogConfigIn;
+}
+
 /** The destination's type and type-specific configuration. */
 export type DestinationIn = _DestinationInFields &
   (
@@ -189,6 +195,7 @@ export type DestinationIn = _DestinationInFields &
     | DestinationInRedshift
     | DestinationInPostgres
     | DestinationInElasticSearch
+    | DestinationInPostHog
   );
 
 export const DestinationInSerializer = {
@@ -231,6 +238,8 @@ export const DestinationInSerializer = {
           return PostgresConfigInSerializer._fromJsonObject(object["config"]);
         case "elasticSearch":
           return ElasticSearchConfigInSerializer._fromJsonObject(object["config"]);
+        case "postHog":
+          return PostHogConfigInSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -306,6 +315,9 @@ export const DestinationInSerializer = {
         break;
       case "elasticSearch":
         config = ElasticSearchConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "postHog":
+        config = PostHogConfigInSerializer._toJsonObject(self.config);
         break;
     }
 

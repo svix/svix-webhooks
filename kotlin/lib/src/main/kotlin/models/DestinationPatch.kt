@@ -135,6 +135,12 @@ sealed class DestinationPatchConfig {
             Json.encodeToJsonElement(ElasticSearchConfigPatch.serializer(), elasticSearch)
     }
 
+    @VariantName("postHog")
+    data class PostHog(val postHog: PostHogConfigPatch) : DestinationPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostHogConfigPatch.serializer(), postHog)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> DestinationPatchConfig>(
@@ -240,6 +246,10 @@ sealed class DestinationPatchConfig {
                                 config,
                             )
                         )
+                    },
+                "postHog" to
+                    { config ->
+                        PostHog(Json.decodeFromJsonElement(PostHogConfigPatch.serializer(), config))
                     },
             )
 

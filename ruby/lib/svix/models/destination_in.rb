@@ -12,6 +12,7 @@ require_relative "./fifo_endpoint_config_in"
 require_relative "./google_cloud_pub_sub_config_in"
 require_relative "./google_cloud_storage_config_in"
 require_relative "./otel_tracing_config_in"
+require_relative "./post_hog_config_in"
 require_relative "./postgres_config_in"
 require_relative "./rabbit_mq_config_in"
 require_relative "./redshift_config_in"
@@ -85,6 +86,9 @@ module Svix
 
     class ElasticSearch < ElasticSearchConfigIn
     end
+
+    class PostHog < PostHogConfigIn
+    end
   end
 
   # The destination's type and type-specific configuration.
@@ -136,7 +140,8 @@ module Svix
       DestinationInConfig::RabbitMq => "rabbitMq",
       DestinationInConfig::Redshift => "redshift",
       DestinationInConfig::Postgres => "postgres",
-      DestinationInConfig::ElasticSearch => "elasticSearch"
+      DestinationInConfig::ElasticSearch => "elasticSearch",
+      DestinationInConfig::PostHog => "postHog"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

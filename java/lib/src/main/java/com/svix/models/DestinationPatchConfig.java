@@ -272,6 +272,21 @@ public abstract class DestinationPatchConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postHog")
+    public static class PostHog extends DestinationPatchConfig {
+        private final PostHogConfigPatch postHog;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postHog);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         DestinationPatchConfig create(JsonNode config);
@@ -314,6 +329,7 @@ public abstract class DestinationPatchConfig {
         TY_M.put(
                 "elasticSearch",
                 c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigPatch.class)));
+        TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigPatch.class)));
     }
 
     public static DestinationPatchConfig fromTypeAndConfig(String type, JsonNode config) {

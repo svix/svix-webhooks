@@ -8,9 +8,10 @@ use super::{
     event_bridge_config_out::EventBridgeConfigOut,
     google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
-    otel_tracing_config_out::OtelTracingConfigOut, postgres_config_out::PostgresConfigOut,
-    rabbit_mq_config_out::RabbitMqConfigOut, redshift_config_out::RedshiftConfigOut,
-    s3_config_out::S3ConfigOut, sink_http_config_out::SinkHttpConfigOut, sink_status::SinkStatus,
+    otel_tracing_config_out::OtelTracingConfigOut, post_hog_config_out::PostHogConfigOut,
+    postgres_config_out::PostgresConfigOut, rabbit_mq_config_out::RabbitMqConfigOut,
+    redshift_config_out::RedshiftConfigOut, s3_config_out::S3ConfigOut,
+    sink_http_config_out::SinkHttpConfigOut, sink_status::SinkStatus,
     snowflake_config_out::SnowflakeConfigOut, sns_config_out::SnsConfigOut,
     sqs_config_out::SqsConfigOut,
 };
@@ -101,4 +102,6 @@ pub enum StreamSinkOutConfig {
     Postgres(PostgresConfigOut),
     #[serde(rename = "elasticSearch")]
     ElasticSearch(ElasticSearchConfigOut),
+    #[serde(rename = "postHog")]
+    PostHog(PostHogConfigOut),
 }

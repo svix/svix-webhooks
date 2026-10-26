@@ -1519,9 +1519,9 @@
                             "description": "The iterator returned from a prior invocation",
                             "type": "string",
                             "maxLength": 31,
-                            "minLength": 31,
-                            "pattern": "^key_[A-Za-z0-9]{27}$",
-                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "minLength": 25,
+                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA",
                             "nullable": true
                         },
                         "style": "form"
@@ -1787,15 +1787,15 @@
                     {
                         "in": "path",
                         "name": "token_id",
-                        "description": "The ApplicationToken's ID.",
+                        "description": "The MCP token's ID.",
                         "required": true,
                         "schema": {
-                            "description": "The ApplicationToken's ID.",
+                            "description": "The MCP token's ID.",
                             "type": "string",
                             "maxLength": 31,
-                            "minLength": 31,
-                            "pattern": "^key_[A-Za-z0-9]{27}$",
-                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                            "minLength": 25,
+                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                         },
                         "style": "simple"
                     }
@@ -1913,9 +1913,9 @@
                             "description": "The iterator returned from a prior invocation",
                             "type": "string",
                             "maxLength": 31,
-                            "minLength": 31,
-                            "pattern": "^key_[A-Za-z0-9]{27}$",
-                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2",
+                            "minLength": 25,
+                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA",
                             "nullable": true
                         },
                         "style": "form"
@@ -2151,15 +2151,15 @@
                     {
                         "in": "path",
                         "name": "token_id",
-                        "description": "The ApplicationToken's ID.",
+                        "description": "The MCP token's ID.",
                         "required": true,
                         "schema": {
-                            "description": "The ApplicationToken's ID.",
+                            "description": "The MCP token's ID.",
                             "type": "string",
                             "maxLength": 31,
-                            "minLength": 31,
-                            "pattern": "^key_[A-Za-z0-9]{27}$",
-                            "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                            "minLength": 25,
+                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                         },
                         "style": "simple"
                     }
@@ -12580,11 +12580,23 @@
                     {
                         "in": "query",
                         "name": "include_archived",
-                        "description": "When `true` archived (deleted but not expunged) items are included in the response.",
+                        "description": "Include archived items in the response.\n\nDeprecated, use `archive_status` instead. Ignored when `archive_status` is set.",
                         "schema": {
-                            "description": "When `true` archived (deleted but not expunged) items are included in the response.",
+                            "description": "Include archived items in the response.\n\nDeprecated, use `archive_status` instead. Ignored when `archive_status` is set.",
                             "type": "boolean",
+                            "deprecated": true,
                             "default": false
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "archive_status",
+                        "description": "Which items to include based on whether they are archived.\n\nDefaults to `active`.",
+                        "schema": {
+                            "description": "Which items to include based on whether they are archived.\n\nDefaults to `active`.",
+                            "$ref": "#/components/schemas/ArchiveStatus",
+                            "nullable": true
                         },
                         "style": "form"
                     },
@@ -12874,67 +12886,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.eventType.create({\n  name: \"user.signup\",\n  description: \"A user has signed up\",\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  groupName: \"user\",\n  featureFlags: [\"cool-new-feature\"],\n});"
+                        "source": "const response = await svix.eventType.create({\n  name: \"user.signup\",\n  description: \"A user has signed up\",\n  descriptionTranslations: {\n    en: \"A user has signed up\",\n    es: \"Un usuario se ha registrado\",\n    \"pt-BR\": \"Um usuário se cadastrou\",\n  },\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  groupName: \"user\",\n  featureFlags: [\"cool-new-feature\"],\n});"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.eventType.create({\n  name: \"user.signup\",\n  description: \"A user has signed up\",\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  groupName: \"user\",\n  featureFlags: [\"cool-new-feature\"],\n});"
+                        "source": "const response = await svix.eventType.create({\n  name: \"user.signup\",\n  description: \"A user has signed up\",\n  descriptionTranslations: {\n    en: \"A user has signed up\",\n    es: \"Un usuario se ha registrado\",\n    \"pt-BR\": \"Um usuário se cadastrou\",\n  },\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  groupName: \"user\",\n  featureFlags: [\"cool-new-feature\"],\n});"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.event_type.create(\n    EventTypeIn(\n        name=\"user.signup\",\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        group_name=\"user\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                        "source": "response = svix.event_type.create(\n    EventTypeIn(\n        name=\"user.signup\",\n        description=\"A user has signed up\",\n        description_translations={\n            \"en\": \"A user has signed up\",\n            \"es\": \"Un usuario se ha registrado\",\n            \"pt-BR\": \"Um usuário se cadastrou\",\n        },\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        group_name=\"user\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.event_type.create(\n    EventTypeIn(\n        name=\"user.signup\",\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        group_name=\"user\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
+                        "source": "response = await svix.event_type.create(\n    EventTypeIn(\n        name=\"user.signup\",\n        description=\"A user has signed up\",\n        description_translations={\n            \"en\": \"A user has signed up\",\n            \"es\": \"Un usuario se ha registrado\",\n            \"pt-BR\": \"Um usuário se cadastrou\",\n        },\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        group_name=\"user\",\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.EventType.Create(\n\tctx,\n\tEventTypeIn{\n\t\tName:         \"user.signup\",\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tGroupName:    new(\"user\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t},\n\tnil,\n)"
+                        "source": "response, err := svix.EventType.Create(\n\tctx,\n\tEventTypeIn{\n\t\tName:        \"user.signup\",\n\t\tDescription: \"A user has signed up\",\n\t\tDescriptionTranslations: &map[string]string{\n\t\t\t\"en\":    \"A user has signed up\",\n\t\t\t\"es\":    \"Un usuario se ha registrado\",\n\t\t\t\"pt-BR\": \"Um usuário se cadastrou\",\n\t\t},\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tGroupName:    new(\"user\"),\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t},\n\tnil,\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.eventType.create(\n        EventTypeIn(\n            name = \"user.signup\",\n            description = \"A user has signed up\",\n            archived = true,\n            deprecated = true,\n            schemas = mapOf(),\n            groupName = \"user\",\n            featureFlags = setOf(\"cool-new-feature\"),\n        )\n    )"
+                        "source": "val response =\n    svix.eventType.create(\n        EventTypeIn(\n            name = \"user.signup\",\n            description = \"A user has signed up\",\n            descriptionTranslations =\n                mapOf(\n                    \"en\" to \"A user has signed up\",\n                    \"es\" to \"Un usuario se ha registrado\",\n                    \"pt-BR\" to \"Um usuário se cadastrou\",\n                ),\n            archived = true,\n            deprecated = true,\n            schemas = mapOf(),\n            groupName = \"user\",\n            featureFlags = setOf(\"cool-new-feature\"),\n        )\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEventType()\n        .create(new EventTypeIn()\n            .name(\"user.signup\")\n            .description(\"A user has signed up\")\n            .archived(true)\n            .deprecated(true)\n            .schemas(Map.of())\n            .groupName(\"user\")\n            .featureFlags(Set.of(\"cool-new-feature\")));"
+                        "source": "var response = svix.getEventType()\n        .create(new EventTypeIn()\n            .name(\"user.signup\")\n            .description(\"A user has signed up\")\n            .descriptionTranslations(Map.ofEntries(\n                Map.entry(\"en\", \"A user has signed up\"),\n                Map.entry(\"es\", \"Un usuario se ha registrado\"),\n                Map.entry(\"pt-BR\", \"Um usuário se cadastrou\")))\n            .archived(true)\n            .deprecated(true)\n            .schemas(Map.of())\n            .groupName(\"user\")\n            .featureFlags(Set.of(\"cool-new-feature\")));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .event_type\n  .create(\n    {\n      name: \"user.signup\",\n      description: \"A user has signed up\",\n      archived: true,\n      deprecated: true,\n      schemas: {},\n      groupName: \"user\",\n      featureFlags: [\"cool-new-feature\"]\n    }\n  )"
+                        "source": "response = svix\n  .event_type\n  .create(\n    {\n      name: \"user.signup\",\n      description: \"A user has signed up\",\n      descriptionTranslations: {\n        :\"en\" => \"A user has signed up\",\n        :\"es\" => \"Un usuario se ha registrado\",\n        :\"pt-BR\" => \"Um usuário se cadastrou\"\n      },\n      archived: true,\n      deprecated: true,\n      schemas: {},\n      groupName: \"user\",\n      featureFlags: [\"cool-new-feature\"]\n    }\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .event_type()\n    .create(\n        EventTypeIn {\n            name: \"user.signup\".to_string(),\n            description: \"A user has signed up\".to_string(),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: Some(\n                serde_json::json!(\n                    { \"1\" : { \"description\" : \"An invoice was paid by a user\",\n                    \"properties\" : { \"invoiceId\" : { \"description\" :\n                    \"The invoice id\", \"type\" : \"string\" }, \"userId\" : { \"description\"\n                    : \"The user id\", \"type\" : \"string\" } }, \"required\" :\n                    [\"invoiceId\", \"userId\"], \"title\" : \"Invoice Paid Event\", \"type\" :\n                    \"object\" } }\n                ),\n            ),\n            group_name: Some(\"user\".to_string()),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n        },\n        None,\n    )\n    .await?;"
+                        "source": "let response = svix\n    .event_type()\n    .create(\n        EventTypeIn {\n            name: \"user.signup\".to_string(),\n            description: \"A user has signed up\".to_string(),\n            description_translations: Some(\n                HashMap::from([\n                    (\"en\".to_string(), \"A user has signed up\".to_string()),\n                    (\"es\".to_string(), \"Un usuario se ha registrado\".to_string()),\n                    (\"pt-BR\".to_string(), \"Um usuário se cadastrou\".to_string()),\n                ]),\n            ),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: Some(\n                serde_json::json!(\n                    { \"1\" : { \"description\" : \"An invoice was paid by a user\",\n                    \"properties\" : { \"invoiceId\" : { \"description\" :\n                    \"The invoice id\", \"type\" : \"string\" }, \"userId\" : { \"description\"\n                    : \"The user id\", \"type\" : \"string\" } }, \"required\" :\n                    [\"invoiceId\", \"userId\"], \"title\" : \"Invoice Paid Event\", \"type\" :\n                    \"object\" } }\n                ),\n            ),\n            group_name: Some(\"user\".to_string()),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n        },\n        None,\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.EventType.Create(\n    new EventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"A user has signed up\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        GroupName = \"user\",\n        FeatureFlags = [\"cool-new-feature\"],\n    }\n);"
+                        "source": "var response = svix.EventType.Create(\n    new EventTypeIn\n    {\n        Name = \"user.signup\",\n        Description = \"A user has signed up\",\n        DescriptionTranslations = new()\n        {\n            { \"en\", \"A user has signed up\" },\n            { \"es\", \"Un usuario se ha registrado\" },\n            { \"pt-BR\", \"Um usuário se cadastrou\" },\n        },\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        GroupName = \"user\",\n        FeatureFlags = [\"cool-new-feature\"],\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->eventType->create(\n    EventTypeIn::create(\n        name: \"user.signup\",\n        description: \"A user has signed up\"\n    )\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withGroupName(\"user\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
+                        "source": "$response = $svix->eventType->create(\n    EventTypeIn::create(\n        name: \"user.signup\",\n        description: \"A user has signed up\"\n    )\n    ->withDescriptionTranslations([\"en\" => \"A user has signed up\", \"es\" => \"Un usuario se ha registrado\", \"pt-BR\" => \"Um usuário se cadastrou\"])\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withGroupName(\"user\")\n    ->withFeatureFlags([\"cool-new-feature\"])\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix event-type create '{\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"groupName\": \"user\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
+                        "source": "svix event-type create '{\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"descriptionTranslations\": {\n      \"en\": \"A user has signed up\",\n      \"es\": \"Un usuario se ha registrado\",\n      \"pt-BR\": \"Um usuário se cadastrou\"\n    },\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"groupName\": \"user\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"groupName\": \"user\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/event-type' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"name\": \"user.signup\",\n    \"description\": \"A user has signed up\",\n    \"descriptionTranslations\": {\n      \"en\": \"A user has signed up\",\n      \"es\": \"Un usuario se ha registrado\",\n      \"pt-BR\": \"Um usuário se cadastrou\"\n    },\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"groupName\": \"user\",\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ]\n  }'"
                     }
                 ]
             }
@@ -13438,67 +13450,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.eventType.upsert(\"user.signup\", {\n  description: \"A user has signed up\",\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
+                        "source": "const response = await svix.eventType.upsert(\"user.signup\", {\n  description: \"A user has signed up\",\n  descriptionTranslations: {\n    en: \"A user has signed up\",\n    es: \"Un usuario se ha registrado\",\n    \"pt-BR\": \"Um usuário se cadastrou\",\n  },\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.eventType.upsert(\"user.signup\", {\n  description: \"A user has signed up\",\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
+                        "source": "const response = await svix.eventType.upsert(\"user.signup\", {\n  description: \"A user has signed up\",\n  descriptionTranslations: {\n    en: \"A user has signed up\",\n    es: \"Un usuario se ha registrado\",\n    \"pt-BR\": \"Um usuário se cadastrou\",\n  },\n  archived: true,\n  deprecated: true,\n  schemas: {\n    \"1\": {\n      description: \"An invoice was paid by a user\",\n      properties: {\n        invoiceId: { description: \"The invoice id\", type: \"string\" },\n        userId: { description: \"The user id\", type: \"string\" },\n      },\n      required: [\"invoiceId\", \"userId\"],\n      title: \"Invoice Paid Event\",\n      type: \"object\",\n    },\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpsertIn(\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
+                        "source": "response = svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpsertIn(\n        description=\"A user has signed up\",\n        description_translations={\n            \"en\": \"A user has signed up\",\n            \"es\": \"Un usuario se ha registrado\",\n            \"pt-BR\": \"Um usuário se cadastrou\",\n        },\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpsertIn(\n        description=\"A user has signed up\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
+                        "source": "response = await svix.event_type.upsert(\n    \"user.signup\",\n    EventTypeUpsertIn(\n        description=\"A user has signed up\",\n        description_translations={\n            \"en\": \"A user has signed up\",\n            \"es\": \"Un usuario se ha registrado\",\n            \"pt-BR\": \"Um usuário se cadastrou\",\n        },\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"1\": {\n                \"description\": \"An invoice was paid by a user\",\n                \"properties\": {\n                    \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                    \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n                },\n                \"required\": [\"invoiceId\", \"userId\"],\n                \"title\": \"Invoice Paid Event\",\n                \"type\": \"object\",\n            }\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.EventType.Upsert(\n\tctx,\n\t\"user.signup\",\n\tEventTypeUpsertIn{\n\t\tDescription:  \"A user has signed up\",\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tGroupName:    new(\"user\"),\n\t},\n)"
+                        "source": "response, err := svix.EventType.Upsert(\n\tctx,\n\t\"user.signup\",\n\tEventTypeUpsertIn{\n\t\tDescription: \"A user has signed up\",\n\t\tDescriptionTranslations: &map[string]string{\n\t\t\t\"en\":    \"A user has signed up\",\n\t\t\t\"es\":    \"Un usuario se ha registrado\",\n\t\t\t\"pt-BR\": \"Um usuário se cadastrou\",\n\t\t},\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      nil,\n\t\tFeatureFlags: []string{\"cool-new-feature\"},\n\t\tGroupName:    new(\"user\"),\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.eventType.upsert(\n        \"user.signup\",\n        EventTypeUpsertIn(\n            description = \"A user has signed up\",\n            archived = true,\n            deprecated = true,\n            schemas = mapOf(),\n            featureFlags = setOf(\"cool-new-feature\"),\n            groupName = \"user\",\n        ),\n    )"
+                        "source": "val response =\n    svix.eventType.upsert(\n        \"user.signup\",\n        EventTypeUpsertIn(\n            description = \"A user has signed up\",\n            descriptionTranslations =\n                mapOf(\n                    \"en\" to \"A user has signed up\",\n                    \"es\" to \"Un usuario se ha registrado\",\n                    \"pt-BR\" to \"Um usuário se cadastrou\",\n                ),\n            archived = true,\n            deprecated = true,\n            schemas = mapOf(),\n            featureFlags = setOf(\"cool-new-feature\"),\n            groupName = \"user\",\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEventType()\n        .upsert(\n            \"user.signup\",\n            new EventTypeUpsertIn()\n                .description(\"A user has signed up\")\n                .archived(true)\n                .deprecated(true)\n                .schemas(Map.of())\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .groupName(\"user\"));"
+                        "source": "var response = svix.getEventType()\n        .upsert(\n            \"user.signup\",\n            new EventTypeUpsertIn()\n                .description(\"A user has signed up\")\n                .descriptionTranslations(Map.ofEntries(\n                    Map.entry(\"en\", \"A user has signed up\"),\n                    Map.entry(\"es\", \"Un usuario se ha registrado\"),\n                    Map.entry(\"pt-BR\", \"Um usuário se cadastrou\")))\n                .archived(true)\n                .deprecated(true)\n                .schemas(Map.of())\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .groupName(\"user\"));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .event_type\n  .upsert(\n    \"user.signup\",\n    {\n      description: \"A user has signed up\",\n      archived: true,\n      deprecated: true,\n      schemas: {},\n      featureFlags: [\"cool-new-feature\"],\n      groupName: \"user\"\n    }\n  )"
+                        "source": "response = svix\n  .event_type\n  .upsert(\n    \"user.signup\",\n    {\n      description: \"A user has signed up\",\n      descriptionTranslations: {\n        :\"en\" => \"A user has signed up\",\n        :\"es\" => \"Un usuario se ha registrado\",\n        :\"pt-BR\" => \"Um usuário se cadastrou\"\n      },\n      archived: true,\n      deprecated: true,\n      schemas: {},\n      featureFlags: [\"cool-new-feature\"],\n      groupName: \"user\"\n    }\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .event_type()\n    .upsert(\n        \"user.signup\".to_string(),\n        EventTypeUpsertIn {\n            description: \"A user has signed up\".to_string(),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: Some(\n                serde_json::json!(\n                    { \"1\" : { \"description\" : \"An invoice was paid by a user\",\n                    \"properties\" : { \"invoiceId\" : { \"description\" :\n                    \"The invoice id\", \"type\" : \"string\" }, \"userId\" : { \"description\"\n                    : \"The user id\", \"type\" : \"string\" } }, \"required\" :\n                    [\"invoiceId\", \"userId\"], \"title\" : \"Invoice Paid Event\", \"type\" :\n                    \"object\" } }\n                ),\n            ),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n            group_name: Some(\"user\".to_string()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .event_type()\n    .upsert(\n        \"user.signup\".to_string(),\n        EventTypeUpsertIn {\n            description: \"A user has signed up\".to_string(),\n            description_translations: Some(\n                HashMap::from([\n                    (\"en\".to_string(), \"A user has signed up\".to_string()),\n                    (\"es\".to_string(), \"Un usuario se ha registrado\".to_string()),\n                    (\"pt-BR\".to_string(), \"Um usuário se cadastrou\".to_string()),\n                ]),\n            ),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: Some(\n                serde_json::json!(\n                    { \"1\" : { \"description\" : \"An invoice was paid by a user\",\n                    \"properties\" : { \"invoiceId\" : { \"description\" :\n                    \"The invoice id\", \"type\" : \"string\" }, \"userId\" : { \"description\"\n                    : \"The user id\", \"type\" : \"string\" } }, \"required\" :\n                    [\"invoiceId\", \"userId\"], \"title\" : \"Invoice Paid Event\", \"type\" :\n                    \"object\" } }\n                ),\n            ),\n            feature_flags: Some(vec![\"cool-new-feature\".to_string()]),\n            group_name: Some(\"user\".to_string()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.EventType.Upsert(\n    \"user.signup\",\n    new EventTypeUpsertIn\n    {\n        Description = \"A user has signed up\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = [\"cool-new-feature\"],\n        GroupName = \"user\",\n    }\n);"
+                        "source": "var response = svix.EventType.Upsert(\n    \"user.signup\",\n    new EventTypeUpsertIn\n    {\n        Description = \"A user has signed up\",\n        DescriptionTranslations = new()\n        {\n            { \"en\", \"A user has signed up\" },\n            { \"es\", \"Un usuario se ha registrado\" },\n            { \"pt-BR\", \"Um usuário se cadastrou\" },\n        },\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = [\"cool-new-feature\"],\n        GroupName = \"user\",\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->eventType->upsert(\n    \"user.signup\",\n    EventTypeUpsertIn::create(\n        description: \"A user has signed up\"\n    )\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withGroupName(\"user\")\n);"
+                        "source": "$response = $svix->eventType->upsert(\n    \"user.signup\",\n    EventTypeUpsertIn::create(\n        description: \"A user has signed up\"\n    )\n    ->withDescriptionTranslations([\"en\" => \"A user has signed up\", \"es\" => \"Un usuario se ha registrado\", \"pt-BR\" => \"Um usuário se cadastrou\"])\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withGroupName(\"user\")\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix event-type upsert \"user.signup\" '{\n    \"description\": \"A user has signed up\",\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
+                        "source": "svix event-type upsert \"user.signup\" '{\n    \"description\": \"A user has signed up\",\n    \"descriptionTranslations\": {\n      \"en\": \"A user has signed up\",\n      \"es\": \"Un usuario se ha registrado\",\n      \"pt-BR\": \"Um usuário se cadastrou\"\n    },\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/user.signup' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/event-type/user.signup' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"A user has signed up\",\n    \"descriptionTranslations\": {\n      \"en\": \"A user has signed up\",\n      \"es\": \"Un usuario se ha registrado\",\n      \"pt-BR\": \"Um usuário se cadastrou\"\n    },\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"1\": {\n        \"description\": \"An invoice was paid by a user\",\n        \"properties\": {\n          \"invoiceId\": {\n            \"description\": \"The invoice id\",\n            \"type\": \"string\"\n          },\n          \"userId\": {\n            \"description\": \"The user id\",\n            \"type\": \"string\"\n          }\n        },\n        \"required\": [\n          \"invoiceId\",\n          \"userId\"\n        ],\n        \"title\": \"Invoice Paid Event\",\n        \"type\": \"object\"\n      }\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
                     }
                 ]
             },
@@ -13507,7 +13519,7 @@
                     "Event Type"
                 ],
                 "summary": "Delete Event Type",
-                "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[create operation](#operation/create_event_type_api_v1_event_type__post).",
+                "description": "Archive an event type.\n\nEndpoints already configured to filter on an event type will continue to do so after archival.\nHowever, new messages can not be sent with it and endpoints can not filter on it.\nAn event type can be unarchived with the\n[patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`.",
                 "operationId": "v1.event-type.delete",
                 "parameters": [
                     {
@@ -13808,67 +13820,67 @@
                     {
                         "lang": "TypeScript",
                         "label": "JavaScript",
-                        "source": "const response = await svix.eventType.patch(\"user.signup\", {\n  description: \"sample string\",\n  archived: true,\n  deprecated: true,\n  schemas: {\n    description: \"An invoice was paid by a user\",\n    properties: {\n      invoiceId: { description: \"The invoice id\", type: \"string\" },\n      userId: { description: \"The user id\", type: \"string\" },\n    },\n    required: [\"invoiceId\", \"userId\"],\n    title: \"Invoice Paid Event\",\n    type: \"object\",\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
+                        "source": "const response = await svix.eventType.patch(\"user.signup\", {\n  description: \"sample string\",\n  descriptionTranslations: {\n    en: \"A user has signed up\",\n    es: \"Un usuario se ha registrado\",\n    \"pt-BR\": \"Um usuário se cadastrou\",\n  },\n  archived: true,\n  deprecated: true,\n  schemas: {\n    description: \"An invoice was paid by a user\",\n    properties: {\n      invoiceId: { description: \"The invoice id\", type: \"string\" },\n      userId: { description: \"The user id\", type: \"string\" },\n    },\n    required: [\"invoiceId\", \"userId\"],\n    title: \"Invoice Paid Event\",\n    type: \"object\",\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
                     },
                     {
                         "lang": "TypeScript",
                         "label": "TypeScript",
-                        "source": "const response = await svix.eventType.patch(\"user.signup\", {\n  description: \"sample string\",\n  archived: true,\n  deprecated: true,\n  schemas: {\n    description: \"An invoice was paid by a user\",\n    properties: {\n      invoiceId: { description: \"The invoice id\", type: \"string\" },\n      userId: { description: \"The user id\", type: \"string\" },\n    },\n    required: [\"invoiceId\", \"userId\"],\n    title: \"Invoice Paid Event\",\n    type: \"object\",\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
+                        "source": "const response = await svix.eventType.patch(\"user.signup\", {\n  description: \"sample string\",\n  descriptionTranslations: {\n    en: \"A user has signed up\",\n    es: \"Un usuario se ha registrado\",\n    \"pt-BR\": \"Um usuário se cadastrou\",\n  },\n  archived: true,\n  deprecated: true,\n  schemas: {\n    description: \"An invoice was paid by a user\",\n    properties: {\n      invoiceId: { description: \"The invoice id\", type: \"string\" },\n      userId: { description: \"The user id\", type: \"string\" },\n    },\n    required: [\"invoiceId\", \"userId\"],\n    title: \"Invoice Paid Event\",\n    type: \"object\",\n  },\n  featureFlags: [\"cool-new-feature\"],\n  groupName: \"user\",\n});"
                     },
                     {
                         "lang": "Python",
                         "label": "Python",
-                        "source": "response = svix.event_type.patch(\n    \"user.signup\",\n    EventTypePatch(\n        description=\"sample string\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"description\": \"An invoice was paid by a user\",\n            \"properties\": {\n                \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n            },\n            \"required\": [\"invoiceId\", \"userId\"],\n            \"title\": \"Invoice Paid Event\",\n            \"type\": \"object\",\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
+                        "source": "response = svix.event_type.patch(\n    \"user.signup\",\n    EventTypePatch(\n        description=\"sample string\",\n        description_translations={\n            \"en\": \"A user has signed up\",\n            \"es\": \"Un usuario se ha registrado\",\n            \"pt-BR\": \"Um usuário se cadastrou\",\n        },\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"description\": \"An invoice was paid by a user\",\n            \"properties\": {\n                \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n            },\n            \"required\": [\"invoiceId\", \"userId\"],\n            \"title\": \"Invoice Paid Event\",\n            \"type\": \"object\",\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
                     },
                     {
                         "lang": "Python",
                         "label": "Python (Async)",
-                        "source": "response = await svix.event_type.patch(\n    \"user.signup\",\n    EventTypePatch(\n        description=\"sample string\",\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"description\": \"An invoice was paid by a user\",\n            \"properties\": {\n                \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n            },\n            \"required\": [\"invoiceId\", \"userId\"],\n            \"title\": \"Invoice Paid Event\",\n            \"type\": \"object\",\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
+                        "source": "response = await svix.event_type.patch(\n    \"user.signup\",\n    EventTypePatch(\n        description=\"sample string\",\n        description_translations={\n            \"en\": \"A user has signed up\",\n            \"es\": \"Un usuario se ha registrado\",\n            \"pt-BR\": \"Um usuário se cadastrou\",\n        },\n        archived=True,\n        deprecated=True,\n        schemas={\n            \"description\": \"An invoice was paid by a user\",\n            \"properties\": {\n                \"invoiceId\": {\"description\": \"The invoice id\", \"type\": \"string\"},\n                \"userId\": {\"description\": \"The user id\", \"type\": \"string\"},\n            },\n            \"required\": [\"invoiceId\", \"userId\"],\n            \"title\": \"Invoice Paid Event\",\n            \"type\": \"object\",\n        },\n        feature_flags=[\n            \"cool-new-feature\",\n        ],\n        group_name=\"user\",\n    ),\n)"
                     },
                     {
                         "lang": "Go",
                         "label": "Go",
-                        "source": "response, err := svix.EventType.Patch(\n\tctx,\n\t\"user.signup\",\n\tEventTypePatch{\n\t\tDescription:  new(\"sample string\"),\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      NewUnsetNullable[map[string]any](),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tGroupName:    NewNullable(\"user\"),\n\t},\n)"
+                        "source": "response, err := svix.EventType.Patch(\n\tctx,\n\t\"user.signup\",\n\tEventTypePatch{\n\t\tDescription: new(\"sample string\"),\n\t\tDescriptionTranslations: NewNullable(\n\t\t\tmap[string]string{\n\t\t\t\t\"en\":    \"A user has signed up\",\n\t\t\t\t\"es\":    \"Un usuario se ha registrado\",\n\t\t\t\t\"pt-BR\": \"Um usuário se cadastrou\",\n\t\t\t},\n\t\t),\n\t\tArchived:     new(true),\n\t\tDeprecated:   new(true),\n\t\tSchemas:      NewUnsetNullable[map[string]any](),\n\t\tFeatureFlags: NewNullable([]string{\"cool-new-feature\"}),\n\t\tGroupName:    NewNullable(\"user\"),\n\t},\n)"
                     },
                     {
                         "lang": "Kotlin",
                         "label": "Kotlin",
-                        "source": "val response =\n    svix.eventType.patch(\n        \"user.signup\",\n        EventTypePatch(\n            description = \"sample string\",\n            archived = true,\n            deprecated = true,\n            schemas = MaybeUnset.Present(mapOf()),\n            featureFlags = MaybeUnset.Present(setOf(\"cool-new-feature\")),\n            groupName = MaybeUnset.Present(\"user\"),\n        ),\n    )"
+                        "source": "val response =\n    svix.eventType.patch(\n        \"user.signup\",\n        EventTypePatch(\n            description = \"sample string\",\n            descriptionTranslations =\n                MaybeUnset.Present(\n                    mapOf(\n                        \"en\" to \"A user has signed up\",\n                        \"es\" to \"Un usuario se ha registrado\",\n                        \"pt-BR\" to \"Um usuário se cadastrou\",\n                    )\n                ),\n            archived = true,\n            deprecated = true,\n            schemas = MaybeUnset.Present(mapOf()),\n            featureFlags = MaybeUnset.Present(setOf(\"cool-new-feature\")),\n            groupName = MaybeUnset.Present(\"user\"),\n        ),\n    )"
                     },
                     {
                         "lang": "Java",
                         "label": "Java",
-                        "source": "var response = svix.getEventType()\n        .patch(\n            \"user.signup\",\n            new EventTypePatch()\n                .description(\"sample string\")\n                .archived(true)\n                .deprecated(true)\n                .schemas(Map.of())\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .groupName(\"user\"));"
+                        "source": "var response = svix.getEventType()\n        .patch(\n            \"user.signup\",\n            new EventTypePatch()\n                .description(\"sample string\")\n                .descriptionTranslations(Map.ofEntries(\n                    Map.entry(\"en\", \"A user has signed up\"),\n                    Map.entry(\"es\", \"Un usuario se ha registrado\"),\n                    Map.entry(\"pt-BR\", \"Um usuário se cadastrou\")))\n                .archived(true)\n                .deprecated(true)\n                .schemas(Map.of())\n                .featureFlags(Set.of(\"cool-new-feature\"))\n                .groupName(\"user\"));"
                     },
                     {
                         "lang": "Ruby",
                         "label": "Ruby",
-                        "source": "response = svix\n  .event_type\n  .patch(\n    \"user.signup\",\n    {\n      description: \"sample string\",\n      archived: true,\n      deprecated: true,\n      schemas: {},\n      featureFlags: [\"cool-new-feature\"],\n      groupName: \"user\"\n    }\n  )"
+                        "source": "response = svix\n  .event_type\n  .patch(\n    \"user.signup\",\n    {\n      description: \"sample string\",\n      descriptionTranslations: {\n        :\"en\" => \"A user has signed up\",\n        :\"es\" => \"Un usuario se ha registrado\",\n        :\"pt-BR\" => \"Um usuário se cadastrou\"\n      },\n      archived: true,\n      deprecated: true,\n      schemas: {},\n      featureFlags: [\"cool-new-feature\"],\n      groupName: \"user\"\n    }\n  )"
                     },
                     {
                         "lang": "Rust",
                         "label": "Rust",
-                        "source": "let response = svix\n    .event_type()\n    .patch(\n        \"user.signup\".to_string(),\n        EventTypePatch {\n            description: Some(\"sample string\".to_string()),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: js_option::JsOption::Some(\n                serde_json::json!(\n                    { \"description\" : \"An invoice was paid by a user\", \"properties\" :\n                    { \"invoiceId\" : { \"description\" : \"The invoice id\", \"type\" :\n                    \"string\" }, \"userId\" : { \"description\" : \"The user id\", \"type\" :\n                    \"string\" } }, \"required\" : [\"invoiceId\", \"userId\"], \"title\" :\n                    \"Invoice Paid Event\", \"type\" : \"object\" }\n                ),\n            ),\n            feature_flags: js_option::JsOption::Some(\n                vec![\"cool-new-feature\".to_string()],\n            ),\n            group_name: js_option::JsOption::Some(\"user\".to_string()),\n        },\n    )\n    .await?;"
+                        "source": "let response = svix\n    .event_type()\n    .patch(\n        \"user.signup\".to_string(),\n        EventTypePatch {\n            description: Some(\"sample string\".to_string()),\n            description_translations: js_option::JsOption::Some(\n                HashMap::from([\n                    (\"en\".to_string(), \"A user has signed up\".to_string()),\n                    (\"es\".to_string(), \"Un usuario se ha registrado\".to_string()),\n                    (\"pt-BR\".to_string(), \"Um usuário se cadastrou\".to_string()),\n                ]),\n            ),\n            archived: Some(true),\n            deprecated: Some(true),\n            schemas: js_option::JsOption::Some(\n                serde_json::json!(\n                    { \"description\" : \"An invoice was paid by a user\", \"properties\" :\n                    { \"invoiceId\" : { \"description\" : \"The invoice id\", \"type\" :\n                    \"string\" }, \"userId\" : { \"description\" : \"The user id\", \"type\" :\n                    \"string\" } }, \"required\" : [\"invoiceId\", \"userId\"], \"title\" :\n                    \"Invoice Paid Event\", \"type\" : \"object\" }\n                ),\n            ),\n            feature_flags: js_option::JsOption::Some(\n                vec![\"cool-new-feature\".to_string()],\n            ),\n            group_name: js_option::JsOption::Some(\"user\".to_string()),\n        },\n    )\n    .await?;"
                     },
                     {
                         "lang": "C#",
                         "label": "C#",
-                        "source": "var response = svix.EventType.Patch(\n    \"user.signup\",\n    new EventTypePatch\n    {\n        Description = \"sample string\",\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n        GroupName = \"user\",\n    }\n);"
+                        "source": "var response = svix.EventType.Patch(\n    \"user.signup\",\n    new EventTypePatch\n    {\n        Description = \"sample string\",\n        DescriptionTranslations = MaybeUnset<Dictionary<string, string>?>.Set(\n            new()\n            {\n                { \"en\", \"A user has signed up\" },\n                { \"es\", \"Un usuario se ha registrado\" },\n                { \"pt-BR\", \"Um usuário se cadastrou\" },\n            }\n        ),\n        Archived = true,\n        Deprecated = true,\n        Schemas = new Dictionary<string, string> { },\n        FeatureFlags = MaybeUnset<List<string>?>.Set([\"cool-new-feature\"]),\n        GroupName = \"user\",\n    }\n);"
                     },
                     {
                         "lang": "PHP",
                         "label": "PHP",
-                        "source": "$response = $svix->eventType->patch(\n    \"user.signup\",\n    EventTypePatch::create()\n    ->withDescription(\"sample string\")\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withGroupName(\"user\")\n);"
+                        "source": "$response = $svix->eventType->patch(\n    \"user.signup\",\n    EventTypePatch::create()\n    ->withDescription(\"sample string\")\n    ->withDescriptionTranslations([\"en\" => \"A user has signed up\", \"es\" => \"Un usuario se ha registrado\", \"pt-BR\" => \"Um usuário se cadastrou\"])\n    ->withArchived(true)\n    ->withDeprecated(true)\n    ->withFeatureFlags([\"cool-new-feature\"])\n    ->withGroupName(\"user\")\n);"
                     },
                     {
                         "lang": "Shell",
                         "label": "CLI",
-                        "source": "svix event-type patch \"user.signup\" '{\n    \"description\": \"sample string\",\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"description\": \"An invoice was paid by a user\",\n      \"properties\": {\n        \"invoiceId\": {\n          \"description\": \"The invoice id\",\n          \"type\": \"string\"\n        },\n        \"userId\": {\n          \"description\": \"The user id\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"invoiceId\",\n        \"userId\"\n      ],\n      \"title\": \"Invoice Paid Event\",\n      \"type\": \"object\"\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
+                        "source": "svix event-type patch \"user.signup\" '{\n    \"description\": \"sample string\",\n    \"descriptionTranslations\": {\n      \"en\": \"A user has signed up\",\n      \"es\": \"Un usuario se ha registrado\",\n      \"pt-BR\": \"Um usuário se cadastrou\"\n    },\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"description\": \"An invoice was paid by a user\",\n      \"properties\": {\n        \"invoiceId\": {\n          \"description\": \"The invoice id\",\n          \"type\": \"string\"\n        },\n        \"userId\": {\n          \"description\": \"The user id\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"invoiceId\",\n        \"userId\"\n      ],\n      \"title\": \"Invoice Paid Event\",\n      \"type\": \"object\"\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
                     },
                     {
                         "lang": "Shell",
                         "label": "cURL",
-                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/user.signup' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"sample string\",\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"description\": \"An invoice was paid by a user\",\n      \"properties\": {\n        \"invoiceId\": {\n          \"description\": \"The invoice id\",\n          \"type\": \"string\"\n        },\n        \"userId\": {\n          \"description\": \"The user id\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"invoiceId\",\n        \"userId\"\n      ],\n      \"title\": \"Invoice Paid Event\",\n      \"type\": \"object\"\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
+                        "source": "curl -X 'PATCH' \\\n  'https://api.eu.svix.com/api/v1/event-type/user.signup' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"description\": \"sample string\",\n    \"descriptionTranslations\": {\n      \"en\": \"A user has signed up\",\n      \"es\": \"Un usuario se ha registrado\",\n      \"pt-BR\": \"Um usuário se cadastrou\"\n    },\n    \"archived\": true,\n    \"deprecated\": true,\n    \"schemas\": {\n      \"description\": \"An invoice was paid by a user\",\n      \"properties\": {\n        \"invoiceId\": {\n          \"description\": \"The invoice id\",\n          \"type\": \"string\"\n        },\n        \"userId\": {\n          \"description\": \"The user id\",\n          \"type\": \"string\"\n        }\n      },\n      \"required\": [\n        \"invoiceId\",\n        \"userId\"\n      ],\n      \"title\": \"Invoice Paid Event\",\n      \"type\": \"object\"\n    },\n    \"featureFlags\": [\n      \"cool-new-feature\"\n    ],\n    \"groupName\": \"user\"\n  }'"
                     }
                 ]
             }
@@ -17268,6 +17280,16 @@
                     },
                     "413": {
                         "description": "Payload too large",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "423": {
+                        "description": "Locked; a concurrent transaction is affecting the same data. You should retry this operation after a backoff.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -21673,6 +21695,160 @@
                 "x-internal": true
             }
         },
+        "/api/v1/stats/app/{app_id}/ep/{endpoint_id}/attempt": {
+            "get": {
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Get Ep Attempt Stats",
+                "description": "Returns endpoint-level statistics on message attempts",
+                "operationId": "v1.stats.endpoint-attempts",
+                "parameters": [
+                    {
+                        "in": "query",
+                        "name": "start_date",
+                        "description": "Filter the range to data starting from this date.",
+                        "schema": {
+                            "description": "Filter the range to data starting from this date.",
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "end_date",
+                        "description": "Filter the range to data ending by this date.",
+                        "schema": {
+                            "description": "Filter the range to data ending by this date.",
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "description": "The Endpoint's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointAttemptStatisticsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
         "/api/v1/stats/app/{app_id}/attempt": {
             "get": {
                 "tags": [
@@ -23655,8 +23831,7 @@
                                 "$ref": "#/components/schemas/CreateAutoConfigSubscriptionIn"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "201": {
@@ -28065,11 +28240,23 @@
                     {
                         "in": "query",
                         "name": "include_archived",
-                        "description": "Include archived (deleted but not expunged) items in the response.",
+                        "description": "Include archived items in the response.\n\nDeprecated, use `archive_status` instead. Ignored when `archive_status` is set.",
                         "schema": {
-                            "description": "Include archived (deleted but not expunged) items in the response.",
+                            "description": "Include archived items in the response.\n\nDeprecated, use `archive_status` instead. Ignored when `archive_status` is set.",
                             "type": "boolean",
+                            "deprecated": true,
                             "default": false
+                        },
+                        "style": "form"
+                    },
+                    {
+                        "in": "query",
+                        "name": "archive_status",
+                        "description": "Which items to include based on whether they are archived.\n\nDefaults to `active`.",
+                        "schema": {
+                            "description": "Which items to include based on whether they are archived.\n\nDefaults to `active`.",
+                            "$ref": "#/components/schemas/ArchiveStatus",
+                            "nullable": true
                         },
                         "style": "form"
                     }
@@ -28795,7 +28982,7 @@
                     "Stream Event Type"
                 ],
                 "summary": "Delete Stream Event Type",
-                "description": "Delete an event type.",
+                "description": "Archive an event type.\n\nAn event type can be unarchived with the\n[patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.",
                 "operationId": "v1.streaming.event-type.delete",
                 "parameters": [
                     {
@@ -28815,9 +29002,9 @@
                     {
                         "in": "query",
                         "name": "expunge",
-                        "description": "By default, event types are archived when \"deleted\". With this flag, they are deleted entirely.",
+                        "description": "Entirely delete the event type, rather than archiving it.",
                         "schema": {
-                            "description": "By default, event types are archived when \"deleted\". With this flag, they are deleted entirely.",
+                            "description": "Entirely delete the event type, rather than archiving it.",
                             "type": "boolean",
                             "default": false
                         },
@@ -33203,6 +33390,16 @@
                                 }
                             }
                         }
+                    },
+                    "423": {
+                        "description": "Locked; a concurrent transaction is affecting the same data. You should retry this operation after a backoff.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -35666,6 +35863,16 @@
                     },
                     "429": {
                         "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "423": {
+                        "description": "Locked; a concurrent transaction is affecting the same data. You should retry this operation after a backoff.",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -39495,7 +39702,7 @@
                     "Broadcast"
                 ],
                 "summary": "Create Broadcast Message",
-                "description": "Creates a background task to send the same message to each application in your organization.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"message.broadcast\",\n  \"data\": {\n    \"messagesCreated\": [\n      {\n        \"appId\": \"app_33s1An2Zz5cO9SWbhHsYyDmVC6m\",\n        \"msgId\": \"msg_33s1An2Zz5cO9SWbhHsYyDmVC6m\"\n      },\n      {\n        \"appId\": \"app_33sXYjcO6bkWeZIXDI8w6ZYMivz\",\n        \"msgId\": \"msg_33sZJfmYMOQGApyIgRdteOX0xlX\"\n      }\n    ]\n  }\n}\n```",
+                "description": "Creates a background task to send the same message to each application in your organization.\n\nUse `appIds` to limit the broadcast to specific applications.\n\nA completed task will return a payload like the following:\n```json\n{\n  \"id\": \"qtask_33qen93MNuelBAq1T9G7eHLJRsF\",\n  \"status\": \"finished\",\n  \"task\": \"message.broadcast\",\n  \"data\": {\n    \"messagesCreated\": [\n      {\n        \"appId\": \"app_33s1An2Zz5cO9SWbhHsYyDmVC6m\",\n        \"msgId\": \"msg_33s1An2Zz5cO9SWbhHsYyDmVC6m\"\n      },\n      {\n        \"appId\": \"app_33sXYjcO6bkWeZIXDI8w6ZYMivz\",\n        \"msgId\": \"msg_33sZJfmYMOQGApyIgRdteOX0xlX\"\n      }\n    ]\n  }\n}\n```",
                 "operationId": "v1.message.broadcast",
                 "parameters": [
                     {
@@ -46217,6 +46424,7 @@
                     "name": {
                         "description": "Application name for human consumption.",
                         "type": "string",
+                        "maxLength": 512,
                         "minLength": 1,
                         "example": "My first application"
                     },
@@ -46299,6 +46507,9 @@
             "HTTPValidationError": {
                 "type": "object",
                 "properties": {
+                    "code": {
+                        "type": "string"
+                    },
                     "detail": {
                         "type": "array",
                         "items": {
@@ -46307,6 +46518,7 @@
                     }
                 },
                 "required": [
+                    "code",
                     "detail"
                 ]
             },
@@ -46392,6 +46604,7 @@
                     "SvixJwt",
                     "RegionalAuthToken",
                     "GlobalAuthToken",
+                    "McpToken",
                     "Unknown"
                 ]
             },
@@ -46499,7 +46712,8 @@
                 "properties": {
                     "name": {
                         "description": "The name of the token.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "expiry": {
                         "description": "How long the token will be valid for, in seconds.",
@@ -46656,12 +46870,12 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "description": "The ApplicationToken's ID.",
+                        "description": "The MCP token's ID.",
                         "type": "string",
                         "maxLength": 31,
-                        "minLength": 31,
-                        "pattern": "^key_[A-Za-z0-9]{27}$",
-                        "example": "key_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                        "minLength": 25,
+                        "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                        "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                     },
                     "censoredToken": {
                         "description": "The censored token value (only a short prefix/suffix is shown).",
@@ -46726,21 +46940,26 @@
                         "example": "oaclt_2yZwUhtgs5Ai8T9yRQJXA"
                     },
                     "redirectUri": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "codeChallenge": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "codeChallengeMethod": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 64
                     },
                     "state": {
                         "type": "string",
+                        "maxLength": 512,
                         "default": null,
                         "nullable": true
                     },
                     "resource": {
                         "type": "string",
+                        "maxLength": 4096,
                         "default": null,
                         "nullable": true
                     }
@@ -46877,6 +47096,7 @@
                 "properties": {
                     "name": {
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "scopes": {
@@ -46922,7 +47142,8 @@
                 "type": "object",
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "scopes": {
                         "type": "array",
@@ -47088,7 +47309,9 @@
                 "type": "object",
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                     },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this application.\n\nOutgoing messages will be throttled to this rate.",
@@ -47121,6 +47344,7 @@
                     "email": {
                         "description": "A comma-separated list of email addresses",
                         "type": "string",
+                        "maxLength": 4096,
                         "nullable": true,
                         "example": "user1@example.com, user2@example.com"
                     }
@@ -47366,6 +47590,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "An example endpoint name"
                     },
                     "throttleRate": {
@@ -47546,6 +47771,12 @@
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "expiry": {
+                        "description": "When the endpoint expires, if ever. No messages are sent to the\nendpoint after this time.",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -47599,6 +47830,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "An example endpoint name"
                     },
                     "throttleRate": {
@@ -47674,7 +47906,8 @@
                 "type": "object",
                 "properties": {
                     "description": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "throttleRate": {
                         "description": "Maximum messages per second to send to this endpoint.\n\nOutgoing messages will be throttled to this rate.",
@@ -48321,11 +48554,13 @@
                     },
                     "clientId": {
                         "description": "The client ID. Required for all authentication types.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "clientSecret": {
                         "description": "Optional client secret. This is only used for `clientSecretBasic` and `clientSecretPost`.\n\nFor `clientSecretBasic`, the secret will be appended to the `Authorization` header.\nFor `clientSecretPost`, this will be added to the body in a `client_secret` parameter.",
                         "type": "string",
+                        "maxLength": 16384,
                         "nullable": true
                     },
                     "tokenUrl": {
@@ -48352,6 +48587,7 @@
                     "refreshToken": {
                         "description": "For `refreshToken` grant type.",
                         "type": "string",
+                        "maxLength": 16384,
                         "nullable": true
                     },
                     "extraHeaders": {
@@ -48375,19 +48611,21 @@
                 "properties": {
                     "secretBase64": {
                         "description": "The base64-encoded secret used for signing the JWT.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16384
                     },
                     "signingAlgorithm": {
                         "description": "The algorithm used to sign the JWT.",
                         "$ref": "#/components/schemas/OauthJwsSigningAlgorithm"
                     },
                     "secretId": {
-                        "description": "Optional secret identifier. If supplied, this will\nbe populated in the JWT header in the `kid` field.",
+                        "description": "Optional secret identifier.\n\nIf supplied, this will be populated in the JWT header in the `kid` field.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "tokenExpirySecs": {
-                        "description": "Optional number of seconds after which the JWT\nshould expire. Defaults to 300 seconds.",
+                        "description": "Optional number of seconds after which the JWT should expire.\n\nDefaults to 300 seconds.",
                         "type": "integer",
                         "format": "uint64",
                         "minimum": 0,
@@ -48436,6 +48674,7 @@
                     "cert": {
                         "description": "A PEM encoded X.509 certificate used to verify the webhook receiver's certificate.\n\nSet to `null` to use standard CAs.",
                         "type": "string",
+                        "maxLength": 65536,
                         "nullable": true
                     }
                 }
@@ -48448,7 +48687,8 @@
                 "properties": {
                     "identity": {
                         "description": "A PEM encoded private key and X.509 certificate to identify the webhook sender.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 },
                 "required": [
@@ -48918,7 +49158,21 @@
                     },
                     "description": {
                         "type": "string",
+                        "maxLength": 4096,
                         "example": "A user has signed up"
+                    },
+                    "descriptionTranslations": {
+                        "description": "Translated descriptions keyed by BCP 47 language tag.",
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "en": "A user has signed up",
+                            "es": "Un usuario se ha registrado",
+                            "pt-BR": "Um usuário se cadastrou"
+                        }
                     },
                     "archived": {
                         "type": "boolean",
@@ -48999,6 +49253,19 @@
                         "type": "string",
                         "example": "A user has signed up"
                     },
+                    "descriptionTranslations": {
+                        "description": "Translated descriptions keyed by BCP 47 language tag.",
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "en": "A user has signed up",
+                            "es": "Un usuario se ha registrado",
+                            "pt-BR": "Um usuário se cadastrou"
+                        }
+                    },
                     "archived": {
                         "type": "boolean",
                         "default": false,
@@ -49076,6 +49343,14 @@
                     "description",
                     "name",
                     "updatedAt"
+                ]
+            },
+            "ArchiveStatus": {
+                "type": "string",
+                "enum": [
+                    "active",
+                    "archived",
+                    "all"
                 ]
             },
             "ListResponse_EventTypeOut_": {
@@ -49284,7 +49559,21 @@
                 "properties": {
                     "description": {
                         "type": "string",
+                        "maxLength": 4096,
                         "example": "A user has signed up"
+                    },
+                    "descriptionTranslations": {
+                        "description": "Translated descriptions keyed by BCP 47 language tag.",
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "en": "A user has signed up",
+                            "es": "Un usuario se ha registrado",
+                            "pt-BR": "Um usuário se cadastrou"
+                        }
                     },
                     "archived": {
                         "type": "boolean",
@@ -49354,7 +49643,21 @@
                 "type": "object",
                 "properties": {
                     "description": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
+                    },
+                    "descriptionTranslations": {
+                        "description": "Translated descriptions keyed by BCP 47 language tag.",
+                        "type": "object",
+                        "nullable": true,
+                        "additionalProperties": {
+                            "type": "string"
+                        },
+                        "example": {
+                            "en": "A user has signed up",
+                            "es": "Un usuario se ha registrado",
+                            "pt-BR": "Um usuário se cadastrou"
+                        }
                     },
                     "archived": {
                         "type": "boolean"
@@ -49583,7 +49886,8 @@
                 "properties": {
                     "domain": {
                         "description": "The customer-owned domain to be pointed at Svix.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 254
                     }
                 },
                 "required": [
@@ -50055,7 +50359,8 @@
                     "redshift",
                     "otelTracing",
                     "postgres",
-                    "elasticSearch"
+                    "elasticSearch",
+                    "postHog"
                 ]
             },
             "EnvironmentOut": {
@@ -50124,6 +50429,7 @@
                 "properties": {
                     "name": {
                         "type": "string",
+                        "maxLength": 512,
                         "example": "My first connector"
                     },
                     "uid": {
@@ -50144,6 +50450,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "Example connector description"
                     },
                     "kind": {
@@ -50154,6 +50461,7 @@
                     "instructions": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "Markdown-formatted instructions"
                     },
                     "allowedEventTypes": {
@@ -50270,6 +50578,7 @@
                     "customFontFamily": {
                         "type": "string",
                         "nullable": true,
+                        "maxLength": 256,
                         "example": "Open Sans"
                     },
                     "customFontFamilyUrl": {
@@ -50293,6 +50602,7 @@
                     },
                     "displayName": {
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "eventCatalogPublished": {
@@ -50471,6 +50781,7 @@
                     "customFontFamily": {
                         "type": "string",
                         "nullable": true,
+                        "maxLength": 256,
                         "example": "Open Sans"
                     },
                     "customFontFamilyUrl": {
@@ -50494,6 +50805,7 @@
                     },
                     "displayName": {
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "eventCatalogPublished": {
@@ -50664,6 +50976,7 @@
                     "customFontFamily": {
                         "type": "string",
                         "nullable": true,
+                        "maxLength": 256,
                         "example": "Open Sans"
                     },
                     "customFontFamilyUrl": {
@@ -50687,6 +51000,7 @@
                     },
                     "displayName": {
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "eventCatalogPublished": {
@@ -50829,6 +51143,7 @@
                     "customFontFamily": {
                         "type": "string",
                         "nullable": true,
+                        "maxLength": 256,
                         "example": "Open Sans"
                     },
                     "customFontFamilyUrl": {
@@ -50851,6 +51166,7 @@
                     },
                     "displayName": {
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "enableChannels": {
@@ -50955,6 +51271,11 @@
                     },
                     "webhooksAutoConfig": {
                         "type": "boolean"
+                    },
+                    "endpointsPerAppLimit": {
+                        "type": "integer",
+                        "format": "uint32",
+                        "minimum": 1
                     },
                     "mcpToken": {
                         "type": "boolean"
@@ -51144,7 +51465,7 @@
                 "type": "object",
                 "properties": {
                     "eventId": {
-                        "description": "Optional unique identifier for the message",
+                        "description": "Optional unique identifier for the message\n\nThis should not contain the '.' character",
                         "type": "string",
                         "maxLength": 256,
                         "minLength": 1,
@@ -51393,7 +51714,7 @@
                         "format": "date-time",
                         "nullable": true
                     },
-                    "with_content": {
+                    "withContent": {
                         "description": "When `true` message payloads are included in the response.\n\nDefaults to `false`.",
                         "type": "boolean",
                         "default": false
@@ -51406,7 +51727,7 @@
                         "example": "project_1337",
                         "nullable": true
                     },
-                    "event_types": {
+                    "eventTypes": {
                         "description": "Filter response based on the event type",
                         "type": "array",
                         "uniqueItems": true,
@@ -51865,6 +52186,12 @@
                     "updatedAt": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "expiry": {
+                        "description": "When the endpoint expires, if ever. No messages are sent to the\nendpoint after this time.",
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -52046,6 +52373,31 @@
                     "disabled"
                 ]
             },
+            "EndpointAttemptStatisticsResponse": {
+                "type": "object",
+                "properties": {
+                    "startDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "endDate": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "period": {
+                        "$ref": "#/components/schemas/StatisticsPeriod"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/EndpointAttemptStatisticsData"
+                    }
+                },
+                "required": [
+                    "data",
+                    "endDate",
+                    "period",
+                    "startDate"
+                ]
+            },
             "StatisticsPeriod": {
                 "description": "Period length for a statistics data point.",
                 "type": "string",
@@ -52054,6 +52406,27 @@
                     "OneHour",
                     "FiveMinutes"
                 ]
+            },
+            "EndpointAttemptStatisticsData": {
+                "type": "object",
+                "properties": {
+                    "successCount": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "nullable": true
+                    },
+                    "failureCount": {
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "nullable": true
+                    }
+                }
             },
             "AttemptStatisticsResponse": {
                 "type": "object",
@@ -52188,6 +52561,7 @@
                 "properties": {
                     "name": {
                         "type": "string",
+                        "maxLength": 512,
                         "example": "Example Integration"
                     },
                     "featureFlags": {
@@ -52818,6 +53192,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostHogConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -52832,14 +53224,17 @@
                 "type": "object",
                 "properties": {
                     "container": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "account": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "accessKey": {
                         "description": "Access key.\n\nCurrently a required field, but marked as optional because we may add\ndifferent authentication in the future.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     }
                 },
@@ -52883,6 +53278,7 @@
                     },
                     "key": {
                         "type": "string",
+                        "maxLength": 512,
                         "default": null,
                         "nullable": true
                     }
@@ -52895,21 +53291,25 @@
                 "type": "object",
                 "properties": {
                     "bucket": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "accessKeyId": {
                         "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is null",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "secretAccessKey": {
                         "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is null",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "region": {
                         "description": "The region of the S3 bucket\n\nCurrently a required field, but marked as optional because we may infer\nit from other fields in the future.",
                         "type": "string",
+                        "maxLength": 16,
                         "nullable": true
                     },
                     "endpointUrl": {
@@ -52920,11 +53320,13 @@
                     "roleArn": {
                         "description": "Role ARN for delegated authentication",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "externalId": {
                         "description": "Shared secret passed as the STS ExternalId.\n\nRecommended if `role_arn` is not null.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     }
                 },
@@ -52937,11 +53339,13 @@
                 "type": "object",
                 "properties": {
                     "bucket": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "credentials": {
                         "description": "Google Cloud Credentials JSON Object as a string.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 },
                 "required": [
@@ -52953,14 +53357,17 @@
                 "type": "object",
                 "properties": {
                     "projectId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "topicId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "credentials": {
                         "description": "Google Cloud Credentials JSON Object as a string.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 },
                 "required": [
@@ -52980,26 +53387,31 @@
                     "region": {
                         "description": "The region of the SQS queue.\n\nCurrently a required field, but marked as optional because we may infer\nit from other fields in the future.",
                         "type": "string",
+                        "maxLength": 16,
                         "nullable": true
                     },
                     "accessKeyId": {
                         "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is blank.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "secretAccessKey": {
                         "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is blank.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "roleArn": {
                         "description": "Role ARN for delegated authentication",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "externalId": {
                         "description": "Shared secret passed as the STS ExternalId.\n\nCan only be set if `role_arn` is Some",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "endpointUrl": {
@@ -53017,21 +53429,25 @@
                 "type": "object",
                 "properties": {
                     "topicArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "region": {
                         "description": "The region of the SNS instance.\n\nCurrently a required field, but marked as optional because we may infer\nit from other fields in the future.",
                         "type": "string",
+                        "maxLength": 16,
                         "nullable": true
                     },
                     "accessKeyId": {
                         "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is None",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "secretAccessKey": {
                         "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is None",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "endpointUrl": {
@@ -53042,11 +53458,13 @@
                     "roleArn": {
                         "description": "Role ARN for delegated authentication",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "externalId": {
                         "description": "Shared secret passed as the STS ExternalId.\n\nCan only be set if `role_arn` is Some",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     }
                 },
@@ -53059,17 +53477,21 @@
                 "type": "object",
                 "properties": {
                     "projectId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "datasetId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "credentials": {
                         "description": "Google Cloud Credentials JSON Object as a string.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 },
                 "required": [
@@ -53090,21 +53512,25 @@
                     "username": {
                         "description": "Username to access Clickhouse.\n\nCurrently a required field, but marked as optional because we may add\ndifferent authentication in the future.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "password": {
                         "description": "Password to access Clickhouse.\n\nCurrently a required field, but marked as optional because we may add\ndifferent authentication in the future.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "database": {
                         "description": "The Clickhouse database to connect to.",
                         "type": "string",
+                        "maxLength": 512,
                         "default": "default"
                     },
                     "tableName": {
                         "description": "The Clickhouse table to write to.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 },
                 "required": [
@@ -53117,7 +53543,8 @@
                 "properties": {
                     "eventBusName": {
                         "description": "The name or ARN of the event bus to receive the event",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "detailType": {
                         "description": "Free-form string, with a maximum of 128 characters",
@@ -53129,26 +53556,31 @@
                     "accessKeyId": {
                         "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is blank.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "secretAccessKey": {
                         "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is blank.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "roleArn": {
                         "description": "Role ARN for delegated authentication",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "externalId": {
                         "description": "Shared secret passed as the STS ExternalId.\n\nCan only be set if `role_arn` is Some",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "region": {
                         "description": "The region of the EventBridge bus.\n\nCurrently a required field, but marked as optional because we may infer\nit from other fields in the future.",
                         "type": "string",
+                        "maxLength": 16,
                         "nullable": true
                     }
                 },
@@ -53163,27 +53595,33 @@
                     "privateKey": {
                         "description": "PEM-encoded private key used for signing token-based requests\nto the Snowflake API.\n\nBeginning/end delimiters are not required.\n\nCurrently a required field, but marked as optional because we may add\ndifferent authentication in the future.",
                         "type": "string",
+                        "maxLength": 65536,
                         "nullable": true
                     },
                     "accountIdentifier": {
                         "description": "Snowflake account identifier, which includes both the organization and account\nIDs separated by a hyphen.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "userId": {
                         "description": "The Snowflake user id.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "dbName": {
                         "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "schemaName": {
                         "description": "Schema name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableName": {
                         "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 },
                 "required": [
@@ -53197,11 +53635,13 @@
                 "properties": {
                     "uri": {
                         "description": "URI to connect to\n\nNote that the VHost must be percent-escaped, so a default URI would look\nlike `amqp://user:pass@host/%2F`",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "routingKey": {
                         "description": "Routing key for message dispatch",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "mandatory": {
                         "description": "If true, then dispatches will fail if there is no attached queue; if false, they are\nsilently dropped (this was previously the default)",
@@ -53221,55 +53661,66 @@
                     "accessKeyId": {
                         "description": "Access key ID.\n\nRequired (along with `secret_access_key`) if `role_arn` is blank.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "secretAccessKey": {
                         "description": "Secret access key.\n\nRequired (along with `access_key_id`) if `role_arn` is blank.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "roleArn": {
                         "description": "Role ARN for delegated authentication",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "externalId": {
                         "description": "Shared secret passed as the STS ExternalId.\n\nCan only be set if `role_arn` is Some",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "region": {
                         "description": "The region of the Redshift DB.\n\nCurrently a required field, but marked as optional because we may infer\nit from other fields in the future.",
                         "type": "string",
+                        "maxLength": 16,
                         "nullable": true
                     },
                     "clusterIdentifier": {
                         "description": "Required for provisioned clusters.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "dbUser": {
                         "description": "Required for provisioned clusters.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "workgroupName": {
                         "description": "Required for Redshift Serverless.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "dbName": {
                         "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "schemaName": {
                         "description": "Schema name.\n\nOnly used if not using transformations.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "tableName": {
                         "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 }
             },
@@ -53278,20 +53729,24 @@
                 "properties": {
                     "url": {
                         "description": "PostgreSQL connection URL, e.g.\n`postgres://user@host:5432/dbname?sslmode=require`.\n\nDo NOT embed a password here; use the `password` field instead.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "password": {
                         "description": "Password for the connection.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "tableName": {
                         "description": "Table to insert into. May be schema-qualified (e.g. `public.events`).\n\nQuote characters are not supported. Each dot-separated segment is automatically\ndouble-quoted when the query is built, so `public.events` becomes `\"public\".\"events\"`.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "sslRootCert": {
                         "description": "PEM-encoded CA certificate used to verify the Postgres server's TLS certificate.\n\nSupply this to trust a private or self-signed CA when connecting with\n`sslmode=verify-ca` or `sslmode=verify-full`. Without it, only the built-in\npublic roots are trusted.",
                         "type": "string",
+                        "maxLength": 65536,
                         "nullable": true
                     }
                 },
@@ -53306,7 +53761,8 @@
                 "properties": {
                     "indexName": {
                         "description": "Name of the index to write to\n\nThis can also be a data stream on sufficiently-new versions of ElasticSearch/OpenSearch",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "url": {
                         "description": "Base URL to send indexing requests\n\nThis should not include the /{index}/_bulk suffix.",
@@ -53316,17 +53772,51 @@
                     "apiKey": {
                         "description": "API key for authentication for ElasticSearch\n\nIf not passed, any username:password embedded in the URL will be used. If none is passed,\nthe indexing will be done unauthenticated.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "refresh": {
                         "description": "If true, Elasticsearch refreshes the affected shards to make this operation visible to search.",
                         "type": "boolean",
                         "default": false
+                    },
+                    "operation": {
+                        "description": "The operation to use when indexing.\n\nIf not passed, this defaults to `create`.",
+                        "$ref": "#/components/schemas/ElasticSearchOperation",
+                        "default": "create"
                     }
                 },
                 "required": [
                     "indexName",
                     "url"
+                ]
+            },
+            "ElasticSearchOperation": {
+                "description": "Operation for bulk indexing.\n\n`index` will do an upsert for the given document ID, and `create` will insert it\n(and do nothing on conflict). Only `create` is supported for Data Stream targets.",
+                "type": "string",
+                "enum": [
+                    "index",
+                    "create"
+                ]
+            },
+            "PostHogConfigIn": {
+                "description": "Configuration parameters for defining a PostHog sink.",
+                "type": "object",
+                "properties": {
+                    "domain": {
+                        "description": "The PostHog ingestion domain.\n\nThis is https://us.i.posthog.com for US Cloud, https://eu.i.posthog.com for EU Cloud,\nand your self-hosted domain for self-hosted instances. Note the `.i.` in the Cloud hosts\n(`us.posthog.com` and `eu.posthog.com` are different, private endpoints).",
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "projectToken": {
+                        "description": "The PostHog project API key.\n\nSent as the `api_key` field in the body of each `/batch/` request.",
+                        "type": "string",
+                        "maxLength": 512
+                    }
+                },
+                "required": [
+                    "domain",
+                    "projectToken"
                 ]
             },
             "DestinationOut": {
@@ -53720,6 +54210,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostHogConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -53822,15 +54330,18 @@
                     },
                     "dbName": {
                         "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "schemaName": {
                         "description": "Schema name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableName": {
                         "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 },
                 "required": [
@@ -53896,16 +54407,19 @@
                     },
                     "dbName": {
                         "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "schemaName": {
                         "description": "Schema name.\n\nOnly used if not using transformations.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "tableName": {
                         "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 },
                 "required": [
@@ -54098,12 +54612,28 @@
                     },
                     "refresh": {
                         "type": "boolean"
+                    },
+                    "operation": {
+                        "$ref": "#/components/schemas/ElasticSearchOperation"
                     }
                 },
                 "required": [
                     "indexName",
+                    "operation",
                     "refresh",
                     "url"
+                ]
+            },
+            "PostHogConfigOut": {
+                "type": "object",
+                "properties": {
+                    "domain": {
+                        "type": "string",
+                        "format": "uri"
+                    }
+                },
+                "required": [
+                    "domain"
                 ]
             },
             "ListResponse_DestinationOut_": {
@@ -54497,6 +55027,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostHogConfigPatch"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -54504,13 +55052,16 @@
                 "type": "object",
                 "properties": {
                     "container": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "account": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "accessKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 }
             },
@@ -54536,22 +55087,28 @@
                 "type": "object",
                 "properties": {
                     "bucket": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "accessKeyId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "secretAccessKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "roleArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "externalId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "region": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16
                     },
                     "endpointUrl": {
                         "type": "string",
@@ -54563,10 +55120,12 @@
                 "type": "object",
                 "properties": {
                     "bucket": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "credentials": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 }
             },
@@ -54574,13 +55133,16 @@
                 "type": "object",
                 "properties": {
                     "projectId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "topicId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "credentials": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 }
             },
@@ -54592,19 +55154,24 @@
                         "format": "uri"
                     },
                     "region": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16
                     },
                     "accessKeyId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "secretAccessKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "roleArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "externalId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "endpointUrl": {
                         "type": "string",
@@ -54617,22 +55184,28 @@
                 "type": "object",
                 "properties": {
                     "topicArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "region": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16
                     },
                     "accessKeyId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "secretAccessKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "roleArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "externalId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "endpointUrl": {
                         "type": "string",
@@ -54645,16 +55218,20 @@
                 "type": "object",
                 "properties": {
                     "projectId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "datasetId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "credentials": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 }
             },
@@ -54666,16 +55243,20 @@
                         "format": "uri"
                     },
                     "username": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "password": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "database": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableName": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 }
             },
@@ -54683,7 +55264,8 @@
                 "type": "object",
                 "properties": {
                     "eventBusName": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "detailType": {
                         "type": "string",
@@ -54691,19 +55273,24 @@
                         "example": "ResourceGroups Resource State Change"
                     },
                     "accessKeyId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "secretAccessKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "roleArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "externalId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "region": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16
                     }
                 }
             },
@@ -54711,25 +55298,31 @@
                 "type": "object",
                 "properties": {
                     "privateKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     },
                     "accountIdentifier": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "userId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "dbName": {
                         "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "schemaName": {
                         "description": "Schema name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableName": {
                         "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 }
             },
@@ -54737,10 +55330,12 @@
                 "type": "object",
                 "properties": {
                     "routingKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "uri": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "mandatory": {
                         "type": "boolean"
@@ -54751,32 +55346,40 @@
                 "type": "object",
                 "properties": {
                     "accessKeyId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "secretAccessKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "roleArn": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "externalId": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "region": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16
                     },
                     "dbName": {
                         "description": "Database name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "schemaName": {
                         "description": "Schema name.\n\nOnly used if not using transformations.",
                         "type": "string",
+                        "maxLength": 512,
                         "nullable": true
                     },
                     "tableName": {
                         "description": "Table name.\n\nOnly required if not using transformations.",
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     }
                 }
             },
@@ -54784,16 +55387,20 @@
                 "type": "object",
                 "properties": {
                     "url": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "password": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "tableName": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "sslRootCert": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 65536
                     }
                 }
             },
@@ -54801,17 +55408,35 @@
                 "type": "object",
                 "properties": {
                     "indexName": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "url": {
                         "type": "string",
                         "format": "uri"
                     },
                     "apiKey": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "refresh": {
                         "type": "boolean"
+                    },
+                    "operation": {
+                        "$ref": "#/components/schemas/ElasticSearchOperation"
+                    }
+                }
+            },
+            "PostHogConfigPatch": {
+                "type": "object",
+                "properties": {
+                    "domain": {
+                        "type": "string",
+                        "format": "uri"
+                    },
+                    "projectToken": {
+                        "type": "string",
+                        "maxLength": 512
                     }
                 }
             },
@@ -55032,6 +55657,7 @@
                     },
                     "description": {
                         "type": "string",
+                        "maxLength": 4096,
                         "nullable": true
                     },
                     "featureFlags": {
@@ -55145,6 +55771,7 @@
                 "properties": {
                     "description": {
                         "type": "string",
+                        "maxLength": 4096,
                         "nullable": true
                     },
                     "featureFlags": {
@@ -55220,7 +55847,8 @@
                     "name": {
                         "description": "The stream's name.",
                         "type": "string",
-                        "minLength": 1
+                        "minLength": 1,
+                        "maxLength": 512
                     },
                     "uid": {
                         "description": "An optional unique identifier for the stream.",
@@ -55377,7 +56005,8 @@
                     "postgres",
                     "sns",
                     "sqs",
-                    "elasticSearch"
+                    "elasticSearch",
+                    "postHog"
                 ]
             },
             "StreamTransformationSimulateOut": {
@@ -55645,6 +56274,24 @@
                             "data",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "data": {
+                                "$ref": "#/components/schemas/PostHogSimulateOut"
+                            }
+                        },
+                        "required": [
+                            "data",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -55848,6 +56495,14 @@
                 "properties": {
                     "payload": {
                         "type": "string"
+                    },
+                    "messageGroupId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "messageDeduplicationId": {
+                        "type": "string",
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -55896,6 +56551,44 @@
                 "required": [
                     "document",
                     "id"
+                ]
+            },
+            "PostHogSimulateOut": {
+                "type": "object",
+                "properties": {
+                    "batch": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/PostHogSimulatedEvent"
+                        }
+                    }
+                },
+                "required": [
+                    "batch"
+                ]
+            },
+            "PostHogSimulatedEvent": {
+                "type": "object",
+                "properties": {
+                    "event": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "distinctId": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "timestamp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "properties": {
+                        "type": "object",
+                        "additionalProperties": true
+                    }
+                },
+                "required": [
+                    "properties"
                 ]
             },
             "ListResponse_StreamSinkOut_": {
@@ -56333,6 +57026,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostHogConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -56711,6 +57422,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostHogConfigIn"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -56737,6 +57466,7 @@
                     },
                     "key": {
                         "type": "string",
+                        "maxLength": 512,
                         "default": null,
                         "nullable": true
                     }
@@ -57107,6 +57837,24 @@
                             "config",
                             "type"
                         ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "postHog"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/PostHogConfigPatch"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
                     }
                 ]
             },
@@ -57355,7 +58103,9 @@
                 "properties": {
                     "description": {
                         "description": "The Stream's description.",
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 512
                     },
                     "uid": {
                         "description": "An optional unique identifier for the stream.",
@@ -57380,6 +58130,7 @@
                     "email": {
                         "description": "A comma-separated list of email addresses",
                         "type": "string",
+                        "maxLength": 4096,
                         "nullable": true,
                         "example": "user1@example.com, user2@example.com"
                     }
@@ -57760,6 +58511,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "An example endpoint name"
                     },
                     "throttleRate": {
@@ -57844,6 +58596,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "An example endpoint name"
                     },
                     "throttleRate": {
@@ -58014,6 +58767,7 @@
                     "name": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 512,
                         "example": "My first connector"
                     },
                     "logo": {
@@ -58025,6 +58779,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "Example connector description"
                     },
                     "kind": {
@@ -58035,6 +58790,7 @@
                     "instructions": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "Markdown-formatted instructions"
                     },
                     "allowedEventTypes": {
@@ -58083,7 +58839,8 @@
                 "type": "object",
                 "properties": {
                     "name": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 512
                     },
                     "logo": {
                         "type": "string",
@@ -58091,13 +58848,15 @@
                         "nullable": true
                     },
                     "description": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "kind": {
                         "$ref": "#/components/schemas/ConnectorKind"
                     },
                     "instructions": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "allowedEventTypes": {
                         "type": "array",
@@ -58463,10 +59222,12 @@
                 "type": "object",
                 "properties": {
                     "code": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "redirectUri": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     }
                 },
                 "required": [
@@ -58513,7 +59274,8 @@
                 "type": "object",
                 "properties": {
                     "refreshToken": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 16384
                     }
                 },
                 "required": [
@@ -58565,6 +59327,22 @@
                             "project_123",
                             "group_2"
                         ]
+                    },
+                    "appIds": {
+                        "description": "Optional list of app IDs or UIDs to send the message to.\n\nWhen unset, the message is sent to all applications in the environment.\nIDs or UIDs that don't match an existing application are silently ignored.",
+                        "type": "array",
+                        "uniqueItems": true,
+                        "items": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "minItems": 1,
+                        "maxItems": 100,
+                        "nullable": true
                     },
                     "payloadRetentionPeriod": {
                         "description": "Optional number of days to retain the message payload. Defaults to 90.\nNote that this is mutually exclusive with `payloadRetentionHours`.",
@@ -58797,11 +59575,47 @@
                             "type": {
                                 "type": "string",
                                 "enum": [
+                                    "ascend"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/AscendConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
                                     "beehiiv"
                                 ]
                             },
                             "config": {
                                 "$ref": "#/components/schemas/SvixConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "bitbucket"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/BitbucketConfigOut"
                             }
                         },
                         "required": [
@@ -59427,6 +60241,24 @@
                             "type": {
                                 "type": "string",
                                 "enum": [
+                                    "tricentis-qtest"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/TricentisQtestConfigOut"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
                                     "vapi"
                                 ]
                             },
@@ -59554,7 +60386,13 @@
             "AdobeSignConfigOut": {
                 "type": "object"
             },
+            "AscendConfigOut": {
+                "type": "object"
+            },
             "SvixConfigOut": {
+                "type": "object"
+            },
+            "BitbucketConfigOut": {
                 "type": "object"
             },
             "CheckbookConfigOut": {
@@ -59632,6 +60470,9 @@
                 "required": [
                     "publicKey"
                 ]
+            },
+            "TricentisQtestConfigOut": {
+                "type": "object"
             },
             "VapiConfigOut": {
                 "type": "object"
@@ -59731,11 +60572,47 @@
                             "type": {
                                 "type": "string",
                                 "enum": [
+                                    "ascend"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/AscendConfig"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
                                     "beehiiv"
                                 ]
                             },
                             "config": {
                                 "$ref": "#/components/schemas/SvixConfig"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
+                                    "bitbucket"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/BitbucketConfig"
                             }
                         },
                         "required": [
@@ -60361,6 +61238,24 @@
                             "type": {
                                 "type": "string",
                                 "enum": [
+                                    "tricentis-qtest"
+                                ]
+                            },
+                            "config": {
+                                "$ref": "#/components/schemas/TricentisQtestConfig"
+                            }
+                        },
+                        "required": [
+                            "config",
+                            "type"
+                        ]
+                    },
+                    {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "type": "string",
+                                "enum": [
                                     "vapi"
                                 ]
                             },
@@ -60476,7 +61371,29 @@
                     "clientId"
                 ]
             },
+            "AscendConfig": {
+                "type": "object",
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ]
+            },
             "SvixConfig": {
+                "type": "object",
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
+                ]
+            },
+            "BitbucketConfig": {
                 "type": "object",
                 "properties": {
                     "secret": {
@@ -60708,6 +61625,17 @@
                 },
                 "required": [
                     "publicKey"
+                ]
+            },
+            "TricentisQtestConfig": {
+                "type": "object",
+                "properties": {
+                    "secret": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "secret"
                 ]
             },
             "VapiConfig": {
@@ -61003,6 +61931,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "An example endpoint name"
                     },
                     "throttleRate": {
@@ -61071,6 +62000,7 @@
                     "description": {
                         "type": "string",
                         "default": "",
+                        "maxLength": 4096,
                         "example": "An example endpoint name"
                     },
                     "throttleRate": {

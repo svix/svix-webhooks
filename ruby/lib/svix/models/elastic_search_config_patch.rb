@@ -8,8 +8,9 @@ module Svix
     attr_accessor :url
     attr_accessor :api_key
     attr_accessor :refresh
+    attr_accessor :operation
 
-    ALL_FIELD ||= ["index_name", "url", "api_key", "refresh"].freeze
+    ALL_FIELD ||= ["index_name", "url", "api_key", "refresh", "operation"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -37,6 +38,7 @@ module Svix
       attrs["url"] = attributes["url"]
       attrs["api_key"] = attributes["apiKey"]
       attrs["refresh"] = attributes["refresh"]
+      attrs["operation"] = Svix::ElasticSearchOperation.deserialize(attributes["operation"]) if attributes["operation"]
       new(attrs)
     end
 
@@ -46,6 +48,7 @@ module Svix
       out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
       out["apiKey"] = Svix::serialize_primitive(@api_key) unless @api_key.nil?
       out["refresh"] = Svix::serialize_primitive(@refresh) unless @refresh.nil?
+      out["operation"] = Svix::serialize_schema_ref(@operation) unless @operation.nil?
       out
     end
 

@@ -21,13 +21,17 @@ class ElasticSearchConfigIn implements \JsonSerializable
      *
      * If not passed, any username:password embedded in the URL will be used. If none is passed,
      * the indexing will be done unauthenticated.
-     * @param bool|null $refresh if true, Elasticsearch refreshes the affected shards to make this operation visible to search
+     * @param bool|null                   $refresh   if true, Elasticsearch refreshes the affected shards to make this operation visible to search
+     * @param ElasticSearchOperation|null $operation The operation to use when indexing.
+     *
+     * If not passed, this defaults to `create`.
      */
     private function __construct(
         public readonly string $indexName,
         public readonly string $url,
         public readonly ?string $apiKey = null,
         public readonly ?bool $refresh = null,
+        public readonly ?ElasticSearchOperation $operation = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -45,6 +49,7 @@ class ElasticSearchConfigIn implements \JsonSerializable
             url: $url,
             apiKey: null,
             refresh: null,
+            operation: null,
             setFields: ['indexName' => true, 'url' => true]
         );
     }
@@ -59,6 +64,7 @@ class ElasticSearchConfigIn implements \JsonSerializable
             url: $this->url,
             apiKey: $apiKey,
             refresh: $this->refresh,
+            operation: $this->operation,
             setFields: $setFields
         );
     }
@@ -73,6 +79,22 @@ class ElasticSearchConfigIn implements \JsonSerializable
             url: $this->url,
             apiKey: $this->apiKey,
             refresh: $refresh,
+            operation: $this->operation,
+            setFields: $setFields
+        );
+    }
+
+    public function withOperation(?ElasticSearchOperation $operation): self
+    {
+        $setFields = $this->setFields;
+        $setFields['operation'] = true;
+
+        return new self(
+            indexName: $this->indexName,
+            url: $this->url,
+            apiKey: $this->apiKey,
+            refresh: $this->refresh,
+            operation: $operation,
             setFields: $setFields
         );
     }
@@ -89,6 +111,9 @@ class ElasticSearchConfigIn implements \JsonSerializable
         if (null !== $this->refresh) {
             $data['refresh'] = $this->refresh;
         }
+        if (null !== $this->operation) {
+            $data['operation'] = $this->operation;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -102,7 +127,8 @@ class ElasticSearchConfigIn implements \JsonSerializable
             indexName: \Svix\Utils::deserializeString($data, 'indexName', true, 'ElasticSearchConfigIn'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'ElasticSearchConfigIn'),
             apiKey: \Svix\Utils::deserializeString($data, 'apiKey', false, 'ElasticSearchConfigIn'),
-            refresh: \Svix\Utils::deserializeBool($data, 'refresh', false, 'ElasticSearchConfigIn')
+            refresh: \Svix\Utils::deserializeBool($data, 'refresh', false, 'ElasticSearchConfigIn'),
+            operation: \Svix\Utils::deserializeObject($data, 'operation', false, 'ElasticSearchConfigIn', [ElasticSearchOperation::class, 'fromMixed'])
         );
     }
 
