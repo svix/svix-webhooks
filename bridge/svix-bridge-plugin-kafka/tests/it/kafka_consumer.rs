@@ -120,7 +120,7 @@ fn get_test_plugin_with_kafka_options(
 ) -> KafkaConsumer {
     KafkaConsumer::new(
         "test".into(),
-        KafkaInputOpts::Inner {
+        KafkaInputOpts {
             bootstrap_brokers: BROKER_HOST.to_owned(),
             // All tests use different topics, so it's fine to have only one consumer group ID
             group_id: "svix_bridge_test_group_id".to_owned(),

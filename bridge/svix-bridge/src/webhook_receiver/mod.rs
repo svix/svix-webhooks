@@ -301,7 +301,7 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     const NO_SLEEP: Duration = Duration::ZERO;
     let mut sleep_time = NO_SLEEP;
 
-    let PollerInputOpts::SvixMessagePoller {
+    let PollerInputOpts {
         consumer_id,
         token: _,
         app_id,
