@@ -657,6 +657,12 @@
                         "type": "array",
                         "uniqueItems": true
                     },
+                    "expiry": {
+                        "description": "When the endpoint expires, if ever.\n\nThis field currently exists only for compatibility with the Svix Cloud API. If you want expiring endpoints in Svix Server OSS, please open an issue.",
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
+                    },
                     "id": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
                         "type": "string"
@@ -1800,6 +1806,12 @@
                         "nullable": true,
                         "type": "array",
                         "uniqueItems": true
+                    },
+                    "expiry": {
+                        "description": "When the endpoint expires, if ever.\n\nThis field currently exists only for compatibility with the Svix Cloud API. If you want expiring endpoints in Svix Server OSS, please open an issue.",
+                        "format": "date-time",
+                        "nullable": true,
+                        "type": "string"
                     },
                     "id": {
                         "example": "ep_1srOrx2ZWZBpBUvZwXKQmoEYga2",
