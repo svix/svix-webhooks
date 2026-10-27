@@ -637,7 +637,7 @@ namespace Svix.Tests
 
             var response = client.Streaming.Sink.Get(strmId, sinkId);
 
-            Assert.Equal(response.Uid, "unique-identifier");
+            Assert.Equal("unique-identifier", response.Uid);
 
             var isPoller = false;
             response.Config.Switch(onPoller: () =>
