@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* **(Breaking)** Reject event type schemas with external `$ref`s (`http://`, `file://`, etc.) with a 422. Refs within the schema itself, such as `#/definitions/...`, still work.
 
 ## Version 1.103.0
 * Bump dependencies to SeaORM 2 and sqlx 0.9
