@@ -34,6 +34,7 @@ fn get_test_plugin(
             delayed_queue_key: None,
             consumer_group: "test_cg".to_owned(),
             consumer_name: "test_cn".to_owned(),
+            payload_key: "payload".to_owned(),
             ack_deadline_ms: 2_000,
             dlq_config: None,
         }),
