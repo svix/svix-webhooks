@@ -6,6 +6,8 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Python: Raise `HttpError` with the status code when an error response body is not JSON
+  (for example an HTML 502 page from a proxy), instead of `json.JSONDecodeError`
 
 ## Version 2.9.1
 * Libs/JavaScript: Throw `ApiException` (with the raw response text as `body`) instead of a
