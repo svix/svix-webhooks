@@ -25,7 +25,7 @@ edition = "2021"
 license = "MIT"
 version = "1.103.0"
 # keep this in sync with .github/workflows/server-ci.yml
-rust-version = "1.94"
+rust-version = "1.95"
 
 [profile.dev]
 # optimize host dependencies for faster rebuilds.
