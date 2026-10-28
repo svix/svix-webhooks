@@ -1,4 +1,8 @@
 // this file is @generated
+import {
+  type ElasticSearchOperation,
+  ElasticSearchOperationSerializer,
+} from "./elasticSearchOperation";
 
 /** Configuration parameters for defining an ElasticSearch/OpenSearch sink. */
 export interface ElasticSearchConfigIn {
@@ -23,6 +27,12 @@ export interface ElasticSearchConfigIn {
   apiKey?: string | null;
   /** If true, Elasticsearch refreshes the affected shards to make this operation visible to search. */
   refresh?: boolean;
+  /**
+   * The operation to use when indexing.
+   *
+   * If not passed, this defaults to `create`.
+   */
+  operation?: ElasticSearchOperation;
 }
 
 export const ElasticSearchConfigInSerializer = {
@@ -32,6 +42,10 @@ export const ElasticSearchConfigInSerializer = {
       url: object["url"],
       apiKey: object["apiKey"],
       refresh: object["refresh"],
+      operation:
+        object["operation"] != null
+          ? ElasticSearchOperationSerializer._fromJsonObject(object["operation"])
+          : undefined,
     };
   },
 
@@ -41,6 +55,10 @@ export const ElasticSearchConfigInSerializer = {
       url: self.url,
       apiKey: self.apiKey,
       refresh: self.refresh,
+      operation:
+        self.operation != null
+          ? ElasticSearchOperationSerializer._toJsonObject(self.operation)
+          : undefined,
     };
   },
 };

@@ -13,6 +13,7 @@ from .event_bridge_config_in import EventBridgeConfigIn
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
 from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
 from .otel_tracing_config_in import OtelTracingConfigIn
+from .post_hog_config_in import PostHogConfigIn
 from .postgres_config_in import PostgresConfigIn
 from .rabbit_mq_config_in import RabbitMqConfigIn
 from .redshift_config_in import RedshiftConfigIn
@@ -72,6 +73,7 @@ class StreamSinkIn(BaseModel):
         t.Literal["redshift"],
         t.Literal["postgres"],
         t.Literal["elasticSearch"],
+        t.Literal["postHog"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -91,6 +93,7 @@ class StreamSinkIn(BaseModel):
         RedshiftConfigIn,
         PostgresConfigIn,
         ElasticSearchConfigIn,
+        PostHogConfigIn,
     ]
 
     @model_validator(mode="wrap")
@@ -143,6 +146,8 @@ class StreamSinkIn(BaseModel):
             output.config = PostgresConfigIn.model_validate(data.get("config", {}))
         elif output.type == "elasticSearch":
             output.config = ElasticSearchConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "postHog":
+            output.config = PostHogConfigIn.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

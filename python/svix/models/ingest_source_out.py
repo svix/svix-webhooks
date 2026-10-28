@@ -7,6 +7,8 @@ from typing_extensions import Self
 
 from .adobe_sign_config_out import AdobeSignConfigOut
 from .airwallex_config_out import AirwallexConfigOut
+from .ascend_config_out import AscendConfigOut
+from .bitbucket_config_out import BitbucketConfigOut
 from .checkbook_config_out import CheckbookConfigOut
 from .common import BaseModel
 from .cron_config import CronConfig
@@ -29,6 +31,7 @@ from .stripe_config_out import StripeConfigOut
 from .svix_config_out import SvixConfigOut
 from .tailscale_config_out import TailscaleConfigOut
 from .telnyx_config_out import TelnyxConfigOut
+from .tricentis_qtest_config_out import TricentisQtestConfigOut
 from .vapi_config_out import VapiConfigOut
 from .veriff_config_out import VeriffConfigOut
 from .vgs_config_out import VgsConfigOut
@@ -56,7 +59,9 @@ class IngestSourceOut(BaseModel):
         t.Literal["generic-webhook"],
         t.Literal["cron"],
         t.Literal["adobe-sign"],
+        t.Literal["ascend"],
         t.Literal["beehiiv"],
+        t.Literal["bitbucket"],
         t.Literal["brex"],
         t.Literal["checkbook"],
         t.Literal["clerk"],
@@ -91,6 +96,7 @@ class IngestSourceOut(BaseModel):
         t.Literal["zoom"],
         t.Literal["tailscale"],
         t.Literal["telnyx"],
+        t.Literal["tricentis-qtest"],
         t.Literal["vapi"],
         t.Literal["open-ai"],
         t.Literal["render"],
@@ -102,7 +108,9 @@ class IngestSourceOut(BaseModel):
         t.Dict[str, t.Any],
         CronConfig,
         AdobeSignConfigOut,
+        AscendConfigOut,
         SvixConfigOut,
+        BitbucketConfigOut,
         CheckbookConfigOut,
         DocusignConfigOut,
         EasypostConfigOut,
@@ -123,6 +131,7 @@ class IngestSourceOut(BaseModel):
         ZoomConfigOut,
         TailscaleConfigOut,
         TelnyxConfigOut,
+        TricentisQtestConfigOut,
         VapiConfigOut,
         VeriffConfigOut,
         AirwallexConfigOut,
@@ -145,8 +154,12 @@ class IngestSourceOut(BaseModel):
             output.config = CronConfig.model_validate(data.get("config", {}))
         elif output.type == "adobe-sign":
             output.config = AdobeSignConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "ascend":
+            output.config = AscendConfigOut.model_validate(data.get("config", {}))
         elif output.type == "beehiiv":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "bitbucket":
+            output.config = BitbucketConfigOut.model_validate(data.get("config", {}))
         elif output.type == "brex":
             output.config = SvixConfigOut.model_validate(data.get("config", {}))
         elif output.type == "checkbook":
@@ -215,6 +228,10 @@ class IngestSourceOut(BaseModel):
             output.config = TailscaleConfigOut.model_validate(data.get("config", {}))
         elif output.type == "telnyx":
             output.config = TelnyxConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "tricentis-qtest":
+            output.config = TricentisQtestConfigOut.model_validate(
+                data.get("config", {})
+            )
         elif output.type == "vapi":
             output.config = VapiConfigOut.model_validate(data.get("config", {}))
         elif output.type == "open-ai":

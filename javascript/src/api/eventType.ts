@@ -1,5 +1,6 @@
 // this file is @generated
 
+import type { ArchiveStatus } from "../models/archiveStatus";
 import {
   type EventTypeImportOpenApiIn,
   EventTypeImportOpenApiInSerializer,
@@ -29,8 +30,18 @@ export interface EventTypeListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
-  /** When `true` archived (deleted but not expunged) items are included in the response. */
+  /**
+   * Include archived items in the response.
+   *
+   * Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
+   */
   includeArchived?: boolean;
+  /**
+   * Which items to include based on whether they are archived.
+   *
+   * Defaults to `active`.
+   */
+  archiveStatus?: ArchiveStatus;
   /** When `true` the full item (including the schema) is included in the response. */
   withContent?: boolean;
 }
@@ -63,6 +74,7 @@ export class EventType {
       iterator: options?.iterator,
       order: options?.order,
       include_archived: options?.includeArchived,
+      archive_status: options?.archiveStatus,
       with_content: options?.withContent ?? false,
     });
 
@@ -149,7 +161,7 @@ export class EventType {
    * Endpoints already configured to filter on an event type will continue to do so after archival.
    * However, new messages can not be sent with it and endpoints can not filter on it.
    * An event type can be unarchived with the
-   * [create operation](#operation/create_event_type_api_v1_event_type__post).
+   * [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`.
    */
   public async delete(
     eventTypeName: string,

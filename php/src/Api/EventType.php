@@ -35,6 +35,7 @@ class EventType
         $request->setQueryParam('iterator', $options->iterator);
         $request->setQueryParam('order', $options->order);
         $request->setQueryParam('include_archived', $options->includeArchived);
+        $request->setQueryParam('archive_status', $options->archiveStatus);
         $request->setQueryParam('with_content', $options->withContent);
         $res = $this->client->send($request);
 
@@ -119,7 +120,7 @@ class EventType
      * Endpoints already configured to filter on an event type will continue to do so after archival.
      * However, new messages can not be sent with it and endpoints can not filter on it.
      * An event type can be unarchived with the
-     * [create operation](#operation/create_event_type_api_v1_event_type__post).
+     * [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`.
      *
      * @throws ApiException
      */

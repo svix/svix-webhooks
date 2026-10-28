@@ -7,6 +7,8 @@ module Svix
     # The event type's name
     attr_accessor :name
     attr_accessor :description
+    # Translated descriptions keyed by BCP 47 language tag.
+    attr_accessor :description_translations
     attr_accessor :archived
     attr_accessor :deprecated
     # The schema for the event type for a specific version as a JSON schema.
@@ -15,7 +17,16 @@ module Svix
     attr_accessor :group_name
     attr_accessor :feature_flags
 
-    ALL_FIELD ||= ["name", "description", "archived", "deprecated", "schemas", "group_name", "feature_flags"].freeze
+    ALL_FIELD ||= [
+      "name",
+      "description",
+      "description_translations",
+      "archived",
+      "deprecated",
+      "schemas",
+      "group_name",
+      "feature_flags"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -38,6 +49,7 @@ module Svix
       attrs = Hash.new
       attrs["name"] = attributes["name"]
       attrs["description"] = attributes["description"]
+      attrs["description_translations"] = attributes["descriptionTranslations"]
       attrs["archived"] = attributes["archived"]
       attrs["deprecated"] = attributes["deprecated"]
       attrs["schemas"] = attributes["schemas"]
@@ -50,6 +62,10 @@ module Svix
       out = Hash.new
       out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
       out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      unless @description_translations.nil?
+        out["descriptionTranslations"] = Svix::serialize_primitive(@description_translations)
+      end
+
       out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
       out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
       out["schemas"] = Svix::serialize_primitive(@schemas) unless @schemas.nil?

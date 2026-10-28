@@ -39,3 +39,7 @@ class MessageEndpointOut(BaseModel):
     created_at: datetime
 
     updated_at: datetime
+
+    expiry: t.Optional[datetime] = None
+    """When the endpoint expires, if ever. No messages are sent to the
+    endpoint after this time."""

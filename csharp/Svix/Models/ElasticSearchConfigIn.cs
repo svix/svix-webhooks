@@ -21,6 +21,9 @@ namespace Svix.Models
         [JsonProperty("refresh")]
         public bool? Refresh { get; set; } = null;
 
+        [JsonProperty("operation")]
+        public ElasticSearchOperation? Operation { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -30,6 +33,7 @@ namespace Svix.Models
             sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  ApiKey: ").Append(ApiKey).Append('\n');
             sb.Append("  Refresh: ").Append(Refresh).Append('\n');
+            sb.Append("  Operation: ").Append(Operation).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

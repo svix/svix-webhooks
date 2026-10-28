@@ -21,6 +21,9 @@ module Svix
     attr_accessor :channels
     attr_accessor :created_at
     attr_accessor :updated_at
+    # When the endpoint expires, if ever. No messages are sent to the
+    # endpoint after this time.
+    attr_accessor :expiry
 
     ALL_FIELD ||= [
       "id",
@@ -33,7 +36,8 @@ module Svix
       "event_types",
       "channels",
       "created_at",
-      "updated_at"
+      "updated_at",
+      "expiry"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -66,6 +70,7 @@ module Svix
       attrs["channels"] = attributes["channels"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
+      attrs["expiry"] = DateTime.rfc3339(attributes["expiry"]).to_time if attributes["expiry"]
       new(attrs)
     end
 
@@ -82,6 +87,7 @@ module Svix
       out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
       out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
       out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
       out
     end
 

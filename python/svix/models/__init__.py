@@ -14,6 +14,9 @@ from .application_in import ApplicationIn
 from .application_out import ApplicationOut
 from .application_patch import ApplicationPatch
 from .application_token_expire_in import ApplicationTokenExpireIn
+from .archive_status import ArchiveStatus
+from .ascend_config import AscendConfig
+from .ascend_config_out import AscendConfigOut
 from .auto_config_out import AutoConfigOut
 from .auto_config_sink_type import AutoConfigSinkType
 from .auto_config_subscription_out import AutoConfigSubscriptionOut
@@ -26,6 +29,8 @@ from .background_task_type import BackgroundTaskType
 from .big_query_config_in import BigQueryConfigIn
 from .big_query_config_out import BigQueryConfigOut
 from .big_query_config_patch import BigQueryConfigPatch
+from .bitbucket_config import BitbucketConfig
+from .bitbucket_config_out import BitbucketConfigOut
 from .bulk_expunge_contents_in import BulkExpungeContentsIn
 from .bulk_expunge_contents_out import BulkExpungeContentsOut
 from .bulk_expunge_status import BulkExpungeStatus
@@ -60,6 +65,7 @@ from .easypost_config_out import EasypostConfigOut
 from .elastic_search_config_in import ElasticSearchConfigIn
 from .elastic_search_config_out import ElasticSearchConfigOut
 from .elastic_search_config_patch import ElasticSearchConfigPatch
+from .elastic_search_operation import ElasticSearchOperation
 from .empty_response import EmptyResponse
 from .endpoint_attempt_stats import EndpointAttemptStats
 from .endpoint_headers_in import EndpointHeadersIn
@@ -184,6 +190,9 @@ from .polling_endpoint_message_out import PollingEndpointMessageOut
 from .polling_endpoint_out import PollingEndpointOut
 from .port_io_config import PortIoConfig
 from .port_io_config_out import PortIoConfigOut
+from .post_hog_config_in import PostHogConfigIn
+from .post_hog_config_out import PostHogConfigOut
+from .post_hog_config_patch import PostHogConfigPatch
 from .postgres_config_in import PostgresConfigIn
 from .postgres_config_out import PostgresConfigOut
 from .postgres_config_patch import PostgresConfigPatch
@@ -253,6 +262,8 @@ from .tailscale_config import TailscaleConfig
 from .tailscale_config_out import TailscaleConfigOut
 from .telnyx_config import TelnyxConfig
 from .telnyx_config_out import TelnyxConfigOut
+from .tricentis_qtest_config import TricentisQtestConfig
+from .tricentis_qtest_config_out import TricentisQtestConfigOut
 from .vapi_config import VapiConfig
 from .vapi_config_out import VapiConfigOut
 from .veriff_config import VeriffConfig
@@ -278,6 +289,9 @@ __all__ = [
     "ApplicationOut",
     "ApplicationPatch",
     "ApplicationTokenExpireIn",
+    "ArchiveStatus",
+    "AscendConfig",
+    "AscendConfigOut",
     "AutoConfigOut",
     "AutoConfigSinkType",
     "AutoConfigSubscriptionOut",
@@ -290,6 +304,8 @@ __all__ = [
     "BigQueryConfigIn",
     "BigQueryConfigOut",
     "BigQueryConfigPatch",
+    "BitbucketConfig",
+    "BitbucketConfigOut",
     "BulkExpungeContentsIn",
     "BulkExpungeContentsOut",
     "BulkExpungeStatus",
@@ -324,6 +340,7 @@ __all__ = [
     "ElasticSearchConfigIn",
     "ElasticSearchConfigOut",
     "ElasticSearchConfigPatch",
+    "ElasticSearchOperation",
     "EmptyResponse",
     "EndpointAttemptStats",
     "EndpointHeadersIn",
@@ -444,6 +461,9 @@ __all__ = [
     "PollingEndpointOut",
     "PortIoConfig",
     "PortIoConfigOut",
+    "PostHogConfigIn",
+    "PostHogConfigOut",
+    "PostHogConfigPatch",
     "PostgresConfigIn",
     "PostgresConfigOut",
     "PostgresConfigPatch",
@@ -513,6 +533,8 @@ __all__ = [
     "TailscaleConfigOut",
     "TelnyxConfig",
     "TelnyxConfigOut",
+    "TricentisQtestConfig",
+    "TricentisQtestConfigOut",
     "VapiConfig",
     "VapiConfigOut",
     "VeriffConfig",

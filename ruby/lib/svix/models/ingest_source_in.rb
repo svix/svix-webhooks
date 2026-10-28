@@ -4,6 +4,8 @@ require "json"
 
 require_relative "./adobe_sign_config"
 require_relative "./airwallex_config"
+require_relative "./ascend_config"
+require_relative "./bitbucket_config"
 require_relative "./checkbook_config"
 require_relative "./cron_config"
 require_relative "./docusign_config"
@@ -25,6 +27,7 @@ require_relative "./stripe_config"
 require_relative "./svix_config"
 require_relative "./tailscale_config"
 require_relative "./telnyx_config"
+require_relative "./tricentis_qtest_config"
 require_relative "./vapi_config"
 require_relative "./veriff_config"
 require_relative "./vgs_config"
@@ -54,7 +57,13 @@ module Svix
     class AdobeSign < AdobeSignConfig
     end
 
+    class Ascend < AscendConfig
+    end
+
     class Beehiiv < SvixConfig
+    end
+
+    class Bitbucket < BitbucketConfig
     end
 
     class Brex < SvixConfig
@@ -159,6 +168,9 @@ module Svix
     class Telnyx < TelnyxConfig
     end
 
+    class TricentisQtest < TricentisQtestConfig
+    end
+
     class Vapi < VapiConfig
     end
 
@@ -191,7 +203,9 @@ module Svix
       IngestSourceInConfig::GenericWebhook => "generic-webhook",
       IngestSourceInConfig::Cron => "cron",
       IngestSourceInConfig::AdobeSign => "adobe-sign",
+      IngestSourceInConfig::Ascend => "ascend",
       IngestSourceInConfig::Beehiiv => "beehiiv",
+      IngestSourceInConfig::Bitbucket => "bitbucket",
       IngestSourceInConfig::Brex => "brex",
       IngestSourceInConfig::Checkbook => "checkbook",
       IngestSourceInConfig::Clerk => "clerk",
@@ -226,6 +240,7 @@ module Svix
       IngestSourceInConfig::Zoom => "zoom",
       IngestSourceInConfig::Tailscale => "tailscale",
       IngestSourceInConfig::Telnyx => "telnyx",
+      IngestSourceInConfig::TricentisQtest => "tricentis-qtest",
       IngestSourceInConfig::Vapi => "vapi",
       IngestSourceInConfig::OpenAi => "open-ai",
       IngestSourceInConfig::Render => "render",

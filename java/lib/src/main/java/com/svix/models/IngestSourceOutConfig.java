@@ -67,6 +67,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("ascend")
+    public static class Ascend extends IngestSourceOutConfig {
+        private final AscendConfigOut ascend;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(ascend);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("beehiiv")
     public static class Beehiiv extends IngestSourceOutConfig {
         private final SvixConfigOut beehiiv;
@@ -74,6 +89,21 @@ public abstract class IngestSourceOutConfig {
         @Override
         public JsonNode toJsonNode() {
             return Utils.getObjectMapper().valueToTree(beehiiv);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("bitbucket")
+    public static class Bitbucket extends IngestSourceOutConfig {
+        private final BitbucketConfigOut bitbucket;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(bitbucket);
         }
     }
 
@@ -592,6 +622,21 @@ public abstract class IngestSourceOutConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("tricentis-qtest")
+    public static class TricentisQtest extends IngestSourceOutConfig {
+        private final TricentisQtestConfigOut tricentisQtest;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(tricentisQtest);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("vapi")
     public static class Vapi extends IngestSourceOutConfig {
         private final VapiConfigOut vapi;
@@ -689,7 +734,9 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("generic-webhook", c -> new GenericWebhook());
         TY_M.put("cron", c -> new Cron(m.convertValue(c, CronConfig.class)));
         TY_M.put("adobe-sign", c -> new AdobeSign(m.convertValue(c, AdobeSignConfigOut.class)));
+        TY_M.put("ascend", c -> new Ascend(m.convertValue(c, AscendConfigOut.class)));
         TY_M.put("beehiiv", c -> new Beehiiv(m.convertValue(c, SvixConfigOut.class)));
+        TY_M.put("bitbucket", c -> new Bitbucket(m.convertValue(c, BitbucketConfigOut.class)));
         TY_M.put("brex", c -> new Brex(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("checkbook", c -> new Checkbook(m.convertValue(c, CheckbookConfigOut.class)));
         TY_M.put("clerk", c -> new Clerk(m.convertValue(c, SvixConfigOut.class)));
@@ -724,6 +771,9 @@ public abstract class IngestSourceOutConfig {
         TY_M.put("zoom", c -> new Zoom(m.convertValue(c, ZoomConfigOut.class)));
         TY_M.put("tailscale", c -> new Tailscale(m.convertValue(c, TailscaleConfigOut.class)));
         TY_M.put("telnyx", c -> new Telnyx(m.convertValue(c, TelnyxConfigOut.class)));
+        TY_M.put(
+                "tricentis-qtest",
+                c -> new TricentisQtest(m.convertValue(c, TricentisQtestConfigOut.class)));
         TY_M.put("vapi", c -> new Vapi(m.convertValue(c, VapiConfigOut.class)));
         TY_M.put("open-ai", c -> new OpenAi(m.convertValue(c, SvixConfigOut.class)));
         TY_M.put("render", c -> new Render(m.convertValue(c, SvixConfigOut.class)));

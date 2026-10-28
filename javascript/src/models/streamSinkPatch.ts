@@ -32,6 +32,10 @@ import {
   OtelTracingConfigPatchSerializer,
 } from "./otelTracingConfigPatch";
 import {
+  type PostHogConfigPatch,
+  PostHogConfigPatchSerializer,
+} from "./postHogConfigPatch";
+import {
   type PostgresConfigPatch,
   PostgresConfigPatchSerializer,
 } from "./postgresConfigPatch";
@@ -155,6 +159,11 @@ interface StreamSinkPatchElasticSearch {
   config: ElasticSearchConfigPatch;
 }
 
+interface StreamSinkPatchPostHog {
+  type: "postHog";
+  config: PostHogConfigPatch;
+}
+
 export type StreamSinkPatch = _StreamSinkPatchFields &
   (
     | StreamSinkPatchPoller
@@ -174,6 +183,7 @@ export type StreamSinkPatch = _StreamSinkPatchFields &
     | StreamSinkPatchRedshift
     | StreamSinkPatchPostgres
     | StreamSinkPatchElasticSearch
+    | StreamSinkPatchPostHog
   );
 
 export const StreamSinkPatchSerializer = {
@@ -218,6 +228,8 @@ export const StreamSinkPatchSerializer = {
           return PostgresConfigPatchSerializer._fromJsonObject(object["config"]);
         case "elasticSearch":
           return ElasticSearchConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "postHog":
+          return PostHogConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -293,6 +305,9 @@ export const StreamSinkPatchSerializer = {
         break;
       case "elasticSearch":
         config = ElasticSearchConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "postHog":
+        config = PostHogConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 

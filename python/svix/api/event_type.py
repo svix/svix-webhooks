@@ -24,7 +24,13 @@ class EventTypeListOptions(BaseOptions):
     order: t.Optional[models.Ordering] = None
     """The sorting order of the returned items"""
     include_archived: t.Optional[bool] = None
-    """When `true` archived (deleted but not expunged) items are included in the response."""
+    """Include archived items in the response.
+
+Deprecated, use `archive_status` instead. Ignored when `archive_status` is set."""
+    archive_status: t.Optional[models.ArchiveStatus] = None
+    """Which items to include based on whether they are archived.
+
+Defaults to `active`."""
     with_content: t.Optional[bool] = None
     """When `true` the full item (including the schema) is included in the response."""
 
@@ -35,6 +41,7 @@ class EventTypeListOptions(BaseOptions):
                 "iterator": self.iterator,
                 "order": self.order,
                 "include_archived": self.include_archived,
+                "archive_status": self.archive_status,
                 "with_content": self.with_content or False,
             }
         )
@@ -171,7 +178,7 @@ class EventTypeAsync(ApiBaseAsync):
         Endpoints already configured to filter on an event type will continue to do so after archival.
         However, new messages can not be sent with it and endpoints can not filter on it.
         An event type can be unarchived with the
-        [create operation](#operation/create_event_type_api_v1_event_type__post)."""
+        [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`."""
         await self._request_asyncio(
             method="delete",
             path="/api/v1/event-type/{event_type_name}",
@@ -292,7 +299,7 @@ class EventType(ApiBaseSync):
         Endpoints already configured to filter on an event type will continue to do so after archival.
         However, new messages can not be sent with it and endpoints can not filter on it.
         An event type can be unarchived with the
-        [create operation](#operation/create_event_type_api_v1_event_type__post)."""
+        [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`."""
         self._request_sync(
             method="delete",
             path="/api/v1/event-type/{event_type_name}",

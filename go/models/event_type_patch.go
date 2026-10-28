@@ -8,18 +8,22 @@ import (
 )
 
 type EventTypePatch struct {
-	Description  *string                        `json:"description,omitempty"`
-	Archived     *bool                          `json:"archived,omitempty"`
-	Deprecated   *bool                          `json:"deprecated,omitempty"`
-	Schemas      utils.Nullable[map[string]any] `json:"schemas"`
-	FeatureFlags utils.Nullable[[]string]       `json:"featureFlags"`
-	GroupName    utils.Nullable[string]         `json:"groupName"` // The event type group's name
+	Description             *string                           `json:"description,omitempty"`
+	DescriptionTranslations utils.Nullable[map[string]string] `json:"descriptionTranslations"` // Translated descriptions keyed by BCP 47 language tag.
+	Archived                *bool                             `json:"archived,omitempty"`
+	Deprecated              *bool                             `json:"deprecated,omitempty"`
+	Schemas                 utils.Nullable[map[string]any]    `json:"schemas"`
+	FeatureFlags            utils.Nullable[[]string]          `json:"featureFlags"`
+	GroupName               utils.Nullable[string]            `json:"groupName"` // The event type group's name
 }
 
 func (o EventTypePatch) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
 	if o.Description != nil {
 		toSerialize["description"] = o.Description
+	}
+	if o.DescriptionTranslations.IsSet() {
+		toSerialize["descriptionTranslations"] = o.DescriptionTranslations
 	}
 	if o.Archived != nil {
 		toSerialize["archived"] = o.Archived

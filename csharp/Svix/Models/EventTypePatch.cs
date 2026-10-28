@@ -11,6 +11,12 @@ namespace Svix.Models
 
         public bool ShouldSerializeDescription() => Description != null;
 
+        [JsonProperty("descriptionTranslations")]
+        public MaybeUnset<Dictionary<string, string>?> DescriptionTranslations { get; set; } =
+            MaybeUnset<Dictionary<string, string>?>.Unset();
+
+        public bool ShouldSerializeDescriptionTranslations() => !DescriptionTranslations.IsUnset;
+
         [JsonProperty("archived")]
         public bool? Archived { get; set; } = null;
 
@@ -43,6 +49,7 @@ namespace Svix.Models
 
             sb.Append("class EventTypePatch {\n");
             sb.Append("  Description: ").Append(Description).Append('\n');
+            sb.Append("  DescriptionTranslations: ").Append(DescriptionTranslations).Append('\n');
             sb.Append("  Archived: ").Append(Archived).Append('\n');
             sb.Append("  Deprecated: ").Append(Deprecated).Append('\n');
             sb.Append("  Schemas: ").Append(Schemas).Append('\n');

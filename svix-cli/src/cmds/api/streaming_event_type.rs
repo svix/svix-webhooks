@@ -18,9 +18,17 @@ pub struct StreamingEventTypeListOptions {
     #[arg(long)]
     pub order: Option<Ordering>,
 
-    /// Include archived (deleted but not expunged) items in the response.
+    /// Include archived items in the response.
+    ///
+    /// Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
     #[arg(long)]
     pub include_archived: Option<bool>,
+
+    /// Which items to include based on whether they are archived.
+    ///
+    /// Defaults to `active`.
+    #[arg(long)]
+    pub archive_status: Option<ArchiveStatus>,
 }
 
 impl From<StreamingEventTypeListOptions> for svix::api::StreamingEventTypeListOptions {
@@ -30,12 +38,14 @@ impl From<StreamingEventTypeListOptions> for svix::api::StreamingEventTypeListOp
             iterator,
             order,
             include_archived,
+            archive_status,
         } = value;
         Self {
             limit,
             iterator,
             order,
             include_archived,
+            archive_status,
         }
     }
 }
@@ -55,7 +65,7 @@ impl From<StreamingEventTypeCreateOptions> for svix::api::StreamingEventTypeCrea
 
 #[derive(Args, Clone)]
 pub struct StreamingEventTypeDeleteOptions {
-    /// By default, event types are archived when "deleted". With this flag, they are deleted entirely.
+    /// Entirely delete the event type, rather than archiving it.
     #[arg(long)]
     pub expunge: Option<bool>,
 }
@@ -186,7 +196,10 @@ pub enum StreamingEventTypeCommands {
         name: String,
         stream_event_type_in: crate::json::JsonOf<StreamEventTypeIn>,
     },
-    /// Delete an event type.
+    /// Archive an event type.
+    ///
+    /// An event type can be unarchived with the
+    /// [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
             "{usage-heading} {usage}\n\n",

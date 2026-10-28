@@ -46,6 +46,10 @@ public class StreamingEventType {
             url.addQueryParameter(
                     "include_archived", Utils.serializeQueryParam(options.includeArchived));
         }
+        if (options.archiveStatus != null) {
+            url.addQueryParameter(
+                    "archive_status", Utils.serializeQueryParam(options.archiveStatus));
+        }
         return this.client.executeRequest(
                 "GET", url.build(), null, null, ListResponseStreamEventTypeOut.class);
     }
@@ -94,12 +98,22 @@ public class StreamingEventType {
                 "PUT", url.build(), null, streamEventTypeIn, StreamEventTypeOut.class);
     }
 
-    /** Delete an event type. */
+    /**
+     * Archive an event type.
+     *
+     * <p>An event type can be unarchived with the [patch
+     * operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
+     */
     public void delete(final String name) throws IOException, ApiException {
         this.delete(name, new StreamingEventTypeDeleteOptions());
     }
 
-    /** Delete an event type. */
+    /**
+     * Archive an event type.
+     *
+     * <p>An event type can be unarchived with the [patch
+     * operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
+     */
     public void delete(final String name, final StreamingEventTypeDeleteOptions options)
             throws IOException, ApiException {
         HttpUrl.Builder url =

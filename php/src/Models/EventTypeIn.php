@@ -10,14 +10,16 @@ class EventTypeIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string            $name         The event type's name
-     * @param array|null        $schemas      the schema for the event type for a specific version as a JSON schema
-     * @param string|null       $groupName    The event type group's name
-     * @param list<string>|null $featureFlags
+     * @param string                     $name                    The event type's name
+     * @param array<string, string>|null $descriptionTranslations translated descriptions keyed by BCP 47 language tag
+     * @param array|null                 $schemas                 the schema for the event type for a specific version as a JSON schema
+     * @param string|null                $groupName               The event type group's name
+     * @param list<string>|null          $featureFlags
      */
     private function __construct(
         public readonly string $name,
         public readonly string $description,
+        public readonly ?array $descriptionTranslations = null,
         public readonly ?bool $archived = null,
         public readonly ?bool $deprecated = null,
         public readonly ?array $schemas = null,
@@ -38,12 +40,31 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: $name,
             description: $description,
+            descriptionTranslations: null,
             archived: null,
             deprecated: null,
             schemas: null,
             groupName: null,
             featureFlags: null,
             setFields: ['name' => true, 'description' => true]
+        );
+    }
+
+    public function withDescriptionTranslations(?array $descriptionTranslations): self
+    {
+        $setFields = $this->setFields;
+        $setFields['descriptionTranslations'] = true;
+
+        return new self(
+            name: $this->name,
+            description: $this->description,
+            descriptionTranslations: $descriptionTranslations,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            groupName: $this->groupName,
+            featureFlags: $this->featureFlags,
+            setFields: $setFields
         );
     }
 
@@ -55,6 +76,7 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -72,6 +94,7 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $deprecated,
             schemas: $this->schemas,
@@ -89,6 +112,7 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $schemas,
@@ -106,6 +130,7 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -123,6 +148,7 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -138,6 +164,9 @@ class EventTypeIn implements \JsonSerializable
             'name' => $this->name,
             'description' => $this->description];
 
+        if (isset($this->setFields['descriptionTranslations'])) {
+            $data['descriptionTranslations'] = $this->descriptionTranslations;
+        }
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;
         }
@@ -165,6 +194,7 @@ class EventTypeIn implements \JsonSerializable
         return new self(
             name: \Svix\Utils::deserializeString($data, 'name', true, 'EventTypeIn'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'EventTypeIn'),
+            descriptionTranslations: \Svix\Utils::getValFromJson($data, 'descriptionTranslations', false, 'EventTypeIn'),
             archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypeIn'),
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'EventTypeIn'),
             schemas: \Svix\Utils::getValFromJson($data, 'schemas', false, 'EventTypeIn'),

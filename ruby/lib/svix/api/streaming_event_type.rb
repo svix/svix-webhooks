@@ -18,7 +18,8 @@ module Svix
           "limit" => options["limit"],
           "iterator" => options["iterator"],
           "order" => options["order"],
-          "include_archived" => options["include_archived"]
+          "include_archived" => options["include_archived"],
+          "archive_status" => options["archive_status"]
         }
       )
       ListResponseStreamEventTypeOut.deserialize(res)

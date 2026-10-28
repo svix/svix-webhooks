@@ -4,8 +4,11 @@ package models
 import "time"
 
 type MessageIn struct {
-	EventId   *string `json:"eventId,omitempty"` // Optional unique identifier for the message
-	EventType string  `json:"eventType"`         // The event type's name
+	// Optional unique identifier for the message
+	//
+	// This should not contain the '.' character
+	EventId   *string `json:"eventId,omitempty"`
+	EventType string  `json:"eventType"` // The event type's name
 	// JSON payload to send as the request body of the webhook.
 	//
 	// We also support sending non-JSON payloads. Please contact us for more information.

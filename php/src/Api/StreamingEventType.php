@@ -32,6 +32,7 @@ class StreamingEventType
         $request->setQueryParam('iterator', $options->iterator);
         $request->setQueryParam('order', $options->order);
         $request->setQueryParam('include_archived', $options->includeArchived);
+        $request->setQueryParam('archive_status', $options->archiveStatus);
         $res = $this->client->send($request);
 
         return ListResponseStreamEventTypeOut::fromJson($res);
@@ -85,7 +86,10 @@ class StreamingEventType
     }
 
     /**
-     * Delete an event type.
+     * Archive an event type.
+     *
+     * An event type can be unarchived with the
+     * [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
      *
      * @throws ApiException
      */

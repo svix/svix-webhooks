@@ -15,6 +15,9 @@ namespace Svix.Models
         [JsonProperty("refresh", Required = Required.Always)]
         public required bool Refresh { get; set; }
 
+        [JsonProperty("operation", Required = Required.Always)]
+        public required ElasticSearchOperation Operation { get; set; }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -23,6 +26,7 @@ namespace Svix.Models
             sb.Append("  IndexName: ").Append(IndexName).Append('\n');
             sb.Append("  Url: ").Append(Url).Append('\n');
             sb.Append("  Refresh: ").Append(Refresh).Append('\n');
+            sb.Append("  Operation: ").Append(Operation).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

@@ -10,10 +10,11 @@ class EventTypeOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string            $name         The event type's name
-     * @param array|null        $schemas      the schema for the event type for a specific version as a JSON schema
-     * @param string|null       $groupName    The event type group's name
-     * @param list<string>|null $featureFlags
+     * @param string                     $name                    The event type's name
+     * @param array<string, string>|null $descriptionTranslations translated descriptions keyed by BCP 47 language tag
+     * @param array|null                 $schemas                 the schema for the event type for a specific version as a JSON schema
+     * @param string|null                $groupName               The event type group's name
+     * @param list<string>|null          $featureFlags
      */
     private function __construct(
         public readonly string $name,
@@ -21,6 +22,7 @@ class EventTypeOut implements \JsonSerializable
         public readonly bool $deprecated,
         public readonly \DateTimeImmutable $createdAt,
         public readonly \DateTimeImmutable $updatedAt,
+        public readonly ?array $descriptionTranslations = null,
         public readonly ?bool $archived = null,
         public readonly ?array $schemas = null,
         public readonly ?string $groupName = null,
@@ -44,6 +46,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: $name,
             description: $description,
+            descriptionTranslations: null,
             archived: null,
             deprecated: $deprecated,
             schemas: null,
@@ -56,6 +59,27 @@ class EventTypeOut implements \JsonSerializable
         );
     }
 
+    public function withDescriptionTranslations(?array $descriptionTranslations): self
+    {
+        $setFields = $this->setFields;
+        $setFields['descriptionTranslations'] = true;
+
+        return new self(
+            name: $this->name,
+            description: $this->description,
+            descriptionTranslations: $descriptionTranslations,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            groupName: $this->groupName,
+            featureFlags: $this->featureFlags,
+            featureFlag: $this->featureFlag,
+            setFields: $setFields
+        );
+    }
+
     public function withArchived(?bool $archived): self
     {
         $setFields = $this->setFields;
@@ -64,6 +88,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -84,6 +109,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $schemas,
@@ -104,6 +130,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -124,6 +151,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -144,6 +172,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: $this->name,
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -165,6 +194,9 @@ class EventTypeOut implements \JsonSerializable
             'createdAt' => $this->createdAt->format('c'),
             'updatedAt' => $this->updatedAt->format('c')];
 
+        if (isset($this->setFields['descriptionTranslations'])) {
+            $data['descriptionTranslations'] = $this->descriptionTranslations;
+        }
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;
         }
@@ -192,6 +224,7 @@ class EventTypeOut implements \JsonSerializable
         return new self(
             name: \Svix\Utils::deserializeString($data, 'name', true, 'EventTypeOut'),
             description: \Svix\Utils::deserializeString($data, 'description', true, 'EventTypeOut'),
+            descriptionTranslations: \Svix\Utils::getValFromJson($data, 'descriptionTranslations', false, 'EventTypeOut'),
             archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypeOut'),
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', true, 'EventTypeOut'),
             schemas: \Svix\Utils::getValFromJson($data, 'schemas', false, 'EventTypeOut'),

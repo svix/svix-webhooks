@@ -14,6 +14,7 @@ class ElasticSearchConfigPatch implements \JsonSerializable
         public readonly ?string $url = null,
         public readonly ?string $apiKey = null,
         public readonly ?bool $refresh = null,
+        public readonly ?ElasticSearchOperation $operation = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -29,6 +30,7 @@ class ElasticSearchConfigPatch implements \JsonSerializable
             url: null,
             apiKey: null,
             refresh: null,
+            operation: null,
             setFields: []
         );
     }
@@ -43,6 +45,7 @@ class ElasticSearchConfigPatch implements \JsonSerializable
             url: $this->url,
             apiKey: $this->apiKey,
             refresh: $this->refresh,
+            operation: $this->operation,
             setFields: $setFields
         );
     }
@@ -57,6 +60,7 @@ class ElasticSearchConfigPatch implements \JsonSerializable
             url: $url,
             apiKey: $this->apiKey,
             refresh: $this->refresh,
+            operation: $this->operation,
             setFields: $setFields
         );
     }
@@ -71,6 +75,7 @@ class ElasticSearchConfigPatch implements \JsonSerializable
             url: $this->url,
             apiKey: $apiKey,
             refresh: $this->refresh,
+            operation: $this->operation,
             setFields: $setFields
         );
     }
@@ -85,6 +90,22 @@ class ElasticSearchConfigPatch implements \JsonSerializable
             url: $this->url,
             apiKey: $this->apiKey,
             refresh: $refresh,
+            operation: $this->operation,
+            setFields: $setFields
+        );
+    }
+
+    public function withOperation(?ElasticSearchOperation $operation): self
+    {
+        $setFields = $this->setFields;
+        $setFields['operation'] = true;
+
+        return new self(
+            indexName: $this->indexName,
+            url: $this->url,
+            apiKey: $this->apiKey,
+            refresh: $this->refresh,
+            operation: $operation,
             setFields: $setFields
         );
     }
@@ -106,6 +127,9 @@ class ElasticSearchConfigPatch implements \JsonSerializable
         if (null !== $this->refresh) {
             $data['refresh'] = $this->refresh;
         }
+        if (null !== $this->operation) {
+            $data['operation'] = $this->operation;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -119,7 +143,8 @@ class ElasticSearchConfigPatch implements \JsonSerializable
             indexName: \Svix\Utils::deserializeString($data, 'indexName', false, 'ElasticSearchConfigPatch'),
             url: \Svix\Utils::getValFromJson($data, 'url', false, 'ElasticSearchConfigPatch'),
             apiKey: \Svix\Utils::deserializeString($data, 'apiKey', false, 'ElasticSearchConfigPatch'),
-            refresh: \Svix\Utils::deserializeBool($data, 'refresh', false, 'ElasticSearchConfigPatch')
+            refresh: \Svix\Utils::deserializeBool($data, 'refresh', false, 'ElasticSearchConfigPatch'),
+            operation: \Svix\Utils::deserializeObject($data, 'operation', false, 'ElasticSearchConfigPatch', [ElasticSearchOperation::class, 'fromMixed'])
         );
     }
 

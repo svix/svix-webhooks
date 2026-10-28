@@ -17,4 +17,8 @@ type ElasticSearchConfigIn struct {
 	// the indexing will be done unauthenticated.
 	ApiKey  *string `json:"apiKey,omitempty"`
 	Refresh *bool   `json:"refresh,omitempty"` // If true, Elasticsearch refreshes the affected shards to make this operation visible to search.
+	// The operation to use when indexing.
+	//
+	// If not passed, this defaults to `create`.
+	Operation *ElasticSearchOperation `json:"operation,omitempty"`
 }

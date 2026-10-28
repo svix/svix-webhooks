@@ -12,7 +12,9 @@ import com.svix.Utils;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 @ToString
@@ -21,6 +23,7 @@ import java.util.Set;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class EventTypePatch {
     @JsonProperty private String description;
+    @JsonProperty private MaybeUnset<Map<String, String>> descriptionTranslations;
     @JsonProperty private Boolean archived;
     @JsonProperty private Boolean deprecated;
     @JsonProperty private MaybeUnset<Object> schemas;
@@ -46,6 +49,38 @@ public class EventTypePatch {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public EventTypePatch descriptionTranslations(Map<String, String> descriptionTranslations) {
+        this.descriptionTranslations = new MaybeUnset<>(descriptionTranslations);
+        return this;
+    }
+
+    public EventTypePatch putDescriptionTranslationsItem(
+            String key, String descriptionTranslationsItem) {
+        if (this.descriptionTranslations == null) {
+            this.descriptionTranslations = new MaybeUnset<>(new HashMap<>());
+        }
+        this.descriptionTranslations.getValue().put(key, descriptionTranslationsItem);
+
+        return this;
+    }
+
+    /**
+     * Translated descriptions keyed by BCP 47 language tag.
+     *
+     * @return descriptionTranslations
+     */
+    @javax.annotation.Nullable
+    public Map<String, String> getDescriptionTranslations() {
+        if (descriptionTranslations == null) {
+            return null;
+        }
+        return descriptionTranslations.getValue();
+    }
+
+    public void setDescriptionTranslations(Map<String, String> descriptionTranslations) {
+        this.descriptionTranslations = new MaybeUnset<>(descriptionTranslations);
     }
 
     public EventTypePatch archived(Boolean archived) {

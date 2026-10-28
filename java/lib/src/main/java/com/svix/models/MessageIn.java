@@ -42,6 +42,8 @@ public class MessageIn {
     /**
      * Optional unique identifier for the message
      *
+     * <p>This should not contain the '.' character
+     *
      * @return eventId
      */
     @javax.annotation.Nullable

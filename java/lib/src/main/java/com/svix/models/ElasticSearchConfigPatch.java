@@ -22,6 +22,7 @@ public class ElasticSearchConfigPatch {
     @JsonProperty private URI url;
     @JsonProperty private String apiKey;
     @JsonProperty private Boolean refresh;
+    @JsonProperty private ElasticSearchOperation operation;
 
     public ElasticSearchConfigPatch() {}
 
@@ -99,6 +100,25 @@ public class ElasticSearchConfigPatch {
 
     public void setRefresh(Boolean refresh) {
         this.refresh = refresh;
+    }
+
+    public ElasticSearchConfigPatch operation(ElasticSearchOperation operation) {
+        this.operation = operation;
+        return this;
+    }
+
+    /**
+     * Get operation
+     *
+     * @return operation
+     */
+    @javax.annotation.Nullable
+    public ElasticSearchOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(ElasticSearchOperation operation) {
+        this.operation = operation;
     }
 
     /**

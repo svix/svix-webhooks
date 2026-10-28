@@ -19,6 +19,9 @@ type (
 	ApplicationOut                            = models.ApplicationOut
 	ApplicationPatch                          = models.ApplicationPatch
 	ApplicationTokenExpireIn                  = models.ApplicationTokenExpireIn
+	ArchiveStatus                             = models.ArchiveStatus
+	AscendConfig                              = models.AscendConfig
+	AscendConfigOut                           = models.AscendConfigOut
 	AutoConfigOut                             = models.AutoConfigOut
 	AzureBlobStorageConfigIn                  = models.AzureBlobStorageConfigIn
 	AzureBlobStorageConfigOut                 = models.AzureBlobStorageConfigOut
@@ -29,6 +32,8 @@ type (
 	BigQueryConfigIn                          = models.BigQueryConfigIn
 	BigQueryConfigOut                         = models.BigQueryConfigOut
 	BigQueryConfigPatch                       = models.BigQueryConfigPatch
+	BitbucketConfig                           = models.BitbucketConfig
+	BitbucketConfigOut                        = models.BitbucketConfigOut
 	BulkExpungeContentsIn                     = models.BulkExpungeContentsIn
 	BulkExpungeContentsOut                    = models.BulkExpungeContentsOut
 	BulkExpungeStatus                         = models.BulkExpungeStatus
@@ -63,6 +68,7 @@ type (
 	ElasticSearchConfigIn                     = models.ElasticSearchConfigIn
 	ElasticSearchConfigOut                    = models.ElasticSearchConfigOut
 	ElasticSearchConfigPatch                  = models.ElasticSearchConfigPatch
+	ElasticSearchOperation                    = models.ElasticSearchOperation
 	EmptyResponse                             = models.EmptyResponse
 	EndpointAttemptStats                      = models.EndpointAttemptStats
 	EndpointHeadersIn                         = models.EndpointHeadersIn
@@ -180,6 +186,9 @@ type (
 	PollingEndpointOut                        = models.PollingEndpointOut
 	PortIoConfig                              = models.PortIoConfig
 	PortIoConfigOut                           = models.PortIoConfigOut
+	PostHogConfigIn                           = models.PostHogConfigIn
+	PostHogConfigOut                          = models.PostHogConfigOut
+	PostHogConfigPatch                        = models.PostHogConfigPatch
 	PostgresConfigIn                          = models.PostgresConfigIn
 	PostgresConfigOut                         = models.PostgresConfigOut
 	PostgresConfigPatch                       = models.PostgresConfigPatch
@@ -245,6 +254,8 @@ type (
 	TailscaleConfigOut                        = models.TailscaleConfigOut
 	TelnyxConfig                              = models.TelnyxConfig
 	TelnyxConfigOut                           = models.TelnyxConfigOut
+	TricentisQtestConfig                      = models.TricentisQtestConfig
+	TricentisQtestConfigOut                   = models.TricentisQtestConfigOut
 	VapiConfig                                = models.VapiConfig
 	VapiConfigOut                             = models.VapiConfigOut
 	VeriffConfig                              = models.VeriffConfig

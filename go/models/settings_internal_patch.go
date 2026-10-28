@@ -50,6 +50,7 @@ type SettingsInternalPatch struct {
 	ApplicationAlertsLogoUrl      utils.Nullable[string]             `json:"applicationAlertsLogoUrl"`
 	ShowFeatureTooltips           *bool                              `json:"showFeatureTooltips,omitempty"`
 	WebhooksAutoConfig            *bool                              `json:"webhooksAutoConfig,omitempty"`
+	EndpointsPerAppLimit          *uint32                            `json:"endpointsPerAppLimit,omitempty"`
 	McpToken                      *bool                              `json:"mcpToken,omitempty"`
 }
 
@@ -165,6 +166,9 @@ func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.WebhooksAutoConfig != nil {
 		toSerialize["webhooksAutoConfig"] = o.WebhooksAutoConfig
+	}
+	if o.EndpointsPerAppLimit != nil {
+		toSerialize["endpointsPerAppLimit"] = o.EndpointsPerAppLimit
 	}
 	if o.McpToken != nil {
 		toSerialize["mcpToken"] = o.McpToken

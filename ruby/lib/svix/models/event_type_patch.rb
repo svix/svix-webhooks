@@ -5,6 +5,8 @@ require "json"
 module Svix
   class EventTypePatch
     attr_accessor :description
+    # Translated descriptions keyed by BCP 47 language tag.
+    attr_accessor :description_translations
     attr_accessor :archived
     attr_accessor :deprecated
     attr_accessor :schemas
@@ -12,7 +14,15 @@ module Svix
     # The event type group's name
     attr_accessor :group_name
 
-    ALL_FIELD ||= ["description", "archived", "deprecated", "schemas", "feature_flags", "group_name"].freeze
+    ALL_FIELD ||= [
+      "description",
+      "description_translations",
+      "archived",
+      "deprecated",
+      "schemas",
+      "feature_flags",
+      "group_name"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,6 +44,7 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["description"] = attributes["description"]
+      attrs["description_translations"] = attributes["descriptionTranslations"]
       attrs["archived"] = attributes["archived"]
       attrs["deprecated"] = attributes["deprecated"]
       attrs["schemas"] = attributes["schemas"]
@@ -45,6 +56,10 @@ module Svix
     def serialize
       out = Hash.new
       out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      if @__description_translations_is_defined
+        out["descriptionTranslations"] = Svix::serialize_primitive(@description_translations)
+      end
+
       out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
       out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
       out["schemas"] = Svix::serialize_primitive(@schemas) if @__schemas_is_defined

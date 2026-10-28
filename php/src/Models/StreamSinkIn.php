@@ -348,6 +348,11 @@ abstract class StreamSinkInConfig implements \JsonSerializable
         return new StreamSinkInConfig\ElasticSearch($elasticSearch);
     }
 
+    public static function postHog(PostHogConfigIn $postHog): StreamSinkInConfig\PostHog
+    {
+        return new StreamSinkInConfig\PostHog($postHog);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -370,6 +375,7 @@ abstract class StreamSinkInConfig implements \JsonSerializable
             'redshift' => self::redshift(RedshiftConfigIn::fromMixed($config)),
             'postgres' => self::postgres(PostgresConfigIn::fromMixed($config)),
             'elasticSearch' => self::elasticSearch(ElasticSearchConfigIn::fromMixed($config)),
+            'postHog' => self::postHog(PostHogConfigIn::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -664,5 +670,22 @@ final class ElasticSearch extends \Svix\Models\StreamSinkInConfig
     public function configPayload(): mixed
     {
         return $this->elasticSearch;
+    }
+}
+
+final class PostHog extends \Svix\Models\StreamSinkInConfig
+{
+    public function __construct(public readonly \Svix\Models\PostHogConfigIn $postHog)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'postHog';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->postHog;
     }
 }

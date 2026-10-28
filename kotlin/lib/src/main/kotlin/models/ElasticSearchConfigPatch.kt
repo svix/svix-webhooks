@@ -9,4 +9,5 @@ data class ElasticSearchConfigPatch(
     val url: String? = null,
     val apiKey: String? = null,
     val refresh: Boolean? = null,
+    val operation: ElasticSearchOperation? = null,
 )

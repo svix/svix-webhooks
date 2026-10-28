@@ -29,4 +29,10 @@ data class ElasticSearchConfigIn(
      * search.
      */
     val refresh: Boolean? = null,
+    /**
+     * The operation to use when indexing.
+     *
+     * If not passed, this defaults to `create`.
+     */
+    val operation: ElasticSearchOperation? = null,
 )

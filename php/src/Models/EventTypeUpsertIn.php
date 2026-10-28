@@ -10,12 +10,14 @@ class EventTypeUpsertIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param array|null        $schemas      the schema for the event type for a specific version as a JSON schema
-     * @param list<string>|null $featureFlags
-     * @param string|null       $groupName    The event type group's name
+     * @param array<string, string>|null $descriptionTranslations translated descriptions keyed by BCP 47 language tag
+     * @param array|null                 $schemas                 the schema for the event type for a specific version as a JSON schema
+     * @param list<string>|null          $featureFlags
+     * @param string|null                $groupName               The event type group's name
      */
     private function __construct(
         public readonly string $description,
+        public readonly ?array $descriptionTranslations = null,
         public readonly ?bool $archived = null,
         public readonly ?bool $deprecated = null,
         public readonly ?array $schemas = null,
@@ -34,12 +36,30 @@ class EventTypeUpsertIn implements \JsonSerializable
     ): self {
         return new self(
             description: $description,
+            descriptionTranslations: null,
             archived: null,
             deprecated: null,
             schemas: null,
             featureFlags: null,
             groupName: null,
             setFields: ['description' => true]
+        );
+    }
+
+    public function withDescriptionTranslations(?array $descriptionTranslations): self
+    {
+        $setFields = $this->setFields;
+        $setFields['descriptionTranslations'] = true;
+
+        return new self(
+            description: $this->description,
+            descriptionTranslations: $descriptionTranslations,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            featureFlags: $this->featureFlags,
+            groupName: $this->groupName,
+            setFields: $setFields
         );
     }
 
@@ -50,6 +70,7 @@ class EventTypeUpsertIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -66,6 +87,7 @@ class EventTypeUpsertIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $deprecated,
             schemas: $this->schemas,
@@ -82,6 +104,7 @@ class EventTypeUpsertIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $schemas,
@@ -98,6 +121,7 @@ class EventTypeUpsertIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -114,6 +138,7 @@ class EventTypeUpsertIn implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -128,6 +153,9 @@ class EventTypeUpsertIn implements \JsonSerializable
         $data = [
             'description' => $this->description];
 
+        if (isset($this->setFields['descriptionTranslations'])) {
+            $data['descriptionTranslations'] = $this->descriptionTranslations;
+        }
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;
         }
@@ -154,6 +182,7 @@ class EventTypeUpsertIn implements \JsonSerializable
     {
         return new self(
             description: \Svix\Utils::deserializeString($data, 'description', true, 'EventTypeUpsertIn'),
+            descriptionTranslations: \Svix\Utils::getValFromJson($data, 'descriptionTranslations', false, 'EventTypeUpsertIn'),
             archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypeUpsertIn'),
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'EventTypeUpsertIn'),
             schemas: \Svix\Utils::getValFromJson($data, 'schemas', false, 'EventTypeUpsertIn'),

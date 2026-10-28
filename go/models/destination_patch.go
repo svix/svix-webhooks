@@ -19,6 +19,7 @@ import (
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
 //   - "otelTracing": Use OtelTracingConfigPatch
 //   - "postgres": Use PostgresConfigPatch
+//   - "postHog": Use PostHogConfigPatch
 //   - "rabbitMq": Use RabbitMqConfigPatch
 //   - "redshift": Use RedshiftConfigPatch
 //   - "amazonS3": Use S3ConfigPatch
@@ -58,6 +59,7 @@ const (
 	DestinationPatchTypeRedshift           DestinationPatchType = "redshift"
 	DestinationPatchTypePostgres           DestinationPatchType = "postgres"
 	DestinationPatchTypeElasticSearch      DestinationPatchType = "elasticSearch"
+	DestinationPatchTypePostHog            DestinationPatchType = "postHog"
 )
 
 type DestinationPatchConfig interface {
@@ -81,6 +83,7 @@ func (RabbitMqConfigPatch) isDestinationPatchConfig()           {}
 func (RedshiftConfigPatch) isDestinationPatchConfig()           {}
 func (PostgresConfigPatch) isDestinationPatchConfig()           {}
 func (ElasticSearchConfigPatch) isDestinationPatchConfig()      {}
+func (PostHogConfigPatch) isDestinationPatchConfig()            {}
 
 func (i *DestinationPatch) UnmarshalJSON(data []byte) error {
 	type Alias DestinationPatch
@@ -130,6 +133,10 @@ func (i *DestinationPatch) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "postgres":
 		var c PostgresConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postHog":
+		var c PostHogConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "rabbitMq":
@@ -197,4 +204,5 @@ var DestinationPatchTypeFromString = map[string]DestinationPatchType{
 	"redshift":           DestinationPatchTypeRedshift,
 	"postgres":           DestinationPatchTypePostgres,
 	"elasticSearch":      DestinationPatchTypeElasticSearch,
+	"postHog":            DestinationPatchTypePostHog,
 }

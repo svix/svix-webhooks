@@ -13,6 +13,7 @@ class ElasticSearchConfigOut implements \JsonSerializable
         public readonly string $indexName,
         public readonly string $url,
         public readonly bool $refresh,
+        public readonly ElasticSearchOperation $operation,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -25,12 +26,14 @@ class ElasticSearchConfigOut implements \JsonSerializable
         string $indexName,
         string $url,
         bool $refresh,
+        ElasticSearchOperation $operation,
     ): self {
         return new self(
             indexName: $indexName,
             url: $url,
             refresh: $refresh,
-            setFields: ['indexName' => true, 'url' => true, 'refresh' => true]
+            operation: $operation,
+            setFields: ['indexName' => true, 'url' => true, 'refresh' => true, 'operation' => true]
         );
     }
 
@@ -39,7 +42,8 @@ class ElasticSearchConfigOut implements \JsonSerializable
         $data = [
             'indexName' => $this->indexName,
             'url' => $this->url,
-            'refresh' => $this->refresh];
+            'refresh' => $this->refresh,
+            'operation' => $this->operation];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -52,7 +56,8 @@ class ElasticSearchConfigOut implements \JsonSerializable
         return new self(
             indexName: \Svix\Utils::deserializeString($data, 'indexName', true, 'ElasticSearchConfigOut'),
             url: \Svix\Utils::getValFromJson($data, 'url', true, 'ElasticSearchConfigOut'),
-            refresh: \Svix\Utils::deserializeBool($data, 'refresh', true, 'ElasticSearchConfigOut')
+            refresh: \Svix\Utils::deserializeBool($data, 'refresh', true, 'ElasticSearchConfigOut'),
+            operation: \Svix\Utils::deserializeObject($data, 'operation', true, 'ElasticSearchConfigOut', [ElasticSearchOperation::class, 'fromMixed'])
         );
     }
 

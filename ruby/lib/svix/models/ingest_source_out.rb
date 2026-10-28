@@ -4,6 +4,8 @@ require "json"
 
 require_relative "./adobe_sign_config_out"
 require_relative "./airwallex_config_out"
+require_relative "./ascend_config_out"
+require_relative "./bitbucket_config_out"
 require_relative "./checkbook_config_out"
 require_relative "./cron_config"
 require_relative "./docusign_config_out"
@@ -25,6 +27,7 @@ require_relative "./stripe_config_out"
 require_relative "./svix_config_out"
 require_relative "./tailscale_config_out"
 require_relative "./telnyx_config_out"
+require_relative "./tricentis_qtest_config_out"
 require_relative "./vapi_config_out"
 require_relative "./veriff_config_out"
 require_relative "./vgs_config_out"
@@ -54,7 +57,13 @@ module Svix
     class AdobeSign < AdobeSignConfigOut
     end
 
+    class Ascend < AscendConfigOut
+    end
+
     class Beehiiv < SvixConfigOut
+    end
+
+    class Bitbucket < BitbucketConfigOut
     end
 
     class Brex < SvixConfigOut
@@ -159,6 +168,9 @@ module Svix
     class Telnyx < TelnyxConfigOut
     end
 
+    class TricentisQtest < TricentisQtestConfigOut
+    end
+
     class Vapi < VapiConfigOut
     end
 
@@ -196,7 +208,9 @@ module Svix
       IngestSourceOutConfig::GenericWebhook => "generic-webhook",
       IngestSourceOutConfig::Cron => "cron",
       IngestSourceOutConfig::AdobeSign => "adobe-sign",
+      IngestSourceOutConfig::Ascend => "ascend",
       IngestSourceOutConfig::Beehiiv => "beehiiv",
+      IngestSourceOutConfig::Bitbucket => "bitbucket",
       IngestSourceOutConfig::Brex => "brex",
       IngestSourceOutConfig::Checkbook => "checkbook",
       IngestSourceOutConfig::Clerk => "clerk",
@@ -231,6 +245,7 @@ module Svix
       IngestSourceOutConfig::Zoom => "zoom",
       IngestSourceOutConfig::Tailscale => "tailscale",
       IngestSourceOutConfig::Telnyx => "telnyx",
+      IngestSourceOutConfig::TricentisQtest => "tricentis-qtest",
       IngestSourceOutConfig::Vapi => "vapi",
       IngestSourceOutConfig::OpenAi => "open-ai",
       IngestSourceOutConfig::Render => "render",

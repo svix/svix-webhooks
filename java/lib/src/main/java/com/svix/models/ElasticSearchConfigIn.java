@@ -22,6 +22,7 @@ public class ElasticSearchConfigIn {
     @JsonProperty private URI url;
     @JsonProperty private String apiKey;
     @JsonProperty private Boolean refresh;
+    @JsonProperty private ElasticSearchOperation operation;
 
     public ElasticSearchConfigIn() {}
 
@@ -107,6 +108,27 @@ public class ElasticSearchConfigIn {
 
     public void setRefresh(Boolean refresh) {
         this.refresh = refresh;
+    }
+
+    public ElasticSearchConfigIn operation(ElasticSearchOperation operation) {
+        this.operation = operation;
+        return this;
+    }
+
+    /**
+     * The operation to use when indexing.
+     *
+     * <p>If not passed, this defaults to `create`.
+     *
+     * @return operation
+     */
+    @javax.annotation.Nullable
+    public ElasticSearchOperation getOperation() {
+        return operation;
+    }
+
+    public void setOperation(ElasticSearchOperation operation) {
+        this.operation = operation;
     }
 
     /**

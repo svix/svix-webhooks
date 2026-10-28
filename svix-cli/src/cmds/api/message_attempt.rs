@@ -492,7 +492,8 @@ pub enum MessageAttemptCommands {
     \"eventTypes\": [\"user.signup\",\"user.deleted\"],
     \"channels\": [\"project_123\",\"group_2\"],
     \"createdAt\": \"2030-01-01T00:00:00Z\",
-    \"updatedAt\": \"2030-01-01T00:00:00Z\"
+    \"updatedAt\": \"2030-01-01T00:00:00Z\",
+    \"expiry\": \"2030-01-01T00:00:00Z\"
   }],
   \"iterator\": \"iterator\",
   \"prevIterator\": \"-iterator\",

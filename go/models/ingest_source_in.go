@@ -10,6 +10,8 @@ import (
 //   - "generic-webhook": No config needed (nil or just ignore the config field)
 //   - "adobe-sign": Use AdobeSignConfig
 //   - "airwallex": Use AirwallexConfig
+//   - "ascend": Use AscendConfig
+//   - "bitbucket": Use BitbucketConfig
 //   - "checkbook": Use CheckbookConfig
 //   - "cron": Use CronConfig
 //   - "docusign": Use DocusignConfig
@@ -31,6 +33,7 @@ import (
 //   - "beehiiv","brex","clerk","guesty","incident-io","lithic","nash","pleo","psi-fi","replicate","resend","safebase","sardine","stych","svix","open-ai","render": Use SvixConfig
 //   - "tailscale": Use TailscaleConfig
 //   - "telnyx": Use TelnyxConfig
+//   - "tricentis-qtest": Use TricentisQtestConfig
 //   - "vapi": Use VapiConfig
 //   - "veriff": Use VeriffConfig
 //   - "vgs": Use VgsConfig
@@ -49,7 +52,9 @@ const (
 	IngestSourceInTypeGenericWebhook IngestSourceInType = "generic-webhook"
 	IngestSourceInTypeCron           IngestSourceInType = "cron"
 	IngestSourceInTypeAdobeSign      IngestSourceInType = "adobe-sign"
+	IngestSourceInTypeAscend         IngestSourceInType = "ascend"
 	IngestSourceInTypeBeehiiv        IngestSourceInType = "beehiiv"
+	IngestSourceInTypeBitbucket      IngestSourceInType = "bitbucket"
 	IngestSourceInTypeBrex           IngestSourceInType = "brex"
 	IngestSourceInTypeCheckbook      IngestSourceInType = "checkbook"
 	IngestSourceInTypeClerk          IngestSourceInType = "clerk"
@@ -84,6 +89,7 @@ const (
 	IngestSourceInTypeZoom           IngestSourceInType = "zoom"
 	IngestSourceInTypeTailscale      IngestSourceInType = "tailscale"
 	IngestSourceInTypeTelnyx         IngestSourceInType = "telnyx"
+	IngestSourceInTypeTricentisQtest IngestSourceInType = "tricentis-qtest"
 	IngestSourceInTypeVapi           IngestSourceInType = "vapi"
 	IngestSourceInTypeOpenAi         IngestSourceInType = "open-ai"
 	IngestSourceInTypeRender         IngestSourceInType = "render"
@@ -96,34 +102,37 @@ type IngestSourceInConfig interface {
 	isIngestSourceInConfig()
 }
 
-func (emptyMap) isIngestSourceInConfig()        {}
-func (CronConfig) isIngestSourceInConfig()      {}
-func (AdobeSignConfig) isIngestSourceInConfig() {}
-func (SvixConfig) isIngestSourceInConfig()      {}
-func (CheckbookConfig) isIngestSourceInConfig() {}
-func (DocusignConfig) isIngestSourceInConfig()  {}
-func (EasypostConfig) isIngestSourceInConfig()  {}
-func (GithubConfig) isIngestSourceInConfig()    {}
-func (HubspotConfig) isIngestSourceInConfig()   {}
-func (MergeConfig) isIngestSourceInConfig()     {}
-func (MetaConfig) isIngestSourceInConfig()      {}
-func (NangoConfig) isIngestSourceInConfig()     {}
-func (OpenClawConfig) isIngestSourceInConfig()  {}
-func (OrumIoConfig) isIngestSourceInConfig()    {}
-func (PandaDocConfig) isIngestSourceInConfig()  {}
-func (PortIoConfig) isIngestSourceInConfig()    {}
-func (RutterConfig) isIngestSourceInConfig()    {}
-func (SegmentConfig) isIngestSourceInConfig()   {}
-func (ShopifyConfig) isIngestSourceInConfig()   {}
-func (SlackConfig) isIngestSourceInConfig()     {}
-func (StripeConfig) isIngestSourceInConfig()    {}
-func (ZoomConfig) isIngestSourceInConfig()      {}
-func (TailscaleConfig) isIngestSourceInConfig() {}
-func (TelnyxConfig) isIngestSourceInConfig()    {}
-func (VapiConfig) isIngestSourceInConfig()      {}
-func (VeriffConfig) isIngestSourceInConfig()    {}
-func (AirwallexConfig) isIngestSourceInConfig() {}
-func (VgsConfig) isIngestSourceInConfig()       {}
+func (emptyMap) isIngestSourceInConfig()             {}
+func (CronConfig) isIngestSourceInConfig()           {}
+func (AdobeSignConfig) isIngestSourceInConfig()      {}
+func (AscendConfig) isIngestSourceInConfig()         {}
+func (SvixConfig) isIngestSourceInConfig()           {}
+func (BitbucketConfig) isIngestSourceInConfig()      {}
+func (CheckbookConfig) isIngestSourceInConfig()      {}
+func (DocusignConfig) isIngestSourceInConfig()       {}
+func (EasypostConfig) isIngestSourceInConfig()       {}
+func (GithubConfig) isIngestSourceInConfig()         {}
+func (HubspotConfig) isIngestSourceInConfig()        {}
+func (MergeConfig) isIngestSourceInConfig()          {}
+func (MetaConfig) isIngestSourceInConfig()           {}
+func (NangoConfig) isIngestSourceInConfig()          {}
+func (OpenClawConfig) isIngestSourceInConfig()       {}
+func (OrumIoConfig) isIngestSourceInConfig()         {}
+func (PandaDocConfig) isIngestSourceInConfig()       {}
+func (PortIoConfig) isIngestSourceInConfig()         {}
+func (RutterConfig) isIngestSourceInConfig()         {}
+func (SegmentConfig) isIngestSourceInConfig()        {}
+func (ShopifyConfig) isIngestSourceInConfig()        {}
+func (SlackConfig) isIngestSourceInConfig()          {}
+func (StripeConfig) isIngestSourceInConfig()         {}
+func (ZoomConfig) isIngestSourceInConfig()           {}
+func (TailscaleConfig) isIngestSourceInConfig()      {}
+func (TelnyxConfig) isIngestSourceInConfig()         {}
+func (TricentisQtestConfig) isIngestSourceInConfig() {}
+func (VapiConfig) isIngestSourceInConfig()           {}
+func (VeriffConfig) isIngestSourceInConfig()         {}
+func (AirwallexConfig) isIngestSourceInConfig()      {}
+func (VgsConfig) isIngestSourceInConfig()            {}
 
 func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 	type Alias IngestSourceIn
@@ -145,6 +154,14 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "airwallex":
 		var c AirwallexConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "ascend":
+		var c AscendConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "bitbucket":
+		var c BitbucketConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "checkbook":
@@ -231,6 +248,10 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		var c TelnyxConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "tricentis-qtest":
+		var c TricentisQtestConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "vapi":
 		var c VapiConfig
 		err = json.Unmarshal(aux.Config, &c)
@@ -270,7 +291,9 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"generic-webhook": IngestSourceInTypeGenericWebhook,
 	"cron":            IngestSourceInTypeCron,
 	"adobe-sign":      IngestSourceInTypeAdobeSign,
+	"ascend":          IngestSourceInTypeAscend,
 	"beehiiv":         IngestSourceInTypeBeehiiv,
+	"bitbucket":       IngestSourceInTypeBitbucket,
 	"brex":            IngestSourceInTypeBrex,
 	"checkbook":       IngestSourceInTypeCheckbook,
 	"clerk":           IngestSourceInTypeClerk,
@@ -305,6 +328,7 @@ var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"zoom":            IngestSourceInTypeZoom,
 	"tailscale":       IngestSourceInTypeTailscale,
 	"telnyx":          IngestSourceInTypeTelnyx,
+	"tricentis-qtest": IngestSourceInTypeTricentisQtest,
 	"vapi":            IngestSourceInTypeVapi,
 	"open-ai":         IngestSourceInTypeOpenAi,
 	"render":          IngestSourceInTypeRender,

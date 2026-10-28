@@ -36,6 +36,10 @@ import {
   OtelTracingConfigPatchSerializer,
 } from "./otelTracingConfigPatch";
 import {
+  type PostHogConfigPatch,
+  PostHogConfigPatchSerializer,
+} from "./postHogConfigPatch";
+import {
   type PostgresConfigPatch,
   PostgresConfigPatchSerializer,
 } from "./postgresConfigPatch";
@@ -158,6 +162,11 @@ interface DestinationPatchElasticSearch {
   config: ElasticSearchConfigPatch;
 }
 
+interface DestinationPatchPostHog {
+  type: "postHog";
+  config: PostHogConfigPatch;
+}
+
 export type DestinationPatch = _DestinationPatchFields &
   (
     | DestinationPatchPollingEndpoint
@@ -177,6 +186,7 @@ export type DestinationPatch = _DestinationPatchFields &
     | DestinationPatchRedshift
     | DestinationPatchPostgres
     | DestinationPatchElasticSearch
+    | DestinationPatchPostHog
   );
 
 export const DestinationPatchSerializer = {
@@ -221,6 +231,8 @@ export const DestinationPatchSerializer = {
           return PostgresConfigPatchSerializer._fromJsonObject(object["config"]);
         case "elasticSearch":
           return ElasticSearchConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "postHog":
+          return PostHogConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -296,6 +308,9 @@ export const DestinationPatchSerializer = {
         break;
       case "elasticSearch":
         config = ElasticSearchConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "postHog":
+        config = PostHogConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 

@@ -15,9 +15,11 @@ class EndpointOut implements \JsonSerializable
      * @param int|null              $throttleRate Maximum messages per second to send to this endpoint.
      *
      * Outgoing messages will be throttled to this rate.
-     * @param string|null       $uid        optional unique identifier for the endpoint
-     * @param list<string>|null $eventTypes
-     * @param list<string>|null $channels   list of message channels this endpoint listens to (omit for all)
+     * @param string|null             $uid        optional unique identifier for the endpoint
+     * @param list<string>|null       $eventTypes
+     * @param list<string>|null       $channels   list of message channels this endpoint listens to (omit for all)
+     * @param \DateTimeImmutable|null $expiry     When the endpoint expires, if ever. No messages are sent to the
+     *                                            endpoint after this time.
      */
     private function __construct(
         public readonly string $id,
@@ -31,6 +33,7 @@ class EndpointOut implements \JsonSerializable
         public readonly ?bool $disabled = null,
         public readonly ?array $eventTypes = null,
         public readonly ?array $channels = null,
+        public readonly ?\DateTimeImmutable $expiry = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -59,6 +62,7 @@ class EndpointOut implements \JsonSerializable
             channels: null,
             createdAt: $createdAt,
             updatedAt: $updatedAt,
+            expiry: null,
             setFields: ['id' => true, 'metadata' => true, 'url' => true, 'description' => true, 'createdAt' => true, 'updatedAt' => true]
         );
     }
@@ -80,6 +84,7 @@ class EndpointOut implements \JsonSerializable
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            expiry: $this->expiry,
             setFields: $setFields
         );
     }
@@ -101,6 +106,7 @@ class EndpointOut implements \JsonSerializable
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            expiry: $this->expiry,
             setFields: $setFields
         );
     }
@@ -122,6 +128,7 @@ class EndpointOut implements \JsonSerializable
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            expiry: $this->expiry,
             setFields: $setFields
         );
     }
@@ -143,6 +150,7 @@ class EndpointOut implements \JsonSerializable
             channels: $this->channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            expiry: $this->expiry,
             setFields: $setFields
         );
     }
@@ -164,6 +172,29 @@ class EndpointOut implements \JsonSerializable
             channels: $channels,
             createdAt: $this->createdAt,
             updatedAt: $this->updatedAt,
+            expiry: $this->expiry,
+            setFields: $setFields
+        );
+    }
+
+    public function withExpiry(?\DateTimeImmutable $expiry): self
+    {
+        $setFields = $this->setFields;
+        $setFields['expiry'] = true;
+
+        return new self(
+            id: $this->id,
+            metadata: $this->metadata,
+            url: $this->url,
+            description: $this->description,
+            throttleRate: $this->throttleRate,
+            uid: $this->uid,
+            disabled: $this->disabled,
+            eventTypes: $this->eventTypes,
+            channels: $this->channels,
+            createdAt: $this->createdAt,
+            updatedAt: $this->updatedAt,
+            expiry: $expiry,
             setFields: $setFields
         );
     }
@@ -193,6 +224,9 @@ class EndpointOut implements \JsonSerializable
         if (isset($this->setFields['channels'])) {
             $data['channels'] = $this->channels;
         }
+        if (isset($this->setFields['expiry'])) {
+            $data['expiry'] = $this->expiry->format('c');
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -213,7 +247,8 @@ class EndpointOut implements \JsonSerializable
             eventTypes: \Svix\Utils::getValFromJson($data, 'eventTypes', false, 'EndpointOut'),
             channels: \Svix\Utils::getValFromJson($data, 'channels', false, 'EndpointOut'),
             createdAt: \Svix\Utils::deserializeDt($data, 'createdAt', true, 'EndpointOut'),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'EndpointOut')
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'EndpointOut'),
+            expiry: \Svix\Utils::deserializeDt($data, 'expiry', false, 'EndpointOut')
         );
     }
 

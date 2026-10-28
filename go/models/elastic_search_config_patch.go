@@ -4,10 +4,11 @@ package models
 import "encoding/json"
 
 type ElasticSearchConfigPatch struct {
-	IndexName *string `json:"indexName,omitempty"`
-	Url       *string `json:"url,omitempty"`
-	ApiKey    *string `json:"apiKey,omitempty"`
-	Refresh   *bool   `json:"refresh,omitempty"`
+	IndexName *string                 `json:"indexName,omitempty"`
+	Url       *string                 `json:"url,omitempty"`
+	ApiKey    *string                 `json:"apiKey,omitempty"`
+	Refresh   *bool                   `json:"refresh,omitempty"`
+	Operation *ElasticSearchOperation `json:"operation,omitempty"`
 }
 
 func (o ElasticSearchConfigPatch) MarshalJSON() ([]byte, error) {
@@ -23,6 +24,9 @@ func (o ElasticSearchConfigPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.Refresh != nil {
 		toSerialize["refresh"] = o.Refresh
+	}
+	if o.Operation != nil {
+		toSerialize["operation"] = o.Operation
 	}
 	return json.Marshal(toSerialize)
 }

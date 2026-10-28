@@ -101,8 +101,14 @@ namespace Svix.Models
         public static IngestSourceOutConfig AdobeSign(AdobeSignConfigOut adobeSignConfigOut) =>
             new(adobeSignConfigOut, ConfigType.AdobeSign);
 
+        public static IngestSourceOutConfig Ascend(AscendConfigOut ascendConfigOut) =>
+            new(ascendConfigOut, ConfigType.Ascend);
+
         public static IngestSourceOutConfig Beehiiv(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Beehiiv);
+
+        public static IngestSourceOutConfig Bitbucket(BitbucketConfigOut bitbucketConfigOut) =>
+            new(bitbucketConfigOut, ConfigType.Bitbucket);
 
         public static IngestSourceOutConfig Brex(SvixConfigOut svixConfigOut) =>
             new(svixConfigOut, ConfigType.Brex);
@@ -206,6 +212,10 @@ namespace Svix.Models
         public static IngestSourceOutConfig Telnyx(TelnyxConfigOut telnyxConfigOut) =>
             new(telnyxConfigOut, ConfigType.Telnyx);
 
+        public static IngestSourceOutConfig TricentisQtest(
+            TricentisQtestConfigOut tricentisQtestConfigOut
+        ) => new(tricentisQtestConfigOut, ConfigType.TricentisQtest);
+
         public static IngestSourceOutConfig Vapi(VapiConfigOut vapiConfigOut) =>
             new(vapiConfigOut, ConfigType.Vapi);
 
@@ -235,8 +245,14 @@ namespace Svix.Models
             [EnumMember(Value = "adobe-sign")]
             AdobeSign,
 
+            [EnumMember(Value = "ascend")]
+            Ascend,
+
             [EnumMember(Value = "beehiiv")]
             Beehiiv,
+
+            [EnumMember(Value = "bitbucket")]
+            Bitbucket,
 
             [EnumMember(Value = "brex")]
             Brex,
@@ -340,6 +356,9 @@ namespace Svix.Models
             [EnumMember(Value = "telnyx")]
             Telnyx,
 
+            [EnumMember(Value = "tricentis-qtest")]
+            TricentisQtest,
+
             [EnumMember(Value = "vapi")]
             Vapi,
 
@@ -363,7 +382,9 @@ namespace Svix.Models
             Func<TResult> onGenericWebhook,
             Func<CronConfig, TResult> onCron,
             Func<AdobeSignConfigOut, TResult> onAdobeSign,
+            Func<AscendConfigOut, TResult> onAscend,
             Func<SvixConfigOut, TResult> onBeehiiv,
+            Func<BitbucketConfigOut, TResult> onBitbucket,
             Func<SvixConfigOut, TResult> onBrex,
             Func<CheckbookConfigOut, TResult> onCheckbook,
             Func<SvixConfigOut, TResult> onClerk,
@@ -398,6 +419,7 @@ namespace Svix.Models
             Func<ZoomConfigOut, TResult> onZoom,
             Func<TailscaleConfigOut, TResult> onTailscale,
             Func<TelnyxConfigOut, TResult> onTelnyx,
+            Func<TricentisQtestConfigOut, TResult> onTricentisQtest,
             Func<VapiConfigOut, TResult> onVapi,
             Func<SvixConfigOut, TResult> onOpenAi,
             Func<SvixConfigOut, TResult> onRender,
@@ -411,7 +433,9 @@ namespace Svix.Models
                 ConfigType.GenericWebhook => onGenericWebhook(),
                 ConfigType.Cron => onCron((CronConfig)_value),
                 ConfigType.AdobeSign => onAdobeSign((AdobeSignConfigOut)_value),
+                ConfigType.Ascend => onAscend((AscendConfigOut)_value),
                 ConfigType.Beehiiv => onBeehiiv((SvixConfigOut)_value),
+                ConfigType.Bitbucket => onBitbucket((BitbucketConfigOut)_value),
                 ConfigType.Brex => onBrex((SvixConfigOut)_value),
                 ConfigType.Checkbook => onCheckbook((CheckbookConfigOut)_value),
                 ConfigType.Clerk => onClerk((SvixConfigOut)_value),
@@ -446,6 +470,7 @@ namespace Svix.Models
                 ConfigType.Zoom => onZoom((ZoomConfigOut)_value),
                 ConfigType.Tailscale => onTailscale((TailscaleConfigOut)_value),
                 ConfigType.Telnyx => onTelnyx((TelnyxConfigOut)_value),
+                ConfigType.TricentisQtest => onTricentisQtest((TricentisQtestConfigOut)_value),
                 ConfigType.Vapi => onVapi((VapiConfigOut)_value),
                 ConfigType.OpenAi => onOpenAi((SvixConfigOut)_value),
                 ConfigType.Render => onRender((SvixConfigOut)_value),
@@ -461,7 +486,9 @@ namespace Svix.Models
             Action? onGenericWebhook = null,
             Action<CronConfig>? onCron = null,
             Action<AdobeSignConfigOut>? onAdobeSign = null,
+            Action<AscendConfigOut>? onAscend = null,
             Action<SvixConfigOut>? onBeehiiv = null,
+            Action<BitbucketConfigOut>? onBitbucket = null,
             Action<SvixConfigOut>? onBrex = null,
             Action<CheckbookConfigOut>? onCheckbook = null,
             Action<SvixConfigOut>? onClerk = null,
@@ -496,6 +523,7 @@ namespace Svix.Models
             Action<ZoomConfigOut>? onZoom = null,
             Action<TailscaleConfigOut>? onTailscale = null,
             Action<TelnyxConfigOut>? onTelnyx = null,
+            Action<TricentisQtestConfigOut>? onTricentisQtest = null,
             Action<VapiConfigOut>? onVapi = null,
             Action<SvixConfigOut>? onOpenAi = null,
             Action<SvixConfigOut>? onRender = null,
@@ -524,10 +552,22 @@ namespace Svix.Models
                         onAdobeSign((AdobeSignConfigOut)_value);
                     }
                     break;
+                case ConfigType.Ascend:
+                    if (onAscend != null)
+                    {
+                        onAscend((AscendConfigOut)_value);
+                    }
+                    break;
                 case ConfigType.Beehiiv:
                     if (onBeehiiv != null)
                     {
                         onBeehiiv((SvixConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.Bitbucket:
+                    if (onBitbucket != null)
+                    {
+                        onBitbucket((BitbucketConfigOut)_value);
                     }
                     break;
                 case ConfigType.Brex:
@@ -734,6 +774,12 @@ namespace Svix.Models
                         onTelnyx((TelnyxConfigOut)_value);
                     }
                     break;
+                case ConfigType.TricentisQtest:
+                    if (onTricentisQtest != null)
+                    {
+                        onTricentisQtest((TricentisQtestConfigOut)_value);
+                    }
+                    break;
                 case ConfigType.Vapi:
                     if (onVapi != null)
                     {
@@ -882,7 +928,9 @@ namespace Svix.Models
             ["generic-webhook"] = c => IngestSourceOutConfig.GenericWebhook(),
             ["cron"] = c => IngestSourceOutConfig.Cron(ToObj<CronConfig>(c)),
             ["adobe-sign"] = c => IngestSourceOutConfig.AdobeSign(ToObj<AdobeSignConfigOut>(c)),
+            ["ascend"] = c => IngestSourceOutConfig.Ascend(ToObj<AscendConfigOut>(c)),
             ["beehiiv"] = c => IngestSourceOutConfig.Beehiiv(ToObj<SvixConfigOut>(c)),
+            ["bitbucket"] = c => IngestSourceOutConfig.Bitbucket(ToObj<BitbucketConfigOut>(c)),
             ["brex"] = c => IngestSourceOutConfig.Brex(ToObj<SvixConfigOut>(c)),
             ["checkbook"] = c => IngestSourceOutConfig.Checkbook(ToObj<CheckbookConfigOut>(c)),
             ["clerk"] = c => IngestSourceOutConfig.Clerk(ToObj<SvixConfigOut>(c)),
@@ -917,6 +965,8 @@ namespace Svix.Models
             ["zoom"] = c => IngestSourceOutConfig.Zoom(ToObj<ZoomConfigOut>(c)),
             ["tailscale"] = c => IngestSourceOutConfig.Tailscale(ToObj<TailscaleConfigOut>(c)),
             ["telnyx"] = c => IngestSourceOutConfig.Telnyx(ToObj<TelnyxConfigOut>(c)),
+            ["tricentis-qtest"] = c =>
+                IngestSourceOutConfig.TricentisQtest(ToObj<TricentisQtestConfigOut>(c)),
             ["vapi"] = c => IngestSourceOutConfig.Vapi(ToObj<VapiConfigOut>(c)),
             ["open-ai"] = c => IngestSourceOutConfig.OpenAi(ToObj<SvixConfigOut>(c)),
             ["render"] = c => IngestSourceOutConfig.Render(ToObj<SvixConfigOut>(c)),

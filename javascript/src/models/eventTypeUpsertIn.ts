@@ -2,6 +2,8 @@
 
 export interface EventTypeUpsertIn {
   description: string;
+  /** Translated descriptions keyed by BCP 47 language tag. */
+  descriptionTranslations?: { [key: string]: string } | null;
   archived?: boolean;
   deprecated?: boolean;
   /** The schema for the event type for a specific version as a JSON schema. */
@@ -15,6 +17,7 @@ export const EventTypeUpsertInSerializer = {
   _fromJsonObject(object: any): EventTypeUpsertIn {
     return {
       description: object["description"],
+      descriptionTranslations: object["descriptionTranslations"],
       archived: object["archived"],
       deprecated: object["deprecated"],
       schemas: object["schemas"],
@@ -26,6 +29,7 @@ export const EventTypeUpsertInSerializer = {
   _toJsonObject(self: EventTypeUpsertIn): any {
     return {
       description: self.description,
+      descriptionTranslations: self.descriptionTranslations,
       archived: self.archived,
       deprecated: self.deprecated,
       schemas: self.schemas,
