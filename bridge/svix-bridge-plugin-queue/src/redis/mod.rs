@@ -31,6 +31,8 @@ pub struct RedisInputOpts {
     pub delayed_queue_key: Option<String>,
     pub consumer_group: String,
     pub consumer_name: String,
+    #[serde(default = "default_payload_key")]
+    pub payload_key: String,
     #[serde(default = "default_ack_deadline_ms")]
     pub ack_deadline_ms: i64,
     pub dlq_config: Option<DeadLetterQueueConfig>,
@@ -46,12 +48,18 @@ pub struct RedisOutputOpts {
     pub max_connections: u16,
     pub queue_key: String,
     pub delayed_queue_key: Option<String>,
+    #[serde(default = "default_payload_key")]
+    pub payload_key: String,
     #[serde(default = "default_ack_deadline_ms")]
     pub ack_deadline_ms: i64,
 }
 
 fn default_ack_deadline_ms() -> i64 {
     5_000
+}
+
+fn default_payload_key() -> String {
+    "payload".to_string()
 }
 
 pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
@@ -70,8 +78,7 @@ pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
         delayed_lock_key,
         consumer_group: cfg.consumer_group.clone(),
         consumer_name: cfg.consumer_name.clone(),
-        // FIXME: expose in config?
-        payload_key: "payload".to_string(),
+        payload_key: cfg.payload_key.clone(),
         ack_deadline_ms: cfg.ack_deadline_ms,
         dlq_config: cfg.dlq_config.clone().map(Into::into),
         sentinel_config: None,
@@ -95,8 +102,7 @@ pub async fn producer(cfg: &RedisOutputOpts) -> Result<DynProducer> {
         queue_key: cfg.queue_key.clone(),
         delayed_queue_key,
         delayed_lock_key,
-        // FIXME: expose in config?
-        payload_key: "payload".to_string(),
+        payload_key: cfg.payload_key.clone(),
         // consumer stuff we don't care about.
         reinsert_on_nack: false,
         consumer_group: String::new(),
