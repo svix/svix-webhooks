@@ -40,8 +40,9 @@ pub struct EndpointOut {
     #[serde(rename = "updatedAt")]
     pub updated_at: chrono::DateTime<chrono::Utc>,
 
-    /// When the endpoint expires, if ever. No messages are sent to the
-    /// endpoint after this time.
+    /// When the endpoint expires, if ever.
+    ///
+    /// No messages are sent to the endpoint after this time.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expiry: Option<chrono::DateTime<chrono::Utc>>,
 }
