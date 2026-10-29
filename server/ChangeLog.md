@@ -4,6 +4,7 @@
 
 ## Version 1.104.0
 * **(Breaking)** Reject event type schemas with external `$ref`s (`http://`, `file://`, etc.) with a 422. Refs within the schema itself, such as `#/definitions/...`, still work.
+* Add `expiry` to `EndpointOut` for Svix Cloud API compatibility (always set to `null` for now)
 * Increase MSRV to 1.95.0
 
 ## Version 1.103.0
