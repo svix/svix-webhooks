@@ -331,4 +331,47 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         \Svix\Webhook::fromRaw("");
     }
+
+    public function testFromRawSignatureIsValid()
+    {
+        $testPayload = new TestPayload(time());
+
+        $wh = \Svix\Webhook::fromRaw(base64_decode($testPayload->secret));
+        $wh->verify($testPayload->payload, $testPayload->header);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testFromRawWrongSecretThrows()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+
+        $wh = \Svix\Webhook::fromRaw("not the secret");
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testFromRawWithCustomToleranceAcceptsOldTimestamp()
+    {
+        $testPayload = new TestPayload(time() - (2 * self::TOLERANCE));
+
+        $wh = \Svix\Webhook::fromRaw(base64_decode($testPayload->secret), 3 * self::TOLERANCE);
+        $wh->verify($testPayload->payload, $testPayload->header);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testNoSecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook();
+    }
+
+    public function testSecretAndRawSecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw", 300, "raw");
+    }
 }
