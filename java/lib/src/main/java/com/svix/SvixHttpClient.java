@@ -1,17 +1,23 @@
 package com.svix;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.svix.exceptions.ApiException;
-
-import okhttp3.*;
-
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.LockSupport;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.svix.exceptions.ApiException;
+
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class SvixHttpClient {
     private final HttpUrl baseUrl;
@@ -48,6 +54,10 @@ public class SvixHttpClient {
 
     public HttpUrl getBaseUrl() {
         return baseUrl;
+    }
+
+    private static boolean shouldRetry(int statusCode) {
+        return statusCode >= 500 || statusCode == 423;
     }
 
     public <Req, Res> Res executeRequest(
@@ -110,7 +120,7 @@ public class SvixHttpClient {
         for (int retryCount = 0; retryCount < retrySchedule.size(); retryCount++) {
             try {
                 Response response = client.newCall(currentRequest).execute();
-                if (response.code() < 500) {
+                if (!shouldRetry(response.code())) {
                     return response;
                 }
                 response.close();
@@ -118,8 +128,12 @@ public class SvixHttpClient {
                 // Network errors (timeouts, connection failures, etc.) are retried
             }
 
-            // Use LockSupport for precise parking instead of Thread.sleep
-            LockSupport.parkNanos(retrySchedule.get(retryCount) * 1_000_000); // Convert ms to ns
+            try {
+                Thread.sleep(retrySchedule.get(retryCount));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedIOException("Request was interrupted");
+            }
 
             currentRequest =
                     request.newBuilder()
