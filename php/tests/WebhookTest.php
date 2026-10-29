@@ -302,4 +302,33 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $signature = $wh->sign($msgId, $timestamp, $payload);
     }
+
+    public function testEmptySecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("");
+    }
+
+    public function testPrefixOnlySecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_");
+    }
+
+    public function testNonBase64SecretThrows()
+    {
+        // without the strict flag, base64_decode("@@@@") returns "" and became an empty HMAC key
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_@@@@");
+    }
+
+    public function testFromRawEmptySecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        \Svix\Webhook::fromRaw("");
+    }
 }

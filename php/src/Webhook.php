@@ -19,7 +19,11 @@ class Webhook
         if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
             $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));
         }
-        $this->secret = base64_decode($secret);
+        $secret = base64_decode($secret, true);
+        if ($secret === false || $secret === '') {
+            throw new \InvalidArgumentException("secret must be a non-empty base64 string");
+        }
+        $this->secret = $secret;
 
         if (!is_int($tolerance) || $tolerance < 0) {
             throw new \InvalidArgumentException("tolerance must be a non-negative integer");
@@ -29,6 +33,9 @@ class Webhook
 
     public static function fromRaw($secret)
     {
+        if (!is_string($secret) || $secret === '') {
+            throw new \InvalidArgumentException("secret must not be empty");
+        }
         $obj = new self();
         $obj->secret = $secret;
         return $obj;
