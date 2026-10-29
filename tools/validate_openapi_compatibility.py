@@ -557,10 +557,13 @@ class OpenAPI:
             # These schemas are not meant to be part of the spec,
             # and are not referenced anywhere.
             # Seems like a waste of time to support them.
-            if name in ["GetMetricsOut", "MetricOut"]:
-                continue
+            #if name in ["GetMetricsOut", "MetricOut"]:
+            #    continue
 
-            self.components_schemas[name] = Schema.parse(value)
+            try:
+                self.components_schemas[name] = Schema.parse(value)
+            except Exception as exc:
+                raise ValueError(f"Invalid component {name}") from exc
         for path, methods in json.get("paths", {}).items():
             for method, props in methods.items():
                 self.paths.setdefault(path, {})[method] = Operation.parse(
