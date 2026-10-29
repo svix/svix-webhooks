@@ -1,3 +1,4 @@
+import "./bun_compat.test";
 import "./autoconfig.test";
 import "./mockttp.test";
 import "./KitchenSink.test";
