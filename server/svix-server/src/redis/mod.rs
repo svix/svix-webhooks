@@ -170,6 +170,25 @@ impl RedisManager {
         }
     }
 
+    /// Panics if Redis is unreachable.
+    ///
+    /// The bb8 pools are lazy, so a misconfigured DSN (see #2100) would
+    /// otherwise only surface as a generic pool timeout on first use. Called
+    /// on server startup unless `redis_startup_probe_enabled` is disabled.
+    pub async fn probe(&self) {
+        // The timeout bounds the pool checkout: for a hanging DSN (see
+        // #2100), `get` would otherwise block well past it.
+        let mut conn = tokio::time::timeout(REDIS_CONN_TIMEOUT, self.get())
+            .await
+            .expect("Error connecting to Redis")
+            .expect("Error connecting to Redis");
+        let pong: String = redis::cmd("PING")
+            .query_async(&mut conn)
+            .await
+            .expect("Error connecting to Redis");
+        assert_eq!(pong, "PONG");
+    }
+
     pub async fn get(&self) -> Result<RedisConnection<'_>, RunError<RedisError>> {
         match self {
             Self::Clustered(pool) => Ok(RedisConnection::Clustered(pool.get().await?)),
@@ -270,5 +289,15 @@ mod tests {
             let _: () = conn.set(key.clone(), val).await.unwrap();
             assert_eq!(conn.get::<_, usize>(&key).await.unwrap(), val);
         }
+    }
+
+    // Regression test for #2100: construction is lazy, so `probe` is what
+    // must fail on an unreachable Redis.
+    #[tokio::test]
+    #[should_panic(expected = "Error connecting to Redis")]
+    async fn test_probe_fails_on_unreachable_redis() {
+        let backend = crate::cfg::QueueBackend::Redis("redis://127.0.0.1:63999/");
+        let mgr = RedisManager::from_queue_backend(&backend, 1).await;
+        mgr.probe().await;
     }
 }
