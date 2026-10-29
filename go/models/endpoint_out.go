@@ -18,7 +18,8 @@ type EndpointOut struct {
 	Channels     []string  `json:"channels,omitempty"` // List of message channels this endpoint listens to (omit for all).
 	CreatedAt    time.Time `json:"createdAt"`
 	UpdatedAt    time.Time `json:"updatedAt"`
-	// When the endpoint expires, if ever. No messages are sent to the
-	// endpoint after this time.
+	// When the endpoint expires, if ever.
+	//
+	// No messages are sent to the endpoint after this time.
 	Expiry *time.Time `json:"expiry,omitempty"`
 }
