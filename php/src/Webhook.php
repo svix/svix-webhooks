@@ -57,7 +57,39 @@ class Webhook
             $msgTimestamp = $headers['webhook-timestamp'];
             $msgSignature = $headers['webhook-signature'];
         } else {
-            throw new Exception\WebhookVerificationException("Missing required headers");
+            $lowerHeaders = null;
+            if (is_array($headers)) {
+                $lowerHeaders = array_change_key_case($headers, CASE_LOWER);
+            } elseif (is_iterable($headers)) {
+                $lowerHeaders = [];
+                foreach ($headers as $k => $v) {
+                    $lowerHeaders[strtolower($k)] = $v;
+                }
+            }
+
+            if ($lowerHeaders !== null) {
+                if (
+                    isset($lowerHeaders['svix-id'])
+                    && isset($lowerHeaders['svix-timestamp'])
+                    && isset($lowerHeaders['svix-signature'])
+                ) {
+                    $msgId = $lowerHeaders['svix-id'];
+                    $msgTimestamp = $lowerHeaders['svix-timestamp'];
+                    $msgSignature = $lowerHeaders['svix-signature'];
+                } elseif (
+                    isset($lowerHeaders['webhook-id'])
+                    && isset($lowerHeaders['webhook-timestamp'])
+                    && isset($lowerHeaders['webhook-signature'])
+                ) {
+                    $msgId = $lowerHeaders['webhook-id'];
+                    $msgTimestamp = $lowerHeaders['webhook-timestamp'];
+                    $msgSignature = $lowerHeaders['webhook-signature'];
+                } else {
+                    throw new Exception\WebhookVerificationException("Missing required headers");
+                }
+            } else {
+                throw new Exception\WebhookVerificationException("Missing required headers");
+            }
         }
 
 

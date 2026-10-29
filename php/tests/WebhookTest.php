@@ -28,6 +28,26 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $json = $wh->verify($testPayload->payload, $testPayload->header);
     }
 
+    public function testCaseInsensitiveHeadersAreValid()
+    {
+        $testPayload = new TestPayload(time());
+        $mixedCaseHeaders = array(
+            "Svix-Id" => $testPayload->header['svix-id'],
+            "SVIX-SIGNATURE" => $testPayload->header['svix-signature'],
+            "svix-TIMESTAMP" => $testPayload->header['svix-timestamp'],
+        );
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verify($testPayload->payload, $mixedCaseHeaders);
+
+        $mixedCaseUnbranded = array(
+            "Webhook-Id" => $testPayload->header['svix-id'],
+            "WEBHOOK-SIGNATURE" => $testPayload->header['svix-signature'],
+            "webhook-TIMESTAMP" => $testPayload->header['svix-timestamp'],
+        );
+        $wh->verify($testPayload->payload, $mixedCaseUnbranded);
+        $this->assertTrue(true);
+    }
+
     public function testInvalidSignatureThrowsException()
     {
         $this->expectException(\Svix\Exception\WebhookVerificationException::class);

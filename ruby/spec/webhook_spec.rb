@@ -109,6 +109,25 @@ describe Svix::Webhook do
     expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
   end
 
+  it "supports case-insensitive headers" do
+    testPayload = TestPayload.new
+    mixed_headers = {
+      "Svix-Id" => testPayload.headers["svix-id"],
+      "SVIX-SIGNATURE" => testPayload.headers["svix-signature"],
+      "svix-TIMESTAMP" => testPayload.headers["svix-timestamp"]
+    }
+
+    wh = Svix::Webhook.new(testPayload.secret)
+    expect { wh.verify(testPayload.payload, mixed_headers) }.not_to raise_error
+
+    unbranded_mixed = {
+      "Webhook-Id" => testPayload.headers["svix-id"],
+      "WEBHOOK-SIGNATURE" => testPayload.headers["svix-signature"],
+      "webhook-TIMESTAMP" => testPayload.headers["svix-timestamp"]
+    }
+    expect { wh.verify(testPayload.payload, unbranded_mixed) }.not_to raise_error
+  end
+
   it "invalid signature raises error" do
     testPayload = TestPayload.new
     testPayload.headers["svix-signature"] = "v1,g0hM9SsE+OTPJTGt/tmIKtSyZlE3uFJELVlNIOLawdd"
