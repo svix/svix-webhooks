@@ -68,7 +68,7 @@ impl JsonSchema for RawPayload {
     }
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        serde_json::Value::json_schema(gen)
+        serde_json::Map::<String, serde_json::Value>::json_schema(gen)
     }
 
     fn is_referenceable() -> bool {

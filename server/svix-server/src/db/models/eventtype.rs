@@ -105,7 +105,7 @@ pub fn schema_example() -> serde_json::Value {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Default)]
-pub struct Schema(HashMap<String, Json>);
+pub struct Schema(HashMap<String, serde_json::Value>);
 json_wrapper!(Schema);
 
 impl Schema {
@@ -138,7 +138,8 @@ impl JsonSchema for Schema {
     }
 
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-        let mut schema = gen.subschema_for::<HashMap<String, Json>>();
+        let mut schema =
+            gen.subschema_for::<HashMap<String, serde_json::Map<String, serde_json::Value>>>();
 
         if let schemars::schema::Schema::Object(obj) = &mut schema {
             obj.extensions
