@@ -23,8 +23,9 @@ module Svix
     attr_accessor :channels
     attr_accessor :created_at
     attr_accessor :updated_at
-    # When the endpoint expires, if ever. No messages are sent to the
-    # endpoint after this time.
+    # When the endpoint expires, if ever.
+    #
+    # No messages are sent to the endpoint after this time.
     attr_accessor :expiry
 
     ALL_FIELD ||= [
