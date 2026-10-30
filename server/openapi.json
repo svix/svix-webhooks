@@ -1,8 +1,7 @@
 {
-    "openapi": "3.0.2",
+    "openapi": "3.1.0",
     "info": {
         "title": "Svix API",
-        "description": "",
         "version": "1.1.1",
         "x-logo": {
             "altText": "Svix Logo",

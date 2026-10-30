@@ -1,10 +1,15 @@
 [workspace]
-members = ["svix-server", "svix-server-derive"]
+members = ["generate-openapi", "svix-server", "svix-server-derive"]
+default-members = ["svix-server"]
 resolver = "2"
 
 [workspace.dependencies]
+aide = { version = "0.14.2", features = ["axum", "axum-json", "axum-query", "redoc", "macros"] }
+anyhow = "1.0.56"
 # pinned to ensure the [patch] below is used
 hyper = { version = "=1.11.1", features = ["full"] }
+serde = { version = "1.0.184", features = ["derive"] }
+serde_json = { version = "1.0.74", features = ["arbitrary_precision", "raw_value"] }
 
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }

@@ -108,10 +108,6 @@ enum Commands {
         yes_i_know_what_im_doing: bool,
     },
 
-    /// Generate OpenAPI JSON specification and exit
-    #[clap()]
-    GenerateOpenapi,
-
     /// Health check command
     #[clap()]
     Healthcheck {
@@ -282,21 +278,6 @@ async fn main() -> anyhow::Result<()> {
             }
 
             prune_messages(&cfg, older_than, batch_size).await?;
-        }
-
-        Some(Commands::GenerateOpenapi) => {
-            let mut openapi = svix_server::openapi::initialize_openapi();
-
-            let router = svix_server::v1::router(cfg);
-            _ = aide::axum::ApiRouter::new()
-                .nest("/api/v1", router)
-                .finish_api_with(&mut openapi, svix_server::openapi::add_security_scheme);
-
-            svix_server::openapi::postprocess_spec(&mut openapi);
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&openapi).expect("Failed to serialize JSON spec")
-            );
         }
 
         Some(Commands::Healthcheck { .. }) => {

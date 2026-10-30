@@ -2125,6 +2125,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "generate-openapi"
+version = "1.104.0"
+dependencies = [
+ "aide",
+ "anyhow",
+ "serde",
+ "serde_json",
+ "svix-server",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"

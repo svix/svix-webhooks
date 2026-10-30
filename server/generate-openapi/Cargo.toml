@@ -1,0 +1,16 @@
+[package]
+name = "generate-openapi"
+edition = "2024"
+license.workspace = true
+version.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+aide.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+svix-server.path = "../svix-server"
+
+[lints]
+workspace = true
