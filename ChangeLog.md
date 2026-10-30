@@ -8,6 +8,8 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 ## Unreleased
 * Libs/PHP: `Webhook` now throws `InvalidArgumentException` for an empty or non-base64 secret
   instead of verifying with an empty HMAC key
+* Libs/PHP: Fix `Webhook::fromRaw()`, which always threw `ArgumentCountError`; it now also
+  accepts an optional `$tolerance`
 
 ## Version 2.9.1
 * Libs/JavaScript: Throw `ApiException` (with the raw response text as `body`) instead of a

@@ -10,18 +10,30 @@ class Webhook
     private $tolerance = self::DEFAULT_TOLERANCE;
 
     /**
-     * @param string $secret    the endpoint's signing secret
-     * @param int    $tolerance maximum difference allowed, in seconds, between the
-     *                          webhook's timestamp and the current time; defaults to 5 minutes
+     * @param string|null $secret    the endpoint's signing secret
+     * @param int         $tolerance maximum difference allowed, in seconds, between the
+     *                               webhook's timestamp and the current time; defaults to 5 minutes
+     * @param string|null $rawSecret the signing secret as raw bytes; pass either this or
+     *                               $secret, not both (see fromRaw())
      */
-    public function __construct($secret, $tolerance = self::DEFAULT_TOLERANCE)
+    public function __construct($secret = null, $tolerance = self::DEFAULT_TOLERANCE, $rawSecret = null)
     {
-        if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
-            $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));
+        if (($secret === null) === ($rawSecret === null)) {
+            throw new \InvalidArgumentException("exactly one of secret and rawSecret must be given");
         }
-        $secret = base64_decode($secret, true);
-        if ($secret === false || $secret === '') {
-            throw new \InvalidArgumentException("secret must be a non-empty base64 string");
+        if ($secret !== null) {
+            if (substr($secret, 0, strlen(Webhook::SECRET_PREFIX)) === Webhook::SECRET_PREFIX) {
+                $secret = substr($secret, strlen(Webhook::SECRET_PREFIX));
+            }
+            $secret = base64_decode($secret, true);
+            if ($secret === false || $secret === '') {
+                throw new \InvalidArgumentException("secret must be a non-empty base64 string");
+            }
+        } else {
+            if (!is_string($rawSecret) || $rawSecret === '') {
+                throw new \InvalidArgumentException("secret must not be empty");
+            }
+            $secret = $rawSecret;
         }
         $this->secret = $secret;
 
@@ -31,14 +43,13 @@ class Webhook
         $this->tolerance = $tolerance;
     }
 
-    public static function fromRaw($secret)
+    /**
+     * @param string $secret    the signing secret as raw bytes
+     * @param int    $tolerance see __construct()
+     */
+    public static function fromRaw($secret, $tolerance = self::DEFAULT_TOLERANCE)
     {
-        if (!is_string($secret) || $secret === '') {
-            throw new \InvalidArgumentException("secret must not be empty");
-        }
-        $obj = new self();
-        $obj->secret = $secret;
-        return $obj;
+        return new self(null, $tolerance, $secret);
     }
 
     /**
