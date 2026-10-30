@@ -9,6 +9,7 @@ import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.coroutines.executeAsync
 import java.io.IOException
 import java.time.Duration
 import java.util.UUID
@@ -34,7 +35,7 @@ internal constructor(
     val baseUrl: HttpUrl =
         if (rawBaseUrl.encodedPath.length > 1 && rawBaseUrl.encodedPath.endsWith('/')) {
             val trimmedPath = rawBaseUrl.encodedPath.trimEnd('/')
-            rawBaseUrl.newBuilder().encodedPath(if (trimmedPath.isEmpty()) "/" else trimmedPath).build()
+            rawBaseUrl.newBuilder().encodedPath(trimmedPath.ifEmpty { "/" }).build()
         } else {
             rawBaseUrl
         }
@@ -86,7 +87,7 @@ internal constructor(
 
         if (headers?.get("idempotency-key") == null && method == "POST") {
             val uuid = UUID.randomUUID().toString()
-            reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
+            reqBuilder.addHeader("idempotency-key", "auto_$uuid")
         }
 
         reqBuilder.addHeader("svix-req-id", Random.nextULong().toString())
@@ -94,11 +95,7 @@ internal constructor(
         val request = reqBuilder.build()
         val res = executeRequestWithRetry(request)
 
-        // if body is null panic
-        if (res.body == null) {
-            throw ApiException("Body is null", res.code)
-        }
-        val bodyString = res.body!!.string()
+        val bodyString = res.body.string()
         if (res.code == 204) {
             return jsonDeserializer.decodeFromString<Res>("true")
         }
@@ -112,8 +109,8 @@ internal constructor(
         var currentRequest = request
         retrySchedule.forEachIndexed { index, sleepTime ->
             try {
-                val res = client.newCall(currentRequest).execute()
-                if (res.code < 500) {
+                val res = client.newCall(currentRequest).executeAsync()
+                if (!shouldRetry(res.code)) {
                     return res
                 }
                 res.close()
@@ -125,6 +122,9 @@ internal constructor(
             currentRequest =
                 request.newBuilder().header("svix-retry-count", (index + 1).toString()).build()
         }
-        return client.newCall(currentRequest).execute()
+        return client.newCall(currentRequest).executeAsync()
     }
 }
+
+private fun shouldRetry(statusCode: Int): Boolean =
+    statusCode >= 500 || statusCode == 423

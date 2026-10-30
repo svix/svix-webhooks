@@ -307,34 +307,39 @@ class WiremockTests {
     }
 
     @Test
-    fun defaultRetryStatusCode500() {
-        val svx = testClient()
-        wireMockServer.stubFor(
-            WireMock.get(urlPathEqualTo("/api/v1/app/ap/msg"))
-                .willReturn(WireMock.status(500).withBodyFile("ListResponseMessageOut.json"))
-        )
-        runBlocking {
-            try {
-                svx.message.list("ap")
-            } catch (e: ApiException) {
-                assertEquals(500, e.statusCode)
+    fun defaultRetry() {
+        for (status in listOf(500, 423)) {
+            wireMockServer.resetAll()
+            val svx = testClient()
+            wireMockServer.stubFor(
+                WireMock.get(urlPathEqualTo("/api/v1/app/ap/msg"))
+                    .willReturn(
+                        WireMock.status(status).withBodyFile("ListResponseMessageOut.json")
+                    )
+            )
+            runBlocking {
+                try {
+                    svx.message.list("ap")
+                } catch (e: ApiException) {
+                    assertEquals(status, e.statusCode)
+                }
             }
-        }
 
-        wireMockServer.verify(
-            1,
-            getRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
-                // first request does not have `svix-retry-count` header
-                .withHeader("svix-retry-count", absent()),
-        )
-
-        // check the svix-retry-count are set correctly
-        for (retryCount in 1..3) {
             wireMockServer.verify(
                 1,
                 getRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
-                    .withHeader("svix-retry-count", equalTo("$retryCount")),
+                    // first request does not have `svix-retry-count` header
+                    .withHeader("svix-retry-count", absent()),
             )
+
+            // check the svix-retry-count are set correctly
+            for (retryCount in 1..3) {
+                wireMockServer.verify(
+                    1,
+                    getRequestedFor(urlEqualTo("/api/v1/app/ap/msg?with_content=false"))
+                        .withHeader("svix-retry-count", equalTo("$retryCount")),
+                )
+            }
         }
     }
 
