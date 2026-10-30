@@ -1,0 +1,50 @@
+name: Convex Release
+
+# Versioned separately from the SDKs, so it's released on its own rather than
+# from the mega-releaser.
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    environment: release
+    defaults:
+      run:
+        working-directory: convex
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 'latest'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install modules and update NPM
+        run: |
+          npm install -g npm@latest
+          npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      - name: Publish
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          # A semver prerelease (anything with a `-`) must not become the default
+          # `npm install @svix/convex`; publish it under the `next` dist-tag instead.
+          if [[ "$version" == *-* ]]; then
+            tag=next
+          else
+            tag=latest
+          fi
+          echo "Publishing @svix/convex@$version with dist-tag '$tag'"
+          npm publish --access public --tag "$tag"

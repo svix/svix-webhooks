@@ -1,0 +1,77 @@
+{
+  "name": "@svix/convex",
+  "version": "0.1.0",
+  "description": "Send and receive webhooks from Convex with Svix",
+  "author": "svix",
+  "repository": "github:svix/svix-webhooks",
+  "homepage": "https://github.com/svix/svix-webhooks/tree/main/convex#readme",
+  "license": "MIT",
+  "keywords": [
+    "convex",
+    "component",
+    "svix",
+    "webhooks"
+  ],
+  "type": "module",
+  "scripts": {
+    "dev": "convex dev --start \"npm run dev:build\"",
+    "dev:build": "chokidar \"tsconfig*.json\" \"src/**/*.ts\" -i \"**/*.test.ts\" -c \"npm run build:codegen\" --initial",
+    "predev": "convex init && npm run build:codegen",
+    "build": "tsc --project ./tsconfig.build.json",
+    "build:codegen": "npx convex codegen --component-dir ./src/component && npm run build",
+    "build:clean": "rm -rf dist *.tsbuildinfo && npm run build:codegen",
+    "typecheck": "tsc --noEmit && tsc -p example/convex",
+    "test": "vitest run --typecheck",
+    "test:watch": "vitest --typecheck --clearScreen false",
+    "fmt": "prettier --write .",
+    "lint": "prettier --check . && npm run typecheck",
+    "prepare": "npm run build"
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./test": "./src/test.ts",
+    "./_generated/component.js": {
+      "types": "./dist/component/_generated/component.d.ts"
+    },
+    "./_generated/component": {
+      "types": "./dist/component/_generated/component.d.ts"
+    },
+    "./convex.config.js": {
+      "types": "./dist/component/convex.config.d.ts",
+      "default": "./dist/component/convex.config.js"
+    },
+    "./convex.config": {
+      "types": "./dist/component/convex.config.d.ts",
+      "default": "./dist/component/convex.config.js"
+    }
+  },
+  "types": "./dist/client/index.d.ts",
+  "module": "./dist/client/index.js",
+  "dependencies": {
+    "@convex-dev/workpool": "^0.4.14",
+    "convex-helpers": "^0.1.129",
+    "svix": "^2.9.1"
+  },
+  "peerDependencies": {
+    "convex": "^1.46.0"
+  },
+  "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
+    "@types/node": "^24.19.2",
+    "chokidar-cli": "^3.0.0",
+    "convex": "^1.46.0",
+    "convex-test": "^0.0.61",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  }
+}

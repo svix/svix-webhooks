@@ -35,6 +35,7 @@ jobs:
     outputs:
       bridge-ci: ${{ steps.filter.outputs.bridge-ci }}
       cli-lint: ${{ steps.filter.outputs.cli-lint }}
+      convex-ci: ${{ steps.filter.outputs.convex-ci }}
       csharp-lint: ${{ steps.filter.outputs.csharp-lint }}
       go-ci: ${{ steps.filter.outputs.go-ci }}
       go-lint: ${{ steps.filter.outputs.go-lint }}
@@ -89,6 +90,9 @@ jobs:
               - 'java/**'
               - 'codegen/lib-openapi.json'
               - '.github/workflows/java-lint.yml'
+            convex-ci:
+              - 'convex/**'
+              - '.github/workflows/convex-ci.yml'
             javascript-lint:
               - 'javascript/**'
               - 'codegen/lib-openapi.json'
@@ -168,6 +172,12 @@ jobs:
     uses: ./.github/workflows/java-lint.yml
     secrets: inherit
 
+  convex-ci:
+    needs: filter
+    if: needs.filter.outputs.convex-ci == 'true'
+    uses: ./.github/workflows/convex-ci.yml
+    secrets: inherit
+
   javascript-lint:
     needs: filter
     if: needs.filter.outputs.javascript-lint == 'true'
@@ -240,6 +250,7 @@ jobs:
       - go-lint
       - kotlin-lint
       - java-lint
+      - convex-ci
       - javascript-lint
       - php-ci
       - python-lint
