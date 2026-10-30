@@ -581,6 +581,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "example": {
                             "email": "test@example.com",
                             "username": "test_user"
@@ -1032,6 +1033,7 @@
                     },
                     "schemas": {
                         "additionalProperties": {
+                            "additionalProperties": true,
                             "type": "object"
                         },
                         "description": "The schema for the event type for a specific version as a JSON schema.",
@@ -1099,6 +1101,7 @@
                     },
                     "schemas": {
                         "additionalProperties": {
+                            "additionalProperties": true,
                             "type": "object"
                         },
                         "description": "The schema for the event type for a specific version as a JSON schema.",
@@ -1160,6 +1163,7 @@
                     },
                     "schemas": {
                         "additionalProperties": {
+                            "additionalProperties": true,
                             "type": "object"
                         },
                         "example": {
@@ -1211,6 +1215,7 @@
                     },
                     "schemas": {
                         "additionalProperties": {
+                            "additionalProperties": true,
                             "type": "object"
                         },
                         "description": "The schema for the event type for a specific version as a JSON schema.",
@@ -1908,6 +1913,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "example": {
                             "email": "test@example.com",
                             "username": "test_user"
@@ -1969,6 +1975,7 @@
                         "type": "string"
                     },
                     "payload": {
+                        "additionalProperties": true,
                         "example": {
                             "email": "test@example.com",
                             "username": "test_user"
