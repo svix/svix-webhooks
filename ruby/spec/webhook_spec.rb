@@ -118,6 +118,17 @@ describe Svix::Webhook do
     expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
   end
 
+  it "signature without a value raises WebhookVerificationError" do
+    ["v1", "v1,", "v1 v1"].each do |malformed|
+      testPayload = TestPayload.new
+      testPayload.headers["svix-signature"] = malformed
+
+      wh = Svix::Webhook.new(testPayload.secret)
+
+      expect { wh.verify(testPayload.payload, testPayload.headers) }.to(raise_error(Svix::WebhookVerificationError))
+    end
+  end
+
   it "valid signature is valid" do
     testPayload = TestPayload.new
     wh = Svix::Webhook.new(testPayload.secret)
