@@ -55,7 +55,7 @@ module Svix
       passedSignatures = msgSignature.split(" ")
       passedSignatures.each do |versionedSignature|
         version, expectedSignature = versionedSignature.split(",", 2)
-        if version != "v1"
+        if version != "v1" || expectedSignature.nil?
           next
         end
 
