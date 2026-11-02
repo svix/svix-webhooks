@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+* Read at most 20000 bytes of an endpoint's response body instead of buffering it whole and truncating afterwards, so
+  memory use of the worker no longer depends on the size of the response
 
 ## Version 1.104.0
 * **(Breaking)** Reject event type schemas with external `$ref`s (`http://`, `file://`, etc.) with a 422. Refs within the schema itself, such as `#/definitions/...`, still work.
