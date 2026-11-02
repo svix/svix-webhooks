@@ -393,15 +393,8 @@ async fn make_http_call(
             };
 
             let (res_parts, body) = res.into_parts();
-            let body = match body.collect().await {
-                Ok(collected) => {
-                    let bytes = collected.to_bytes();
-                    if bytes.len() > RESPONSE_MAX_SIZE {
-                        bytes_to_string(bytes.slice(..RESPONSE_MAX_SIZE))
-                    } else {
-                        bytes_to_string(bytes)
-                    }
-                }
+            let body = match read_body_up_to(body, RESPONSE_MAX_SIZE).await {
+                Ok(bytes) => bytes_to_string(bytes),
                 Err(err) => format!("Error reading response body: {err}"),
             };
 
@@ -788,6 +781,27 @@ async fn dispatch_message_task(
     }
 }
 
+/// Reads at most `limit` bytes of `body` and leaves the rest unread: only that much is ever stored.
+async fn read_body_up_to<B>(body: B, limit: usize) -> Result<bytes::Bytes, B::Error>
+where
+    B: hyper::body::Body<Data = bytes::Bytes>,
+{
+    let mut body = std::pin::pin!(body);
+    let mut buffer = bytes::BytesMut::new();
+
+    while buffer.len() < limit {
+        let Some(frame) = body.as_mut().frame().await else {
+            break;
+        };
+        if let Ok(data) = frame?.into_data() {
+            buffer.extend_from_slice(&data);
+        }
+    }
+
+    buffer.truncate(limit);
+    Ok(buffer.freeze())
+}
+
 fn bytes_to_string(bytes: bytes::Bytes) -> String {
     match std::str::from_utf8(&bytes) {
         Ok(v) => v.to_owned(),
@@ -1123,7 +1137,7 @@ mod tests {
 
     use super::{
         CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers,
-        retry_after, sign_msg,
+        read_body_up_to, retry_after, sign_msg,
     };
     use crate::core::{
         cryptography::{AsymmetricKey, Encryption},
@@ -1318,5 +1332,42 @@ mod tests {
 
         headers.clear();
         assert!(retry_after(&headers).is_none());
+    }
+
+    #[tokio::test]
+    async fn test_read_body_up_to_stops_at_limit() {
+        use std::{
+            convert::Infallible,
+            sync::{
+                Arc,
+                atomic::{AtomicUsize, Ordering},
+            },
+        };
+
+        use http_body_util::StreamBody;
+        use hyper::body::Frame;
+
+        let frames_read = Arc::new(AtomicUsize::new(0));
+        let counter = frames_read.clone();
+        let frames = futures::stream::iter((0..100).map(move |_| {
+            counter.fetch_add(1, Ordering::Relaxed);
+            Ok::<_, Infallible>(Frame::data(Bytes::from(vec![b'a'; 1000])))
+        }));
+
+        let bytes = read_body_up_to(StreamBody::new(frames), 2500)
+            .await
+            .unwrap();
+
+        assert_eq!(bytes.len(), 2500);
+        assert_eq!(frames_read.load(Ordering::Relaxed), 3);
+    }
+
+    #[tokio::test]
+    async fn test_read_body_up_to_keeps_short_body() {
+        let body = http_body_util::Full::new(Bytes::from_static(b"short"));
+
+        let bytes = read_body_up_to(body, 2500).await.unwrap();
+
+        assert_eq!(bytes, Bytes::from_static(b"short"));
     }
 }
