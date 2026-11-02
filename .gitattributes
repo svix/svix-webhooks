@@ -31,3 +31,7 @@
 /rust/src/api_internal/** linguist-generated
 /rust/src/api/client.rs -linguist-generated
 /rust/src/models/** linguist-generated
+
+# Convex codegen output
+/convex/example/convex/_generated/** linguist-generated
+/convex/src/component/_generated/** linguist-generated
