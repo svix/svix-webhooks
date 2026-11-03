@@ -70,3 +70,120 @@ test("default retries twice after the initial request", async () => {
   await assert.rejects(svx.application.list(), ApiException);
   assert.equal(counter.calls, 3);
 });
+
+test("retries cancel unread response bodies before the next request", async () => {
+  const events: string[] = [];
+  let calls = 0;
+  const fetchImpl: typeof fetch = async () => {
+    const attempt = ++calls;
+    events.push(`fetch:${attempt}`);
+    if (attempt === 3) {
+      return new Response('{"data":[],"iterator":null,"done":true}');
+    }
+    return new Response(
+      new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode("unread error body"));
+        },
+        cancel() {
+          events.push(`cancel:${attempt}`);
+        },
+      }),
+      { status: 503 }
+    );
+  };
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    retryScheduleInMs: [0, 0],
+    fetch: fetchImpl,
+  });
+
+  const result = await svx.application.list();
+
+  assert.deepEqual(result.data, []);
+  assert.deepEqual(events, ["fetch:1", "cancel:1", "fetch:2", "cancel:2", "fetch:3"]);
+});
+
+test("retry exhaustion keeps the final error body readable", async () => {
+  let calls = 0;
+  let cancelled = 0;
+  const terminalBody = '{"detail":"still unavailable"}';
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    retryScheduleInMs: [0],
+    fetch: async () => {
+      calls += 1;
+      return calls === 1
+        ? new Response(
+            new ReadableStream({
+              cancel() {
+                cancelled += 1;
+              },
+            }),
+            {
+              status: 503,
+            }
+          )
+        : new Response(terminalBody, { status: 503 });
+    },
+  });
+
+  await assert.rejects(svx.application.list(), (error: unknown) => {
+    assert.ok(error instanceof ApiException);
+    assert.equal(error.code, 503);
+    assert.equal(error.body, terminalBody);
+    return true;
+  });
+  assert.equal(calls, 2);
+  assert.equal(cancelled, 1);
+});
+
+test("a failed body cancellation does not prevent the scheduled retry", async () => {
+  let calls = 0;
+  let cancellations = 0;
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    retryScheduleInMs: [0],
+    fetch: async () => {
+      calls += 1;
+      return calls === 1
+        ? new Response(
+            new ReadableStream({
+              cancel() {
+                cancellations += 1;
+                throw new Error("body already failed");
+              },
+            }),
+            { status: 500 }
+          )
+        : new Response('{"data":[],"iterator":null,"done":true}');
+    },
+  });
+
+  assert.deepEqual((await svx.application.list()).data, []);
+  assert.equal(calls, 2);
+  assert.equal(cancellations, 1);
+});
+
+for (const status of [400, 503]) {
+  test(`a non-retried ${status} response retains its error body`, async () => {
+    let calls = 0;
+    const errorBody = '{"detail":"not retried"}';
+    const svx = new Svix("token", {
+      serverUrl: "https://api.example.com",
+      numRetries: 0,
+      fetch: async () => {
+        calls += 1;
+        return new Response(errorBody, { status });
+      },
+    });
+
+    await assert.rejects(svx.application.list(), (error: unknown) => {
+      assert.ok(error instanceof ApiException);
+      assert.equal(error.code, status);
+      assert.deepEqual(error.body, status === 400 ? JSON.parse(errorBody) : errorBody);
+      return true;
+    });
+    assert.equal(calls, 1);
+  });
+}
