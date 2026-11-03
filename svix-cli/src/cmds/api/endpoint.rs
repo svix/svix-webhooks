@@ -4,7 +4,9 @@ use svix::api::Svix;
 #[allow(unused_imports)]
 use svix::models::*;
 
-use super::endpoint_transformation::EndpointTransformationArgs;
+use super::{
+    endpoint_mcp_events::EndpointMcpEventsArgs, endpoint_transformation::EndpointTransformationArgs,
+};
 #[derive(Args, Clone)]
 pub struct EndpointListOptions {
     /// Limit the number of returned items
@@ -157,6 +159,7 @@ pub struct EndpointArgs {
 #[allow(clippy::large_enum_variant)]
 #[derive(Subcommand)]
 pub enum EndpointCommands {
+    McpEvents(EndpointMcpEventsArgs),
     Transformation(EndpointTransformationArgs),
     /// List the application's endpoints.
     #[command(help_template = concat!(
@@ -708,6 +711,9 @@ impl EndpointCommands {
         color_mode: colored_json::ColorMode,
     ) -> anyhow::Result<()> {
         match self {
+            Self::McpEvents(args) => {
+                args.command.exec(client, color_mode).await?;
+            }
             Self::Transformation(args) => {
                 args.command.exec(client, color_mode).await?;
             }

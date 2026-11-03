@@ -53,6 +53,10 @@ import {
 } from "./redshiftConfigPatch";
 import { type S3ConfigPatch, S3ConfigPatchSerializer } from "./s3ConfigPatch";
 import {
+  type SegmentSinkConfigPatch,
+  SegmentSinkConfigPatchSerializer,
+} from "./segmentSinkConfigPatch";
+import {
   type SinkHttpConfigPatch,
   SinkHttpConfigPatchSerializer,
 } from "./sinkHttpConfigPatch";
@@ -167,6 +171,11 @@ interface DestinationPatchPostHog {
   config: PostHogConfigPatch;
 }
 
+interface DestinationPatchSegment {
+  type: "segment";
+  config: SegmentSinkConfigPatch;
+}
+
 export type DestinationPatch = _DestinationPatchFields &
   (
     | DestinationPatchPollingEndpoint
@@ -187,6 +196,7 @@ export type DestinationPatch = _DestinationPatchFields &
     | DestinationPatchPostgres
     | DestinationPatchElasticSearch
     | DestinationPatchPostHog
+    | DestinationPatchSegment
   );
 
 export const DestinationPatchSerializer = {
@@ -233,6 +243,8 @@ export const DestinationPatchSerializer = {
           return ElasticSearchConfigPatchSerializer._fromJsonObject(object["config"]);
         case "postHog":
           return PostHogConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -311,6 +323,9 @@ export const DestinationPatchSerializer = {
         break;
       case "postHog":
         config = PostHogConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 

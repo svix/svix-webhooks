@@ -5,9 +5,11 @@ require "net/http"
 
 module Svix
   class Endpoint
+    attr_accessor :mcp_events
     attr_accessor :transformation
     def initialize(client)
       @client = client
+      @mcp_events = EndpointMcpEvents.new(client)
       @transformation = EndpointTransformation.new(client)
     end
 

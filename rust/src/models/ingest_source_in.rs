@@ -5,9 +5,9 @@ use super::{
     adobe_sign_config::AdobeSignConfig, airwallex_config::AirwallexConfig,
     ascend_config::AscendConfig, bitbucket_config::BitbucketConfig,
     checkbook_config::CheckbookConfig, cron_config::CronConfig, docusign_config::DocusignConfig,
-    easypost_config::EasypostConfig, github_config::GithubConfig, hubspot_config::HubspotConfig,
-    merge_config::MergeConfig, meta_config::MetaConfig, nango_config::NangoConfig,
-    open_claw_config::OpenClawConfig, orum_io_config::OrumIoConfig,
+    easypost_config::EasypostConfig, generic_config::GenericConfig, github_config::GithubConfig,
+    hubspot_config::HubspotConfig, merge_config::MergeConfig, meta_config::MetaConfig,
+    nango_config::NangoConfig, open_claw_config::OpenClawConfig, orum_io_config::OrumIoConfig,
     panda_doc_config::PandaDocConfig, port_io_config::PortIoConfig, rutter_config::RutterConfig,
     segment_config::SegmentConfig, shopify_config::ShopifyConfig, slack_config::SlackConfig,
     stripe_config::StripeConfig, svix_config::SvixConfig, tailscale_config::TailscaleConfig,
@@ -36,6 +36,8 @@ pub struct IngestSourceIn {
 pub enum IngestSourceInConfig {
     #[serde(rename = "generic-webhook")]
     GenericWebhook,
+    #[serde(rename = "generic")]
+    Generic(GenericConfig),
     #[serde(rename = "cron")]
     Cron(CronConfig),
     #[serde(rename = "adobe-sign")]

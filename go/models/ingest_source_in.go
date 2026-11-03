@@ -16,6 +16,7 @@ import (
 //   - "cron": Use CronConfig
 //   - "docusign": Use DocusignConfig
 //   - "easypost": Use EasypostConfig
+//   - "generic": Use GenericConfig
 //   - "github": Use GithubConfig
 //   - "hubspot": Use HubspotConfig
 //   - "merge": Use MergeConfig
@@ -50,6 +51,7 @@ type IngestSourceInType string
 
 const (
 	IngestSourceInTypeGenericWebhook IngestSourceInType = "generic-webhook"
+	IngestSourceInTypeGeneric        IngestSourceInType = "generic"
 	IngestSourceInTypeCron           IngestSourceInType = "cron"
 	IngestSourceInTypeAdobeSign      IngestSourceInType = "adobe-sign"
 	IngestSourceInTypeAscend         IngestSourceInType = "ascend"
@@ -103,6 +105,7 @@ type IngestSourceInConfig interface {
 }
 
 func (emptyMap) isIngestSourceInConfig()             {}
+func (GenericConfig) isIngestSourceInConfig()        {}
 func (CronConfig) isIngestSourceInConfig()           {}
 func (AdobeSignConfig) isIngestSourceInConfig()      {}
 func (AscendConfig) isIngestSourceInConfig()         {}
@@ -178,6 +181,10 @@ func (i *IngestSourceIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "easypost":
 		var c EasypostConfig
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "generic":
+		var c GenericConfig
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "github":
@@ -289,6 +296,7 @@ func (i IngestSourceIn) MarshalJSON() ([]byte, error) {
 
 var IngestSourceInTypeFromString = map[string]IngestSourceInType{
 	"generic-webhook": IngestSourceInTypeGenericWebhook,
+	"generic":         IngestSourceInTypeGeneric,
 	"cron":            IngestSourceInTypeCron,
 	"adobe-sign":      IngestSourceInTypeAdobeSign,
 	"ascend":          IngestSourceInTypeAscend,

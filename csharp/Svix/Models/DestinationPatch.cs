@@ -169,6 +169,10 @@ namespace Svix.Models
         public static DestinationPatchConfig PostHog(PostHogConfigPatch postHogConfigPatch) =>
             new(postHogConfigPatch, ConfigType.PostHog);
 
+        public static DestinationPatchConfig Segment(
+            SegmentSinkConfigPatch segmentSinkConfigPatch
+        ) => new(segmentSinkConfigPatch, ConfigType.Segment);
+
         private enum ConfigType
         {
             [EnumMember(Value = "pollingEndpoint")]
@@ -224,6 +228,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "postHog")]
             PostHog,
+
+            [EnumMember(Value = "segment")]
+            Segment,
         }
 
         public TResult Match<TResult>(
@@ -244,7 +251,8 @@ namespace Svix.Models
             Func<RedshiftConfigPatch, TResult> onRedshift,
             Func<PostgresConfigPatch, TResult> onPostgres,
             Func<ElasticSearchConfigPatch, TResult> onElasticSearch,
-            Func<PostHogConfigPatch, TResult> onPostHog
+            Func<PostHogConfigPatch, TResult> onPostHog,
+            Func<SegmentSinkConfigPatch, TResult> onSegment
         )
         {
             return _type switch
@@ -273,6 +281,7 @@ namespace Svix.Models
                 ConfigType.Postgres => onPostgres((PostgresConfigPatch)_value),
                 ConfigType.ElasticSearch => onElasticSearch((ElasticSearchConfigPatch)_value),
                 ConfigType.PostHog => onPostHog((PostHogConfigPatch)_value),
+                ConfigType.Segment => onSegment((SegmentSinkConfigPatch)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
@@ -296,7 +305,8 @@ namespace Svix.Models
             Action<RedshiftConfigPatch>? onRedshift = null,
             Action<PostgresConfigPatch>? onPostgres = null,
             Action<ElasticSearchConfigPatch>? onElasticSearch = null,
-            Action<PostHogConfigPatch>? onPostHog = null
+            Action<PostHogConfigPatch>? onPostHog = null,
+            Action<SegmentSinkConfigPatch>? onSegment = null
         )
         {
             switch (_type)
@@ -407,6 +417,12 @@ namespace Svix.Models
                     if (onPostHog != null)
                     {
                         onPostHog((PostHogConfigPatch)_value);
+                    }
+                    break;
+                case ConfigType.Segment:
+                    if (onSegment != null)
+                    {
+                        onSegment((SegmentSinkConfigPatch)_value);
                     }
                     break;
                 default:
@@ -559,6 +575,7 @@ namespace Svix.Models
             ["elasticSearch"] = c =>
                 DestinationPatchConfig.ElasticSearch(ToObj<ElasticSearchConfigPatch>(c)),
             ["postHog"] = c => DestinationPatchConfig.PostHog(ToObj<PostHogConfigPatch>(c)),
+            ["segment"] = c => DestinationPatchConfig.Segment(ToObj<SegmentSinkConfigPatch>(c)),
         };
     }
 }

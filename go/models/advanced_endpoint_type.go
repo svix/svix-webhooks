@@ -28,6 +28,7 @@ const (
 	ADVANCEDENDPOINTTYPE_POSTGRES             AdvancedEndpointType = "postgres"
 	ADVANCEDENDPOINTTYPE_ELASTIC_SEARCH       AdvancedEndpointType = "elasticSearch"
 	ADVANCEDENDPOINTTYPE_POST_HOG             AdvancedEndpointType = "postHog"
+	ADVANCEDENDPOINTTYPE_SEGMENT              AdvancedEndpointType = "segment"
 )
 
 var allowedAdvancedEndpointType = []AdvancedEndpointType{
@@ -49,6 +50,7 @@ var allowedAdvancedEndpointType = []AdvancedEndpointType{
 	"postgres",
 	"elasticSearch",
 	"postHog",
+	"segment",
 }
 
 func (v *AdvancedEndpointType) UnmarshalJSON(src []byte) error {
@@ -85,4 +87,5 @@ var AdvancedEndpointTypeFromString = map[string]AdvancedEndpointType{
 	"postgres":           ADVANCEDENDPOINTTYPE_POSTGRES,
 	"elasticSearch":      ADVANCEDENDPOINTTYPE_ELASTIC_SEARCH,
 	"postHog":            ADVANCEDENDPOINTTYPE_POST_HOG,
+	"segment":            ADVANCEDENDPOINTTYPE_SEGMENT,
 }

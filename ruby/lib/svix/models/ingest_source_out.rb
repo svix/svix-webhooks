@@ -10,6 +10,7 @@ require_relative "./checkbook_config_out"
 require_relative "./cron_config"
 require_relative "./docusign_config_out"
 require_relative "./easypost_config_out"
+require_relative "./generic_config"
 require_relative "./github_config_out"
 require_relative "./hubspot_config_out"
 require_relative "./merge_config_out"
@@ -49,6 +50,9 @@ module Svix
       def to_json(*args)
         serialize.to_json(*args)
       end
+    end
+
+    class Generic < GenericConfig
     end
 
     class Cron < CronConfig
@@ -206,6 +210,7 @@ module Svix
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       IngestSourceOutConfig::GenericWebhook => "generic-webhook",
+      IngestSourceOutConfig::Generic => "generic",
       IngestSourceOutConfig::Cron => "cron",
       IngestSourceOutConfig::AdobeSign => "adobe-sign",
       IngestSourceOutConfig::Ascend => "ascend",

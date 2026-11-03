@@ -23,6 +23,7 @@ import (
 //   - "rabbitMq": Use RabbitMqConfigIn
 //   - "redshift": Use RedshiftConfigIn
 //   - "amazonS3": Use S3ConfigIn
+//   - "segment": Use SegmentSinkConfigIn
 //   - "snowflake": Use SnowflakeConfigIn
 //   - "sns": Use SnsConfigIn
 //   - "sqs": Use SqsConfigIn
@@ -76,6 +77,7 @@ const (
 	DestinationInTypePostgres           DestinationInType = "postgres"
 	DestinationInTypeElasticSearch      DestinationInType = "elasticSearch"
 	DestinationInTypePostHog            DestinationInType = "postHog"
+	DestinationInTypeSegment            DestinationInType = "segment"
 )
 
 type DestinationInConfig interface {
@@ -100,6 +102,7 @@ func (RedshiftConfigIn) isDestinationInConfig()           {}
 func (PostgresConfigIn) isDestinationInConfig()           {}
 func (ElasticSearchConfigIn) isDestinationInConfig()      {}
 func (PostHogConfigIn) isDestinationInConfig()            {}
+func (SegmentSinkConfigIn) isDestinationInConfig()        {}
 
 func (i *DestinationIn) UnmarshalJSON(data []byte) error {
 	type Alias DestinationIn
@@ -171,6 +174,10 @@ func (i *DestinationIn) UnmarshalJSON(data []byte) error {
 		var c S3ConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "snowflake":
 		var c SnowflakeConfigIn
 		err = json.Unmarshal(aux.Config, &c)
@@ -221,4 +228,5 @@ var DestinationInTypeFromString = map[string]DestinationInType{
 	"postgres":           DestinationInTypePostgres,
 	"elasticSearch":      DestinationInTypeElasticSearch,
 	"postHog":            DestinationInTypePostHog,
+	"segment":            DestinationInTypeSegment,
 }

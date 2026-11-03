@@ -287,6 +287,21 @@ public abstract class StreamSinkPatchConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("segment")
+    public static class Segment extends StreamSinkPatchConfig {
+        private final SegmentSinkConfigPatch segment;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(segment);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkPatchConfig create(JsonNode config);
@@ -328,6 +343,7 @@ public abstract class StreamSinkPatchConfig {
                 "elasticSearch",
                 c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigPatch.class)));
         TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigPatch.class)));
+        TY_M.put("segment", c -> new Segment(m.convertValue(c, SegmentSinkConfigPatch.class)));
     }
 
     public static StreamSinkPatchConfig fromTypeAndConfig(String type, JsonNode config) {

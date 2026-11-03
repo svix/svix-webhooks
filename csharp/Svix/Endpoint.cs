@@ -126,6 +126,11 @@ namespace Svix
     {
         readonly SvixClient _client = client;
 
+        public EndpointMcpEvents McpEvents
+        {
+            get => new EndpointMcpEvents(_client);
+        }
+
         public EndpointTransformation Transformation
         {
             get => new EndpointTransformation(_client);

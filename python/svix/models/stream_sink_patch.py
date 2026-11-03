@@ -18,6 +18,7 @@ from .postgres_config_patch import PostgresConfigPatch
 from .rabbit_mq_config_patch import RabbitMqConfigPatch
 from .redshift_config_patch import RedshiftConfigPatch
 from .s3_config_patch import S3ConfigPatch
+from .segment_sink_config_patch import SegmentSinkConfigPatch
 from .sink_http_config_patch import SinkHttpConfigPatch
 from .sink_status_in import SinkStatusIn
 from .snowflake_config_patch import SnowflakeConfigPatch
@@ -60,6 +61,7 @@ class StreamSinkPatch(BaseModel):
         t.Literal["postgres"],
         t.Literal["elasticSearch"],
         t.Literal["postHog"],
+        t.Literal["segment"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -80,6 +82,7 @@ class StreamSinkPatch(BaseModel):
         PostgresConfigPatch,
         ElasticSearchConfigPatch,
         PostHogConfigPatch,
+        SegmentSinkConfigPatch,
     ]
 
     @model_validator(mode="wrap")
@@ -140,6 +143,10 @@ class StreamSinkPatch(BaseModel):
             )
         elif output.type == "postHog":
             output.config = PostHogConfigPatch.model_validate(data.get("config", {}))
+        elif output.type == "segment":
+            output.config = SegmentSinkConfigPatch.model_validate(
+                data.get("config", {})
+            )
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

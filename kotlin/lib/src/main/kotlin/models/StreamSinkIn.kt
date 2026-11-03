@@ -159,6 +159,12 @@ sealed class StreamSinkInConfig {
             Json.encodeToJsonElement(PostHogConfigIn.serializer(), postHog)
     }
 
+    @VariantName("segment")
+    data class Segment(val segment: SegmentSinkConfigIn) : StreamSinkInConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SegmentSinkConfigIn.serializer(), segment)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkInConfig>(
@@ -255,6 +261,12 @@ sealed class StreamSinkInConfig {
                 "postHog" to
                     { config ->
                         PostHog(Json.decodeFromJsonElement(PostHogConfigIn.serializer(), config))
+                    },
+                "segment" to
+                    { config ->
+                        Segment(
+                            Json.decodeFromJsonElement(SegmentSinkConfigIn.serializer(), config)
+                        )
                     },
             )
 

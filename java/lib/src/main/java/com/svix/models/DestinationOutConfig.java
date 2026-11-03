@@ -287,6 +287,21 @@ public abstract class DestinationOutConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("segment")
+    public static class Segment extends DestinationOutConfig {
+        private final SegmentSinkConfigOut segment;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(segment);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         DestinationOutConfig create(JsonNode config);
@@ -324,6 +339,7 @@ public abstract class DestinationOutConfig {
                 "elasticSearch",
                 c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigOut.class)));
         TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigOut.class)));
+        TY_M.put("segment", c -> new Segment(m.convertValue(c, SegmentSinkConfigOut.class)));
     }
 
     public static DestinationOutConfig fromTypeAndConfig(String type, JsonNode config) {

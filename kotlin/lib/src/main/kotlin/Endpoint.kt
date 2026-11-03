@@ -61,6 +61,8 @@ data class EndpointRecoverOptions(val idempotencyKey: String? = null)
 data class EndpointSendExampleOptions(val idempotencyKey: String? = null)
 
 class Endpoint(private val client: SvixHttpClient) {
+    val mcpEvents: EndpointMcpEvents = EndpointMcpEvents(client)
+
     val transformation: EndpointTransformation = EndpointTransformation(client)
 
     /** List the application's endpoints. */

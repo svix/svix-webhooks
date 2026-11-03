@@ -11,7 +11,8 @@ use super::{
     otel_tracing_config_in::OtelTracingConfigIn, post_hog_config_in::PostHogConfigIn,
     postgres_config_in::PostgresConfigIn, rabbit_mq_config_in::RabbitMqConfigIn,
     redshift_config_in::RedshiftConfigIn, s3_config_in::S3ConfigIn,
-    snowflake_config_in::SnowflakeConfigIn, sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
+    segment_sink_config_in::SegmentSinkConfigIn, snowflake_config_in::SnowflakeConfigIn,
+    sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
 };
 
 /// The destination's type and type-specific configuration.
@@ -105,4 +106,6 @@ pub enum DestinationInConfig {
     ElasticSearch(ElasticSearchConfigIn),
     #[serde(rename = "postHog")]
     PostHog(PostHogConfigIn),
+    #[serde(rename = "segment")]
+    Segment(SegmentSinkConfigIn),
 }

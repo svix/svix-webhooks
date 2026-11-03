@@ -1,5 +1,5 @@
 // this file is @generated
-use super::EndpointTransformation;
+use super::{EndpointMcpEvents, EndpointTransformation};
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -69,6 +69,10 @@ pub struct Endpoint<'a> {
 impl<'a> Endpoint<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn mcp_events(&self) -> EndpointMcpEvents<'a> {
+        EndpointMcpEvents::new(self.cfg)
     }
 
     pub fn transformation(&self) -> EndpointTransformation<'a> {

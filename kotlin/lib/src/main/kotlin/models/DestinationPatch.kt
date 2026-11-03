@@ -141,6 +141,12 @@ sealed class DestinationPatchConfig {
             Json.encodeToJsonElement(PostHogConfigPatch.serializer(), postHog)
     }
 
+    @VariantName("segment")
+    data class Segment(val segment: SegmentSinkConfigPatch) : DestinationPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SegmentSinkConfigPatch.serializer(), segment)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> DestinationPatchConfig>(
@@ -250,6 +256,12 @@ sealed class DestinationPatchConfig {
                 "postHog" to
                     { config ->
                         PostHog(Json.decodeFromJsonElement(PostHogConfigPatch.serializer(), config))
+                    },
+                "segment" to
+                    { config ->
+                        Segment(
+                            Json.decodeFromJsonElement(SegmentSinkConfigPatch.serializer(), config)
+                        )
                     },
             )
 

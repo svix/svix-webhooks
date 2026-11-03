@@ -19,6 +19,7 @@ import {
 import { type CronConfig, CronConfigSerializer } from "./cronConfig";
 import { type DocusignConfigOut, DocusignConfigOutSerializer } from "./docusignConfigOut";
 import { type EasypostConfigOut, EasypostConfigOutSerializer } from "./easypostConfigOut";
+import { type GenericConfig, GenericConfigSerializer } from "./genericConfig";
 import { type GithubConfigOut, GithubConfigOutSerializer } from "./githubConfigOut";
 import { type HubspotConfigOut, HubspotConfigOutSerializer } from "./hubspotConfigOut";
 import { type MergeConfigOut, MergeConfigOutSerializer } from "./mergeConfigOut";
@@ -66,6 +67,11 @@ interface IngestSourceOutGenericWebhookConfig {}
 interface IngestSourceOutGenericWebhook {
   type: "generic-webhook";
   config?: IngestSourceOutGenericWebhookConfig;
+}
+
+interface IngestSourceOutGeneric {
+  type: "generic";
+  config: GenericConfig;
 }
 
 interface IngestSourceOutCron {
@@ -301,6 +307,7 @@ interface IngestSourceOutVgs {
 export type IngestSourceOut = _IngestSourceOutFields &
   (
     | IngestSourceOutGenericWebhook
+    | IngestSourceOutGeneric
     | IngestSourceOutCron
     | IngestSourceOutAdobeSign
     | IngestSourceOutAscend
@@ -357,6 +364,8 @@ export const IngestSourceOutSerializer = {
       switch (type) {
         case "generic-webhook":
           return {};
+        case "generic":
+          return GenericConfigSerializer._fromJsonObject(object["config"]);
         case "cron":
           return CronConfigSerializer._fromJsonObject(object["config"]);
         case "adobe-sign":
@@ -473,6 +482,9 @@ export const IngestSourceOutSerializer = {
     switch (self.type) {
       case "generic-webhook":
         config = {};
+        break;
+      case "generic":
+        config = GenericConfigSerializer._toJsonObject(self.config);
         break;
       case "cron":
         config = CronConfigSerializer._toJsonObject(self.config);

@@ -38,6 +38,11 @@ sealed class IngestSourceOutConfig {
         override fun toJsonElement() = buildJsonObject {}
     }
 
+    @VariantName("generic")
+    data class Generic(val generic: GenericConfig) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(GenericConfig.serializer(), generic)
+    }
+
     @VariantName("cron")
     data class Cron(val cron: CronConfig) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(CronConfig.serializer(), cron)
@@ -297,6 +302,10 @@ sealed class IngestSourceOutConfig {
         private val typeMap =
             mapOf<String, (JsonElement) -> IngestSourceOutConfig>(
                 "generic-webhook" to { _ -> GenericWebhook },
+                "generic" to
+                    { config ->
+                        Generic(Json.decodeFromJsonElement(GenericConfig.serializer(), config))
+                    },
                 "cron" to
                     { config ->
                         Cron(Json.decodeFromJsonElement(CronConfig.serializer(), config))

@@ -17,6 +17,7 @@ require_relative "./postgres_config_in"
 require_relative "./rabbit_mq_config_in"
 require_relative "./redshift_config_in"
 require_relative "./s3_config_in"
+require_relative "./segment_sink_config_in"
 require_relative "./snowflake_config_in"
 require_relative "./sns_config_in"
 require_relative "./sqs_config_in"
@@ -89,6 +90,9 @@ module Svix
 
     class PostHog < PostHogConfigIn
     end
+
+    class Segment < SegmentSinkConfigIn
+    end
   end
 
   # The destination's type and type-specific configuration.
@@ -141,7 +145,8 @@ module Svix
       DestinationInConfig::Redshift => "redshift",
       DestinationInConfig::Postgres => "postgres",
       DestinationInConfig::ElasticSearch => "elasticSearch",
-      DestinationInConfig::PostHog => "postHog"
+      DestinationInConfig::PostHog => "postHog",
+      DestinationInConfig::Segment => "segment"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

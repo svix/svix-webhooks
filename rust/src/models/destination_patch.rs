@@ -14,8 +14,9 @@ use super::{
     otel_tracing_config_patch::OtelTracingConfigPatch, post_hog_config_patch::PostHogConfigPatch,
     postgres_config_patch::PostgresConfigPatch, rabbit_mq_config_patch::RabbitMqConfigPatch,
     redshift_config_patch::RedshiftConfigPatch, s3_config_patch::S3ConfigPatch,
-    sink_http_config_patch::SinkHttpConfigPatch, snowflake_config_patch::SnowflakeConfigPatch,
-    sns_config_patch::SnsConfigPatch, sqs_config_patch::SqsConfigPatch,
+    segment_sink_config_patch::SegmentSinkConfigPatch, sink_http_config_patch::SinkHttpConfigPatch,
+    snowflake_config_patch::SnowflakeConfigPatch, sns_config_patch::SnsConfigPatch,
+    sqs_config_patch::SqsConfigPatch,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -88,4 +89,6 @@ pub enum DestinationPatchConfig {
     ElasticSearch(ElasticSearchConfigPatch),
     #[serde(rename = "postHog")]
     PostHog(PostHogConfigPatch),
+    #[serde(rename = "segment")]
+    Segment(SegmentSinkConfigPatch),
 }

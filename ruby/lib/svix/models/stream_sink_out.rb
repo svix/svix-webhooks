@@ -15,6 +15,7 @@ require_relative "./postgres_config_out"
 require_relative "./rabbit_mq_config_out"
 require_relative "./redshift_config_out"
 require_relative "./s3_config_out"
+require_relative "./segment_sink_config_out"
 require_relative "./sink_http_config_out"
 require_relative "./sink_status"
 require_relative "./snowflake_config_out"
@@ -105,6 +106,9 @@ module Svix
 
     class PostHog < PostHogConfigOut
     end
+
+    class Segment < SegmentSinkConfigOut
+    end
   end
 
   class StreamSinkOut
@@ -161,7 +165,8 @@ module Svix
       StreamSinkOutConfig::Sns => "sns",
       StreamSinkOutConfig::Postgres => "postgres",
       StreamSinkOutConfig::ElasticSearch => "elasticSearch",
-      StreamSinkOutConfig::PostHog => "postHog"
+      StreamSinkOutConfig::PostHog => "postHog",
+      StreamSinkOutConfig::Segment => "segment"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert

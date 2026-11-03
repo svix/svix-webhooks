@@ -37,10 +37,12 @@ import java.util.Map;
 public class Endpoint {
     private final SvixHttpClient client;
 
+    @Getter private final EndpointMcpEvents mcpEvents;
     @Getter private final EndpointTransformation transformation;
 
     public Endpoint(SvixHttpClient client) {
         this.client = client;
+        this.mcpEvents = new EndpointMcpEvents(client);
         this.transformation = new EndpointTransformation(client);
     }
 
