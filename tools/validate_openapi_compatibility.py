@@ -65,6 +65,7 @@ class frozenlist(Generic[T]):
 class Schema:
     @classmethod
     def parse(cls, json: dict) -> "Schema":
+        nullable = json.get("nullable", False)
         if "$ref" in json:
             obj = RefSchema(ref=json["$ref"])
         elif "oneOf" in json:
@@ -77,25 +78,40 @@ class Schema:
             )
         elif "type" not in json:
             raise ValueError(json)
-        elif json["type"] == "object":
-            obj = ObjectSchema.parse(json)
-        elif json["type"] == "array":
-            if isinstance(json.get("items"), list):
-                obj = TupleSchema.parse(json)
-            else:
-                obj = ArraySchema.parse(json)
-        elif json["type"] == "string":
-            if "enum" in json:
-                obj = EnumSchema(values=frozenset(json["enum"]))
-            else:
-                obj = StringSchema(pattern=json.get("pattern"))
-        elif json["type"] == "integer":
-            obj = IntSchema.parse(json)
-        elif json["type"] == "boolean":
-            obj = BooleanSchema()
         else:
-            raise ValueError(f"Not implemented: {json}")
-        if json.get("nullable", False):
+            schema_type = json["type"]
+
+            if isinstance(schema_type, list):
+                if "null" in schema_type:
+                    nullable = True
+                else:
+                    raise ValueError(
+                        f"Schemas with multiple types must be nullable: {schema_type}"
+                    )
+                schema_type.remove("null")
+                if len(schema_type) != 1:
+                    raise ValueError(f"We don't support multiple types: {schema_type}")
+                schema_type = schema_type[0]
+
+            if schema_type == "object":
+                obj = ObjectSchema.parse(json)
+            elif schema_type == "array":
+                if isinstance(json.get("items"), list):
+                    obj = TupleSchema.parse(json)
+                else:
+                    obj = ArraySchema.parse(json)
+            elif schema_type == "string":
+                if "enum" in json:
+                    obj = EnumSchema(values=frozenset(json["enum"]))
+                else:
+                    obj = StringSchema(pattern=json.get("pattern"))
+            elif schema_type == "integer":
+                obj = IntSchema.parse(json)
+            elif schema_type == "boolean":
+                obj = BooleanSchema()
+            else:
+                raise ValueError(f"Not implemented: {json}")
+        if nullable:
             return NullableSchema(inner=obj)
         else:
             return obj
@@ -557,7 +573,7 @@ class OpenAPI:
             # These schemas are not meant to be part of the spec,
             # and are not referenced anywhere.
             # Seems like a waste of time to support them.
-            #if name in ["GetMetricsOut", "MetricOut"]:
+            # if name in ["GetMetricsOut", "MetricOut"]:
             #    continue
 
             try:
