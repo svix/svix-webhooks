@@ -411,7 +411,7 @@ test("mockttp tests", async (t) => {
     assert.ok(requests[0].headers["user-agent"]);
     assert.match(
       requests[0].headers["user-agent"],
-      /^svix-libs\/[0-9.]+(-[a-z]+.[0-9]+)?\/javascript node\/v[0-9.]+ (aix|darwin|freebsd|linux|openbsd|sunos|win32)\/(arm|arm64|ia32|x64)$/
+      /^svix-libs\/[0-9.]+(-[a-z]+.[0-9]+)?\/javascript node\/v[0-9.]+[^ /]* (aix|darwin|freebsd|linux|openbsd|sunos|win32)\/(arm|arm64|ia32|x64)$/
     );
   });
 
