@@ -21,8 +21,9 @@ export interface EndpointOut {
   createdAt: Date;
   updatedAt: Date;
   /**
-   * When the endpoint expires, if ever. No messages are sent to the
-   * endpoint after this time.
+   * When the endpoint expires, if ever.
+   *
+   * No messages are sent to the endpoint after this time.
    */
   expiry?: Date | null;
 }

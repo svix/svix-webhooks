@@ -49,6 +49,10 @@ import {
 } from "./redshiftConfigPatch";
 import { type S3ConfigPatch, S3ConfigPatchSerializer } from "./s3ConfigPatch";
 import {
+  type SegmentSinkConfigPatch,
+  SegmentSinkConfigPatchSerializer,
+} from "./segmentSinkConfigPatch";
+import {
   type SinkHttpConfigPatch,
   SinkHttpConfigPatchSerializer,
 } from "./sinkHttpConfigPatch";
@@ -164,6 +168,11 @@ interface StreamSinkPatchPostHog {
   config: PostHogConfigPatch;
 }
 
+interface StreamSinkPatchSegment {
+  type: "segment";
+  config: SegmentSinkConfigPatch;
+}
+
 export type StreamSinkPatch = _StreamSinkPatchFields &
   (
     | StreamSinkPatchPoller
@@ -184,6 +193,7 @@ export type StreamSinkPatch = _StreamSinkPatchFields &
     | StreamSinkPatchPostgres
     | StreamSinkPatchElasticSearch
     | StreamSinkPatchPostHog
+    | StreamSinkPatchSegment
   );
 
 export const StreamSinkPatchSerializer = {
@@ -230,6 +240,8 @@ export const StreamSinkPatchSerializer = {
           return ElasticSearchConfigPatchSerializer._fromJsonObject(object["config"]);
         case "postHog":
           return PostHogConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -308,6 +320,9 @@ export const StreamSinkPatchSerializer = {
         break;
       case "postHog":
         config = PostHogConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 

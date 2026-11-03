@@ -34,6 +34,10 @@ import { type PostgresConfigOut, PostgresConfigOutSerializer } from "./postgresC
 import { type RabbitMqConfigOut, RabbitMqConfigOutSerializer } from "./rabbitMqConfigOut";
 import { type RedshiftConfigOut, RedshiftConfigOutSerializer } from "./redshiftConfigOut";
 import { type S3ConfigOut, S3ConfigOutSerializer } from "./s3ConfigOut";
+import {
+  type SegmentSinkConfigOut,
+  SegmentSinkConfigOutSerializer,
+} from "./segmentSinkConfigOut";
 import { type SinkHttpConfigOut, SinkHttpConfigOutSerializer } from "./sinkHttpConfigOut";
 import {
   type SnowflakeConfigOut,
@@ -153,6 +157,11 @@ interface DestinationOutPostHog {
   config: PostHogConfigOut;
 }
 
+interface DestinationOutSegment {
+  type: "segment";
+  config: SegmentSinkConfigOut;
+}
+
 export type DestinationOut = _DestinationOutFields &
   (
     | DestinationOutPollingEndpoint
@@ -173,6 +182,7 @@ export type DestinationOut = _DestinationOutFields &
     | DestinationOutPostgres
     | DestinationOutElasticSearch
     | DestinationOutPostHog
+    | DestinationOutSegment
   );
 
 export const DestinationOutSerializer = {
@@ -217,6 +227,8 @@ export const DestinationOutSerializer = {
           return ElasticSearchConfigOutSerializer._fromJsonObject(object["config"]);
         case "postHog":
           return PostHogConfigOutSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -298,6 +310,9 @@ export const DestinationOutSerializer = {
         break;
       case "postHog":
         config = PostHogConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

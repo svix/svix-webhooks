@@ -17,8 +17,9 @@ class MessageEndpointOut implements \JsonSerializable
      * @param string|null             $uid        optional unique identifier for the endpoint
      * @param list<string>|null       $eventTypes
      * @param list<string>|null       $channels   list of message channels this endpoint listens to (omit for all)
-     * @param \DateTimeImmutable|null $expiry     When the endpoint expires, if ever. No messages are sent to the
-     *                                            endpoint after this time.
+     * @param \DateTimeImmutable|null $expiry     When the endpoint expires, if ever.
+     *
+     * No messages are sent to the endpoint after this time.
      */
     private function __construct(
         public readonly string $id,

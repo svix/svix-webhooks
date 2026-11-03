@@ -68,6 +68,7 @@ from .elastic_search_config_patch import ElasticSearchConfigPatch
 from .elastic_search_operation import ElasticSearchOperation
 from .empty_response import EmptyResponse
 from .endpoint_attempt_stats import EndpointAttemptStats
+from .endpoint_challenge_mode import EndpointChallengeMode
 from .endpoint_headers_in import EndpointHeadersIn
 from .endpoint_headers_out import EndpointHeadersOut
 from .endpoint_headers_patch_in import EndpointHeadersPatchIn
@@ -101,6 +102,8 @@ from .event_type_patch import EventTypePatch
 from .event_type_upsert_in import EventTypeUpsertIn
 from .expunge_all_contents_out import ExpungeAllContentsOut
 from .fifo_endpoint_config_in import FifoEndpointConfigIn
+from .generic_config import GenericConfig
+from .generic_response import GenericResponse
 from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
@@ -147,6 +150,12 @@ from .list_response_operational_webhook_endpoint_out import (
 from .list_response_stream_event_type_out import ListResponseStreamEventTypeOut
 from .list_response_stream_out import ListResponseStreamOut
 from .list_response_stream_sink_out import ListResponseStreamSinkOut
+from .mcp_events_delivery_mode import McpEventsDeliveryMode
+from .mcp_events_subscribe_delivery_in import McpEventsSubscribeDeliveryIn
+from .mcp_events_subscribe_in import McpEventsSubscribeIn
+from .mcp_events_subscribe_out import McpEventsSubscribeOut
+from .mcp_events_unsubscribe_delivery_in import McpEventsUnsubscribeDeliveryIn
+from .mcp_events_unsubscribe_in import McpEventsUnsubscribeIn
 from .merge_config import MergeConfig
 from .merge_config_out import MergeConfigOut
 from .message_attempt_out import MessageAttemptOut
@@ -216,6 +225,9 @@ from .s3_config_out import S3ConfigOut
 from .s3_config_patch import S3ConfigPatch
 from .segment_config import SegmentConfig
 from .segment_config_out import SegmentConfigOut
+from .segment_sink_config_in import SegmentSinkConfigIn
+from .segment_sink_config_out import SegmentSinkConfigOut
+from .segment_sink_config_patch import SegmentSinkConfigPatch
 from .shopify_config import ShopifyConfig
 from .shopify_config_out import ShopifyConfigOut
 from .sink_http_config_in import SinkHttpConfigIn
@@ -343,6 +355,7 @@ __all__ = [
     "ElasticSearchOperation",
     "EmptyResponse",
     "EndpointAttemptStats",
+    "EndpointChallengeMode",
     "EndpointHeadersIn",
     "EndpointHeadersOut",
     "EndpointHeadersPatchIn",
@@ -376,6 +389,8 @@ __all__ = [
     "EventTypeUpsertIn",
     "ExpungeAllContentsOut",
     "FifoEndpointConfigIn",
+    "GenericConfig",
+    "GenericResponse",
     "GithubConfig",
     "GithubConfigOut",
     "GoogleCloudPubSubConfigIn",
@@ -420,6 +435,12 @@ __all__ = [
     "ListResponseStreamEventTypeOut",
     "ListResponseStreamOut",
     "ListResponseStreamSinkOut",
+    "McpEventsDeliveryMode",
+    "McpEventsSubscribeDeliveryIn",
+    "McpEventsSubscribeIn",
+    "McpEventsSubscribeOut",
+    "McpEventsUnsubscribeDeliveryIn",
+    "McpEventsUnsubscribeIn",
     "MergeConfig",
     "MergeConfigOut",
     "MessageAttemptOut",
@@ -487,6 +508,9 @@ __all__ = [
     "S3ConfigPatch",
     "SegmentConfig",
     "SegmentConfigOut",
+    "SegmentSinkConfigIn",
+    "SegmentSinkConfigOut",
+    "SegmentSinkConfigPatch",
     "ShopifyConfig",
     "ShopifyConfigOut",
     "SinkHttpConfigIn",

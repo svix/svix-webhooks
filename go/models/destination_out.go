@@ -22,6 +22,7 @@ import (
 //   - "rabbitMq": Use RabbitMqConfigOut
 //   - "redshift": Use RedshiftConfigOut
 //   - "amazonS3": Use S3ConfigOut
+//   - "segment": Use SegmentSinkConfigOut
 //   - "fifoEndpoint": Use SinkHttpConfigOut
 //   - "snowflake": Use SnowflakeConfigOut
 //   - "sns": Use SnsConfigOut
@@ -65,6 +66,7 @@ const (
 	DestinationOutTypePostgres           DestinationOutType = "postgres"
 	DestinationOutTypeElasticSearch      DestinationOutType = "elasticSearch"
 	DestinationOutTypePostHog            DestinationOutType = "postHog"
+	DestinationOutTypeSegment            DestinationOutType = "segment"
 )
 
 type DestinationOutConfig interface {
@@ -89,6 +91,7 @@ func (SnsConfigOut) isDestinationOutConfig()                {}
 func (PostgresConfigOut) isDestinationOutConfig()           {}
 func (ElasticSearchConfigOut) isDestinationOutConfig()      {}
 func (PostHogConfigOut) isDestinationOutConfig()            {}
+func (SegmentSinkConfigOut) isDestinationOutConfig()        {}
 
 func (i *DestinationOut) UnmarshalJSON(data []byte) error {
 	type Alias DestinationOut
@@ -156,6 +159,10 @@ func (i *DestinationOut) UnmarshalJSON(data []byte) error {
 		var c S3ConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "fifoEndpoint":
 		var c SinkHttpConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -210,4 +217,5 @@ var DestinationOutTypeFromString = map[string]DestinationOutType{
 	"postgres":           DestinationOutTypePostgres,
 	"elasticSearch":      DestinationOutTypeElasticSearch,
 	"postHog":            DestinationOutTypePostHog,
+	"segment":            DestinationOutTypeSegment,
 }

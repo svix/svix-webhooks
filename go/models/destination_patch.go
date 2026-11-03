@@ -23,6 +23,7 @@ import (
 //   - "rabbitMq": Use RabbitMqConfigPatch
 //   - "redshift": Use RedshiftConfigPatch
 //   - "amazonS3": Use S3ConfigPatch
+//   - "segment": Use SegmentSinkConfigPatch
 //   - "fifoEndpoint": Use SinkHttpConfigPatch
 //   - "snowflake": Use SnowflakeConfigPatch
 //   - "sns": Use SnsConfigPatch
@@ -60,6 +61,7 @@ const (
 	DestinationPatchTypePostgres           DestinationPatchType = "postgres"
 	DestinationPatchTypeElasticSearch      DestinationPatchType = "elasticSearch"
 	DestinationPatchTypePostHog            DestinationPatchType = "postHog"
+	DestinationPatchTypeSegment            DestinationPatchType = "segment"
 )
 
 type DestinationPatchConfig interface {
@@ -84,6 +86,7 @@ func (RedshiftConfigPatch) isDestinationPatchConfig()           {}
 func (PostgresConfigPatch) isDestinationPatchConfig()           {}
 func (ElasticSearchConfigPatch) isDestinationPatchConfig()      {}
 func (PostHogConfigPatch) isDestinationPatchConfig()            {}
+func (SegmentSinkConfigPatch) isDestinationPatchConfig()        {}
 
 func (i *DestinationPatch) UnmarshalJSON(data []byte) error {
 	type Alias DestinationPatch
@@ -151,6 +154,10 @@ func (i *DestinationPatch) UnmarshalJSON(data []byte) error {
 		var c S3ConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "fifoEndpoint":
 		var c SinkHttpConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
@@ -205,4 +212,5 @@ var DestinationPatchTypeFromString = map[string]DestinationPatchType{
 	"postgres":           DestinationPatchTypePostgres,
 	"elasticSearch":      DestinationPatchTypeElasticSearch,
 	"postHog":            DestinationPatchTypePostHog,
+	"segment":            DestinationPatchTypeSegment,
 }

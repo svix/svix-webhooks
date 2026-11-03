@@ -14,6 +14,7 @@ from .common import BaseModel
 from .cron_config import CronConfig
 from .docusign_config_out import DocusignConfigOut
 from .easypost_config_out import EasypostConfigOut
+from .generic_config import GenericConfig
 from .github_config_out import GithubConfigOut
 from .hubspot_config_out import HubspotConfigOut
 from .merge_config_out import MergeConfigOut
@@ -57,6 +58,7 @@ class IngestSourceOut(BaseModel):
 
     type: t.Union[
         t.Literal["generic-webhook"],
+        t.Literal["generic"],
         t.Literal["cron"],
         t.Literal["adobe-sign"],
         t.Literal["ascend"],
@@ -106,6 +108,7 @@ class IngestSourceOut(BaseModel):
     ]
     config: t.Union[
         t.Dict[str, t.Any],
+        GenericConfig,
         CronConfig,
         AdobeSignConfigOut,
         AscendConfigOut,
@@ -150,6 +153,8 @@ class IngestSourceOut(BaseModel):
         output = handler(data)
         if output.type == "generic-webhook":
             output.config = data.get("config", {})
+        elif output.type == "generic":
+            output.config = GenericConfig.model_validate(data.get("config", {}))
         elif output.type == "cron":
             output.config = CronConfig.model_validate(data.get("config", {}))
         elif output.type == "adobe-sign":

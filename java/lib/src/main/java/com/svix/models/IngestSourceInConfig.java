@@ -37,6 +37,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("generic")
+    public static class Generic extends IngestSourceInConfig {
+        private final GenericConfig generic;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(generic);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("cron")
     public static class Cron extends IngestSourceInConfig {
         private final CronConfig cron;
@@ -732,6 +747,7 @@ public abstract class IngestSourceInConfig {
 
     static {
         TY_M.put("generic-webhook", c -> new GenericWebhook());
+        TY_M.put("generic", c -> new Generic(m.convertValue(c, GenericConfig.class)));
         TY_M.put("cron", c -> new Cron(m.convertValue(c, CronConfig.class)));
         TY_M.put("adobe-sign", c -> new AdobeSign(m.convertValue(c, AdobeSignConfig.class)));
         TY_M.put("ascend", c -> new Ascend(m.convertValue(c, AscendConfig.class)));

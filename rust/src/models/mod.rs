@@ -70,6 +70,7 @@ mod elastic_search_config_patch;
 mod elastic_search_operation;
 mod empty_response;
 mod endpoint_attempt_stats;
+mod endpoint_challenge_mode;
 mod endpoint_headers_in;
 mod endpoint_headers_out;
 mod endpoint_headers_patch_in;
@@ -103,6 +104,8 @@ mod event_type_patch;
 mod event_type_upsert_in;
 mod expunge_all_contents_out;
 mod fifo_endpoint_config_in;
+mod generic_config;
+mod generic_response;
 mod github_config;
 mod github_config_out;
 mod google_cloud_pub_sub_config_in;
@@ -147,6 +150,12 @@ mod list_response_operational_webhook_endpoint_out;
 mod list_response_stream_event_type_out;
 mod list_response_stream_out;
 mod list_response_stream_sink_out;
+mod mcp_events_delivery_mode;
+mod mcp_events_subscribe_delivery_in;
+mod mcp_events_subscribe_in;
+mod mcp_events_subscribe_out;
+mod mcp_events_unsubscribe_delivery_in;
+mod mcp_events_unsubscribe_in;
 mod merge_config;
 mod merge_config_out;
 mod message_attempt_out;
@@ -214,6 +223,9 @@ mod s3_config_out;
 mod s3_config_patch;
 mod segment_config;
 mod segment_config_out;
+mod segment_sink_config_in;
+mod segment_sink_config_out;
+mod segment_sink_config_patch;
 mod shopify_config;
 mod shopify_config_out;
 mod sink_http_config_in;
@@ -349,6 +361,7 @@ pub use self::{
     elastic_search_operation::ElasticSearchOperation,
     empty_response::EmptyResponse,
     endpoint_attempt_stats::EndpointAttemptStats,
+    endpoint_challenge_mode::EndpointChallengeMode,
     endpoint_headers_in::EndpointHeadersIn,
     endpoint_headers_out::EndpointHeadersOut,
     endpoint_headers_patch_in::EndpointHeadersPatchIn,
@@ -382,6 +395,8 @@ pub use self::{
     event_type_upsert_in::EventTypeUpsertIn,
     expunge_all_contents_out::ExpungeAllContentsOut,
     fifo_endpoint_config_in::FifoEndpointConfigIn,
+    generic_config::GenericConfig,
+    generic_response::GenericResponse,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
@@ -426,6 +441,12 @@ pub use self::{
     list_response_stream_event_type_out::ListResponseStreamEventTypeOut,
     list_response_stream_out::ListResponseStreamOut,
     list_response_stream_sink_out::ListResponseStreamSinkOut,
+    mcp_events_delivery_mode::McpEventsDeliveryMode,
+    mcp_events_subscribe_delivery_in::McpEventsSubscribeDeliveryIn,
+    mcp_events_subscribe_in::McpEventsSubscribeIn,
+    mcp_events_subscribe_out::McpEventsSubscribeOut,
+    mcp_events_unsubscribe_delivery_in::McpEventsUnsubscribeDeliveryIn,
+    mcp_events_unsubscribe_in::McpEventsUnsubscribeIn,
     merge_config::MergeConfig,
     merge_config_out::MergeConfigOut,
     message_attempt_out::MessageAttemptOut,
@@ -493,6 +514,9 @@ pub use self::{
     s3_config_patch::S3ConfigPatch,
     segment_config::SegmentConfig,
     segment_config_out::SegmentConfigOut,
+    segment_sink_config_in::SegmentSinkConfigIn,
+    segment_sink_config_out::SegmentSinkConfigOut,
+    segment_sink_config_patch::SegmentSinkConfigPatch,
     shopify_config::ShopifyConfig,
     shopify_config_out::ShopifyConfigOut,
     sink_http_config_in::SinkHttpConfigIn,

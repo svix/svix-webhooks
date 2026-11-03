@@ -11,8 +11,9 @@ use super::{
     otel_tracing_config_out::OtelTracingConfigOut, post_hog_config_out::PostHogConfigOut,
     postgres_config_out::PostgresConfigOut, rabbit_mq_config_out::RabbitMqConfigOut,
     redshift_config_out::RedshiftConfigOut, s3_config_out::S3ConfigOut,
-    sink_http_config_out::SinkHttpConfigOut, snowflake_config_out::SnowflakeConfigOut,
-    sns_config_out::SnsConfigOut, sqs_config_out::SqsConfigOut,
+    segment_sink_config_out::SegmentSinkConfigOut, sink_http_config_out::SinkHttpConfigOut,
+    snowflake_config_out::SnowflakeConfigOut, sns_config_out::SnsConfigOut,
+    sqs_config_out::SqsConfigOut,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -101,4 +102,6 @@ pub enum DestinationOutConfig {
     ElasticSearch(ElasticSearchConfigOut),
     #[serde(rename = "postHog")]
     PostHog(PostHogConfigOut),
+    #[serde(rename = "segment")]
+    Segment(SegmentSinkConfigOut),
 }

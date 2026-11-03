@@ -71,6 +71,7 @@ type (
 	ElasticSearchOperation                    = models.ElasticSearchOperation
 	EmptyResponse                             = models.EmptyResponse
 	EndpointAttemptStats                      = models.EndpointAttemptStats
+	EndpointChallengeMode                     = models.EndpointChallengeMode
 	EndpointHeadersIn                         = models.EndpointHeadersIn
 	EndpointHeadersOut                        = models.EndpointHeadersOut
 	EndpointHeadersPatchIn                    = models.EndpointHeadersPatchIn
@@ -104,6 +105,8 @@ type (
 	EventTypeUpsertIn                         = models.EventTypeUpsertIn
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
 	FifoEndpointConfigIn                      = models.FifoEndpointConfigIn
+	GenericConfig                             = models.GenericConfig
+	GenericResponse                           = models.GenericResponse
 	GithubConfig                              = models.GithubConfig
 	GithubConfigOut                           = models.GithubConfigOut
 	GoogleCloudPubSubConfigIn                 = models.GoogleCloudPubSubConfigIn
@@ -148,6 +151,12 @@ type (
 	ListResponseStreamEventTypeOut            = models.ListResponseStreamEventTypeOut
 	ListResponseStreamOut                     = models.ListResponseStreamOut
 	ListResponseStreamSinkOut                 = models.ListResponseStreamSinkOut
+	McpEventsDeliveryMode                     = models.McpEventsDeliveryMode
+	McpEventsSubscribeDeliveryIn              = models.McpEventsSubscribeDeliveryIn
+	McpEventsSubscribeIn                      = models.McpEventsSubscribeIn
+	McpEventsSubscribeOut                     = models.McpEventsSubscribeOut
+	McpEventsUnsubscribeDeliveryIn            = models.McpEventsUnsubscribeDeliveryIn
+	McpEventsUnsubscribeIn                    = models.McpEventsUnsubscribeIn
 	MergeConfig                               = models.MergeConfig
 	MergeConfigOut                            = models.MergeConfigOut
 	MessageAttemptOut                         = models.MessageAttemptOut
@@ -212,6 +221,9 @@ type (
 	S3ConfigPatch                             = models.S3ConfigPatch
 	SegmentConfig                             = models.SegmentConfig
 	SegmentConfigOut                          = models.SegmentConfigOut
+	SegmentSinkConfigIn                       = models.SegmentSinkConfigIn
+	SegmentSinkConfigOut                      = models.SegmentSinkConfigOut
+	SegmentSinkConfigPatch                    = models.SegmentSinkConfigPatch
 	ShopifyConfig                             = models.ShopifyConfig
 	ShopifyConfigOut                          = models.ShopifyConfigOut
 	SinkHttpConfigIn                          = models.SinkHttpConfigIn

@@ -79,6 +79,9 @@ namespace Svix.Models
         public static IngestSourceInConfig GenericWebhook() =>
             new(new Dictionary<string, string>(), ConfigType.GenericWebhook);
 
+        public static IngestSourceInConfig Generic(GenericConfig genericConfig) =>
+            new(genericConfig, ConfigType.Generic);
+
         public static IngestSourceInConfig Cron(CronConfig cronConfig) =>
             new(cronConfig, ConfigType.Cron);
 
@@ -223,6 +226,9 @@ namespace Svix.Models
             [EnumMember(Value = "generic-webhook")]
             GenericWebhook,
 
+            [EnumMember(Value = "generic")]
+            Generic,
+
             [EnumMember(Value = "cron")]
             Cron,
 
@@ -364,6 +370,7 @@ namespace Svix.Models
 
         public TResult Match<TResult>(
             Func<TResult> onGenericWebhook,
+            Func<GenericConfig, TResult> onGeneric,
             Func<CronConfig, TResult> onCron,
             Func<AdobeSignConfig, TResult> onAdobeSign,
             Func<AscendConfig, TResult> onAscend,
@@ -415,6 +422,7 @@ namespace Svix.Models
             return _type switch
             {
                 ConfigType.GenericWebhook => onGenericWebhook(),
+                ConfigType.Generic => onGeneric((GenericConfig)_value),
                 ConfigType.Cron => onCron((CronConfig)_value),
                 ConfigType.AdobeSign => onAdobeSign((AdobeSignConfig)_value),
                 ConfigType.Ascend => onAscend((AscendConfig)_value),
@@ -468,6 +476,7 @@ namespace Svix.Models
 
         public void Switch(
             Action? onGenericWebhook = null,
+            Action<GenericConfig>? onGeneric = null,
             Action<CronConfig>? onCron = null,
             Action<AdobeSignConfig>? onAdobeSign = null,
             Action<AscendConfig>? onAscend = null,
@@ -522,6 +531,12 @@ namespace Svix.Models
                     if (onGenericWebhook != null)
                     {
                         onGenericWebhook();
+                    }
+                    break;
+                case ConfigType.Generic:
+                    if (onGeneric != null)
+                    {
+                        onGeneric((GenericConfig)_value);
                     }
                     break;
                 case ConfigType.Cron:
@@ -892,6 +907,7 @@ namespace Svix.Models
             new()
             {
                 ["generic-webhook"] = c => IngestSourceInConfig.GenericWebhook(),
+                ["generic"] = c => IngestSourceInConfig.Generic(ToObj<GenericConfig>(c)),
                 ["cron"] = c => IngestSourceInConfig.Cron(ToObj<CronConfig>(c)),
                 ["adobe-sign"] = c => IngestSourceInConfig.AdobeSign(ToObj<AdobeSignConfig>(c)),
                 ["ascend"] = c => IngestSourceInConfig.Ascend(ToObj<AscendConfig>(c)),

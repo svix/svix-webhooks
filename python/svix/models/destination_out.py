@@ -20,6 +20,7 @@ from .postgres_config_out import PostgresConfigOut
 from .rabbit_mq_config_out import RabbitMqConfigOut
 from .redshift_config_out import RedshiftConfigOut
 from .s3_config_out import S3ConfigOut
+from .segment_sink_config_out import SegmentSinkConfigOut
 from .sink_http_config_out import SinkHttpConfigOut
 from .snowflake_config_out import SnowflakeConfigOut
 from .sns_config_out import SnsConfigOut
@@ -74,6 +75,7 @@ class DestinationOut(BaseModel):
         t.Literal["postgres"],
         t.Literal["elasticSearch"],
         t.Literal["postHog"],
+        t.Literal["segment"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -94,6 +96,7 @@ class DestinationOut(BaseModel):
         PostgresConfigOut,
         ElasticSearchConfigOut,
         PostHogConfigOut,
+        SegmentSinkConfigOut,
     ]
 
     @model_validator(mode="wrap")
@@ -150,6 +153,8 @@ class DestinationOut(BaseModel):
             )
         elif output.type == "postHog":
             output.config = PostHogConfigOut.model_validate(data.get("config", {}))
+        elif output.type == "segment":
+            output.config = SegmentSinkConfigOut.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

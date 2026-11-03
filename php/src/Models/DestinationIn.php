@@ -357,6 +357,11 @@ abstract class DestinationInConfig implements \JsonSerializable
         return new DestinationInConfig\PostHog($postHog);
     }
 
+    public static function segment(SegmentSinkConfigIn $segment): DestinationInConfig\Segment
+    {
+        return new DestinationInConfig\Segment($segment);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -380,6 +385,7 @@ abstract class DestinationInConfig implements \JsonSerializable
             'postgres' => self::postgres(PostgresConfigIn::fromMixed($config)),
             'elasticSearch' => self::elasticSearch(ElasticSearchConfigIn::fromMixed($config)),
             'postHog' => self::postHog(PostHogConfigIn::fromMixed($config)),
+            'segment' => self::segment(SegmentSinkConfigIn::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -691,5 +697,22 @@ final class PostHog extends \Svix\Models\DestinationInConfig
     public function configPayload(): mixed
     {
         return $this->postHog;
+    }
+}
+
+final class Segment extends \Svix\Models\DestinationInConfig
+{
+    public function __construct(public readonly \Svix\Models\SegmentSinkConfigIn $segment)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'segment';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->segment;
     }
 }

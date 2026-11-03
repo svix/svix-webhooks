@@ -33,6 +33,10 @@ import { type PostgresConfigIn, PostgresConfigInSerializer } from "./postgresCon
 import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
 import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
 import { type S3ConfigIn, S3ConfigInSerializer } from "./s3ConfigIn";
+import {
+  type SegmentSinkConfigIn,
+  SegmentSinkConfigInSerializer,
+} from "./segmentSinkConfigIn";
 import { type SinkHttpConfigIn, SinkHttpConfigInSerializer } from "./sinkHttpConfigIn";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import { type SnowflakeConfigIn, SnowflakeConfigInSerializer } from "./snowflakeConfigIn";
@@ -163,6 +167,11 @@ interface StreamSinkInPostHog {
   config: PostHogConfigIn;
 }
 
+interface StreamSinkInSegment {
+  type: "segment";
+  config: SegmentSinkConfigIn;
+}
+
 export type StreamSinkIn = _StreamSinkInFields &
   (
     | StreamSinkInPoller
@@ -183,6 +192,7 @@ export type StreamSinkIn = _StreamSinkInFields &
     | StreamSinkInPostgres
     | StreamSinkInElasticSearch
     | StreamSinkInPostHog
+    | StreamSinkInSegment
   );
 
 export const StreamSinkInSerializer = {
@@ -227,6 +237,8 @@ export const StreamSinkInSerializer = {
           return ElasticSearchConfigInSerializer._fromJsonObject(object["config"]);
         case "postHog":
           return PostHogConfigInSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigInSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -305,6 +317,9 @@ export const StreamSinkInSerializer = {
         break;
       case "postHog":
         config = PostHogConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigInSerializer._toJsonObject(self.config);
         break;
     }
 

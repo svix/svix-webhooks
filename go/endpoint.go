@@ -17,6 +17,9 @@ func newEndpoint(client *internal.SvixHttpClient) Endpoint {
 	return Endpoint{client}
 }
 
+func (endpoint Endpoint) McpEvents() EndpointMcpEvents {
+	return newEndpointMcpEvents(endpoint.client)
+}
 func (endpoint Endpoint) Transformation() EndpointTransformation {
 	return newEndpointTransformation(endpoint.client)
 }

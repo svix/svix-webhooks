@@ -29,6 +29,10 @@ from ..models import (
     ReplayOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .endpoint_mcp_events import (
+    EndpointMcpEvents,
+    EndpointMcpEventsAsync,
+)
 from .endpoint_transformation import (
     EndpointTransformation,
     EndpointTransformationAsync,
@@ -159,6 +163,10 @@ class EndpointSendExampleOptions(BaseOptions):
 
 
 class EndpointAsync(ApiBaseAsync):
+    @property
+    def mcp_events(self) -> EndpointMcpEventsAsync:
+        return EndpointMcpEventsAsync(self._client, self._httpx_client)
+
     @property
     def transformation(self) -> EndpointTransformationAsync:
         return EndpointTransformationAsync(self._client, self._httpx_client)
@@ -533,6 +541,10 @@ class EndpointAsync(ApiBaseAsync):
 
 
 class Endpoint(ApiBaseSync):
+    @property
+    def mcp_events(self) -> EndpointMcpEvents:
+        return EndpointMcpEvents(self._client, self._httpx_client)
+
     @property
     def transformation(self) -> EndpointTransformation:
         return EndpointTransformation(self._client, self._httpx_client)

@@ -25,6 +25,10 @@ data class EndpointOut(
     val channels: Set<String>? = null,
     val createdAt: Instant,
     val updatedAt: Instant,
-    /** When the endpoint expires, if ever. No messages are sent to the endpoint after this time. */
+    /**
+     * When the endpoint expires, if ever.
+     *
+     * No messages are sent to the endpoint after this time.
+     */
     val expiry: Instant? = null,
 )

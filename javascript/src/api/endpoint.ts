@@ -48,6 +48,7 @@ import { type RecoverIn, RecoverInSerializer } from "../models/recoverIn";
 import { type RecoverOut, RecoverOutSerializer } from "../models/recoverOut";
 import { type ReplayIn, ReplayInSerializer } from "../models/replayIn";
 import { type ReplayOut, ReplayOutSerializer } from "../models/replayOut";
+import { EndpointMcpEvents } from "./endpointMcpEvents";
 import { EndpointTransformation } from "./endpointTransformation";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
@@ -100,6 +101,10 @@ export interface EndpointSendExampleOptions {
 
 export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
+
+  public get mcpEvents() {
+    return new EndpointMcpEvents(this.requestCtx);
+  }
 
   public get transformation() {
     return new EndpointTransformation(this.requestCtx);

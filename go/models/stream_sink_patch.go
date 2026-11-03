@@ -23,6 +23,7 @@ import (
 //   - "rabbitMq": Use RabbitMqConfigPatch
 //   - "redshift": Use RedshiftConfigPatch
 //   - "amazonS3": Use S3ConfigPatch
+//   - "segment": Use SegmentSinkConfigPatch
 //   - "http": Use SinkHttpConfigPatch
 //   - "snowflake": Use SnowflakeConfigPatch
 //   - "sns": Use SnsConfigPatch
@@ -60,6 +61,7 @@ const (
 	StreamSinkPatchTypePostgres           StreamSinkPatchType = "postgres"
 	StreamSinkPatchTypeElasticSearch      StreamSinkPatchType = "elasticSearch"
 	StreamSinkPatchTypePostHog            StreamSinkPatchType = "postHog"
+	StreamSinkPatchTypeSegment            StreamSinkPatchType = "segment"
 )
 
 type StreamSinkPatchConfig interface {
@@ -84,6 +86,7 @@ func (RedshiftConfigPatch) isStreamSinkPatchConfig()           {}
 func (PostgresConfigPatch) isStreamSinkPatchConfig()           {}
 func (ElasticSearchConfigPatch) isStreamSinkPatchConfig()      {}
 func (PostHogConfigPatch) isStreamSinkPatchConfig()            {}
+func (SegmentSinkConfigPatch) isStreamSinkPatchConfig()        {}
 
 func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkPatch
@@ -151,6 +154,10 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		var c S3ConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "http":
 		var c SinkHttpConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
@@ -205,4 +212,5 @@ var StreamSinkPatchTypeFromString = map[string]StreamSinkPatchType{
 	"postgres":           StreamSinkPatchTypePostgres,
 	"elasticSearch":      StreamSinkPatchTypeElasticSearch,
 	"postHog":            StreamSinkPatchTypePostHog,
+	"segment":            StreamSinkPatchTypeSegment,
 }

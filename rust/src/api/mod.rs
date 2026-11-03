@@ -13,6 +13,7 @@ mod connector;
 mod destination;
 mod destination_transformation;
 mod endpoint;
+mod endpoint_mcp_events;
 mod endpoint_transformation;
 mod environment;
 mod event_type;
@@ -61,6 +62,9 @@ pub use self::{
         Endpoint, EndpointBulkReplayOptions, EndpointCreateOptions, EndpointGetAttemptStatsOptions,
         EndpointGetStatsOptions, EndpointListOptions, EndpointRecoverOptions,
         EndpointReplayMissingOptions, EndpointRotateSecretOptions, EndpointSendExampleOptions,
+    },
+    endpoint_mcp_events::{
+        EndpointMcpEvents, EndpointMcpEventsSubscribeOptions, EndpointMcpEventsUnsubscribeOptions,
     },
     endpoint_transformation::EndpointTransformation,
     environment::{Environment, EnvironmentExportOptions, EnvironmentImportOptions},

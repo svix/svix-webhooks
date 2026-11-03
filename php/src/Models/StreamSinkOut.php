@@ -374,6 +374,11 @@ abstract class StreamSinkOutConfig implements \JsonSerializable
         return new StreamSinkOutConfig\PostHog($postHog);
     }
 
+    public static function segment(SegmentSinkConfigOut $segment): StreamSinkOutConfig\Segment
+    {
+        return new StreamSinkOutConfig\Segment($segment);
+    }
+
     public static function fromTypeAndConfig(string $type, mixed $config): self
     {
         $config ??= [];
@@ -398,6 +403,7 @@ abstract class StreamSinkOutConfig implements \JsonSerializable
             'postgres' => self::postgres(PostgresConfigOut::fromMixed($config)),
             'elasticSearch' => self::elasticSearch(ElasticSearchConfigOut::fromMixed($config)),
             'postHog' => self::postHog(PostHogConfigOut::fromMixed($config)),
+            'segment' => self::segment(SegmentSinkConfigOut::fromMixed($config)),
             default => throw new \InvalidArgumentException("Unknown type: {$type}"),
         };
     }
@@ -722,5 +728,22 @@ final class PostHog extends \Svix\Models\StreamSinkOutConfig
     public function configPayload(): mixed
     {
         return $this->postHog;
+    }
+}
+
+final class Segment extends \Svix\Models\StreamSinkOutConfig
+{
+    public function __construct(public readonly \Svix\Models\SegmentSinkConfigOut $segment)
+    {
+    }
+
+    public function variantName(): string
+    {
+        return 'segment';
+    }
+
+    public function configPayload(): mixed
+    {
+        return $this->segment;
     }
 }

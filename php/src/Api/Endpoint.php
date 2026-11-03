@@ -30,11 +30,13 @@ use Svix\Request\SvixHttpClient;
 
 class Endpoint
 {
+    public EndpointMcpEvents $mcpEvents;
     public EndpointTransformation $transformation;
 
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->mcpEvents = new EndpointMcpEvents($client);
         $this->transformation = new EndpointTransformation($client);
     }
 
