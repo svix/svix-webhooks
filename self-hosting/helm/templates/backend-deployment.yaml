@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "svix.fullname" . }}-{{ .Values.backend.name }}
+  labels:
+    {{- include "svix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- if not .Values.backend.autoscaling.enabled }}
+  replicas: {{ .Values.backend.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "svix.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "svix.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: backend
+    spec:
+      initContainers:
+        - name: wait-for-pgbouncer
+          image: postgres:13.4
+          command: ['sh', '-c', 'until pg_isready -h {{ include "svix.fullname" . }}-{{ .Values.pgbouncer.name }} -p 5432 -U postgres; do echo waiting for pgbouncer; sleep 2; done; echo pgbouncer is ready']
+        - name: wait-for-redis
+          image: redis:7-alpine
+          command: ['sh', '-c', 'until redis-cli -h {{ include "svix.fullname" . }}-{{ .Values.redis.name }} ping; do echo waiting for redis; sleep 2; done; echo redis is ready']
+      containers:
+        - name: {{ .Values.backend.name }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy | default "IfNotPresent" }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.backend.healthcheck.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.healthcheck.path }}
+              port: {{ .Values.backend.healthcheck.port }}
+            initialDelaySeconds: {{ .Values.backend.healthcheck.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.healthcheck.periodSeconds }}
+            timeoutSeconds: {{ .Values.backend.healthcheck.timeoutSeconds }}
+            failureThreshold: {{ .Values.backend.healthcheck.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.healthcheck.path }}
+              port: {{ .Values.backend.healthcheck.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
+          env:
+            # Database Configuration - complete DSN from secret
+            - name: SVIX_DB_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "svix.fullname" . }}-secrets
+                  key: SVIX_DB_DSN
+            
+            # Redis Configuration - complete DSN from secret
+            - name: SVIX_REDIS_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "svix.fullname" . }}-secrets
+                  key: SVIX_REDIS_DSN
+            
+            # Security Configuration from secrets
+            - name: SVIX_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "svix.fullname" . }}-secrets
+                  key: SVIX_JWT_SECRET
+            - name: SVIX_MAIN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "svix.fullname" . }}-secrets
+                  key: SVIX_MAIN_SECRET
+            
+            # Production Configuration (override defaults)
+            {{- range $key, $value := .Values.backend.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }} 
