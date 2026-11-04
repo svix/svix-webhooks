@@ -4,6 +4,7 @@
 * Change Docker images to be based on wolfi instead of debian
 * Bump MSRV to 1.96
 * Replace `serde_yaml` with `serde_saphyr` for parsing configuration; please let us know if you encounter any config files that fail to parse
+* Change the default `js_engine` (if unspecified) from Deno to rquickjs
 
 ## Version 1.101.1
 * Rebuild Docker image for CVE-2026-111497
