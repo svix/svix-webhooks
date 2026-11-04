@@ -317,6 +317,10 @@ async function sendWithRetry(
     if (triesLeft <= 0 || response.status < 500) {
       return response;
     }
+    // A retried response is never returned or read. Release its body before
+    // backoff so an unfinished error response cannot retain the connection.
+    // Cancellation failures follow the same retry path as fetch failures.
+    await response.body?.cancel();
   } catch (e) {
     if (triesLeft <= 0) {
       throw e;
