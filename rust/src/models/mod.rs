@@ -28,6 +28,8 @@ mod azure_blob_storage_config_patch;
 mod background_task_out;
 mod background_task_status;
 mod background_task_type;
+mod batch_create_messages_in;
+mod batch_message_in;
 mod big_query_config_in;
 mod big_query_config_out;
 mod big_query_config_patch;
@@ -319,6 +321,8 @@ pub use self::{
     background_task_out::BackgroundTaskOut,
     background_task_status::BackgroundTaskStatus,
     background_task_type::BackgroundTaskType,
+    batch_create_messages_in::BatchCreateMessagesIn,
+    batch_message_in::BatchMessageIn,
     big_query_config_in::BigQueryConfigIn,
     big_query_config_out::BigQueryConfigOut,
     big_query_config_patch::BigQueryConfigPatch,

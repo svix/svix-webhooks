@@ -54,6 +54,18 @@ namespace Svix
         }
     }
 
+    public class MessageCreateBatchOptions : SvixOptionsBase
+    {
+        public string? IdempotencyKey { get; set; }
+
+        public new Dictionary<string, string> HeaderParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "idempotency-key", IdempotencyKey } }
+            );
+        }
+    }
+
     public class MessagePrecheckOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
@@ -323,6 +335,96 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(Create)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Creates a batch of messages in a fire-or-forget fashion.
+        ///
+        /// This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+        /// if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+        /// doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+        /// to the `v1.create.message` action.
+        ///
+        /// The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+        /// generally a good idea to keep webhook payloads under 40KiB.
+        /// </summary>
+        public async Task<EmptyResponse> CreateBatchAsync(
+            string appId,
+            BatchCreateMessagesIn batchCreateMessagesIn,
+            MessageCreateBatchOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new MessageCreateBatchOptions();
+            }
+            batchCreateMessagesIn =
+                batchCreateMessagesIn
+                ?? throw new ArgumentNullException(nameof(batchCreateMessagesIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EmptyResponse>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/batch",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    content: batchCreateMessagesIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(CreateBatchAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Creates a batch of messages in a fire-or-forget fashion.
+        ///
+        /// This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+        /// if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+        /// doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+        /// to the `v1.create.message` action.
+        ///
+        /// The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+        /// generally a good idea to keep webhook payloads under 40KiB.
+        /// </summary>
+        public EmptyResponse CreateBatch(
+            string appId,
+            BatchCreateMessagesIn batchCreateMessagesIn,
+            MessageCreateBatchOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new MessageCreateBatchOptions();
+            }
+            batchCreateMessagesIn =
+                batchCreateMessagesIn
+                ?? throw new ArgumentNullException(nameof(batchCreateMessagesIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EmptyResponse>(
+                    method: HttpMethod.Post,
+                    path: "/api/v1/app/{app_id}/msg/batch",
+                    pathParams: new Dictionary<string, string> { { "app_id", appId } },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    content: batchCreateMessagesIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(CreateBatch)} failed");
 
                 throw;
             }

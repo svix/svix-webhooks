@@ -1,6 +1,10 @@
 // this file is @generated
 
 import {
+  type BatchCreateMessagesIn,
+  BatchCreateMessagesInSerializer,
+} from "../models/batchCreateMessagesIn";
+import {
   type BulkExpungeContentsIn,
   BulkExpungeContentsInSerializer,
 } from "../models/bulkExpungeContentsIn";
@@ -8,6 +12,7 @@ import {
   type BulkExpungeContentsOut,
   BulkExpungeContentsOutSerializer,
 } from "../models/bulkExpungeContentsOut";
+import { type EmptyResponse, EmptyResponseSerializer } from "../models/emptyResponse";
 import {
   type ExpungeAllContentsOut,
   ExpungeAllContentsOutSerializer,
@@ -61,6 +66,10 @@ export interface MessageCreateOptions {
    * without specifying this parameter.
    */
   withContent?: boolean;
+  idempotencyKey?: string;
+}
+
+export interface MessageCreateBatchOptions {
   idempotencyKey?: string;
 }
 
@@ -154,6 +163,31 @@ export class Message {
     request.setBody(MessageInSerializer._toJsonObject(messageIn));
 
     return await request.send(this.requestCtx, MessageOutSerializer._fromJsonObject);
+  }
+
+  /**
+   * Creates a batch of messages in a fire-or-forget fashion.
+   *
+   * This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+   * if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+   * doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+   * to the `v1.create.message` action.
+   *
+   * The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+   * generally a good idea to keep webhook payloads under 40KiB.
+   */
+  public async createBatch(
+    appId: string,
+    batchCreateMessagesIn: BatchCreateMessagesIn,
+    options?: MessageCreateBatchOptions
+  ): Promise<EmptyResponse> {
+    const request = new SvixRequest(HttpMethod.POST, "/api/v1/app/{app_id}/msg/batch");
+
+    request.setPathParam("app_id", appId);
+    request.setHeaderParam("idempotency-key", options?.idempotencyKey);
+    request.setBody(BatchCreateMessagesInSerializer._toJsonObject(batchCreateMessagesIn));
+
+    return await request.send(this.requestCtx, EmptyResponseSerializer._fromJsonObject);
   }
 
   /**

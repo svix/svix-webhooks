@@ -4,8 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime
 
 from ..models import (
+    BatchCreateMessagesIn,
     BulkExpungeContentsIn,
     BulkExpungeContentsOut,
+    EmptyResponse,
     ExpungeAllContentsOut,
     ListResponseMessageOut,
     MessageIn,
@@ -72,6 +74,18 @@ without specifying this parameter."""
                 "with_content": self.with_content or False,
             }
         )
+
+    def _header_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "idempotency-key": self.idempotency_key,
+            }
+        )
+
+
+@dataclass
+class MessageCreateBatchOptions(BaseOptions):
+    idempotency_key: t.Optional[str] = None
 
     def _header_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -219,6 +233,35 @@ class MessageAsync(ApiBaseAsync):
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
         return MessageOut.model_validate(response.json())
+
+    async def create_batch(
+        self,
+        app_id: str,
+        batch_create_messages_in: BatchCreateMessagesIn,
+        options: MessageCreateBatchOptions = (MessageCreateBatchOptions()),
+    ) -> EmptyResponse:
+        """Creates a batch of messages in a fire-or-forget fashion.
+
+        This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+        if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+        doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+        to the `v1.create.message` action.
+
+        The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+        generally a good idea to keep webhook payloads under 40KiB."""
+        response = await self._request_asyncio(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/batch",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=batch_create_messages_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return EmptyResponse.model_validate(response.json())
 
     async def precheck(
         self,
@@ -395,6 +438,35 @@ class Message(ApiBaseSync):
             json_body=message_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
         return MessageOut.model_validate(response.json())
+
+    def create_batch(
+        self,
+        app_id: str,
+        batch_create_messages_in: BatchCreateMessagesIn,
+        options: MessageCreateBatchOptions = (MessageCreateBatchOptions()),
+    ) -> EmptyResponse:
+        """Creates a batch of messages in a fire-or-forget fashion.
+
+        This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+        if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+        doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+        to the `v1.create.message` action.
+
+        The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+        generally a good idea to keep webhook payloads under 40KiB."""
+        response = self._request_sync(
+            method="post",
+            path="/api/v1/app/{app_id}/msg/batch",
+            path_params={
+                "app_id": app_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+            json_body=batch_create_messages_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+        return EmptyResponse.model_validate(response.json())
 
     def precheck(
         self,

@@ -92,6 +92,19 @@ impl From<MessageCreateOptions> for svix::api::MessageCreateOptions {
 }
 
 #[derive(Args, Clone)]
+pub struct MessageCreateBatchOptions {
+    #[arg(long)]
+    pub idempotency_key: Option<String>,
+}
+
+impl From<MessageCreateBatchOptions> for svix::api::MessageCreateBatchOptions {
+    fn from(value: MessageCreateBatchOptions) -> Self {
+        let MessageCreateBatchOptions { idempotency_key } = value;
+        Self { idempotency_key }
+    }
+}
+
+#[derive(Args, Clone)]
 pub struct MessagePrecheckOptions {
     #[arg(long)]
     pub idempotency_key: Option<String>,
@@ -259,6 +272,49 @@ pub enum MessageCommands {
         #[clap(flatten)]
         options: MessageCreateOptions,
     },
+    /// Creates a batch of messages in a fire-or-forget fashion.
+    ///
+    /// This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+    /// if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+    /// doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+    /// to the `v1.create.message` action.
+    ///
+    /// The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+    /// generally a good idea to keep webhook payloads under 40KiB.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix message create_batch app_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"messages\": [{
+    \"eventId\": \"unique-identifier\",
+    \"eventType\": \"user.signup\",
+    \"payload\": {
+      \"email\": \"test@example.com\",
+      \"type\": \"user.created\",
+      \"username\": \"test_user\"
+    },
+    \"channels\": [\"project_123\",\"group_2\"],
+    \"tags\": [\"my_tag\",\"other\"],
+    \"transformationsParams\": {\"key\": \"...\"},
+    \"deliverAt\": \"2030-01-01T00:00:00Z\",
+    \"payloadRetentionPeriod\": 90,
+    \"payloadRetentionHours\": 123
+  }]
+}\n\nExample response:
+{
+}\n")]
+    CreateBatch {
+        app_id: String,
+        batch_create_messages_in: crate::json::JsonOf<BatchCreateMessagesIn>,
+        #[clap(flatten)]
+        options: MessageCreateBatchOptions,
+    },
     /// A pre-check call for `message.create` that checks whether any active endpoints are
     /// listening to this message.
     ///
@@ -419,6 +475,21 @@ impl MessageCommands {
                 let resp = client
                     .message()
                     .create(app_id, message_in.into_inner(), Some(options.into()))
+                    .await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::CreateBatch {
+                app_id,
+                batch_create_messages_in,
+                options,
+            } => {
+                let resp = client
+                    .message()
+                    .create_batch(
+                        app_id,
+                        batch_create_messages_in.into_inner(),
+                        Some(options.into()),
+                    )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
             }

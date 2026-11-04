@@ -7,8 +7,10 @@ import com.svix.SvixHttpClient;
 import com.svix.Utils;
 import com.svix.exceptions.ApiException;
 import com.svix.models.*;
+import com.svix.models.BatchCreateMessagesIn;
 import com.svix.models.BulkExpungeContentsIn;
 import com.svix.models.BulkExpungeContentsOut;
+import com.svix.models.EmptyResponse;
 import com.svix.models.ExpungeAllContentsOut;
 import com.svix.models.ListResponseMessageOut;
 import com.svix.models.MessageIn;
@@ -170,6 +172,55 @@ public class Message {
         msgInInternal.payload = new HashMap<>();
         return this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), msgInInternal, MessageOut.class);
+    }
+
+    /**
+     * Creates a batch of messages in a fire-or-forget fashion.
+     *
+     * <p>This is the fastest and most-scalable way to create messages, but doesn't allow you to
+     * detect if your message failed certain validation steps (e.g., the `eventId` uniqueness
+     * check), and doesn't provide any back-pressure in the event of rate-limit exhaustion.
+     * Otherwise very similar to the `v1.create.message` action.
+     *
+     * <p>The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+     * generally a good idea to keep webhook payloads under 40KiB.
+     */
+    public EmptyResponse createBatch(
+            final String appId, final BatchCreateMessagesIn batchCreateMessagesIn)
+            throws IOException, ApiException {
+        return this.createBatch(appId, batchCreateMessagesIn, new MessageCreateBatchOptions());
+    }
+
+    /**
+     * Creates a batch of messages in a fire-or-forget fashion.
+     *
+     * <p>This is the fastest and most-scalable way to create messages, but doesn't allow you to
+     * detect if your message failed certain validation steps (e.g., the `eventId` uniqueness
+     * check), and doesn't provide any back-pressure in the event of rate-limit exhaustion.
+     * Otherwise very similar to the `v1.create.message` action.
+     *
+     * <p>The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+     * generally a good idea to keep webhook payloads under 40KiB.
+     */
+    public EmptyResponse createBatch(
+            final String appId,
+            final BatchCreateMessagesIn batchCreateMessagesIn,
+            final MessageCreateBatchOptions options)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(String.format("/api/v1/app/%s/msg/batch", appId));
+        Map<String, String> headers = new HashMap<>();
+        if (options.idempotencyKey != null) {
+            headers.put("idempotency-key", options.idempotencyKey);
+        }
+        return this.client.executeRequest(
+                "POST",
+                url.build(),
+                Headers.of(headers),
+                batchCreateMessagesIn,
+                EmptyResponse.class);
     }
 
     /**

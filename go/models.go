@@ -29,6 +29,8 @@ type (
 	BackgroundTaskOut                         = models.BackgroundTaskOut
 	BackgroundTaskStatus                      = models.BackgroundTaskStatus
 	BackgroundTaskType                        = models.BackgroundTaskType
+	BatchCreateMessagesIn                     = models.BatchCreateMessagesIn
+	BatchMessageIn                            = models.BatchMessageIn
 	BigQueryConfigIn                          = models.BigQueryConfigIn
 	BigQueryConfigOut                         = models.BigQueryConfigOut
 	BigQueryConfigPatch                       = models.BigQueryConfigPatch

@@ -44,6 +44,11 @@ pub struct MessageCreateOptions {
 }
 
 #[derive(Default)]
+pub struct MessageCreateBatchOptions {
+    pub idempotency_key: Option<String>,
+}
+
+#[derive(Default)]
 pub struct MessagePrecheckOptions {
     pub idempotency_key: Option<String>,
 }
@@ -156,6 +161,33 @@ impl<'a> Message<'a> {
             .with_optional_query_param("with_content", with_content)
             .with_optional_header_param("idempotency-key", idempotency_key)
             .with_body_param(message_in)
+            .execute(self.cfg)
+            .await
+    }
+
+    /// Creates a batch of messages in a fire-or-forget fashion.
+    ///
+    /// This is the fastest and most-scalable way to create messages, but
+    /// doesn't allow you to detect if your message failed certain
+    /// validation steps (e.g., the `eventId` uniqueness check), and doesn't
+    /// provide any back-pressure in the event of rate-limit exhaustion.
+    /// Otherwise very similar to the `v1.create.message` action.
+    ///
+    /// The entire batch may not exceed 5MB, and each individual payload may not
+    /// exceed 1MiB; it's generally a good idea to keep webhook payloads
+    /// under 40KiB.
+    pub async fn create_batch(
+        &self,
+        app_id: String,
+        batch_create_messages_in: BatchCreateMessagesIn,
+        options: Option<MessageCreateBatchOptions>,
+    ) -> Result<EmptyResponse> {
+        let MessageCreateBatchOptions { idempotency_key } = options.unwrap_or_default();
+
+        crate::request::Request::new(http::Method::POST, "/api/v1/app/{app_id}/msg/batch")
+            .with_path_param("app_id", app_id)
+            .with_optional_header_param("idempotency-key", idempotency_key)
+            .with_body_param(batch_create_messages_in)
             .execute(self.cfg)
             .await
     }

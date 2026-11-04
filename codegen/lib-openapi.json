@@ -16847,7 +16847,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/OtelConfig"
+                                "$ref": "#/components/schemas/OtelConfigIn"
                             }
                         }
                     },
@@ -17048,7 +17048,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/OptionalOtelConfig"
+                                "$ref": "#/components/schemas/OptionalOtelConfigIn"
                             }
                         }
                     },
@@ -17806,6 +17806,216 @@
                         "lang": "Shell",
                         "label": "cURL",
                         "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"eventId\": \"unique-identifier\",\n    \"eventType\": \"user.signup\",\n    \"payload\": {\n      \"email\": \"test@example.com\",\n      \"type\": \"user.created\",\n      \"username\": \"test_user\"\n    },\n    \"channels\": [\n      \"project_123\",\n      \"group_2\"\n    ],\n    \"application\": {\n      \"name\": \"My first application\",\n      \"throttleRate\": 1,\n      \"uid\": \"unique-identifier\",\n      \"metadata\": {}\n    },\n    \"tags\": [\n      \"my_tag\",\n      \"other\"\n    ],\n    \"transformationsParams\": {},\n    \"deliverAt\": \"2025-10-02T20:28:42+00:00\",\n    \"payloadRetentionPeriod\": 90,\n    \"payloadRetentionHours\": 1\n  }'\n\n\n# Alternatively, with a raw string payload.\ncurl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/{app_id}/msg' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n      \"eventType\": \"user.signup\",\n      \"payload\": {},\n      \"transformationsParams\": {\n          \"rawPayload\": \"This is a raw body.\",\n          \"headers\": { \"content-type\": \"text/plain\" }\n      }\n  }'"
+                    }
+                ]
+            }
+        },
+        "/api/v1/app/{app_id}/msg/batch": {
+            "post": {
+                "tags": [
+                    "Message"
+                ],
+                "summary": "Quickly Create a Batch of Messages",
+                "description": "Creates a batch of messages in a fire-or-forget fashion.\n\nThis is the fastest and most-scalable way to create messages, but doesn't allow you to detect\nif your message failed certain validation steps (e.g., the `eventId` uniqueness check), and\ndoesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar\nto the `v1.create.message` action.\n\nThe entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's\ngenerally a good idea to keep webhook payloads under 40KiB.",
+                "operationId": "v1.message.create_batch",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "header",
+                        "name": "idempotency-key",
+                        "description": "The request's idempotency key",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BatchCreateMessagesIn"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmptyResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "413": {
+                        "description": "Payload too large",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.message.createBatch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  messages: [],\n});"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.message.createBatch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {\n  messages: [],\n});"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.message.create_batch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    BatchCreateMessagesIn(\n        messages=[],\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.message.create_batch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    BatchCreateMessagesIn(\n        messages=[],\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Message.CreateBatch(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\tBatchCreateMessagesIn{Messages: []BatchMessageIn{}},\n\tnil,\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.message.createBatch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        BatchCreateMessagesIn(messages = listOf()),\n    )"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getMessage()\n        .createBatch(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", new BatchCreateMessagesIn().messages(List.of()));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.message.create_batch(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", {messages: []})"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .message()\n    .create_batch(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        BatchCreateMessagesIn {\n            messages: vec![],\n        },\n        None,\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Message.CreateBatch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    new BatchCreateMessagesIn { Messages = [] }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->message->createBatch(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    BatchCreateMessagesIn::create(\n        messages: []\n    )\n\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix message create-batch \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" '{\n    \"messages\": []\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'POST' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/msg/batch' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"messages\": []\n  }'"
                     }
                 ]
             }
@@ -52716,11 +52926,12 @@
                     "svixManaged"
                 ]
             },
-            "OtelConfig": {
+            "OtelConfigIn": {
                 "type": "object",
                 "properties": {
                     "url": {
-                        "type": "string"
+                        "type": "string",
+                        "maxLength": 4096
                     },
                     "additionalHeaders": {
                         "type": [
@@ -52737,11 +52948,11 @@
                     "url"
                 ]
             },
-            "OptionalOtelConfig": {
+            "OptionalOtelConfigIn": {
                 "type": "object",
                 "properties": {
                     "otelConfig": {
-                        "$ref": "#/components/schemas/OtelConfig",
+                        "$ref": "#/components/schemas/OtelConfigIn",
                         "nullable": true
                     }
                 }
@@ -52999,6 +53210,142 @@
                     "eventType",
                     "payload"
                 ]
+            },
+            "BatchCreateMessagesIn": {
+                "type": "object",
+                "properties": {
+                    "messages": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BatchMessageIn"
+                        },
+                        "minItems": 1,
+                        "maxItems": 50
+                    }
+                },
+                "required": [
+                    "messages"
+                ]
+            },
+            "BatchMessageIn": {
+                "description": "A single message in a batch of bulk-created messages\n\nPractically identical to `MessageIn`, but without the `application` field",
+                "type": "object",
+                "properties": {
+                    "eventId": {
+                        "description": "Optional unique identifier for the message\n\nThis should not contain the '.' character",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 256,
+                        "minLength": 1,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "example": "unique-identifier"
+                    },
+                    "eventType": {
+                        "description": "The event type's name",
+                        "type": "string",
+                        "maxLength": 256,
+                        "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                        "example": "user.signup"
+                    },
+                    "payload": {
+                        "description": "JSON payload to send as the request body of the webhook.\n\nWe also support sending non-JSON payloads. Please contact us for more information.\n\nThe serialized byte-length of this value should be under 1MiB. Please contact us\nif you need to send payloads large than 1MiB.",
+                        "type": "object",
+                        "additionalProperties": true,
+                        "example": {
+                            "type": "user.created",
+                            "email": "test@example.com",
+                            "username": "test_user"
+                        }
+                    },
+                    "channels": {
+                        "description": "List of free-form identifiers that endpoints can filter by",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_.:+]+$",
+                            "example": "project_1337"
+                        },
+                        "maxItems": 10,
+                        "minItems": 1,
+                        "example": [
+                            "project_123",
+                            "group_2"
+                        ]
+                    },
+                    "tags": {
+                        "description": "List of free-form tags that can be filtered by when listing messages",
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "uniqueItems": true,
+                        "items": {
+                            "type": "string",
+                            "maxLength": 128,
+                            "pattern": "^[a-zA-Z0-9\\-_./\\\\#]+$",
+                            "example": "project_1337"
+                        },
+                        "maxItems": 5,
+                        "minItems": 1,
+                        "example": [
+                            "my_tag",
+                            "other"
+                        ]
+                    },
+                    "transformationsParams": {
+                        "description": "Extra parameters to pass to Transformations (for future use)",
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "additionalProperties": true
+                    },
+                    "deliverAt": {
+                        "description": "The date and time at which the message will be delivered.\n\nNote that this time is best-effort-only. Must be at least one minute\nand no more than 24 hours in the future.",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "payloadRetentionPeriod": {
+                        "description": "Optional number of days to retain the message payload. Defaults to 90.\nNote that this is mutually exclusive with `payloadRetentionHours`.",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "default": 90,
+                        "minimum": 1,
+                        "maximum": 90,
+                        "example": 90
+                    },
+                    "payloadRetentionHours": {
+                        "description": "Optional number of hours to retain the message payload. Note that\nthis is mutually exclusive with `payloadRetentionPeriod`.",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "int64",
+                        "minimum": 1,
+                        "maximum": 2160,
+                        "default": null
+                    }
+                },
+                "required": [
+                    "eventType",
+                    "payload"
+                ]
+            },
+            "EmptyResponse": {
+                "type": "object"
             },
             "MessagePrecheckIn": {
                 "type": "object",
@@ -53713,9 +54060,6 @@
                     "sensitive",
                     "sentHeaders"
                 ]
-            },
-            "EmptyResponse": {
-                "type": "object"
             },
             "AggregateEventTypesOut": {
                 "type": "object",
