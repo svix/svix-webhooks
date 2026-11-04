@@ -11,6 +11,10 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/PHP: Fix `Webhook::fromRaw()`, which always threw `ArgumentCountError`; it now also
   accepts an optional `$tolerance`
 * Libs/All: Update to latest Svix Cloud spec
+* Libs/Ruby, Libs/PHP: Webhook verification now lowercases the header names
+  before looking them up, so header sets like `Svix-Id` (as returned by PHP's
+  `getallheaders()` and by Rack) verify instead of failing with
+  "Missing required headers"
 
 ## Version 2.9.1
 * Libs/JavaScript: Throw `ApiException` (with the raw response text as `body`) instead of a
@@ -94,10 +98,6 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 * Libs/All: Add support for new bulk-expunge endpoint (`svix.message.bulkExpungeContent`)
   * For Svix Server OSS, this endpoint is available as of v1.101.0
 * Libs/Rust: Add `Svix::server_url` accessor method
-* Libs/Ruby, Libs/PHP: Webhook verification now lowercases the header names
-  before looking them up, so header sets like `Svix-Id` (as returned by PHP's
-  `getallheaders()` and by Rack) verify instead of failing with
-  "Missing required headers"
 
 ## Version 2.0.0
 * Libs/All **(Breaking)**: The `PatchConfig`-suffixed types are now `ConfigPatch`-suffixed
