@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class GenericResponse
+    public class GenericWebhookResponse
     {
         [JsonProperty("contentType", Required = Required.Always)]
         public required string ContentType { get; set; }
@@ -16,7 +16,7 @@ namespace Svix.Models
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("class GenericResponse {\n");
+            sb.Append("class GenericWebhookResponse {\n");
             sb.Append("  ContentType: ").Append(ContentType).Append('\n');
             sb.Append("  Body: ").Append(Body).Append('\n');
             sb.Append("}\n");

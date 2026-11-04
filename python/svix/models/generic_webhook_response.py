@@ -3,7 +3,7 @@
 from .common import BaseModel
 
 
-class GenericResponse(BaseModel):
+class GenericWebhookResponse(BaseModel):
     content_type: str
 
     body: str

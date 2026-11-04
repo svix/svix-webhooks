@@ -104,8 +104,9 @@ from .event_type_patch import EventTypePatch
 from .event_type_upsert_in import EventTypeUpsertIn
 from .expunge_all_contents_out import ExpungeAllContentsOut
 from .fifo_endpoint_config_in import FifoEndpointConfigIn
-from .generic_config import GenericConfig
-from .generic_response import GenericResponse
+from .generic_webhook_config import GenericWebhookConfig
+from .generic_webhook_config_out import GenericWebhookConfigOut
+from .generic_webhook_response import GenericWebhookResponse
 from .github_config import GithubConfig
 from .github_config_out import GithubConfigOut
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
@@ -393,8 +394,9 @@ __all__ = [
     "EventTypeUpsertIn",
     "ExpungeAllContentsOut",
     "FifoEndpointConfigIn",
-    "GenericConfig",
-    "GenericResponse",
+    "GenericWebhookConfig",
+    "GenericWebhookConfigOut",
+    "GenericWebhookResponse",
     "GithubConfig",
     "GithubConfigOut",
     "GoogleCloudPubSubConfigIn",

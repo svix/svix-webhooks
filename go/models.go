@@ -107,8 +107,9 @@ type (
 	EventTypeUpsertIn                         = models.EventTypeUpsertIn
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
 	FifoEndpointConfigIn                      = models.FifoEndpointConfigIn
-	GenericConfig                             = models.GenericConfig
-	GenericResponse                           = models.GenericResponse
+	GenericWebhookConfig                      = models.GenericWebhookConfig
+	GenericWebhookConfigOut                   = models.GenericWebhookConfigOut
+	GenericWebhookResponse                    = models.GenericWebhookResponse
 	GithubConfig                              = models.GithubConfig
 	GithubConfigOut                           = models.GithubConfigOut
 	GoogleCloudPubSubConfigIn                 = models.GoogleCloudPubSubConfigIn

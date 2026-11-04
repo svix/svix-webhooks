@@ -1,19 +1,19 @@
 // this file is @generated
 
-export interface GenericResponse {
+export interface GenericWebhookResponse {
   contentType: string;
   body: string;
 }
 
-export const GenericResponseSerializer = {
-  _fromJsonObject(object: any): GenericResponse {
+export const GenericWebhookResponseSerializer = {
+  _fromJsonObject(object: any): GenericWebhookResponse {
     return {
       contentType: object["contentType"],
       body: object["body"],
     };
   },
 
-  _toJsonObject(self: GenericResponse): any {
+  _toJsonObject(self: GenericWebhookResponse): any {
     return {
       contentType: self.contentType,
       body: self.body,

@@ -7,7 +7,10 @@ import { type CheckbookConfig, CheckbookConfigSerializer } from "./checkbookConf
 import { type CronConfig, CronConfigSerializer } from "./cronConfig";
 import { type DocusignConfig, DocusignConfigSerializer } from "./docusignConfig";
 import { type EasypostConfig, EasypostConfigSerializer } from "./easypostConfig";
-import { type GenericConfig, GenericConfigSerializer } from "./genericConfig";
+import {
+  type GenericWebhookConfig,
+  GenericWebhookConfigSerializer,
+} from "./genericWebhookConfig";
 import { type GithubConfig, GithubConfigSerializer } from "./githubConfig";
 import { type HubspotConfig, HubspotConfigSerializer } from "./hubspotConfig";
 import { type MergeConfig, MergeConfigSerializer } from "./mergeConfig";
@@ -51,7 +54,7 @@ interface IngestSourceInGenericWebhook {
 
 interface IngestSourceInGeneric {
   type: "generic";
-  config: GenericConfig;
+  config: GenericWebhookConfig;
 }
 
 interface IngestSourceInCron {
@@ -345,7 +348,7 @@ export const IngestSourceInSerializer = {
         case "generic-webhook":
           return {};
         case "generic":
-          return GenericConfigSerializer._fromJsonObject(object["config"]);
+          return GenericWebhookConfigSerializer._fromJsonObject(object["config"]);
         case "cron":
           return CronConfigSerializer._fromJsonObject(object["config"]);
         case "adobe-sign":
@@ -460,7 +463,7 @@ export const IngestSourceInSerializer = {
         config = {};
         break;
       case "generic":
-        config = GenericConfigSerializer._toJsonObject(self.config);
+        config = GenericWebhookConfigSerializer._toJsonObject(self.config);
         break;
       case "cron":
         config = CronConfigSerializer._toJsonObject(self.config);
