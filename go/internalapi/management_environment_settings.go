@@ -85,10 +85,10 @@ func (managementEnvironmentSettings ManagementEnvironmentSettings) GetOtelConfig
 // Update customer otel config.
 func (managementEnvironmentSettings ManagementEnvironmentSettings) UpdateOtelConfig(
 	ctx context.Context,
-	otelConfig models.OtelConfig,
+	otelConfigIn models.OtelConfigIn,
 ) error {
 	var err error
-	_, err = internal.ExecuteRequest[models.OtelConfig, any](
+	_, err = internal.ExecuteRequest[models.OtelConfigIn, any](
 		ctx,
 		managementEnvironmentSettings.client,
 		"PUT",
@@ -96,7 +96,7 @@ func (managementEnvironmentSettings ManagementEnvironmentSettings) UpdateOtelCon
 		nil,
 		nil,
 		nil,
-		&otelConfig,
+		&otelConfigIn,
 	)
 	return err
 }

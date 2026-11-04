@@ -1,0 +1,59 @@
+// this file is @generated
+using System.Text;
+using Newtonsoft.Json;
+
+namespace Svix.Models
+{
+    /// <summary>
+    /// A single message in a batch of bulk-created messages
+    ///
+    /// Practically identical to `MessageIn`, but without the `application` field
+    /// <summary>
+    public class BatchMessageIn
+    {
+        [JsonProperty("eventId")]
+        public string? EventId { get; set; } = null;
+
+        [JsonProperty("eventType", Required = Required.Always)]
+        public required string EventType { get; set; }
+
+        [JsonProperty("payload", Required = Required.Always)]
+        public required Object Payload { get; set; }
+
+        [JsonProperty("channels")]
+        public List<string>? Channels { get; set; } = null;
+
+        [JsonProperty("tags")]
+        public List<string>? Tags { get; set; } = null;
+
+        [JsonProperty("transformationsParams")]
+        public Object? TransformationsParams { get; set; } = null;
+
+        [JsonProperty("deliverAt")]
+        public DateTime? DeliverAt { get; set; } = null;
+
+        [JsonProperty("payloadRetentionPeriod")]
+        public long? PayloadRetentionPeriod { get; set; } = null;
+
+        [JsonProperty("payloadRetentionHours")]
+        public long? PayloadRetentionHours { get; set; } = null;
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            sb.Append("class BatchMessageIn {\n");
+            sb.Append("  EventId: ").Append(EventId).Append('\n');
+            sb.Append("  EventType: ").Append(EventType).Append('\n');
+            sb.Append("  Payload: ").Append(Payload).Append('\n');
+            sb.Append("  Channels: ").Append(Channels).Append('\n');
+            sb.Append("  Tags: ").Append(Tags).Append('\n');
+            sb.Append("  TransformationsParams: ").Append(TransformationsParams).Append('\n');
+            sb.Append("  DeliverAt: ").Append(DeliverAt).Append('\n');
+            sb.Append("  PayloadRetentionPeriod: ").Append(PayloadRetentionPeriod).Append('\n');
+            sb.Append("  PayloadRetentionHours: ").Append(PayloadRetentionHours).Append('\n');
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+    }
+}

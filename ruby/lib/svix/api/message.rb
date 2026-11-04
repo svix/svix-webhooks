@@ -74,6 +74,19 @@ module Svix
       MessageOut.deserialize(res)
     end
 
+    def create_batch(app_id, batch_create_messages_in, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "POST",
+        "/api/v1/app/#{app_id}/msg/batch",
+        headers: {
+          "idempotency-key" => options["idempotency-key"]
+        },
+        body: batch_create_messages_in
+      )
+      EmptyResponse.deserialize(res)
+    end
+
     def precheck(app_id, message_precheck_in, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(

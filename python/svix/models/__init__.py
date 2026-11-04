@@ -26,6 +26,8 @@ from .azure_blob_storage_config_patch import AzureBlobStorageConfigPatch
 from .background_task_out import BackgroundTaskOut
 from .background_task_status import BackgroundTaskStatus
 from .background_task_type import BackgroundTaskType
+from .batch_create_messages_in import BatchCreateMessagesIn
+from .batch_message_in import BatchMessageIn
 from .big_query_config_in import BigQueryConfigIn
 from .big_query_config_out import BigQueryConfigOut
 from .big_query_config_patch import BigQueryConfigPatch
@@ -313,6 +315,8 @@ __all__ = [
     "BackgroundTaskOut",
     "BackgroundTaskStatus",
     "BackgroundTaskType",
+    "BatchCreateMessagesIn",
+    "BatchMessageIn",
     "BigQueryConfigIn",
     "BigQueryConfigOut",
     "BigQueryConfigPatch",

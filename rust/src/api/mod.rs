@@ -90,7 +90,7 @@ pub use self::{
         Integration, IntegrationCreateOptions, IntegrationListOptions, IntegrationRotateKeyOptions,
     },
     message::{
-        Message, MessageBulkExpungeContentOptions, MessageCreateOptions,
+        Message, MessageBulkExpungeContentOptions, MessageCreateBatchOptions, MessageCreateOptions,
         MessageExpungeAllContentsOptions, MessageGetOptions, MessageListOptions,
         MessagePrecheckOptions,
     },

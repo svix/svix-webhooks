@@ -6,8 +6,10 @@ declare(strict_types=1);
 namespace Svix\Api;
 
 use Svix\Exception\ApiException;
+use Svix\Models\BatchCreateMessagesIn;
 use Svix\Models\BulkExpungeContentsIn;
 use Svix\Models\BulkExpungeContentsOut;
+use Svix\Models\EmptyResponse;
 use Svix\Models\ExpungeAllContentsOut;
 use Svix\Models\ListResponseMessageOut;
 use Svix\Models\MessageIn;
@@ -82,6 +84,32 @@ class Message
         $res = $this->client->send($request);
 
         return MessageOut::fromJson($res);
+    }
+
+    /**
+     * Creates a batch of messages in a fire-or-forget fashion.
+     *
+     * This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+     * if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+     * doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+     * to the `v1.create.message` action.
+     *
+     * The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+     * generally a good idea to keep webhook payloads under 40KiB.
+     *
+     * @throws ApiException
+     */
+    public function createBatch(
+        string $appId,
+        BatchCreateMessagesIn $batchCreateMessagesIn,
+        MessageCreateBatchOptions $options = new MessageCreateBatchOptions(),
+    ): EmptyResponse {
+        $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/msg/batch");
+        $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
+        $request->setBody(json_encode($batchCreateMessagesIn));
+        $res = $this->client->send($request);
+
+        return EmptyResponse::fromJson($res);
     }
 
     /**

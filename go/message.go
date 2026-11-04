@@ -52,6 +52,10 @@ type MessageCreateOptions struct {
 	IdempotencyKey *string
 }
 
+type MessageCreateBatchOptions struct {
+	IdempotencyKey *string
+}
+
 type MessagePrecheckOptions struct {
 	IdempotencyKey *string
 }
@@ -157,6 +161,46 @@ func (message Message) Create(
 		queryMap,
 		headerMap,
 		&messageIn,
+	)
+}
+
+// Creates a batch of messages in a fire-or-forget fashion.
+//
+// This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+// if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+// doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
+// to the `v1.create.message` action.
+//
+// The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+// generally a good idea to keep webhook payloads under 40KiB.
+func (message Message) CreateBatch(
+	ctx context.Context,
+	appId string,
+	batchCreateMessagesIn models.BatchCreateMessagesIn,
+	o *MessageCreateBatchOptions,
+) (*models.EmptyResponse, error) {
+	var err error
+	pathMap := map[string]string{
+		"app_id": appId,
+	}
+	headerMap := map[string]string{}
+	if o == nil {
+		opts := MessageCreateBatchOptions{}
+		o = &opts
+	}
+	internal.SerializeParamToMap("idempotency-key", o.IdempotencyKey, headerMap, &err)
+	if err != nil {
+		return nil, err
+	}
+	return internal.ExecuteRequest[models.BatchCreateMessagesIn, models.EmptyResponse](
+		ctx,
+		message.client,
+		"POST",
+		"/api/v1/app/{app_id}/msg/batch",
+		pathMap,
+		nil,
+		headerMap,
+		&batchCreateMessagesIn,
 	)
 }
 

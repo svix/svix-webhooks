@@ -2,8 +2,10 @@
 package com.svix.kotlin
 
 import com.svix.kotlin.models.ApplicationIn
+import com.svix.kotlin.models.BatchCreateMessagesIn
 import com.svix.kotlin.models.BulkExpungeContentsIn
 import com.svix.kotlin.models.BulkExpungeContentsOut
+import com.svix.kotlin.models.EmptyResponse
 import com.svix.kotlin.models.ExpungeAllContentsOut
 import com.svix.kotlin.models.ListResponseMessageOut
 import com.svix.kotlin.models.MessageIn
@@ -51,6 +53,8 @@ data class MessageCreateOptions(
     val withContent: Boolean? = null,
     val idempotencyKey: String? = null,
 )
+
+data class MessageCreateBatchOptions(val idempotencyKey: String? = null)
 
 data class MessagePrecheckOptions(val idempotencyKey: String? = null)
 
@@ -162,6 +166,34 @@ class Message(private val client: SvixHttpClient) {
             url.build(),
             headers = headers.build(),
             reqBody = msgInInternal,
+        )
+    }
+
+    /**
+     * Creates a batch of messages in a fire-or-forget fashion.
+     *
+     * This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
+     * if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
+     * doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very
+     * similar to the `v1.create.message` action.
+     *
+     * The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
+     * generally a good idea to keep webhook payloads under 40KiB.
+     */
+    suspend fun createBatch(
+        appId: String,
+        batchCreateMessagesIn: BatchCreateMessagesIn,
+        options: MessageCreateBatchOptions = MessageCreateBatchOptions(),
+    ): EmptyResponse {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/msg/batch")
+        val headers = Headers.Builder()
+        options.idempotencyKey?.let { headers.add("idempotency-key", it) }
+
+        return client.executeRequest<BatchCreateMessagesIn, EmptyResponse>(
+            "POST",
+            url.build(),
+            headers = headers.build(),
+            reqBody = batchCreateMessagesIn,
         )
     }
 

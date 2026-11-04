@@ -24,6 +24,8 @@ export { type AzureBlobStorageConfigPatch } from "./azureBlobStorageConfigPatch"
 export { type BackgroundTaskOut } from "./backgroundTaskOut";
 export { BackgroundTaskStatus } from "./backgroundTaskStatus";
 export { BackgroundTaskType } from "./backgroundTaskType";
+export { type BatchCreateMessagesIn } from "./batchCreateMessagesIn";
+export { type BatchMessageIn } from "./batchMessageIn";
 export { type BigQueryConfigIn } from "./bigQueryConfigIn";
 export { type BigQueryConfigOut } from "./bigQueryConfigOut";
 export { type BigQueryConfigPatch } from "./bigQueryConfigPatch";
