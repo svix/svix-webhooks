@@ -9,9 +9,9 @@ namespace Svix.ApiInternal
     {
         readonly SvixClient _client = client;
 
-        public EndpointAutoConfig AutoConfig
+        public EndpointAutoConfigDeprecated AutoConfigDeprecated
         {
-            get => new EndpointAutoConfig(_client);
+            get => new EndpointAutoConfigDeprecated(_client);
         }
 
         /// <summary>

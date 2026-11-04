@@ -8,7 +8,10 @@ use std::sync::Arc;
 use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
 use serde::Serialize;
-use svix::api::{MessageIn, Svix, SvixOptions};
+use svix::{
+    api::{Svix, SvixOptions},
+    models::MessageIn,
+};
 
 use super::{
     security::generate_management_token,
@@ -167,11 +170,7 @@ impl OperationalWebhookSenderInner {
                 .message()
                 .create(
                     recipient_org_id.clone(),
-                    MessageIn {
-                        event_type,
-                        payload,
-                        ..MessageIn::default()
-                    },
+                    MessageIn::new(event_type, payload),
                     None,
                 )
                 .await;
@@ -180,7 +179,7 @@ impl OperationalWebhookSenderInner {
                 Ok(_) => {}
                 // Ignore 404s because not every org will have an associated application
                 Err(svix::error::Error::Http(svix::error::HttpErrorContent {
-                    status: http02::StatusCode::NOT_FOUND,
+                    status: http::StatusCode::NOT_FOUND,
                     ..
                 })) => {
                     tracing::warn!(

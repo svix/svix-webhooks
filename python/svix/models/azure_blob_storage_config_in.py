@@ -12,4 +12,5 @@ class AzureBlobStorageConfigIn(BaseModel):
     access_key: t.Optional[str] = None
     """Access key.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Currently a required field, but marked as optional because we may add
+    different authentication in the future."""

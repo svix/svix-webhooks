@@ -3,13 +3,18 @@
 require "cgi"
 require "uri"
 require "net/http"
+require "openssl"
 require "securerandom"
 
 module Svix
   class SvixHttpClient
+    TIMEOUT_SECONDS = 15
+
     def initialize(token, base_url)
       @token = token
-      @base_url = base_url
+      # Strip trailing slashes so that `https://api.svix.com/` does not
+      # produce request URLs such as `https://api.svix.com//api/v1/app`.
+      @base_url = base_url.to_s.sub(%r{/+\z}, "")
     end
 
     def execute_request(method, path, **kwargs)
@@ -25,6 +30,9 @@ module Svix
 
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = (uri.scheme == "https")
+      http.open_timeout = TIMEOUT_SECONDS
+      http.read_timeout = TIMEOUT_SECONDS
+      http.write_timeout = TIMEOUT_SECONDS
 
       # Dynamically select the request class based on method
       request_class = case method.to_s.upcase
@@ -88,20 +96,31 @@ module Svix
       end
     end
 
-    private def execute_request_with_retries(request, http)
-      res = http.request(request)
+    # Network-level errors (timeouts, connection failures, etc.) that are retried
+    RETRYABLE_ERRORS = [
+      Timeout::Error,
+      SocketError,
+      SystemCallError,
+      IOError,
+      Net::ProtocolError,
+      Net::HTTPBadResponse,
+      OpenSSL::SSL::SSLError
+    ].freeze
 
+    private def execute_request_with_retries(request, http)
       [0.05, 0.1, 0.2].each_with_index do |sleep_duration, index|
-        unless Integer(res.code) >= 500
-          break
+        begin
+          res = http.request(request)
+          return res unless Integer(res.code) >= 500
+        rescue *RETRYABLE_ERRORS
+          # retried below
         end
 
         sleep(sleep_duration)
         request["svix-retry-count"] = index + 1
-        res = http.request(request)
       end
 
-      res
+      http.request(request)
     end
 
     private def encode_query_params(query_params = {})
@@ -113,7 +132,7 @@ module Svix
           elsif v.is_a?(Time)
             encoded_query_pairs.append("#{k}=#{CGI.escape(v.utc.to_datetime.rfc3339)}")
           else
-            encoded_query_pairs.append("#{k}=#{CGI.escape(v)}")
+            encoded_query_pairs.append("#{k}=#{CGI.escape(v.to_s)}")
           end
         elsif k == "with_content"
           # default with_content to false, it only defaults to true

@@ -36,15 +36,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
+      out["eventType"] = Svix::serialize_primitive(@event_type) unless @event_type.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

@@ -11,13 +11,17 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigIn
 //   - "bigQuery": Use BigQueryConfigIn
 //   - "clickhouse": Use ClickhouseConfigIn
+//   - "elasticSearch": Use ElasticSearchConfigIn
 //   - "eventBridge": Use EventBridgeConfigIn
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigIn
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigIn
 //   - "otelTracing": Use OtelTracingConfigIn
+//   - "postgres": Use PostgresConfigIn
+//   - "postHog": Use PostHogConfigIn
 //   - "rabbitMq": Use RabbitMqConfigIn
 //   - "redshift": Use RedshiftConfigIn
 //   - "amazonS3": Use S3ConfigIn
+//   - "segment": Use SegmentSinkConfigIn
 //   - "http": Use SinkHttpConfigIn
 //   - "snowflake": Use SnowflakeConfigIn
 //   - "sns": Use SnsConfigIn
@@ -26,7 +30,8 @@ type StreamSinkIn struct {
 	Uid *string `json:"uid,omitempty"` // An optional unique identifier for the sink.
 	// Whether the sink will receive events.
 	//
-	// If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+	// If the sink is `enabled`, any events posted to the stream will be
+	// dispatched to the Sink in the same order that events were posted to the stream.
 	//
 	// If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
 	Status    *SinkStatusIn `json:"status,omitempty"`
@@ -36,12 +41,14 @@ type StreamSinkIn struct {
 	// For example, with a `batchSize` of 100 and `maxWaitSecs` of 10, we will send a request after 10 seconds or 100 events, whichever comes first.
 	//
 	// Note that we will never send an empty batch of events to the Sink.
-	MaxWaitSecs *uint16            `json:"maxWaitSecs,omitempty"`
-	EventTypes  []string           `json:"eventTypes,omitempty"` // A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events.
-	Channels    []string           `json:"channels,omitempty"`
-	Metadata    *map[string]string `json:"metadata,omitempty"`
-	Type        StreamSinkInType   `json:"type"`
-	Config      StreamSinkInConfig `json:"config"`
+	MaxWaitSecs *uint16 `json:"maxWaitSecs,omitempty"`
+	// A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out
+	// any events.
+	EventTypes []string           `json:"eventTypes,omitempty"`
+	Channels   []string           `json:"channels,omitempty"`
+	Metadata   *map[string]string `json:"metadata,omitempty"`
+	Type       StreamSinkInType   `json:"type"`
+	Config     StreamSinkInConfig `json:"config"`
 }
 
 type StreamSinkInType string
@@ -62,6 +69,10 @@ const (
 	StreamSinkInTypeSnowflake          StreamSinkInType = "snowflake"
 	StreamSinkInTypeRabbitMq           StreamSinkInType = "rabbitMq"
 	StreamSinkInTypeRedshift           StreamSinkInType = "redshift"
+	StreamSinkInTypePostgres           StreamSinkInType = "postgres"
+	StreamSinkInTypeElasticSearch      StreamSinkInType = "elasticSearch"
+	StreamSinkInTypePostHog            StreamSinkInType = "postHog"
+	StreamSinkInTypeSegment            StreamSinkInType = "segment"
 )
 
 type StreamSinkInConfig interface {
@@ -83,6 +94,10 @@ func (EventBridgeConfigIn) isStreamSinkInConfig()        {}
 func (SnowflakeConfigIn) isStreamSinkInConfig()          {}
 func (RabbitMqConfigIn) isStreamSinkInConfig()           {}
 func (RedshiftConfigIn) isStreamSinkInConfig()           {}
+func (PostgresConfigIn) isStreamSinkInConfig()           {}
+func (ElasticSearchConfigIn) isStreamSinkInConfig()      {}
+func (PostHogConfigIn) isStreamSinkInConfig()            {}
+func (SegmentSinkConfigIn) isStreamSinkInConfig()        {}
 
 func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkIn
@@ -110,6 +125,10 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		var c ClickhouseConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "eventBridge":
 		var c EventBridgeConfigIn
 		err = json.Unmarshal(aux.Config, &c)
@@ -126,6 +145,14 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		var c OtelTracingConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "postgres":
+		var c PostgresConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postHog":
+		var c PostHogConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "rabbitMq":
 		var c RabbitMqConfigIn
 		err = json.Unmarshal(aux.Config, &c)
@@ -136,6 +163,10 @@ func (i *StreamSinkIn) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "amazonS3":
 		var c S3ConfigIn
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigIn
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "http":
@@ -189,4 +220,8 @@ var StreamSinkInTypeFromString = map[string]StreamSinkInType{
 	"snowflake":          StreamSinkInTypeSnowflake,
 	"rabbitMq":           StreamSinkInTypeRabbitMq,
 	"redshift":           StreamSinkInTypeRedshift,
+	"postgres":           StreamSinkInTypePostgres,
+	"elasticSearch":      StreamSinkInTypeElasticSearch,
+	"postHog":            StreamSinkInTypePostHog,
+	"segment":            StreamSinkInTypeSegment,
 }

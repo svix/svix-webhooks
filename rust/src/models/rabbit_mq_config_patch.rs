@@ -11,6 +11,9 @@ pub struct RabbitMqConfigPatch {
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub uri: Option<String>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mandatory: Option<bool>,
 }
 
 impl RabbitMqConfigPatch {
@@ -18,6 +21,7 @@ impl RabbitMqConfigPatch {
         Self {
             routing_key: None,
             uri: None,
+            mandatory: None,
         }
     }
 }

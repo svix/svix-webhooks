@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"runtime"
 
-	"github.com/svix/svix-webhooks/go/internal"
+	"github.com/svix/svix-webhooks/v2/go/internal"
 )
 
 type (
@@ -15,6 +15,10 @@ type (
 		client *internal.SvixHttpClient
 	}
 )
+
+func (svix InternalSvix) AutoconfigSubscription() AutoconfigSubscription {
+	return newAutoconfigSubscription(svix.client)
+}
 
 func (svix InternalSvix) Endpoint() Endpoint {
 	return newEndpoint(svix.client)

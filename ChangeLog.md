@@ -6,6 +6,93 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/PHP: `Webhook` now throws `InvalidArgumentException` for an empty or non-base64 secret
+  instead of verifying with an empty HMAC key
+* Libs/PHP: Fix `Webhook::fromRaw()`, which always threw `ArgumentCountError`; it now also
+  accepts an optional `$tolerance`
+* Libs/All: Update to latest Svix Cloud spec
+
+## Version 2.9.1
+* Libs/JavaScript: Throw `ApiException` (with the raw response text as `body`) instead of a
+  `SyntaxError` when a 4xx error response body is not JSON
+* CLI: Rebuild Docker image for CVE-2026-111497
+
+## Version 2.9.0
+* Libs/(Java and Kotlin): Strip trailing slashes from server URLs
+* Libs/Python: Retry on HTTP 423 and on I/O errors; add test coverage for SvixAsync
+* Libs/All: Update to latest Svix Cloud API, including adding ElasticSearch support for Advanced Destinations
+* Libs/(C#, Go, Java, JavaScript, Kotlin, PHP, Ruby and Rust): Retry requests that fail due to
+  timeouts or other network errors (connection failures, DNS errors, etc.), not just 5xx responses
+* Libs/Go: Fix the default retry schedule being 50µs, 100µs and 200µs instead of 50ms, 100ms and 200ms
+* Libs/PHP: Send the `svix-retry-count` header on retries, and reuse the same `svix-req-id` across
+  retries of a request
+* Libs/JavaScript: Requests now time out after 15 seconds by default (previously there was no
+  timeout unless `requestTimeout` was set)
+* Libs/(Go, Java, Kotlin, PHP and Ruby): Change the default request timeout to 15 seconds, matching the
+  other SDKs (previously 60s for Go, 30s for PHP, 60s per connect/read/write for Ruby, and no overall
+  timeout for Java and Kotlin)
+
+## Version 2.8.0
+* CLI: You can now populate a request body from a file by using cURL-style `@filename` syntax; e.g.,
+  `svix streaming events create strm_abcdef123456789 @filename.json`
+* Libs/C#: Honor cancellation duration wait for retry (use `Task.Delay` instead of `Thread.Sleep`)
+  in `Async` methods
+* Libs/Ruby: Fix `Svix::Webhook.new_using_raw_bytes` to actually accept raw key bytes instead of
+  base64 encoded bytes
+* Libs/Go: Make `svix.Message().GetOrCreate()` work by changing an accidental pointer receiver
+  (inconsistent with all other methods) to a value receiver, and allow passing `nil` for options
+
+## Version 2.7.0
+* Libs/All: Return the new secret from `v1.endpoint.rotate-secret`, `v1.destination.rotate-secret`
+  and `v1.streaming.sink.rotate-secret` (if you are using the open-source Svix Server,
+  please upgrade it to server v1.102.0 before upgrading the SDK)
+* Libs/C#: Fix `TimeoutMilliseconds` option not being respected
+
+## Version 2.6.2
+* Libs/(Java and Kotlin): Fix a bug that broke SDK methods where the underlying HTTP call
+  uses a POST or PUT method and doesn't have any HTTP body parameters
+* Libs/Go: Fix module path such that v2 are properly released
+
+## Version 2.6.1
+* Libs/All: Update to latest Svix Cloud spec
+
+## Version 2.6.0
+* Libs/PHP: Add support for `destination` and `stream` APIs
+* Libs/PHP: Add `AutoConfigConsumer`
+* Libs/Python **(Breaking)**: Drop support for Python 3.9 (EOL). Minimum supported version is now 3.10
+* Libs/Rust: Revert an accidental breaking change to `AutoConfigConsumer` that made a couple methods
+  require unique access to the object (`&mut self`) instead of shared access (`&self`)
+
+## Version 2.5.0
+* Libs **(New)**: Add `autoconfig` API support to create and rotate AutoConfig tokens
+* Libs/Kotlin: Fix requests with body not having `content-type`
+
+## Version 2.4.0
+* Libs **(New)**: Add `destination` API support
+* Libs/All: AutoConfig v2. Add support for updated AutoConfig token format (`auto_v2` prefix)
+* Libs/All **(Breaking)**: `AutoConfigConsumer.subscribe()` return type changed from `EndpointOut` to `DestinationOut`
+* Libs/PHP **(Breaking)**: Remove `AutoConfigConsumer` class (it will be reintroduced in the next version)
+* CLI: In `listen` mode, don't follow redirects returned by the local service
+
+## Version 2.3.0
+* Libs/All: Add new streaming sink types
+* Libs/Ruby: Add missing accessors for `connector`, `streaming` APIs
+* Libs/Ruby: Accept symbol keys in struct enums (thanks @anishfyi)
+* Libs/Ruby: Fix various small bugs (thanks @clinejj and @anishfyi)
+
+## Version 2.2.0
+* Libs/JavaScript **(Breaking)**: Remove JSON parsing from `Webhook.verify`, for consistency with
+  SDKs for other languages (this was meant to be part of the recently-released v2.0.0 but forgotten
+  for JavaScript and PHP - we're yanking v2.0.0 and v2.1.0 of the JS SDK in response)
+* Libs/PHP **(Breaking)**: Remove JSON parsing from `Webhook.verify`, for consistency with
+  SDKs for other languages (this was meant to be part of the recently-released v2.0.0 but forgotten
+  for JavaScript and PHP - we're yanking v2.0.0 and v2.1.0 of the PHP SDK in response)
+* Libs/Rust: Re-export `Svix`, `Webhook`, `AutoConfig` and `AutoConfigConsumer`,
+  `Error` and `Result` at the crate root
+
+## Version 2.1.0
+* Libs/All: Add support for new bulk-expunge endpoint (`svix.message.bulkExpungeContent`)
+  * For Svix Server OSS, this endpoint is available as of v1.101.0
 * Libs/Rust: Add `Svix::server_url` accessor method
 * Libs/Ruby, Libs/PHP: Webhook verification now lowercases the header names
   before looking them up, so header sets like `Svix-Id` (as returned by PHP's

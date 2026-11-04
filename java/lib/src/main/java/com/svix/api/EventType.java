@@ -49,6 +49,10 @@ public class EventType {
             url.addQueryParameter(
                     "include_archived", Utils.serializeQueryParam(options.includeArchived));
         }
+        if (options.archiveStatus != null) {
+            url.addQueryParameter(
+                    "archive_status", Utils.serializeQueryParam(options.archiveStatus));
+        }
         if (options.withContent != null) {
             url.addQueryParameter("with_content", Utils.serializeQueryParam(options.withContent));
         } else {
@@ -149,8 +153,8 @@ public class EventType {
      *
      * <p>Endpoints already configured to filter on an event type will continue to do so after
      * archival. However, new messages can not be sent with it and endpoints can not filter on it.
-     * An event type can be unarchived with the [create
-     * operation](#operation/create_event_type_api_v1_event_type__post).
+     * An event type can be unarchived with the [patch operation](#operation/v1.event-type.patch) by
+     * setting `archived` to `false`.
      */
     public void delete(final String eventTypeName) throws IOException, ApiException {
         this.delete(eventTypeName, new EventTypeDeleteOptions());
@@ -161,8 +165,8 @@ public class EventType {
      *
      * <p>Endpoints already configured to filter on an event type will continue to do so after
      * archival. However, new messages can not be sent with it and endpoints can not filter on it.
-     * An event type can be unarchived with the [create
-     * operation](#operation/create_event_type_api_v1_event_type__post).
+     * An event type can be unarchived with the [patch operation](#operation/v1.event-type.patch) by
+     * setting `archived` to `false`.
      */
     public void delete(final String eventTypeName, final EventTypeDeleteOptions options)
             throws IOException, ApiException {

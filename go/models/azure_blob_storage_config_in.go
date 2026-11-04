@@ -6,6 +6,7 @@ type AzureBlobStorageConfigIn struct {
 	Account   string `json:"account"`
 	// Access key.
 	//
-	// Currently a required field, but marked as optional because we may add different authentication in the future.
+	// Currently a required field, but marked as optional because we may add
+	// different authentication in the future.
 	AccessKey *string `json:"accessKey,omitempty"`
 }

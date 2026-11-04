@@ -10,17 +10,17 @@ class AppUsageStatsOut implements \JsonSerializable
     private array $setFields = [];
 
     /**
+     * @param string       $id               the QueueBackgroundTask's ID
      * @param list<string> $unresolvedAppIds Any app IDs or UIDs received in the request that weren't found.
      *
      * Stats will be produced for all the others.
-     * @param string $id the QueueBackgroundTask's ID
      */
     private function __construct(
-        public readonly array $unresolvedAppIds,
         public readonly string $id,
         public readonly BackgroundTaskStatus $status,
         public readonly BackgroundTaskType $task,
         public readonly \DateTimeImmutable $updatedAt,
+        public readonly array $unresolvedAppIds,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -30,30 +30,30 @@ class AppUsageStatsOut implements \JsonSerializable
      * Create an instance of AppUsageStatsOut with required fields.
      */
     public static function create(
-        array $unresolvedAppIds,
         string $id,
         BackgroundTaskStatus $status,
         BackgroundTaskType $task,
         \DateTimeImmutable $updatedAt,
+        array $unresolvedAppIds,
     ): self {
         return new self(
-            unresolvedAppIds: $unresolvedAppIds,
             id: $id,
             status: $status,
             task: $task,
             updatedAt: $updatedAt,
-            setFields: ['unresolvedAppIds' => true, 'id' => true, 'status' => true, 'task' => true, 'updatedAt' => true]
+            unresolvedAppIds: $unresolvedAppIds,
+            setFields: ['id' => true, 'status' => true, 'task' => true, 'updatedAt' => true, 'unresolvedAppIds' => true]
         );
     }
 
     public function jsonSerialize(): mixed
     {
         $data = [
-            'unresolvedAppIds' => $this->unresolvedAppIds,
             'id' => $this->id,
             'status' => $this->status,
             'task' => $this->task,
-            'updatedAt' => $this->updatedAt->format('c')];
+            'updatedAt' => $this->updatedAt->format('c'),
+            'unresolvedAppIds' => $this->unresolvedAppIds];
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -64,11 +64,11 @@ class AppUsageStatsOut implements \JsonSerializable
     public static function fromMixed(mixed $data): self
     {
         return new self(
-            unresolvedAppIds: \Svix\Utils::getValFromJson($data, 'unresolvedAppIds', true, 'AppUsageStatsOut'),
             id: \Svix\Utils::deserializeString($data, 'id', true, 'AppUsageStatsOut'),
             status: \Svix\Utils::deserializeObject($data, 'status', true, 'AppUsageStatsOut', [BackgroundTaskStatus::class, 'fromMixed']),
             task: \Svix\Utils::deserializeObject($data, 'task', true, 'AppUsageStatsOut', [BackgroundTaskType::class, 'fromMixed']),
-            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'AppUsageStatsOut')
+            updatedAt: \Svix\Utils::deserializeDt($data, 'updatedAt', true, 'AppUsageStatsOut'),
+            unresolvedAppIds: \Svix\Utils::getValFromJson($data, 'unresolvedAppIds', true, 'AppUsageStatsOut')
         );
     }
 

@@ -12,8 +12,10 @@ class EventBridgeConfigOut implements \JsonSerializable
     private function __construct(
         public readonly string $eventBusName,
         public readonly string $detailType,
-        public readonly string $accessKeyId,
         public readonly string $region,
+        public readonly ?string $accessKeyId = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -25,15 +27,64 @@ class EventBridgeConfigOut implements \JsonSerializable
     public static function create(
         string $eventBusName,
         string $detailType,
-        string $accessKeyId,
         string $region,
     ): self {
         return new self(
             eventBusName: $eventBusName,
             detailType: $detailType,
-            accessKeyId: $accessKeyId,
+            accessKeyId: null,
+            roleArn: null,
+            externalId: null,
             region: $region,
-            setFields: ['eventBusName' => true, 'detailType' => true, 'accessKeyId' => true, 'region' => true]
+            setFields: ['eventBusName' => true, 'detailType' => true, 'region' => true]
+        );
+    }
+
+    public function withAccessKeyId(?string $accessKeyId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['accessKeyId'] = true;
+
+        return new self(
+            eventBusName: $this->eventBusName,
+            detailType: $this->detailType,
+            accessKeyId: $accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            eventBusName: $this->eventBusName,
+            detailType: $this->detailType,
+            accessKeyId: $this->accessKeyId,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            eventBusName: $this->eventBusName,
+            detailType: $this->detailType,
+            accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
+            region: $this->region,
+            setFields: $setFields
         );
     }
 
@@ -42,8 +93,17 @@ class EventBridgeConfigOut implements \JsonSerializable
         $data = [
             'eventBusName' => $this->eventBusName,
             'detailType' => $this->detailType,
-            'accessKeyId' => $this->accessKeyId,
             'region' => $this->region];
+
+        if (isset($this->setFields['accessKeyId'])) {
+            $data['accessKeyId'] = $this->accessKeyId;
+        }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -56,7 +116,9 @@ class EventBridgeConfigOut implements \JsonSerializable
         return new self(
             eventBusName: \Svix\Utils::deserializeString($data, 'eventBusName', true, 'EventBridgeConfigOut'),
             detailType: \Svix\Utils::deserializeString($data, 'detailType', true, 'EventBridgeConfigOut'),
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'EventBridgeConfigOut'),
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'EventBridgeConfigOut'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'EventBridgeConfigOut'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'EventBridgeConfigOut'),
             region: \Svix\Utils::deserializeString($data, 'region', true, 'EventBridgeConfigOut')
         );
     }

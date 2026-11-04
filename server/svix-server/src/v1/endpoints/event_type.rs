@@ -8,6 +8,7 @@ use aide::axum::{
 use axum::{
     Json,
     extract::{Path, State},
+    response::NoContent,
 };
 use chrono::{DateTime, Utc};
 use schemars::JsonSchema;
@@ -26,8 +27,8 @@ use crate::{
     error::{HttpError, Result, http_error_on_conflict},
     v1::utils::{
         EventTypeNamePath, IteratorDirection, JsonStatus, JsonStatusUpsert, ListResponse, ModelIn,
-        ModelOut, NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator,
-        ValidatedJson, ValidatedQuery, apply_pagination, openapi_tag,
+        ModelOut, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
+        ValidatedQuery, apply_pagination, openapi_tag,
         patch::{
             UnrequiredField, UnrequiredNullableField, patch_field_non_nullable,
             patch_field_nullable,
@@ -62,6 +63,7 @@ pub struct EventTypeIn {
     #[serde(default)]
     pub deprecated: bool,
     /// The schema for the event type for a specific version as a JSON schema.
+    #[validate(custom(function = "eventtype::Schema::validate"))]
     #[schemars(example = "event_type_versioned_schemas_example")]
     pub schemas: Option<eventtype::Schema>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -103,6 +105,7 @@ struct EventTypeUpdate {
     #[serde(default)]
     deprecated: bool,
     /// The schema for the event type for a specific version as a JSON schema.
+    #[validate(custom(function = "eventtype::Schema::validate"))]
     #[schemars(example = "event_type_versioned_schemas_example")]
     schemas: Option<eventtype::Schema>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -148,10 +151,20 @@ struct EventTypePatch {
     deprecated: UnrequiredField<bool>,
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
+    #[validate(custom(function = "validate_schemas_unrequired"))]
     schemas: UnrequiredNullableField<eventtype::Schema>,
 
     #[serde(default, skip_serializing_if = "UnrequiredNullableField::is_absent")]
     feature_flag: UnrequiredNullableField<FeatureFlag>,
+}
+
+fn validate_schemas_unrequired(
+    schemas: &UnrequiredNullableField<eventtype::Schema>,
+) -> std::result::Result<(), validator::ValidationError> {
+    match schemas {
+        UnrequiredNullableField::Some(schemas) => schemas.validate(),
+        UnrequiredNullableField::Absent | UnrequiredNullableField::None => Ok(()),
+    }
 }
 
 impl ModelIn for EventTypePatch {

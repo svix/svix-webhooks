@@ -9,6 +9,10 @@ import {
   ClickhouseConfigOutSerializer,
 } from "./clickhouseConfigOut";
 import {
+  type ElasticSearchConfigOut,
+  ElasticSearchConfigOutSerializer,
+} from "./elasticSearchConfigOut";
+import {
   type EventBridgeConfigOut,
   EventBridgeConfigOutSerializer,
 } from "./eventBridgeConfigOut";
@@ -24,9 +28,15 @@ import {
   type OtelTracingConfigOut,
   OtelTracingConfigOutSerializer,
 } from "./otelTracingConfigOut";
+import { type PostHogConfigOut, PostHogConfigOutSerializer } from "./postHogConfigOut";
+import { type PostgresConfigOut, PostgresConfigOutSerializer } from "./postgresConfigOut";
 import { type RabbitMqConfigOut, RabbitMqConfigOutSerializer } from "./rabbitMqConfigOut";
 import { type RedshiftConfigOut, RedshiftConfigOutSerializer } from "./redshiftConfigOut";
 import { type S3ConfigOut, S3ConfigOutSerializer } from "./s3ConfigOut";
+import {
+  type SegmentSinkConfigOut,
+  SegmentSinkConfigOutSerializer,
+} from "./segmentSinkConfigOut";
 import { type SinkHttpConfigOut, SinkHttpConfigOutSerializer } from "./sinkHttpConfigOut";
 import { type SinkStatus, SinkStatusSerializer } from "./sinkStatus";
 import {
@@ -57,9 +67,17 @@ interface _StreamSinkOutFields {
 // biome-ignore lint/suspicious/noEmptyInterface: backwards compat
 interface StreamSinkOutPollerConfig {}
 
+// biome-ignore lint/suspicious/noEmptyInterface: backwards compat
+interface StreamSinkOutPollingEndpointConfig {}
+
 interface StreamSinkOutPoller {
   type: "poller";
   config?: StreamSinkOutPollerConfig;
+}
+
+interface StreamSinkOutPollingEndpoint {
+  type: "pollingEndpoint";
+  config?: StreamSinkOutPollingEndpointConfig;
 }
 
 interface StreamSinkOutAzureBlobStorage {
@@ -132,9 +150,30 @@ interface StreamSinkOutSns {
   config: SnsConfigOut;
 }
 
+interface StreamSinkOutPostgres {
+  type: "postgres";
+  config: PostgresConfigOut;
+}
+
+interface StreamSinkOutElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigOut;
+}
+
+interface StreamSinkOutPostHog {
+  type: "postHog";
+  config: PostHogConfigOut;
+}
+
+interface StreamSinkOutSegment {
+  type: "segment";
+  config: SegmentSinkConfigOut;
+}
+
 export type StreamSinkOut = _StreamSinkOutFields &
   (
     | StreamSinkOutPoller
+    | StreamSinkOutPollingEndpoint
     | StreamSinkOutAzureBlobStorage
     | StreamSinkOutOtelTracing
     | StreamSinkOutHttp
@@ -149,6 +188,10 @@ export type StreamSinkOut = _StreamSinkOutFields &
     | StreamSinkOutSqs
     | StreamSinkOutEventBridge
     | StreamSinkOutSns
+    | StreamSinkOutPostgres
+    | StreamSinkOutElasticSearch
+    | StreamSinkOutPostHog
+    | StreamSinkOutSegment
   );
 
 export const StreamSinkOutSerializer = {
@@ -158,6 +201,9 @@ export const StreamSinkOutSerializer = {
     function getConfig(type: string): any {
       switch (type) {
         case "poller":
+          return {};
+
+        case "pollingEndpoint":
           return {};
         case "azureBlobStorage":
           return AzureBlobStorageConfigOutSerializer._fromJsonObject(object["config"]);
@@ -187,6 +233,14 @@ export const StreamSinkOutSerializer = {
           return EventBridgeConfigOutSerializer._fromJsonObject(object["config"]);
         case "sns":
           return SnsConfigOutSerializer._fromJsonObject(object["config"]);
+        case "postgres":
+          return PostgresConfigOutSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigOutSerializer._fromJsonObject(object["config"]);
+        case "postHog":
+          return PostHogConfigOutSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigOutSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -216,6 +270,9 @@ export const StreamSinkOutSerializer = {
     let config;
     switch (self.type) {
       case "poller":
+        config = {};
+        break;
+      case "pollingEndpoint":
         config = {};
         break;
       case "azureBlobStorage":
@@ -259,6 +316,18 @@ export const StreamSinkOutSerializer = {
         break;
       case "sns":
         config = SnsConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "postgres":
+        config = PostgresConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "postHog":
+        config = PostHogConfigOutSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigOutSerializer._toJsonObject(self.config);
         break;
     }
 

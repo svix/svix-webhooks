@@ -242,6 +242,66 @@ public abstract class StreamSinkPatchConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postgres")
+    public static class Postgres extends StreamSinkPatchConfig {
+        private final PostgresConfigPatch postgres;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postgres);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("elasticSearch")
+    public static class ElasticSearch extends StreamSinkPatchConfig {
+        private final ElasticSearchConfigPatch elasticSearch;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(elasticSearch);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postHog")
+    public static class PostHog extends StreamSinkPatchConfig {
+        private final PostHogConfigPatch postHog;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postHog);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("segment")
+    public static class Segment extends StreamSinkPatchConfig {
+        private final SegmentSinkConfigPatch segment;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(segment);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkPatchConfig create(JsonNode config);
@@ -278,6 +338,12 @@ public abstract class StreamSinkPatchConfig {
         TY_M.put("snowflake", c -> new Snowflake(m.convertValue(c, SnowflakeConfigPatch.class)));
         TY_M.put("rabbitMq", c -> new RabbitMq(m.convertValue(c, RabbitMqConfigPatch.class)));
         TY_M.put("redshift", c -> new Redshift(m.convertValue(c, RedshiftConfigPatch.class)));
+        TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigPatch.class)));
+        TY_M.put(
+                "elasticSearch",
+                c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigPatch.class)));
+        TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigPatch.class)));
+        TY_M.put("segment", c -> new Segment(m.convertValue(c, SegmentSinkConfigPatch.class)));
     }
 
     public static StreamSinkPatchConfig fromTypeAndConfig(String type, JsonNode config) {

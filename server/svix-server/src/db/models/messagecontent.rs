@@ -47,7 +47,7 @@ impl ActiveModel {
 }
 
 impl Entity {
-    pub fn secure_find_by_id_in(ids: Vec<MessageId>) -> Select<Entity> {
+    pub fn secure_find_by_id_in(ids: impl IntoIterator<Item = MessageId>) -> Select<Entity> {
         Self::find().filter(Column::Id.is_in(ids))
     }
 }

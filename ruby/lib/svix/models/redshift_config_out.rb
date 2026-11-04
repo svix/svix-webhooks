@@ -5,6 +5,8 @@ require "json"
 module Svix
   class RedshiftConfigOut
     attr_accessor :access_key_id
+    attr_accessor :role_arn
+    attr_accessor :external_id
     attr_accessor :region
     attr_accessor :cluster_identifier
     attr_accessor :db_user
@@ -24,6 +26,8 @@ module Svix
 
     ALL_FIELD ||= [
       "access_key_id",
+      "role_arn",
+      "external_id",
       "region",
       "cluster_identifier",
       "db_user",
@@ -53,6 +57,8 @@ module Svix
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
       attrs["access_key_id"] = attributes["accessKeyId"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       attrs["region"] = attributes["region"]
       attrs["cluster_identifier"] = attributes["clusterIdentifier"]
       attrs["db_user"] = attributes["dbUser"]
@@ -65,21 +71,23 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) if @cluster_identifier
-      out["dbUser"] = Svix::serialize_primitive(@db_user) if @db_user
-      out["workgroupName"] = Svix::serialize_primitive(@workgroup_name) if @workgroup_name
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
-      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
+      out["clusterIdentifier"] = Svix::serialize_primitive(@cluster_identifier) unless @cluster_identifier.nil?
+      out["dbUser"] = Svix::serialize_primitive(@db_user) unless @db_user.nil?
+      out["workgroupName"] = Svix::serialize_primitive(@workgroup_name) unless @workgroup_name.nil?
+      out["dbName"] = Svix::serialize_primitive(@db_name) unless @db_name.nil?
+      out["schemaName"] = Svix::serialize_primitive(@schema_name) unless @schema_name.nil?
+      out["tableName"] = Svix::serialize_primitive(@table_name) unless @table_name.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

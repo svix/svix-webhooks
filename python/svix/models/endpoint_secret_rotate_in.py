@@ -14,4 +14,5 @@ class EndpointSecretRotateIn(BaseModel):
     grace_period_seconds: t.Optional[int] = None
     """How long the old secret will be valid for, in seconds.
 
-    Valid values are between 0 (immediate expiry) and 7 days. The default is 24 hours."""
+    Valid values are between 0 (immediate expiry) and 7 days.
+    The default is 24 hours."""

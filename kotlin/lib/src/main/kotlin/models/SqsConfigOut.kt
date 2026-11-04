@@ -7,6 +7,8 @@ import kotlinx.serialization.Serializable
 data class SqsConfigOut(
     val queueUrl: String,
     val region: String,
-    val accessKeyId: String,
+    val accessKeyId: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val endpointUrl: String? = null,
 )

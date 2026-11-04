@@ -3,14 +3,14 @@ name = "svix-cli"
 description = "A CLI to interact with the Svix API."
 homepage = "https://www.svix.com"
 authors = ["Svix Inc. <oss@svix.com>"]
-version = "2.0.0"
+version = "2.9.1"
 edition = "2021"
 license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
 categories = ["development-tools", "asynchronous", "network-programming", "web-programming"]
 repository = "https://github.com/svix/svix-webhooks"
 publish = false
-# update .github/workflows/cli-lint.yml when changing this
+# keep this in sync with .github/workflows/cli-lint.yml
 rust-version = "1.88"
 
 [package.metadata.dist]

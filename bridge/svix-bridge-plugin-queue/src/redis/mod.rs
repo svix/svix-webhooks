@@ -1,9 +1,27 @@
-use omniqueue::{DynConsumer, DynProducer, backends};
+use omniqueue::{DynConsumer, DynProducer, QueueConsumer as _, QueueProducer as _, backends};
 use serde::Deserialize;
 
-use crate::error::{Error, Result};
+use crate::error::Result;
 
-#[derive(Debug, Default, Deserialize)]
+// wrapper because omniqueue::backends::redis::DeadLetterQueueConfig doesn't implement Deserialize
+#[derive(Clone, Debug, Deserialize)]
+pub struct DeadLetterQueueConfig {
+    /// The name of the dead letter queue (a plain Redis list).
+    pub queue_key: String,
+    /// The number of times a message may be received before being sent to the dead letter queue.
+    pub max_receives: usize,
+}
+
+impl From<DeadLetterQueueConfig> for backends::redis::DeadLetterQueueConfig {
+    fn from(value: DeadLetterQueueConfig) -> Self {
+        Self {
+            queue_key: value.queue_key,
+            max_receives: value.max_receives,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Default, Deserialize)]
 pub struct RedisInputOpts {
     pub dsn: String,
     pub max_connections: u16,
@@ -15,6 +33,7 @@ pub struct RedisInputOpts {
     pub consumer_name: String,
     #[serde(default = "default_ack_deadline_ms")]
     pub ack_deadline_ms: i64,
+    pub dlq_config: Option<DeadLetterQueueConfig>,
 }
 
 fn default_reinsert_on_nack() -> bool {
@@ -42,7 +61,7 @@ pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
         .unwrap_or_else(|| format!("{}_delays", cfg.queue_key));
     let delayed_lock_key = format!("{delayed_queue_key}_lock");
 
-    backends::RedisBackend::builder(backends::RedisConfig {
+    let c = backends::RedisBackend::builder(backends::RedisConfig {
         dsn: cfg.dsn.clone(),
         max_connections: cfg.max_connections,
         reinsert_on_nack: cfg.reinsert_on_nack,
@@ -54,13 +73,14 @@ pub async fn consumer(cfg: &RedisInputOpts) -> Result<DynConsumer> {
         // FIXME: expose in config?
         payload_key: "payload".to_string(),
         ack_deadline_ms: cfg.ack_deadline_ms,
-        dlq_config: None,
+        dlq_config: cfg.dlq_config.clone().map(Into::into),
         sentinel_config: None,
     })
-    .make_dynamic()
     .build_consumer()
-    .await
-    .map_err(Error::from)
+    .await?
+    .into_dyn();
+
+    Ok(c)
 }
 pub async fn producer(cfg: &RedisOutputOpts) -> Result<DynProducer> {
     let delayed_queue_key = cfg
@@ -69,7 +89,7 @@ pub async fn producer(cfg: &RedisOutputOpts) -> Result<DynProducer> {
         .unwrap_or_else(|| format!("{}_delays", cfg.queue_key));
     let delayed_lock_key = format!("{delayed_queue_key}_lock");
 
-    backends::RedisBackend::builder(backends::RedisConfig {
+    let p = backends::RedisBackend::builder(backends::RedisConfig {
         dsn: cfg.dsn.clone(),
         max_connections: cfg.max_connections,
         queue_key: cfg.queue_key.clone(),
@@ -85,8 +105,9 @@ pub async fn producer(cfg: &RedisOutputOpts) -> Result<DynProducer> {
         dlq_config: None,
         sentinel_config: None,
     })
-    .make_dynamic()
     .build_producer()
-    .await
-    .map_err(Error::from)
+    .await?
+    .into_dyn();
+
+    Ok(p)
 }

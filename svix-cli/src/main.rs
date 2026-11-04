@@ -9,6 +9,7 @@ use self::{
     cmds::{
         api::{
             application::ApplicationArgs, authentication::AuthenticationArgs,
+            autoconfig_subscription::AutoconfigSubscriptionArgs, destination::DestinationArgs,
             endpoint::EndpointArgs, environment::EnvironmentArgs, event_type::EventTypeArgs,
             ingest::IngestArgs, integration::IntegrationArgs, message::MessageArgs,
             message_attempt::MessageAttemptArgs, operational_webhook::OperationalWebhookArgs,
@@ -79,10 +80,14 @@ enum RootCommands {
     Application(ApplicationArgs),
     /// Manage authentication tasks such as getting dashboard URLs
     Authentication(AuthenticationArgs),
+    /// Create and rotate AutoConfig subscriptions
+    AutoconfigSubscription(AutoconfigSubscriptionArgs),
     /// Generate the autocompletion script for the specified shell
     Completion { shell: Shell },
     /// List, create & modify connectors
     Connector(ConnectorArgs),
+    /// List, create & modify destinations
+    Destination(DestinationArgs),
     /// List, create & modify endpoints
     Endpoint(EndpointArgs),
     /// Import or export environments
@@ -157,7 +162,15 @@ async fn main() -> Result<()> {
             let client = get_client(&cfg)?;
             args.command.exec(&client, color_mode).await?;
         }
+        RootCommands::AutoconfigSubscription(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
         RootCommands::Connector(args) => {
+            let client = get_client(&cfg?)?;
+            args.command.exec(&client, color_mode).await?;
+        }
+        RootCommands::Destination(args) => {
             let client = get_client(&cfg?)?;
             args.command.exec(&client, color_mode).await?;
         }

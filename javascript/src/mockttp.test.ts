@@ -170,6 +170,50 @@ test("mockttp tests", async (t) => {
     assert(after - before >= retryScheduleInMs.reduce((prev, curr) => prev + curr, 0));
   });
 
+  await t.test("test retry on connection reset", async () => {
+    const resetMock = await mockServer.forGet("/api/v1/app").once().thenResetConnection();
+    const okMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await svx.application.list();
+
+    assert.equal((await resetMock.getSeenRequests()).length, 1);
+    const retries = await okMock.getSeenRequests();
+    assert.equal(retries.length, 1);
+    assert.equal(retries[0].headers["svix-retry-count"], "1");
+  });
+
+  await t.test("test retry on timeout", async () => {
+    const timeoutMock = await mockServer.forGet("/api/v1/app").once().thenTimeout();
+    const okMock = await mockServer
+      .forGet("/api/v1/app")
+      .thenReply(200, ListResponseApplicationOut);
+    const svx = new Svix("token", { serverUrl: mockServer.url, requestTimeout: 100 });
+
+    await svx.application.list();
+
+    assert.equal((await timeoutMock.getSeenRequests()).length, 1);
+    assert.equal((await okMock.getSeenRequests()).length, 1);
+  });
+
+  await t.test("test timeout applies to each retry attempt", async () => {
+    const retryScheduleInMs = [10, 10];
+    const endpointMock = await mockServer.forGet("/api/v1/app").thenTimeout();
+    const svx = new Svix("token", {
+      serverUrl: mockServer.url,
+      requestTimeout: 100,
+      retryScheduleInMs,
+    });
+
+    await assert.rejects(svx.application.list());
+
+    // every attempt actually reaches the server instead of being aborted immediately
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, retryScheduleInMs.length + 1);
+  });
+
   await t.test("no body in response does not return anything", async () => {
     const endpointMock = await mockServer
       .forDelete("/api/v1/app/app1")
@@ -220,6 +264,34 @@ test("mockttp tests", async (t) => {
 
     const requests = await endpointMock.getSeenRequests();
     assert.equal(requests.length, 2);
+  });
+
+  await t.test("non-JSON 4xx body returns ApiException", async () => {
+    const htmlPage = "<html><body><h1>413 Request Entity Too Large</h1></body></html>";
+    const endpointMock = await mockServer.forGet("/api/v1/app").thenReply(413, htmlPage);
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await assert.rejects(svx.application.list(), (e: unknown) => {
+      assert(e instanceof ApiException);
+      assert.equal(e.code, 413);
+      assert.equal(e.body, htmlPage);
+      return true;
+    });
+
+    const requests = await endpointMock.getSeenRequests();
+    assert.equal(requests.length, 1);
+  });
+
+  await t.test("empty 422 body returns ApiException", async () => {
+    await mockServer.forGet("/api/v1/app").thenReply(422, "");
+    const svx = new Svix("token", { serverUrl: mockServer.url });
+
+    await assert.rejects(svx.application.list(), (e: unknown) => {
+      assert(e instanceof ApiException);
+      assert.equal(e.code, 422);
+      assert.equal(e.body, "");
+      return true;
+    });
   });
 
   await t.test("sub-resource works", async () => {
@@ -339,7 +411,7 @@ test("mockttp tests", async (t) => {
     assert.ok(requests[0].headers["user-agent"]);
     assert.match(
       requests[0].headers["user-agent"],
-      /^svix-libs\/[0-9.]+(-[a-z]+.[0-9]+)?\/javascript node\/v[0-9.]+ (aix|darwin|freebsd|linux|openbsd|sunos|win32)\/(arm|arm64|ia32|x64)$/
+      /^svix-libs\/[0-9.]+(-[a-z]+.[0-9]+)?\/javascript node\/v[0-9.]+[^ /]* (aix|darwin|freebsd|linux|openbsd|sunos|win32)\/(arm|arm64|ia32|x64)$/
     );
   });
 

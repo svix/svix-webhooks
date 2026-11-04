@@ -38,6 +38,11 @@ sealed class IngestSourceOutConfig {
         override fun toJsonElement() = buildJsonObject {}
     }
 
+    @VariantName("generic")
+    data class Generic(val generic: GenericConfig) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(GenericConfig.serializer(), generic)
+    }
+
     @VariantName("cron")
     data class Cron(val cron: CronConfig) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(CronConfig.serializer(), cron)
@@ -49,9 +54,21 @@ sealed class IngestSourceOutConfig {
             Json.encodeToJsonElement(AdobeSignConfigOut.serializer(), adobeSign)
     }
 
+    @VariantName("ascend")
+    data class Ascend(val ascend: AscendConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(AscendConfigOut.serializer(), ascend)
+    }
+
     @VariantName("beehiiv")
     data class Beehiiv(val beehiiv: SvixConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), beehiiv)
+    }
+
+    @VariantName("bitbucket")
+    data class Bitbucket(val bitbucket: BitbucketConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(BitbucketConfigOut.serializer(), bitbucket)
     }
 
     @VariantName("brex")
@@ -108,6 +125,11 @@ sealed class IngestSourceOutConfig {
     @VariantName("lithic")
     data class Lithic(val lithic: SvixConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(SvixConfigOut.serializer(), lithic)
+    }
+
+    @VariantName("merge")
+    data class Merge(val merge: MergeConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() = Json.encodeToJsonElement(MergeConfigOut.serializer(), merge)
     }
 
     @VariantName("meta")
@@ -237,6 +259,13 @@ sealed class IngestSourceOutConfig {
             Json.encodeToJsonElement(TelnyxConfigOut.serializer(), telnyx)
     }
 
+    @VariantName("tricentis-qtest")
+    data class TricentisQtest(val tricentisQtest: TricentisQtestConfigOut) :
+        IngestSourceOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(TricentisQtestConfigOut.serializer(), tricentisQtest)
+    }
+
     @VariantName("vapi")
     data class Vapi(val vapi: VapiConfigOut) : IngestSourceOutConfig() {
         override fun toJsonElement() = Json.encodeToJsonElement(VapiConfigOut.serializer(), vapi)
@@ -273,6 +302,10 @@ sealed class IngestSourceOutConfig {
         private val typeMap =
             mapOf<String, (JsonElement) -> IngestSourceOutConfig>(
                 "generic-webhook" to { _ -> GenericWebhook },
+                "generic" to
+                    { config ->
+                        Generic(Json.decodeFromJsonElement(GenericConfig.serializer(), config))
+                    },
                 "cron" to
                     { config ->
                         Cron(Json.decodeFromJsonElement(CronConfig.serializer(), config))
@@ -283,9 +316,19 @@ sealed class IngestSourceOutConfig {
                             Json.decodeFromJsonElement(AdobeSignConfigOut.serializer(), config)
                         )
                     },
+                "ascend" to
+                    { config ->
+                        Ascend(Json.decodeFromJsonElement(AscendConfigOut.serializer(), config))
+                    },
                 "beehiiv" to
                     { config ->
                         Beehiiv(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
+                    },
+                "bitbucket" to
+                    { config ->
+                        Bitbucket(
+                            Json.decodeFromJsonElement(BitbucketConfigOut.serializer(), config)
+                        )
                     },
                 "brex" to
                     { config ->
@@ -328,6 +371,10 @@ sealed class IngestSourceOutConfig {
                 "lithic" to
                     { config ->
                         Lithic(Json.decodeFromJsonElement(SvixConfigOut.serializer(), config))
+                    },
+                "merge" to
+                    { config ->
+                        Merge(Json.decodeFromJsonElement(MergeConfigOut.serializer(), config))
                     },
                 "meta" to
                     { config ->
@@ -423,6 +470,12 @@ sealed class IngestSourceOutConfig {
                     { config ->
                         Telnyx(Json.decodeFromJsonElement(TelnyxConfigOut.serializer(), config))
                     },
+                "tricentis-qtest" to
+                    { config ->
+                        TricentisQtest(
+                            Json.decodeFromJsonElement(TricentisQtestConfigOut.serializer(), config)
+                        )
+                    },
                 "vapi" to
                     { config ->
                         Vapi(Json.decodeFromJsonElement(VapiConfigOut.serializer(), config))
@@ -471,7 +524,7 @@ class IngestSourceOutSerializer : KSerializer<IngestSourceOut> {
         val updatedAt: Instant,
         val metadata: Map<String, String>,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = IngestSourceOutSurrogate.serializer().descriptor

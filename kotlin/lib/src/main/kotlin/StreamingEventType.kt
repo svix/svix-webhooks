@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.kotlin
 
+import com.svix.kotlin.models.ArchiveStatus
 import com.svix.kotlin.models.ListResponseStreamEventTypeOut
 import com.svix.kotlin.models.Ordering
 import com.svix.kotlin.models.StreamEventTypeIn
@@ -15,17 +16,24 @@ data class StreamingEventTypeListOptions(
     val iterator: String? = null,
     /** The sorting order of the returned items */
     val order: Ordering? = null,
-    /** Include archived (deleted but not expunged) items in the response. */
+    /**
+     * Include archived items in the response.
+     *
+     * Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
+     */
     val includeArchived: Boolean? = null,
+    /**
+     * Which items to include based on whether they are archived.
+     *
+     * Defaults to `active`.
+     */
+    val archiveStatus: ArchiveStatus? = null,
 )
 
 data class StreamingEventTypeCreateOptions(val idempotencyKey: String? = null)
 
 data class StreamingEventTypeDeleteOptions(
-    /**
-     * By default, event types are archived when "deleted". With this flag, they are deleted
-     * entirely.
-     */
+    /** Entirely delete the event type, rather than archiving it. */
     val expunge: Boolean? = null
 )
 
@@ -40,6 +48,9 @@ class StreamingEventType(private val client: SvixHttpClient) {
         options.order?.let { url.addQueryParameter("order", serializeQueryParam(it)) }
         options.includeArchived?.let {
             url.addQueryParameter("include_archived", serializeQueryParam(it))
+        }
+        options.archiveStatus?.let {
+            url.addQueryParameter("archive_status", serializeQueryParam(it))
         }
         return client.executeRequest<Any, ListResponseStreamEventTypeOut>("GET", url.build())
     }
@@ -78,7 +89,12 @@ class StreamingEventType(private val client: SvixHttpClient) {
         )
     }
 
-    /** Delete an event type. */
+    /**
+     * Archive an event type.
+     *
+     * An event type can be unarchived with the
+     * [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
+     */
     suspend fun delete(
         name: String,
         options: StreamingEventTypeDeleteOptions = StreamingEventTypeDeleteOptions(),

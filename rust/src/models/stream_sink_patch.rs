@@ -6,14 +6,16 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_patch::AzureBlobStorageConfigPatch,
     big_query_config_patch::BigQueryConfigPatch, clickhouse_config_patch::ClickhouseConfigPatch,
+    elastic_search_config_patch::ElasticSearchConfigPatch,
     event_bridge_config_patch::EventBridgeConfigPatch,
     google_cloud_pub_sub_config_patch::GoogleCloudPubSubConfigPatch,
     google_cloud_storage_config_patch::GoogleCloudStorageConfigPatch,
-    otel_tracing_config_patch::OtelTracingConfigPatch, rabbit_mq_config_patch::RabbitMqConfigPatch,
+    otel_tracing_config_patch::OtelTracingConfigPatch, post_hog_config_patch::PostHogConfigPatch,
+    postgres_config_patch::PostgresConfigPatch, rabbit_mq_config_patch::RabbitMqConfigPatch,
     redshift_config_patch::RedshiftConfigPatch, s3_config_patch::S3ConfigPatch,
-    sink_http_config_patch::SinkHttpConfigPatch, sink_status_in::SinkStatusIn,
-    snowflake_config_patch::SnowflakeConfigPatch, sns_config_patch::SnsConfigPatch,
-    sqs_config_patch::SqsConfigPatch,
+    segment_sink_config_patch::SegmentSinkConfigPatch, sink_http_config_patch::SinkHttpConfigPatch,
+    sink_status_in::SinkStatusIn, snowflake_config_patch::SnowflakeConfigPatch,
+    sns_config_patch::SnsConfigPatch, sqs_config_patch::SqsConfigPatch,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -80,4 +82,12 @@ pub enum StreamSinkPatchConfig {
     RabbitMq(RabbitMqConfigPatch),
     #[serde(rename = "redshift")]
     Redshift(RedshiftConfigPatch),
+    #[serde(rename = "postgres")]
+    Postgres(PostgresConfigPatch),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigPatch),
+    #[serde(rename = "postHog")]
+    PostHog(PostHogConfigPatch),
+    #[serde(rename = "segment")]
+    Segment(SegmentSinkConfigPatch),
 }

@@ -12,7 +12,9 @@ class SqsConfigOut implements \JsonSerializable
     private function __construct(
         public readonly string $queueUrl,
         public readonly string $region,
-        public readonly string $accessKeyId,
+        public readonly ?string $accessKeyId = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
@@ -25,14 +27,63 @@ class SqsConfigOut implements \JsonSerializable
     public static function create(
         string $queueUrl,
         string $region,
-        string $accessKeyId,
     ): self {
         return new self(
             queueUrl: $queueUrl,
             region: $region,
-            accessKeyId: $accessKeyId,
+            accessKeyId: null,
+            roleArn: null,
+            externalId: null,
             endpointUrl: null,
-            setFields: ['queueUrl' => true, 'region' => true, 'accessKeyId' => true]
+            setFields: ['queueUrl' => true, 'region' => true]
+        );
+    }
+
+    public function withAccessKeyId(?string $accessKeyId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['accessKeyId'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            queueUrl: $this->queueUrl,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
         );
     }
 
@@ -45,6 +96,8 @@ class SqsConfigOut implements \JsonSerializable
             queueUrl: $this->queueUrl,
             region: $this->region,
             accessKeyId: $this->accessKeyId,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $endpointUrl,
             setFields: $setFields
         );
@@ -54,9 +107,17 @@ class SqsConfigOut implements \JsonSerializable
     {
         $data = [
             'queueUrl' => $this->queueUrl,
-            'region' => $this->region,
-            'accessKeyId' => $this->accessKeyId];
+            'region' => $this->region];
 
+        if (isset($this->setFields['accessKeyId'])) {
+            $data['accessKeyId'] = $this->accessKeyId;
+        }
+        if (isset($this->setFields['roleArn'])) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (isset($this->setFields['externalId'])) {
+            $data['externalId'] = $this->externalId;
+        }
         if (isset($this->setFields['endpointUrl'])) {
             $data['endpointUrl'] = $this->endpointUrl;
         }
@@ -72,7 +133,9 @@ class SqsConfigOut implements \JsonSerializable
         return new self(
             queueUrl: \Svix\Utils::getValFromJson($data, 'queueUrl', true, 'SqsConfigOut'),
             region: \Svix\Utils::deserializeString($data, 'region', true, 'SqsConfigOut'),
-            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', true, 'SqsConfigOut'),
+            accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SqsConfigOut'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'SqsConfigOut'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'SqsConfigOut'),
             endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SqsConfigOut')
         );
     }

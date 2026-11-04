@@ -37,6 +37,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("generic")
+    public static class Generic extends IngestSourceInConfig {
+        private final GenericConfig generic;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(generic);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("cron")
     public static class Cron extends IngestSourceInConfig {
         private final CronConfig cron;
@@ -67,6 +82,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("ascend")
+    public static class Ascend extends IngestSourceInConfig {
+        private final AscendConfig ascend;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(ascend);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("beehiiv")
     public static class Beehiiv extends IngestSourceInConfig {
         private final SvixConfig beehiiv;
@@ -74,6 +104,21 @@ public abstract class IngestSourceInConfig {
         @Override
         public JsonNode toJsonNode() {
             return Utils.getObjectMapper().valueToTree(beehiiv);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("bitbucket")
+    public static class Bitbucket extends IngestSourceInConfig {
+        private final BitbucketConfig bitbucket;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(bitbucket);
         }
     }
 
@@ -224,6 +269,21 @@ public abstract class IngestSourceInConfig {
         @Override
         public JsonNode toJsonNode() {
             return Utils.getObjectMapper().valueToTree(lithic);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("merge")
+    public static class Merge extends IngestSourceInConfig {
+        private final MergeConfig merge;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(merge);
         }
     }
 
@@ -577,6 +637,21 @@ public abstract class IngestSourceInConfig {
     @AllArgsConstructor
     @ToString
     @EqualsAndHashCode(callSuper = false)
+    @VariantName("tricentis-qtest")
+    public static class TricentisQtest extends IngestSourceInConfig {
+        private final TricentisQtestConfig tricentisQtest;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(tricentisQtest);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
     @VariantName("vapi")
     public static class Vapi extends IngestSourceInConfig {
         private final VapiConfig vapi;
@@ -672,9 +747,12 @@ public abstract class IngestSourceInConfig {
 
     static {
         TY_M.put("generic-webhook", c -> new GenericWebhook());
+        TY_M.put("generic", c -> new Generic(m.convertValue(c, GenericConfig.class)));
         TY_M.put("cron", c -> new Cron(m.convertValue(c, CronConfig.class)));
         TY_M.put("adobe-sign", c -> new AdobeSign(m.convertValue(c, AdobeSignConfig.class)));
+        TY_M.put("ascend", c -> new Ascend(m.convertValue(c, AscendConfig.class)));
         TY_M.put("beehiiv", c -> new Beehiiv(m.convertValue(c, SvixConfig.class)));
+        TY_M.put("bitbucket", c -> new Bitbucket(m.convertValue(c, BitbucketConfig.class)));
         TY_M.put("brex", c -> new Brex(m.convertValue(c, SvixConfig.class)));
         TY_M.put("checkbook", c -> new Checkbook(m.convertValue(c, CheckbookConfig.class)));
         TY_M.put("clerk", c -> new Clerk(m.convertValue(c, SvixConfig.class)));
@@ -685,6 +763,7 @@ public abstract class IngestSourceInConfig {
         TY_M.put("hubspot", c -> new Hubspot(m.convertValue(c, HubspotConfig.class)));
         TY_M.put("incident-io", c -> new IncidentIo(m.convertValue(c, SvixConfig.class)));
         TY_M.put("lithic", c -> new Lithic(m.convertValue(c, SvixConfig.class)));
+        TY_M.put("merge", c -> new Merge(m.convertValue(c, MergeConfig.class)));
         TY_M.put("meta", c -> new Meta(m.convertValue(c, MetaConfig.class)));
         TY_M.put("nango", c -> new Nango(m.convertValue(c, NangoConfig.class)));
         TY_M.put("nash", c -> new Nash(m.convertValue(c, SvixConfig.class)));
@@ -708,6 +787,9 @@ public abstract class IngestSourceInConfig {
         TY_M.put("zoom", c -> new Zoom(m.convertValue(c, ZoomConfig.class)));
         TY_M.put("tailscale", c -> new Tailscale(m.convertValue(c, TailscaleConfig.class)));
         TY_M.put("telnyx", c -> new Telnyx(m.convertValue(c, TelnyxConfig.class)));
+        TY_M.put(
+                "tricentis-qtest",
+                c -> new TricentisQtest(m.convertValue(c, TricentisQtestConfig.class)));
         TY_M.put("vapi", c -> new Vapi(m.convertValue(c, VapiConfig.class)));
         TY_M.put("open-ai", c -> new OpenAi(m.convertValue(c, SvixConfig.class)));
         TY_M.put("render", c -> new Render(m.convertValue(c, SvixConfig.class)));

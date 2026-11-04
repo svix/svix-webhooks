@@ -1,6 +1,19 @@
 # Changelog
 
 ## Unreleased
+* Change Docker images to be based on wolfi instead of debian
+* Bump MSRV to 1.96
+* Replace `serde_yaml` with `serde_saphyr` for parsing configuration; please let us know if you encounter any config files that fail to parse
+
+## Version 1.101.1
+* Rebuild Docker image for CVE-2026-111497
+* Add `dlq_config` to Redis queue plugin (thanks @stackedbyaradhya)
+
+## Version 1.101.0
+* Add an rquickjs backend for transformations, alongside the Deno backend. In a future version, Deno will be removed. This backend is *significantly* faster for most programs, but does not include some of the node.js APIs that Deno supports. Please test your applications against it by setting `js_engine = "quick-js"` in your Bridge config.
+* Switch from `jemalloc` to `mimalloc` as the global allocator
+* Add `consume_prefetch_count` to RabbitMQ queue plugin (thanks @stackedbyaradhya)
+* Remove [compromised eMudhra CA certificates](https://emudhra.we-have-a-problem.com/) from TLS trust store
 
 ## Version 1.100.0
 * Add an opt-in Kafka record envelope for JSON transformations

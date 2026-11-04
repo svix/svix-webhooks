@@ -8,9 +8,19 @@ module Svix
     attr_accessor :region
     attr_accessor :access_key_id
     attr_accessor :secret_access_key
+    attr_accessor :role_arn
+    attr_accessor :external_id
     attr_accessor :endpoint_url
 
-    ALL_FIELD ||= ["topic_arn", "region", "access_key_id", "secret_access_key", "endpoint_url"].freeze
+    ALL_FIELD ||= [
+      "topic_arn",
+      "region",
+      "access_key_id",
+      "secret_access_key",
+      "role_arn",
+      "external_id",
+      "endpoint_url"
+    ].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -35,24 +45,28 @@ module Svix
       attrs["region"] = attributes["region"]
       attrs["access_key_id"] = attributes["accessKeyId"]
       attrs["secret_access_key"] = attributes["secretAccessKey"]
+      attrs["role_arn"] = attributes["roleArn"]
+      attrs["external_id"] = attributes["externalId"]
       attrs["endpoint_url"] = attributes["endpointUrl"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["topicArn"] = Svix::serialize_primitive(@topic_arn) if @topic_arn
-      out["region"] = Svix::serialize_primitive(@region) if @region
-      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) if @access_key_id
-      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) if @secret_access_key
+      out["topicArn"] = Svix::serialize_primitive(@topic_arn) unless @topic_arn.nil?
+      out["region"] = Svix::serialize_primitive(@region) unless @region.nil?
+      out["accessKeyId"] = Svix::serialize_primitive(@access_key_id) unless @access_key_id.nil?
+      out["secretAccessKey"] = Svix::serialize_primitive(@secret_access_key) unless @secret_access_key.nil?
+      out["roleArn"] = Svix::serialize_primitive(@role_arn) unless @role_arn.nil?
+      out["externalId"] = Svix::serialize_primitive(@external_id) unless @external_id.nil?
       out["endpointUrl"] = Svix::serialize_primitive(@endpoint_url) if @__endpoint_url_is_defined
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

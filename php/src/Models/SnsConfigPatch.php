@@ -14,6 +14,8 @@ class SnsConfigPatch implements \JsonSerializable
         public readonly ?string $region = null,
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $endpointUrl = null,
         array $setFields = [],
     ) {
@@ -30,6 +32,8 @@ class SnsConfigPatch implements \JsonSerializable
             region: null,
             accessKeyId: null,
             secretAccessKey: null,
+            roleArn: null,
+            externalId: null,
             endpointUrl: null,
             setFields: []
         );
@@ -45,6 +49,8 @@ class SnsConfigPatch implements \JsonSerializable
             region: $this->region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -60,6 +66,8 @@ class SnsConfigPatch implements \JsonSerializable
             region: $region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -75,6 +83,8 @@ class SnsConfigPatch implements \JsonSerializable
             region: $this->region,
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -90,6 +100,42 @@ class SnsConfigPatch implements \JsonSerializable
             region: $this->region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            topicArn: $this->topicArn,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            topicArn: $this->topicArn,
+            region: $this->region,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
         );
@@ -105,6 +151,8 @@ class SnsConfigPatch implements \JsonSerializable
             region: $this->region,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             endpointUrl: $endpointUrl,
             setFields: $setFields
         );
@@ -127,6 +175,12 @@ class SnsConfigPatch implements \JsonSerializable
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
         }
+        if (null !== $this->roleArn) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (null !== $this->externalId) {
+            $data['externalId'] = $this->externalId;
+        }
         if (isset($this->setFields['endpointUrl'])) {
             $data['endpointUrl'] = $this->endpointUrl;
         }
@@ -144,6 +198,8 @@ class SnsConfigPatch implements \JsonSerializable
             region: \Svix\Utils::deserializeString($data, 'region', false, 'SnsConfigPatch'),
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'SnsConfigPatch'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'SnsConfigPatch'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'SnsConfigPatch'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'SnsConfigPatch'),
             endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'SnsConfigPatch')
         );
     }

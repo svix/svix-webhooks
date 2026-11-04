@@ -44,6 +44,11 @@ sealed class StreamSinkOutConfig {
         override fun toJsonElement() = buildJsonObject {}
     }
 
+    @VariantName("pollingEndpoint")
+    data object PollingEndpoint : StreamSinkOutConfig() {
+        override fun toJsonElement() = buildJsonObject {}
+    }
+
     @VariantName("azureBlobStorage")
     data class AzureBlobStorage(val azureBlobStorage: AzureBlobStorageConfigOut) :
         StreamSinkOutConfig() {
@@ -128,10 +133,35 @@ sealed class StreamSinkOutConfig {
         override fun toJsonElement() = Json.encodeToJsonElement(SnsConfigOut.serializer(), sns)
     }
 
+    @VariantName("postgres")
+    data class Postgres(val postgres: PostgresConfigOut) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostgresConfigOut.serializer(), postgres)
+    }
+
+    @VariantName("elasticSearch")
+    data class ElasticSearch(val elasticSearch: ElasticSearchConfigOut) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(ElasticSearchConfigOut.serializer(), elasticSearch)
+    }
+
+    @VariantName("postHog")
+    data class PostHog(val postHog: PostHogConfigOut) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostHogConfigOut.serializer(), postHog)
+    }
+
+    @VariantName("segment")
+    data class Segment(val segment: SegmentSinkConfigOut) : StreamSinkOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SegmentSinkConfigOut.serializer(), segment)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkOutConfig>(
                 "poller" to { _ -> Poller },
+                "pollingEndpoint" to { _ -> PollingEndpoint },
                 "azureBlobStorage" to
                     { config ->
                         AzureBlobStorage(
@@ -211,6 +241,26 @@ sealed class StreamSinkOutConfig {
                     { config ->
                         Sns(Json.decodeFromJsonElement(SnsConfigOut.serializer(), config))
                     },
+                "postgres" to
+                    { config ->
+                        Postgres(Json.decodeFromJsonElement(PostgresConfigOut.serializer(), config))
+                    },
+                "elasticSearch" to
+                    { config ->
+                        ElasticSearch(
+                            Json.decodeFromJsonElement(ElasticSearchConfigOut.serializer(), config)
+                        )
+                    },
+                "postHog" to
+                    { config ->
+                        PostHog(Json.decodeFromJsonElement(PostHogConfigOut.serializer(), config))
+                    },
+                "segment" to
+                    { config ->
+                        Segment(
+                            Json.decodeFromJsonElement(SegmentSinkConfigOut.serializer(), config)
+                        )
+                    },
             )
 
         fun fromTypeAndConfig(type: String, config: JsonElement): StreamSinkOutConfig {
@@ -239,7 +289,7 @@ class StreamSinkOutSerializer : KSerializer<StreamSinkOut> {
         val nextRetryAt: Instant? = null,
         val metadata: Map<String, String>,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = StreamSinkOutSurrogate.serializer().descriptor

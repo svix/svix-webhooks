@@ -1,7 +1,7 @@
 // Package svix this file is @generated DO NOT EDIT
 package svix
 
-import "github.com/svix/svix-webhooks/go/models"
+import "github.com/svix/svix-webhooks/v2/go/models"
 
 type (
 	AdobeSignConfig                           = models.AdobeSignConfig
@@ -19,6 +19,10 @@ type (
 	ApplicationOut                            = models.ApplicationOut
 	ApplicationPatch                          = models.ApplicationPatch
 	ApplicationTokenExpireIn                  = models.ApplicationTokenExpireIn
+	ArchiveStatus                             = models.ArchiveStatus
+	AscendConfig                              = models.AscendConfig
+	AscendConfigOut                           = models.AscendConfigOut
+	AutoConfigOut                             = models.AutoConfigOut
 	AzureBlobStorageConfigIn                  = models.AzureBlobStorageConfigIn
 	AzureBlobStorageConfigOut                 = models.AzureBlobStorageConfigOut
 	AzureBlobStorageConfigPatch               = models.AzureBlobStorageConfigPatch
@@ -28,6 +32,8 @@ type (
 	BigQueryConfigIn                          = models.BigQueryConfigIn
 	BigQueryConfigOut                         = models.BigQueryConfigOut
 	BigQueryConfigPatch                       = models.BigQueryConfigPatch
+	BitbucketConfig                           = models.BitbucketConfig
+	BitbucketConfigOut                        = models.BitbucketConfigOut
 	BulkExpungeContentsIn                     = models.BulkExpungeContentsIn
 	BulkExpungeContentsOut                    = models.BulkExpungeContentsOut
 	BulkExpungeStatus                         = models.BulkExpungeStatus
@@ -43,14 +49,29 @@ type (
 	ConnectorPatch                            = models.ConnectorPatch
 	ConnectorProduct                          = models.ConnectorProduct
 	ConnectorUpsertIn                         = models.ConnectorUpsertIn
+	CreateAutoConfigSubscriptionIn            = models.CreateAutoConfigSubscriptionIn
 	CreateStreamEventsIn                      = models.CreateStreamEventsIn
 	CreateStreamEventsOut                     = models.CreateStreamEventsOut
 	CronConfig                                = models.CronConfig
+	DestinationIn                             = models.DestinationIn
+	DestinationOut                            = models.DestinationOut
+	DestinationPatch                          = models.DestinationPatch
+	DestinationSecretRotateOut                = models.DestinationSecretRotateOut
+	DestinationStatus                         = models.DestinationStatus
+	DestinationStatusIn                       = models.DestinationStatusIn
+	DestinationTransformIn                    = models.DestinationTransformIn
+	DestinationTransformationOut              = models.DestinationTransformationOut
 	DocusignConfig                            = models.DocusignConfig
 	DocusignConfigOut                         = models.DocusignConfigOut
 	EasypostConfig                            = models.EasypostConfig
 	EasypostConfigOut                         = models.EasypostConfigOut
+	ElasticSearchConfigIn                     = models.ElasticSearchConfigIn
+	ElasticSearchConfigOut                    = models.ElasticSearchConfigOut
+	ElasticSearchConfigPatch                  = models.ElasticSearchConfigPatch
+	ElasticSearchOperation                    = models.ElasticSearchOperation
 	EmptyResponse                             = models.EmptyResponse
+	EndpointAttemptStats                      = models.EndpointAttemptStats
+	EndpointChallengeMode                     = models.EndpointChallengeMode
 	EndpointHeadersIn                         = models.EndpointHeadersIn
 	EndpointHeadersOut                        = models.EndpointHeadersOut
 	EndpointHeadersPatchIn                    = models.EndpointHeadersPatchIn
@@ -83,6 +104,9 @@ type (
 	EventTypePatch                            = models.EventTypePatch
 	EventTypeUpsertIn                         = models.EventTypeUpsertIn
 	ExpungeAllContentsOut                     = models.ExpungeAllContentsOut
+	FifoEndpointConfigIn                      = models.FifoEndpointConfigIn
+	GenericConfig                             = models.GenericConfig
+	GenericResponse                           = models.GenericResponse
 	GithubConfig                              = models.GithubConfig
 	GithubConfigOut                           = models.GithubConfigOut
 	GoogleCloudPubSubConfigIn                 = models.GoogleCloudPubSubConfigIn
@@ -113,6 +137,7 @@ type (
 	ListResponseApplicationOut                = models.ListResponseApplicationOut
 	ListResponseBackgroundTaskOut             = models.ListResponseBackgroundTaskOut
 	ListResponseConnectorOut                  = models.ListResponseConnectorOut
+	ListResponseDestinationOut                = models.ListResponseDestinationOut
 	ListResponseEndpointMessageOut            = models.ListResponseEndpointMessageOut
 	ListResponseEndpointOut                   = models.ListResponseEndpointOut
 	ListResponseEventTypeOut                  = models.ListResponseEventTypeOut
@@ -126,6 +151,14 @@ type (
 	ListResponseStreamEventTypeOut            = models.ListResponseStreamEventTypeOut
 	ListResponseStreamOut                     = models.ListResponseStreamOut
 	ListResponseStreamSinkOut                 = models.ListResponseStreamSinkOut
+	McpEventsDeliveryMode                     = models.McpEventsDeliveryMode
+	McpEventsSubscribeDeliveryIn              = models.McpEventsSubscribeDeliveryIn
+	McpEventsSubscribeIn                      = models.McpEventsSubscribeIn
+	McpEventsSubscribeOut                     = models.McpEventsSubscribeOut
+	McpEventsUnsubscribeDeliveryIn            = models.McpEventsUnsubscribeDeliveryIn
+	McpEventsUnsubscribeIn                    = models.McpEventsUnsubscribeIn
+	MergeConfig                               = models.MergeConfig
+	MergeConfigOut                            = models.MergeConfigOut
 	MessageAttemptOut                         = models.MessageAttemptOut
 	MessageAttemptTriggerType                 = models.MessageAttemptTriggerType
 	MessageEndpointOut                        = models.MessageEndpointOut
@@ -162,6 +195,12 @@ type (
 	PollingEndpointOut                        = models.PollingEndpointOut
 	PortIoConfig                              = models.PortIoConfig
 	PortIoConfigOut                           = models.PortIoConfigOut
+	PostHogConfigIn                           = models.PostHogConfigIn
+	PostHogConfigOut                          = models.PostHogConfigOut
+	PostHogConfigPatch                        = models.PostHogConfigPatch
+	PostgresConfigIn                          = models.PostgresConfigIn
+	PostgresConfigOut                         = models.PostgresConfigOut
+	PostgresConfigPatch                       = models.PostgresConfigPatch
 	RabbitMqConfigIn                          = models.RabbitMqConfigIn
 	RabbitMqConfigOut                         = models.RabbitMqConfigOut
 	RabbitMqConfigPatch                       = models.RabbitMqConfigPatch
@@ -173,6 +212,7 @@ type (
 	ReplayIn                                  = models.ReplayIn
 	ReplayOut                                 = models.ReplayOut
 	RotatePollerTokenIn                       = models.RotatePollerTokenIn
+	RotateSubscriptionIn2                     = models.RotateSubscriptionIn2
 	RotateTokenOut                            = models.RotateTokenOut
 	RutterConfig                              = models.RutterConfig
 	RutterConfigOut                           = models.RutterConfigOut
@@ -181,12 +221,16 @@ type (
 	S3ConfigPatch                             = models.S3ConfigPatch
 	SegmentConfig                             = models.SegmentConfig
 	SegmentConfigOut                          = models.SegmentConfigOut
+	SegmentSinkConfigIn                       = models.SegmentSinkConfigIn
+	SegmentSinkConfigOut                      = models.SegmentSinkConfigOut
+	SegmentSinkConfigPatch                    = models.SegmentSinkConfigPatch
 	ShopifyConfig                             = models.ShopifyConfig
 	ShopifyConfigOut                          = models.ShopifyConfigOut
 	SinkHttpConfigIn                          = models.SinkHttpConfigIn
 	SinkHttpConfigOut                         = models.SinkHttpConfigOut
 	SinkHttpConfigPatch                       = models.SinkHttpConfigPatch
 	SinkSecretOut                             = models.SinkSecretOut
+	SinkSecretRotateOut                       = models.SinkSecretRotateOut
 	SinkStatus                                = models.SinkStatus
 	SinkStatusIn                              = models.SinkStatusIn
 	SinkTransformIn                           = models.SinkTransformIn
@@ -222,6 +266,8 @@ type (
 	TailscaleConfigOut                        = models.TailscaleConfigOut
 	TelnyxConfig                              = models.TelnyxConfig
 	TelnyxConfigOut                           = models.TelnyxConfigOut
+	TricentisQtestConfig                      = models.TricentisQtestConfig
+	TricentisQtestConfigOut                   = models.TricentisQtestConfigOut
 	VapiConfig                                = models.VapiConfig
 	VapiConfigOut                             = models.VapiConfigOut
 	VeriffConfig                              = models.VeriffConfig

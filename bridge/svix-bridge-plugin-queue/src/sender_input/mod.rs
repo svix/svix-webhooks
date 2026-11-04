@@ -90,7 +90,7 @@ impl Consumer for QueueSender {
             QueueInputOpts::GcpPubSub(cfg) => gcp_pubsub::consumer(cfg).await?,
             QueueInputOpts::RabbitMQ(cfg) => rabbitmq::consumer(cfg).await?,
             QueueInputOpts::Redis(cfg) => crate::redis::consumer(cfg).await?,
-            QueueInputOpts::Sqs(cfg) => sqs::consumer(cfg).await?,
+            QueueInputOpts::Sqs(cfg) => sqs::consumer(cfg).await,
         })
     }
 }

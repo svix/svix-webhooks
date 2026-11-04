@@ -6,6 +6,8 @@ use super::application_in::ApplicationIn;
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct MessageIn {
     /// Optional unique identifier for the message
+    ///
+    /// This should not contain the '.' character
     #[serde(rename = "eventId")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub event_id: Option<String>,
@@ -18,6 +20,9 @@ pub struct MessageIn {
     ///
     /// We also support sending non-JSON payloads. Please contact us for more
     /// information.
+    ///
+    /// The serialized byte-length of this value should be under 1MiB. Please
+    /// contact us if you need to send payloads large than 1MiB.
     pub payload: serde_json::Value,
 
     /// List of free-form identifiers that endpoints can filter by
@@ -42,8 +47,8 @@ pub struct MessageIn {
 
     /// The date and time at which the message will be delivered.
     ///
-    /// Note that this time is best-effort-only. Must be at least one minute and
-    /// no more than 24 hours in the future.
+    /// Note that this time is best-effort-only. Must be at least one minute
+    /// and no more than 24 hours in the future.
     #[serde(rename = "deliverAt")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub deliver_at: Option<chrono::DateTime<chrono::Utc>>,
@@ -54,8 +59,8 @@ pub struct MessageIn {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payload_retention_period: Option<i64>,
 
-    /// Optional number of hours to retain the message payload. Note that this
-    /// is mutually exclusive with `payloadRetentionPeriod`.
+    /// Optional number of hours to retain the message payload. Note that
+    /// this is mutually exclusive with `payloadRetentionPeriod`.
     #[serde(rename = "payloadRetentionHours")]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payload_retention_hours: Option<i64>,

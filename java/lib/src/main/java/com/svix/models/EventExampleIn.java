@@ -18,6 +18,7 @@ import lombok.ToString;
 public class EventExampleIn {
     @JsonProperty private String eventType;
     @JsonProperty private Long exampleIndex;
+    @JsonProperty private Object payload;
 
     public EventExampleIn() {}
 
@@ -59,6 +60,28 @@ public class EventExampleIn {
 
     public void setExampleIndex(Long exampleIndex) {
         this.exampleIndex = exampleIndex;
+    }
+
+    public EventExampleIn payload(Object payload) {
+        this.payload = payload;
+        return this;
+    }
+
+    /**
+     * Custom payload to send as an example
+     *
+     * <p>This is only available to allow-listed customers and should otherwise not be passed.
+     * Please contact us if you need access to this functionality
+     *
+     * @return payload
+     */
+    @javax.annotation.Nullable
+    public Object getPayload() {
+        return payload;
+    }
+
+    public void setPayload(Object payload) {
+        this.payload = payload;
     }
 
     /**

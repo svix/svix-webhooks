@@ -1,27 +1,45 @@
-use std::{num::NonZeroUsize, str::FromStr};
+use std::num::NonZeroUsize;
 
 use anyhow::Result;
 use deadpool::unmanaged::Pool;
-use deno_ast::{MediaType, ParseParams};
-use deno_core::{
-    JsRuntime, serde_v8, url,
-    v8::{self},
-};
-use svix_bridge_types::{JsObject, TransformerInput, TransformerOutput};
+use serde::{Deserialize, Serialize};
+use svix_bridge_types::{TransformerInput, TransformerOutput};
 use tokio::sync::oneshot;
 
-struct Executor {
+mod engine_deno;
+mod engine_quickjs;
+
+#[derive(Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum JsExecutor {
+    #[default]
+    Deno,
+    QuickJs,
+    Both,
+}
+
+impl JsExecutor {
+    fn run_deno(&self) -> bool {
+        matches!(self, Self::Deno | Self::Both)
+    }
+
+    fn run_quickjs(&self) -> bool {
+        matches!(self, Self::QuickJs | Self::Both)
+    }
+}
+
+struct DenoExecutor {
     tx: std::sync::mpsc::Sender<Job>,
     _handle: std::thread::JoinHandle<()>,
 }
 
-impl Default for Executor {
+impl Default for DenoExecutor {
     fn default() -> Self {
         let (tx, rx) = std::sync::mpsc::channel::<Job>();
         let _handle = std::thread::spawn(move || {
-            let mut runtime = JsRuntime::new(Default::default());
+            let mut runtime = engine_deno::build_runtime();
             for Job { input, script, cb } in rx {
-                let ret = run_script_inner(&mut runtime, input, script);
+                let ret = engine_deno::run_script_inner(&mut runtime, input, script);
                 if cb.send(ret).is_err() {
                     tracing::error!("failed to send script output to caller");
                 }
@@ -39,7 +57,7 @@ struct Job {
     cb: Callback,
 }
 
-impl Executor {
+impl DenoExecutor {
     async fn execute(
         &mut self,
         input: TransformerInput,
@@ -57,18 +75,22 @@ impl Executor {
 
 #[derive(Clone)]
 pub struct JsPooler {
-    executors: Pool<Executor>,
+    deno_executors: Pool<DenoExecutor>,
+    backend: JsExecutor,
 }
 
+const MAX_QJS_DURATION: std::time::Duration = std::time::Duration::from_millis(100);
+
 impl JsPooler {
-    pub fn new(pool_size: NonZeroUsize) -> Self {
+    pub fn new(pool_size: NonZeroUsize, backend: JsExecutor) -> Self {
         let pool_size = pool_size.get();
         let mut items = Vec::with_capacity(pool_size);
         for _ in 0..pool_size {
-            items.push(Executor::default());
+            items.push(DenoExecutor::default());
         }
         Self {
-            executors: Pool::from(items),
+            deno_executors: Pool::from(items),
+            backend,
         }
     }
 
@@ -77,68 +99,63 @@ impl JsPooler {
         input: TransformerInput,
         script: String,
     ) -> Result<TransformerOutput> {
-        let pool = self.executors.clone();
-        let mut executor = pool.get().await;
+        let deno_output = if self.backend.run_deno() {
+            let pool = self.deno_executors.clone();
+            let mut executor = pool.get().await;
 
-        executor
-            .as_mut()
-            .map_err(|e| anyhow::anyhow!("{e:?}"))?
-            .execute(input, script)
-            .await
+            Some(
+                executor
+                    .as_mut()
+                    .map_err(|e| anyhow::anyhow!("{e:?}"))?
+                    .execute(input.clone(), script.clone())
+                    .await,
+            )
+        } else {
+            None
+        };
+        let quickjs_output = if self.backend.run_quickjs() {
+            Some(engine_quickjs::run_script(input, script, MAX_QJS_DURATION).await)
+        } else {
+            None
+        };
+
+        match (deno_output, quickjs_output) {
+            (Some(lhs), Some(rhs)) => compare(lhs, rhs),
+            (Some(lhs), None) => lhs,
+            (None, Some(rhs)) => rhs,
+            (None, None) => anyhow::bail!("no JS executor backend configured"),
+        }
     }
 }
 
-/// Checks that the input parses as valid JavaScript, giving the parser's error back on failure.
-pub fn validate_script(src: &str) -> Result<()> {
-    Ok(deno_ast::parse_script(ParseParams {
-        specifier: url::Url::from_str("file:///x.js").expect("static string"),
-        text: src.into(),
-        media_type: MediaType::JavaScript,
-        capture_tokens: false,
-        scope_analysis: false,
-        maybe_syntax: None,
-    })
-    .map(|_| ())?)
-}
-
-fn run_script_inner(
-    runtime: &mut JsRuntime,
-    input: TransformerInput,
-    script: String,
+fn compare(
+    deno: Result<TransformerOutput>,
+    qjs: Result<TransformerOutput>,
 ) -> Result<TransformerOutput> {
-    let input = serde_json::to_string(&input)?;
-    let res = runtime.execute_script(
-        "<anon>",
-        format!(
-            // Wrap the user script, and invocation of `handler`, in a self-calling closure.
-            // The hope is we'll prevent the globals space from being polluted call after call.
-            r#"
-    (function () {{
-        {script}
-        return handler({input});
-    }})()
-    "#,
-        ),
-    );
-    match res {
-        Ok(global) => {
-            let scope = &mut runtime.handle_scope();
-            let local = v8::Local::new(scope, global);
-            match serde_v8::from_v8::<JsObject>(scope, local) {
-                Ok(v) => Ok(TransformerOutput::Object(v)),
-                Err(e @ serde_v8::Error::ExpectedObject(_)) => {
-                    tracing::error!("{e}");
-                    Ok(TransformerOutput::Invalid)
-                }
-                Err(e) => {
-                    tracing::error!("{e}");
-                    Err(e)?
-                }
+    match (deno, qjs) {
+        (Ok(d), Ok(q)) => {
+            if d == q {
+                Ok(q)
+            } else {
+                tracing::warn!(deno_output=?d, quickjs_output=?q, "deno and qjs disagreed; returning deno");
+                Ok(d)
             }
         }
-        Err(err) => Err(anyhow::format_err!("Evaling error: {err:?}")),
+        (Ok(d), Err(q)) => {
+            tracing::warn!(quickjs_error = %q, "qjs returned an error, but deno succeeded");
+            Ok(d)
+        }
+        (Err(d), Ok(q)) => {
+            tracing::warn!(deno_error = %d, "deno returned an error, but qjs succeeded");
+            Ok(q)
+        }
+        (Err(d), Err(q)) => {
+            tracing::warn!(deno_err = %d, quickjs_err = %q, "both deno and quickjs returned errors");
+            Err(q)
+        }
     }
 }
 
-#[cfg(test)]
-mod tests;
+pub(super) fn validate_script(src: &str) -> Result<()> {
+    engine_deno::validate_script(src)
+}

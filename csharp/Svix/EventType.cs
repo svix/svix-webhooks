@@ -11,6 +11,7 @@ namespace Svix
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
         public bool? IncludeArchived { get; set; }
+        public ArchiveStatus? ArchiveStatus { get; set; }
         public bool? WithContent { get; set; }
 
         public new Dictionary<string, string> QueryParams()
@@ -22,6 +23,7 @@ namespace Svix
                     { "iterator", Iterator },
                     { "order", Order },
                     { "include_archived", IncludeArchived },
+                    { "archive_status", ArchiveStatus },
                     { "with_content", WithContent ?? false },
                 }
             );
@@ -396,7 +398,7 @@ namespace Svix
         /// Endpoints already configured to filter on an event type will continue to do so after archival.
         /// However, new messages can not be sent with it and endpoints can not filter on it.
         /// An event type can be unarchived with the
-        /// [create operation](#operation/create_event_type_api_v1_event_type__post).
+        /// [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`.
         /// </summary>
         public async Task<bool> DeleteAsync(
             string eventTypeName,
@@ -437,7 +439,7 @@ namespace Svix
         /// Endpoints already configured to filter on an event type will continue to do so after archival.
         /// However, new messages can not be sent with it and endpoints can not filter on it.
         /// An event type can be unarchived with the
-        /// [create operation](#operation/create_event_type_api_v1_event_type__post).
+        /// [patch operation](#operation/v1.event-type.patch) by setting `archived` to `false`.
         /// </summary>
         public bool Delete(string eventTypeName, EventTypeDeleteOptions? options = null)
         {

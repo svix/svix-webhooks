@@ -5,9 +5,11 @@ require "net/http"
 
 module Svix
   class Endpoint
+    attr_accessor :mcp_events
     attr_accessor :transformation
     def initialize(client)
       @client = client
+      @mcp_events = EndpointMcpEvents.new(client)
       @transformation = EndpointTransformation.new(client)
     end
 
@@ -81,7 +83,7 @@ module Svix
 
     def rotate_secret(app_id, endpoint_id, endpoint_secret_rotate_in, options = {})
       options = options.transform_keys(&:to_s)
-      @client.execute_request(
+      res = @client.execute_request(
         "POST",
         "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/secret/rotate",
         headers: {
@@ -89,6 +91,7 @@ module Svix
         },
         body: endpoint_secret_rotate_in
       )
+      EndpointSecretOut.deserialize(res)
     end
 
     def get_headers(app_id, endpoint_id)
@@ -152,6 +155,19 @@ module Svix
         }
       )
       EndpointStats.deserialize(res)
+    end
+
+    def get_attempt_stats(app_id, endpoint_id, options = {})
+      options = options.transform_keys(&:to_s)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/attempt-stats",
+        query_params: {
+          "since" => options["since"],
+          "until" => options["until"]
+        }
+      )
+      EndpointAttemptStats.deserialize(res)
     end
 
     def recover(app_id, endpoint_id, recover_in, options = {})

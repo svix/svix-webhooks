@@ -14,10 +14,13 @@ const (
 	CONNECTORKIND_AGENTIC_COMMERCE_PROTOCOL ConnectorKind = "AgenticCommerceProtocol"
 	CONNECTORKIND_CLOSE_CRM                 ConnectorKind = "CloseCRM"
 	CONNECTORKIND_CUSTOMER_IO               ConnectorKind = "CustomerIO"
+	CONNECTORKIND_DATADOG_TRACING           ConnectorKind = "DatadogTracing"
 	CONNECTORKIND_DISCORD                   ConnectorKind = "Discord"
+	CONNECTORKIND_GRAFANA_CLOUD_TRACING     ConnectorKind = "GrafanaCloudTracing"
 	CONNECTORKIND_HUBSPOT                   ConnectorKind = "Hubspot"
 	CONNECTORKIND_INNGEST                   ConnectorKind = "Inngest"
 	CONNECTORKIND_LOOPS                     ConnectorKind = "Loops"
+	CONNECTORKIND_NEW_RELIC_TRACING         ConnectorKind = "NewRelicTracing"
 	CONNECTORKIND_OTEL                      ConnectorKind = "Otel"
 	CONNECTORKIND_RESEND                    ConnectorKind = "Resend"
 	CONNECTORKIND_SALESFORCE                ConnectorKind = "Salesforce"
@@ -35,10 +38,13 @@ var allowedConnectorKind = []ConnectorKind{
 	"AgenticCommerceProtocol",
 	"CloseCRM",
 	"CustomerIO",
+	"DatadogTracing",
 	"Discord",
+	"GrafanaCloudTracing",
 	"Hubspot",
 	"Inngest",
 	"Loops",
+	"NewRelicTracing",
 	"Otel",
 	"Resend",
 	"Salesforce",
@@ -71,10 +77,13 @@ var ConnectorKindFromString = map[string]ConnectorKind{
 	"AgenticCommerceProtocol": CONNECTORKIND_AGENTIC_COMMERCE_PROTOCOL,
 	"CloseCRM":                CONNECTORKIND_CLOSE_CRM,
 	"CustomerIO":              CONNECTORKIND_CUSTOMER_IO,
+	"DatadogTracing":          CONNECTORKIND_DATADOG_TRACING,
 	"Discord":                 CONNECTORKIND_DISCORD,
+	"GrafanaCloudTracing":     CONNECTORKIND_GRAFANA_CLOUD_TRACING,
 	"Hubspot":                 CONNECTORKIND_HUBSPOT,
 	"Inngest":                 CONNECTORKIND_INNGEST,
 	"Loops":                   CONNECTORKIND_LOOPS,
+	"NewRelicTracing":         CONNECTORKIND_NEW_RELIC_TRACING,
 	"Otel":                    CONNECTORKIND_OTEL,
 	"Resend":                  CONNECTORKIND_RESEND,
 	"Salesforce":              CONNECTORKIND_SALESFORCE,

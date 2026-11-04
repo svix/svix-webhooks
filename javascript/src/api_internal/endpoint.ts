@@ -4,14 +4,14 @@ import {
   type EndpointTransformationIn,
   EndpointTransformationInSerializer,
 } from "../models/endpointTransformationIn";
-import { EndpointAutoConfig } from "./endpointAutoConfig";
+import { EndpointAutoConfigDeprecated } from "./endpointAutoConfigDeprecated";
 import { HttpMethod, SvixRequest, type SvixRequestContext } from "../request";
 
 export class Endpoint {
   public constructor(private readonly requestCtx: SvixRequestContext) {}
 
-  public get autoConfig() {
-    return new EndpointAutoConfig(this.requestCtx);
+  public get autoConfigDeprecated() {
+    return new EndpointAutoConfigDeprecated(this.requestCtx);
   }
 
   /**

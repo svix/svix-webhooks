@@ -18,6 +18,7 @@ import lombok.ToString;
 public class RabbitMqConfigIn {
     @JsonProperty private String uri;
     @JsonProperty private String routingKey;
+    @JsonProperty private Boolean mandatory;
 
     public RabbitMqConfigIn() {}
 
@@ -27,7 +28,10 @@ public class RabbitMqConfigIn {
     }
 
     /**
-     * Get uri
+     * URI to connect to
+     *
+     * <p>Note that the VHost must be percent-escaped, so a default URI would look like
+     * `amqp://user:pass@host/%2F`
      *
      * @return uri
      */
@@ -46,7 +50,7 @@ public class RabbitMqConfigIn {
     }
 
     /**
-     * Get routingKey
+     * Routing key for message dispatch
      *
      * @return routingKey
      */
@@ -57,6 +61,26 @@ public class RabbitMqConfigIn {
 
     public void setRoutingKey(String routingKey) {
         this.routingKey = routingKey;
+    }
+
+    public RabbitMqConfigIn mandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
+        return this;
+    }
+
+    /**
+     * If true, then dispatches will fail if there is no attached queue; if false, they are silently
+     * dropped (this was previously the default)
+     *
+     * @return mandatory
+     */
+    @javax.annotation.Nullable
+    public Boolean getMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     /**

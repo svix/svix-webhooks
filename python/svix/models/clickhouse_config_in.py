@@ -11,12 +11,14 @@ class ClickhouseConfigIn(BaseModel):
     username: t.Optional[str] = None
     """Username to access Clickhouse.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Currently a required field, but marked as optional because we may add
+    different authentication in the future."""
 
     password: t.Optional[str] = None
     """Password to access Clickhouse.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Currently a required field, but marked as optional because we may add
+    different authentication in the future."""
 
     database: t.Optional[str] = None
     """The Clickhouse database to connect to."""

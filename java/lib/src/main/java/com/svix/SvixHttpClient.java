@@ -1,16 +1,23 @@
 package com.svix;
 
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.svix.exceptions.ApiException;
 
-import okhttp3.*;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.LockSupport;
-import java.util.UUID;
+import okhttp3.Headers;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class SvixHttpClient {
     private final HttpUrl baseUrl;
@@ -20,11 +27,20 @@ public class SvixHttpClient {
     private final ObjectMapper objectMapper;
 
     public SvixHttpClient(
-            HttpUrl baseUrl, Map<String, String> defaultHeaders, List<Long> retrySchedule) {
-        this.baseUrl = baseUrl;
+            HttpUrl rawBaseUrl, Map<String, String> defaultHeaders, List<Long> retrySchedule) {
+        String path = rawBaseUrl.encodedPath();
+        if (path.length() > 1 && path.endsWith("/")) {
+            String trimmedPath = path.replaceAll("/+$", "");
+            this.baseUrl =
+                    rawBaseUrl.newBuilder()
+                            .encodedPath(trimmedPath.isEmpty() ? "/" : trimmedPath)
+                            .build();
+        } else {
+            this.baseUrl = rawBaseUrl;
+        }
         this.defaultHeaders = defaultHeaders;
         this.retrySchedule = retrySchedule;
-        this.client = new OkHttpClient();
+        this.client = new OkHttpClient.Builder().callTimeout(Duration.ofSeconds(15)).build();
 
         this.objectMapper = Utils.getObjectMapper();
     }
@@ -34,6 +50,14 @@ public class SvixHttpClient {
                 .scheme(baseUrl.scheme())
                 .host(baseUrl.host())
                 .port(baseUrl.port());
+    }
+
+    public HttpUrl getBaseUrl() {
+        return baseUrl;
+    }
+
+    private static boolean shouldRetry(int statusCode) {
+        return statusCode >= 500 || statusCode == 423;
     }
 
     public <Req, Res> Res executeRequest(
@@ -47,6 +71,8 @@ public class SvixHttpClient {
             jsonBody = objectMapper.writeValueAsString(reqBody);
             RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json"));
             reqBuilder.method(method, body);
+        } else if (method.equals("POST") || method.equals("PUT") || method.equals("PATCH")) {
+            reqBuilder.method(method, RequestBody.create(new byte[0]));
         } else {
             reqBuilder.method(method, null);
         }
@@ -90,22 +116,30 @@ public class SvixHttpClient {
     }
 
     private Response executeRequestWithRetry(Request request, String body) throws IOException {
-        Response response = client.newCall(request).execute();
+        Request currentRequest = request;
+        for (int retryCount = 0; retryCount < retrySchedule.size(); retryCount++) {
+            try {
+                Response response = client.newCall(currentRequest).execute();
+                if (!shouldRetry(response.code())) {
+                    return response;
+                }
+                response.close();
+            } catch (IOException e) {
+                // Network errors (timeouts, connection failures, etc.) are retried
+            }
 
-        int retryCount = 0;
-        while (response.code() >= 500 && retryCount < retrySchedule.size()) {
-            response.close();
+            try {
+                Thread.sleep(retrySchedule.get(retryCount));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedIOException("Request was interrupted");
+            }
 
-            // Use LockSupport for precise parking instead of Thread.sleep
-            LockSupport.parkNanos(retrySchedule.get(retryCount) * 1_000_000); // Convert ms to ns
-
-            Request retryRequest =
+            currentRequest =
                     request.newBuilder()
                             .header("svix-retry-count", String.valueOf(retryCount + 1))
                             .build();
-            response = client.newCall(retryRequest).execute();
-            retryCount++;
         }
-        return response;
+        return client.newCall(currentRequest).execute();
     }
 }

@@ -7,6 +7,7 @@ namespace Svix\Api;
 
 use Svix\Exception\ApiException;
 use Svix\Models\BulkReplayIn;
+use Svix\Models\EndpointAttemptStats;
 use Svix\Models\EndpointHeadersIn;
 use Svix\Models\EndpointHeadersOut;
 use Svix\Models\EndpointHeadersPatchIn;
@@ -29,11 +30,13 @@ use Svix\Request\SvixHttpClient;
 
 class Endpoint
 {
+    public EndpointMcpEvents $mcpEvents;
     public EndpointTransformation $transformation;
 
     public function __construct(
         private readonly SvixHttpClient $client,
     ) {
+        $this->mcpEvents = new EndpointMcpEvents($client);
         $this->transformation = new EndpointTransformation($client);
     }
 
@@ -167,11 +170,13 @@ class Endpoint
         string $endpointId,
         EndpointSecretRotateIn $endpointSecretRotateIn,
         EndpointRotateSecretOptions $options = new EndpointRotateSecretOptions(),
-    ): void {
+    ): EndpointSecretOut {
         $request = $this->client->newReq('POST', "/api/v1/app/{$appId}/endpoint/{$endpointId}/secret/rotate");
         $request->setHeaderParam('idempotency-key', $options->idempotencyKey);
         $request->setBody(json_encode($endpointSecretRotateIn));
-        $res = $this->client->sendNoResponseBody($request);
+        $res = $this->client->send($request);
+
+        return EndpointSecretOut::fromJson($res);
     }
 
     /**
@@ -303,6 +308,26 @@ class Endpoint
         $res = $this->client->send($request);
 
         return EndpointStats::fromJson($res);
+    }
+
+    /**
+     * Get basic statistics about attempted deliveries for the endpoint.
+     *
+     * Time windows are always rounded to hour granularity
+     *
+     * @throws ApiException
+     */
+    public function getAttemptStats(
+        string $appId,
+        string $endpointId,
+        EndpointGetAttemptStatsOptions $options = new EndpointGetAttemptStatsOptions(),
+    ): EndpointAttemptStats {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/attempt-stats");
+        $request->setQueryParam('since', $options->since);
+        $request->setQueryParam('until', $options->until);
+        $res = $this->client->send($request);
+
+        return EndpointAttemptStats::fromJson($res);
     }
 
     /**

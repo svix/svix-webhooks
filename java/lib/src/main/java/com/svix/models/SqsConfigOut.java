@@ -21,6 +21,8 @@ public class SqsConfigOut {
     @JsonProperty private URI queueUrl;
     @JsonProperty private String region;
     @JsonProperty private String accessKeyId;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private URI endpointUrl;
 
     public SqsConfigOut() {}
@@ -73,13 +75,51 @@ public class SqsConfigOut {
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
 
     public void setAccessKeyId(String accessKeyId) {
         this.accessKeyId = accessKeyId;
+    }
+
+    public SqsConfigOut roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public SqsConfigOut externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public SqsConfigOut endpointUrl(URI endpointUrl) {

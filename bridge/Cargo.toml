@@ -13,9 +13,9 @@ members = [
 ]
 
 [workspace.package]
-version = "1.100.0"
+version = "1.101.1"
 license = "MIT"
-rust-version = "1.95"
+rust-version = "1.96"
 
 [workspace.lints.rust]
 rust_2018_idioms = { level = "warn", priority = -1 }
@@ -33,6 +33,8 @@ uninlined_format_args = "warn"
 
 [workspace.dependencies]
 axum = { version = "0.8.9", features = ["macros"] }
+itertools = "0.15.0"
+omniqueue = { git = "https://github.com/svix/omniqueue-rs", rev = "8be4f888b198023bbf109bc8e7b0360046ae30da", default-features = false, features = ["gcp_pubsub", "rabbitmq", "redis", "sqs"] }
 opentelemetry = "0.32.0"
 opentelemetry-otlp = { version = "0.32.0", features = ["metrics", "grpc-tonic", "reqwest-client"] }
 opentelemetry_sdk = { version = "0.32.0", features = ["metrics", "rt-tokio", "experimental_metrics_periodicreader_with_async_runtime", "experimental_trace_batch_span_processor_with_async_runtime"] }

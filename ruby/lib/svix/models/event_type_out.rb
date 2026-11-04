@@ -7,6 +7,8 @@ module Svix
     # The event type's name
     attr_accessor :name
     attr_accessor :description
+    # Translated descriptions keyed by BCP 47 language tag.
+    attr_accessor :description_translations
     attr_accessor :archived
     attr_accessor :deprecated
     # The schema for the event type for a specific version as a JSON schema.
@@ -21,6 +23,7 @@ module Svix
     ALL_FIELD ||= [
       "name",
       "description",
+      "description_translations",
       "archived",
       "deprecated",
       "schemas",
@@ -52,6 +55,7 @@ module Svix
       attrs = Hash.new
       attrs["name"] = attributes["name"]
       attrs["description"] = attributes["description"]
+      attrs["description_translations"] = attributes["descriptionTranslations"]
       attrs["archived"] = attributes["archived"]
       attrs["deprecated"] = attributes["deprecated"]
       attrs["schemas"] = attributes["schemas"]
@@ -65,23 +69,27 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["archived"] = Svix::serialize_primitive(@archived) if @archived
-      out["deprecated"] = Svix::serialize_primitive(@deprecated) if @deprecated
-      out["schemas"] = Svix::serialize_primitive(@schemas) if @schemas
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      out["groupName"] = Svix::serialize_primitive(@group_name) if @group_name
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["featureFlag"] = Svix::serialize_primitive(@feature_flag) if @feature_flag
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      unless @description_translations.nil?
+        out["descriptionTranslations"] = Svix::serialize_primitive(@description_translations)
+      end
+
+      out["archived"] = Svix::serialize_primitive(@archived) unless @archived.nil?
+      out["deprecated"] = Svix::serialize_primitive(@deprecated) unless @deprecated.nil?
+      out["schemas"] = Svix::serialize_primitive(@schemas) unless @schemas.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["groupName"] = Svix::serialize_primitive(@group_name) unless @group_name.nil?
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["featureFlag"] = Svix::serialize_primitive(@feature_flag) unless @feature_flag.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

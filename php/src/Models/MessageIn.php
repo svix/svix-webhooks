@@ -10,22 +10,31 @@ class MessageIn implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param string|null $eventId   Optional unique identifier for the message
-     * @param string      $eventType The event type's name
-     * @param array       $payload   JSON payload to send as the request body of the webhook.
+     * @param string|null $eventId Optional unique identifier for the message
+     *
+     * This should not contain the '.' character
+     * @param string $eventType The event type's name
+     * @param array  $payload   JSON payload to send as the request body of the webhook.
      *
      * We also support sending non-JSON payloads. Please contact us for more information.
+     *
+     * The serialized byte-length of this value should be under 1MiB. Please contact us
+     * if you need to send payloads large than 1MiB.
      * @param list<string>|null  $channels    List of free-form identifiers that endpoints can filter by
      * @param ApplicationIn|null $application Optionally creates a new application alongside the message.
      *
-     * If the application id or uid that is used in the path already exists, this argument is ignored.
+     * If the application id or uid that is used in the path already exists,
+     * this argument is ignored.
      * @param list<string>|null       $tags                  List of free-form tags that can be filtered by when listing messages
      * @param array|null              $transformationsParams Extra parameters to pass to Transformations (for future use)
      * @param \DateTimeImmutable|null $deliverAt             The date and time at which the message will be delivered.
      *
-     * Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future.
-     * @param int|null $payloadRetentionPeriod Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
-     * @param int|null $payloadRetentionHours  Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
+     * Note that this time is best-effort-only. Must be at least one minute
+     * and no more than 24 hours in the future.
+     * @param int|null $payloadRetentionPeriod Optional number of days to retain the message payload. Defaults to 90.
+     *                                         Note that this is mutually exclusive with `payloadRetentionHours`.
+     * @param int|null $payloadRetentionHours  Optional number of hours to retain the message payload. Note that
+     *                                         this is mutually exclusive with `payloadRetentionPeriod`.
      */
     private function __construct(
         public readonly string $eventType,

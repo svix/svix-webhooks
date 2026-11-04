@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Svix\Api;
 
+use Svix\Models\ArchiveStatus;
 use Svix\Models\Ordering;
 
 class EventTypeListOptions
@@ -14,6 +15,7 @@ class EventTypeListOptions
         public readonly ?string $iterator = null,
         public readonly ?Ordering $order = null,
         public readonly ?bool $includeArchived = null,
+        public readonly ?ArchiveStatus $archiveStatus = null,
         public readonly ?bool $withContent = null,
     ) {
     }

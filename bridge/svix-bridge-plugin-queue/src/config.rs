@@ -1,4 +1,3 @@
-use serde::Deserialize;
 use svix_bridge_types::{
     ReceiverOutput, SenderInput, SenderOutputOpts, TransformationConfig, TransformerInputFormat,
 };
@@ -14,10 +13,11 @@ pub use crate::{
 
 pub fn into_sender_input(
     name: String,
-    input_opts: QueueInputOpts,
+    input_opts: impl Into<QueueInputOpts>,
     transformation: Option<TransformationConfig>,
     output: SenderOutputOpts,
 ) -> Result<Box<dyn SenderInput>, &'static str> {
+    let input_opts = input_opts.into();
     // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
     if matches!(input_opts, QueueInputOpts::Redis(_))
         && transformation
@@ -38,10 +38,11 @@ pub fn into_sender_input(
 
 pub async fn into_receiver_output(
     name: String,
-    opts: QueueOutputOpts,
+    opts: impl Into<QueueOutputOpts>,
     // Annoying to have to pass this, but certain backends (redis) only work with certain transformations (json).
     transformation: Option<&TransformationConfig>,
 ) -> Result<Box<dyn ReceiverOutput>, crate::Error> {
+    let opts = opts.into();
     // FIXME: see if this check is still needed. String transforms worked for the omniqueue redis receiver, I think?
     if matches!(opts, QueueOutputOpts::Redis(_))
         && transformation
@@ -59,25 +60,69 @@ pub async fn into_receiver_output(
 }
 
 // TODO: feature flag the variants, thread the features down through to generic-queue
-#[derive(Debug, Deserialize)]
-#[serde(tag = "type", rename_all = "lowercase")]
+#[derive(Clone, Debug)]
 pub enum QueueInputOpts {
-    #[serde(rename = "gcp-pubsub")]
     GcpPubSub(GcpPubSubInputOpts),
     RabbitMQ(RabbitMqInputOpts),
     Redis(RedisInputOpts),
     Sqs(SqsInputOpts),
 }
 
-#[derive(Clone, Debug, Deserialize)]
+impl From<GcpPubSubInputOpts> for QueueInputOpts {
+    fn from(value: GcpPubSubInputOpts) -> Self {
+        Self::GcpPubSub(value)
+    }
+}
+
+impl From<RabbitMqInputOpts> for QueueInputOpts {
+    fn from(value: RabbitMqInputOpts) -> Self {
+        Self::RabbitMQ(value)
+    }
+}
+
+impl From<RedisInputOpts> for QueueInputOpts {
+    fn from(value: RedisInputOpts) -> Self {
+        Self::Redis(value)
+    }
+}
+
+impl From<SqsInputOpts> for QueueInputOpts {
+    fn from(value: SqsInputOpts) -> Self {
+        Self::Sqs(value)
+    }
+}
+
+#[derive(Clone, Debug)]
 #[allow(clippy::large_enum_variant)] // Largest variant isn't _that_ big
-#[serde(tag = "type", rename_all = "lowercase")]
 pub enum QueueOutputOpts {
-    #[serde(rename = "gcp-pubsub")]
     GcpPubSub(GcpPubSubOutputOpts),
     RabbitMQ(RabbitMqOutputOpts),
     Redis(RedisOutputOpts),
     Sqs(SqsOutputOpts),
+}
+
+impl From<GcpPubSubOutputOpts> for QueueOutputOpts {
+    fn from(value: GcpPubSubOutputOpts) -> Self {
+        Self::GcpPubSub(value)
+    }
+}
+
+impl From<RabbitMqOutputOpts> for QueueOutputOpts {
+    fn from(value: RabbitMqOutputOpts) -> Self {
+        Self::RabbitMQ(value)
+    }
+}
+
+impl From<RedisOutputOpts> for QueueOutputOpts {
+    fn from(value: RedisOutputOpts) -> Self {
+        Self::Redis(value)
+    }
+}
+
+impl From<SqsOutputOpts> for QueueOutputOpts {
+    fn from(value: SqsOutputOpts) -> Self {
+        Self::Sqs(value)
+    }
 }
 
 #[cfg(test)]
@@ -89,7 +134,9 @@ mod tests {
     use super::{into_receiver_output, into_sender_input};
     use crate::{
         config::{QueueInputOpts, QueueOutputOpts},
+        rabbitmq::RabbitMqInputOpts,
         redis::{RedisInputOpts, RedisOutputOpts},
+        sqs::{SqsInputOpts, SqsOutputOpts},
     };
 
     // FIXME: can't support raw payload access for redis because it requires JSON internally.
@@ -105,6 +152,7 @@ mod tests {
             consumer_group: "".to_string(),
             consumer_name: "".to_string(),
             ack_deadline_ms: 2_000,
+            dlq_config: None,
         });
 
         let err = into_sender_input(
@@ -153,5 +201,71 @@ mod tests {
                 .expect("invalid config didn't result in error"),
             crate::error::Error::Generic(msg) if msg == "redis only supports json formatted transformations"
         ));
+    }
+
+    #[test]
+    fn rabbitmq_input_opts_deserializes_consume_prefetch_count() {
+        let opts: RabbitMqInputOpts = serde_json::from_value(serde_json::json!({
+            "uri": "amqp://guest:guest@localhost:5672/%2f",
+            "queue_name": "my-queue",
+            "consume_prefetch_count": 10,
+        }))
+        .unwrap();
+        assert_eq!(opts.consume_prefetch_count, Some(10));
+
+        // Absent is fine too, and doesn't default to some arbitrary limit.
+        let opts: RabbitMqInputOpts = serde_json::from_value(serde_json::json!({
+            "uri": "amqp://guest:guest@localhost:5672/%2f",
+            "queue_name": "my-queue",
+        }))
+        .unwrap();
+        assert_eq!(opts.consume_prefetch_count, None);
+    }
+
+    #[test]
+    fn redis_input_opts_deserializes_dlq_config() {
+        let opts: RedisInputOpts = serde_json::from_value(serde_json::json!({
+            "dsn": "redis://localhost:6379/",
+            "max_connections": 4,
+            "queue_key": "my_queue",
+            "consumer_group": "my_group",
+            "consumer_name": "my_consumer",
+            "dlq_config": {
+                "queue_key": "my_queue_dlq",
+                "max_receives": 5,
+            },
+        }))
+        .unwrap();
+        let dlq = opts.dlq_config.expect("dlq_config should be set");
+        assert_eq!(dlq.queue_key, "my_queue_dlq");
+        assert_eq!(dlq.max_receives, 5);
+
+        // Absent is fine too -- no DLQ by default.
+        let opts: RedisInputOpts = serde_json::from_value(serde_json::json!({
+            "dsn": "redis://localhost:6379/",
+            "max_connections": 4,
+            "queue_key": "my_queue",
+            "consumer_group": "my_group",
+            "consumer_name": "my_consumer",
+        }))
+        .unwrap();
+        assert!(opts.dlq_config.is_none());
+    }
+
+    #[test]
+    fn sqs_opts_deserialize_max_payload_size() {
+        let opts: SqsInputOpts = serde_json::from_value(serde_json::json!({
+            "queue_dsn": "http://localhost:9324/000000000000/local",
+            "max_payload_size": 262_144,
+        }))
+        .unwrap();
+        assert_eq!(opts.max_payload_size, Some(262_144));
+
+        let opts: SqsOutputOpts = serde_json::from_value(serde_json::json!({
+            "queue_dsn": "http://localhost:9324/000000000000/local",
+            "max_payload_size": 262_144,
+        }))
+        .unwrap();
+        assert_eq!(opts.max_payload_size, Some(262_144));
     }
 }

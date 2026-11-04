@@ -12,6 +12,7 @@ class RabbitMqConfigPatch implements \JsonSerializable
     private function __construct(
         public readonly ?string $routingKey = null,
         public readonly ?string $uri = null,
+        public readonly ?bool $mandatory = null,
         array $setFields = [],
     ) {
         $this->setFields = $setFields;
@@ -25,6 +26,7 @@ class RabbitMqConfigPatch implements \JsonSerializable
         return new self(
             routingKey: null,
             uri: null,
+            mandatory: null,
             setFields: []
         );
     }
@@ -37,6 +39,7 @@ class RabbitMqConfigPatch implements \JsonSerializable
         return new self(
             routingKey: $routingKey,
             uri: $this->uri,
+            mandatory: $this->mandatory,
             setFields: $setFields
         );
     }
@@ -49,6 +52,20 @@ class RabbitMqConfigPatch implements \JsonSerializable
         return new self(
             routingKey: $this->routingKey,
             uri: $uri,
+            mandatory: $this->mandatory,
+            setFields: $setFields
+        );
+    }
+
+    public function withMandatory(?bool $mandatory): self
+    {
+        $setFields = $this->setFields;
+        $setFields['mandatory'] = true;
+
+        return new self(
+            routingKey: $this->routingKey,
+            uri: $this->uri,
+            mandatory: $mandatory,
             setFields: $setFields
         );
     }
@@ -64,6 +81,9 @@ class RabbitMqConfigPatch implements \JsonSerializable
         if (null !== $this->uri) {
             $data['uri'] = $this->uri;
         }
+        if (null !== $this->mandatory) {
+            $data['mandatory'] = $this->mandatory;
+        }
 
         return \Svix\Utils::newStdClassIfArrayIsEmpty($data);
     }
@@ -75,7 +95,8 @@ class RabbitMqConfigPatch implements \JsonSerializable
     {
         return new self(
             routingKey: \Svix\Utils::deserializeString($data, 'routingKey', false, 'RabbitMqConfigPatch'),
-            uri: \Svix\Utils::deserializeString($data, 'uri', false, 'RabbitMqConfigPatch')
+            uri: \Svix\Utils::deserializeString($data, 'uri', false, 'RabbitMqConfigPatch'),
+            mandatory: \Svix\Utils::deserializeBool($data, 'mandatory', false, 'RabbitMqConfigPatch')
         );
     }
 

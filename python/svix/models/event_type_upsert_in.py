@@ -7,6 +7,9 @@ from .common import BaseModel
 class EventTypeUpsertIn(BaseModel):
     description: str
 
+    description_translations: t.Optional[t.Dict[str, str]] = None
+    """Translated descriptions keyed by BCP 47 language tag."""
+
     archived: t.Optional[bool] = None
 
     deprecated: t.Optional[bool] = None

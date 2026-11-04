@@ -4,7 +4,7 @@ package models
 import (
 	"encoding/json"
 
-	"github.com/svix/svix-webhooks/go/utils"
+	"github.com/svix/svix-webhooks/v2/go/utils"
 )
 
 type IngestEndpointTransformationPatch struct {

@@ -40,6 +40,20 @@ pub fn router(cfg: Configuration) -> ApiRouter<AppState> {
     ret
 }
 
+/// Builds a router containing all routes, but no middlewares, so that the
+/// OpenAPI spec can be generated without needing to load configuration.
+pub fn docs_router() -> ApiRouter<AppState> {
+    ApiRouter::new()
+        .merge(endpoints::health::router())
+        .merge(endpoints::auth::router())
+        .merge(endpoints::application::router())
+        .merge(endpoints::endpoint::router())
+        .merge(endpoints::event_type::router())
+        .merge(endpoints::message::router())
+        .merge(endpoints::attempt::router())
+        .merge(endpoints::admin::router())
+}
+
 #[cfg(debug_assertions)]
 mod development {
     use axum::{Json, Router, extract::FromRequestParts, routing::get};

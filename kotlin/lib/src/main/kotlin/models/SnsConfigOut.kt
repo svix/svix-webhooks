@@ -4,4 +4,10 @@ package com.svix.kotlin.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class SnsConfigOut(val topicArn: String, val region: String, val accessKeyId: String)
+data class SnsConfigOut(
+    val topicArn: String,
+    val region: String,
+    val accessKeyId: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
+)

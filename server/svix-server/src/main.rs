@@ -108,10 +108,6 @@ enum Commands {
         yes_i_know_what_im_doing: bool,
     },
 
-    /// Generate OpenAPI JSON specification and exit
-    #[clap()]
-    GenerateOpenapi,
-
     /// Health check command
     #[clap()]
     Healthcheck {
@@ -146,6 +142,12 @@ fn org_id_parser(s: &str) -> Result<OrganizationId, String> {
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // rustls requires a crypto backend ("provider") choice to be made explicitly when more than
+    // one is compiled in, which is the case here: reqwest enables aws-lc-rs while sqlx and sea-orm
+    // enable ring. Without this, the first code path that asks rustls for the process-level default
+    // provider panics (for example when connecting to Postgres with `sslmode=verify-ca`).
+    _ = rustls::crypto::aws_lc_rs::default_provider().install_default();
+
     dotenv().ok();
 
     let args = Args::parse();
@@ -170,7 +172,7 @@ async fn main() -> anyhow::Result<()> {
 
     let cfg = cfg::load()?;
 
-    let (tracing_subscriber, _guard, otel_tracer_provider) =
+    let (tracing_subscriber, _guard, otel_tracer_provider, otel_logger_provider) =
         setup_tracing(&cfg, /* for_test = */ false);
     tracing_subscriber.init();
 
@@ -278,21 +280,6 @@ async fn main() -> anyhow::Result<()> {
             prune_messages(&cfg, older_than, batch_size).await?;
         }
 
-        Some(Commands::GenerateOpenapi) => {
-            let mut openapi = svix_server::openapi::initialize_openapi();
-
-            let router = svix_server::v1::router(cfg);
-            _ = aide::axum::ApiRouter::new()
-                .nest("/api/v1", router)
-                .finish_api_with(&mut openapi, svix_server::openapi::add_security_scheme);
-
-            svix_server::openapi::postprocess_spec(&mut openapi);
-            println!(
-                "{}",
-                serde_json::to_string_pretty(&openapi).expect("Failed to serialize JSON spec")
-            );
-        }
-
         Some(Commands::Healthcheck { .. }) => {
             unreachable!("Healthcheck command should be handled before config loading")
         }
@@ -302,6 +289,13 @@ async fn main() -> anyhow::Result<()> {
     };
 
     if let Some(provider) = otel_tracer_provider {
+        _ = tokio::task::spawn_blocking(move || {
+            _ = provider.shutdown();
+        })
+        .await;
+    }
+
+    if let Some(provider) = otel_logger_provider {
         _ = tokio::task::spawn_blocking(move || {
             _ = provider.shutdown();
         })

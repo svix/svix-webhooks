@@ -8,11 +8,13 @@ module Svix
     attr_accessor :feature_flags
     # How long the token will be valid for, in seconds.
     #
-    # Valid values are between 1 hour and 7 days. The default is 7 days.
+    # Valid values are between 1 hour and 7 days.
+    # The default is 7 days.
     attr_accessor :expiry
     # An optional session ID to attach to the token.
     #
-    # When expiring tokens with "Expire All", you can include the session ID to only expire tokens that were created with that session ID.
+    # When expiring tokens with "Expire All", you can include the session ID
+    # to only expire tokens that were created with that session ID.
     attr_accessor :session_id
 
     ALL_FIELD ||= ["feature_flags", "expiry", "session_id"].freeze
@@ -44,16 +46,16 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) if @feature_flags
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["sessionId"] = Svix::serialize_primitive(@session_id) if @session_id
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["sessionId"] = Svix::serialize_primitive(@session_id) unless @session_id.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

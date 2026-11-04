@@ -6,10 +6,13 @@ module Svix
     AGENTIC_COMMERCE_PROTOCOL = "AgenticCommerceProtocol".freeze
     CLOSE_CRM = "CloseCRM".freeze
     CUSTOMER_IO = "CustomerIO".freeze
+    DATADOG_TRACING = "DatadogTracing".freeze
     DISCORD = "Discord".freeze
+    GRAFANA_CLOUD_TRACING = "GrafanaCloudTracing".freeze
     HUBSPOT = "Hubspot".freeze
     INNGEST = "Inngest".freeze
     LOOPS = "Loops".freeze
+    NEW_RELIC_TRACING = "NewRelicTracing".freeze
     OTEL = "Otel".freeze
     RESEND = "Resend".freeze
     SALESFORCE = "Salesforce".freeze
@@ -27,10 +30,13 @@ module Svix
         AGENTIC_COMMERCE_PROTOCOL,
         CLOSE_CRM,
         CUSTOMER_IO,
+        DATADOG_TRACING,
         DISCORD,
+        GRAFANA_CLOUD_TRACING,
         HUBSPOT,
         INNGEST,
         LOOPS,
+        NEW_RELIC_TRACING,
         OTEL,
         RESEND,
         SALESFORCE,

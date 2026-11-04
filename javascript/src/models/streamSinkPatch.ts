@@ -12,6 +12,10 @@ import {
   ClickhouseConfigPatchSerializer,
 } from "./clickhouseConfigPatch";
 import {
+  type ElasticSearchConfigPatch,
+  ElasticSearchConfigPatchSerializer,
+} from "./elasticSearchConfigPatch";
+import {
   type EventBridgeConfigPatch,
   EventBridgeConfigPatchSerializer,
 } from "./eventBridgeConfigPatch";
@@ -28,6 +32,14 @@ import {
   OtelTracingConfigPatchSerializer,
 } from "./otelTracingConfigPatch";
 import {
+  type PostHogConfigPatch,
+  PostHogConfigPatchSerializer,
+} from "./postHogConfigPatch";
+import {
+  type PostgresConfigPatch,
+  PostgresConfigPatchSerializer,
+} from "./postgresConfigPatch";
+import {
   type RabbitMqConfigPatch,
   RabbitMqConfigPatchSerializer,
 } from "./rabbitMqConfigPatch";
@@ -36,6 +48,10 @@ import {
   RedshiftConfigPatchSerializer,
 } from "./redshiftConfigPatch";
 import { type S3ConfigPatch, S3ConfigPatchSerializer } from "./s3ConfigPatch";
+import {
+  type SegmentSinkConfigPatch,
+  SegmentSinkConfigPatchSerializer,
+} from "./segmentSinkConfigPatch";
 import {
   type SinkHttpConfigPatch,
   SinkHttpConfigPatchSerializer,
@@ -137,6 +153,26 @@ interface StreamSinkPatchRedshift {
   config: RedshiftConfigPatch;
 }
 
+interface StreamSinkPatchPostgres {
+  type: "postgres";
+  config: PostgresConfigPatch;
+}
+
+interface StreamSinkPatchElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigPatch;
+}
+
+interface StreamSinkPatchPostHog {
+  type: "postHog";
+  config: PostHogConfigPatch;
+}
+
+interface StreamSinkPatchSegment {
+  type: "segment";
+  config: SegmentSinkConfigPatch;
+}
+
 export type StreamSinkPatch = _StreamSinkPatchFields &
   (
     | StreamSinkPatchPoller
@@ -154,6 +190,10 @@ export type StreamSinkPatch = _StreamSinkPatchFields &
     | StreamSinkPatchSnowflake
     | StreamSinkPatchRabbitMq
     | StreamSinkPatchRedshift
+    | StreamSinkPatchPostgres
+    | StreamSinkPatchElasticSearch
+    | StreamSinkPatchPostHog
+    | StreamSinkPatchSegment
   );
 
 export const StreamSinkPatchSerializer = {
@@ -194,6 +234,14 @@ export const StreamSinkPatchSerializer = {
           return RabbitMqConfigPatchSerializer._fromJsonObject(object["config"]);
         case "redshift":
           return RedshiftConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "postgres":
+          return PostgresConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "postHog":
+          return PostHogConfigPatchSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigPatchSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -263,6 +311,18 @@ export const StreamSinkPatchSerializer = {
         break;
       case "redshift":
         config = RedshiftConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "postgres":
+        config = PostgresConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "postHog":
+        config = PostHogConfigPatchSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigPatchSerializer._toJsonObject(self.config);
         break;
     }
 

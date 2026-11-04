@@ -5,7 +5,8 @@ use serde::{Deserialize, Serialize};
 pub struct IngestSourceConsumerPortalAccessIn {
     /// How long the token will be valid for, in seconds.
     ///
-    /// Valid values are between 1 hour and 7 days. The default is 7 days.
+    /// Valid values are between 1 hour and 7 days.
+    /// The default is 7 days.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub expiry: Option<u64>,
 

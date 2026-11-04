@@ -14,6 +14,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
         public readonly ?string $detailType = null,
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $region = null,
         array $setFields = [],
     ) {
@@ -30,6 +32,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: null,
             accessKeyId: null,
             secretAccessKey: null,
+            roleArn: null,
+            externalId: null,
             region: null,
             setFields: []
         );
@@ -45,6 +49,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: $this->detailType,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             setFields: $setFields
         );
@@ -60,6 +66,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: $detailType,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             setFields: $setFields
         );
@@ -75,6 +83,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: $this->detailType,
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             setFields: $setFields
         );
@@ -90,6 +100,42 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: $this->detailType,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            eventBusName: $this->eventBusName,
+            detailType: $this->detailType,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            eventBusName: $this->eventBusName,
+            detailType: $this->detailType,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             region: $this->region,
             setFields: $setFields
         );
@@ -105,6 +151,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: $this->detailType,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $region,
             setFields: $setFields
         );
@@ -127,6 +175,12 @@ class EventBridgeConfigPatch implements \JsonSerializable
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
         }
+        if (null !== $this->roleArn) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (null !== $this->externalId) {
+            $data['externalId'] = $this->externalId;
+        }
         if (null !== $this->region) {
             $data['region'] = $this->region;
         }
@@ -144,6 +198,8 @@ class EventBridgeConfigPatch implements \JsonSerializable
             detailType: \Svix\Utils::deserializeString($data, 'detailType', false, 'EventBridgeConfigPatch'),
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'EventBridgeConfigPatch'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'EventBridgeConfigPatch'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'EventBridgeConfigPatch'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'EventBridgeConfigPatch'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'EventBridgeConfigPatch')
         );
     }

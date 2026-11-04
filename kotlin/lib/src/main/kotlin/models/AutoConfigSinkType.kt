@@ -9,6 +9,7 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.buildJsonObject
 
 @Serializable(with = AutoConfigSinkTypeSerializer::class)
 data class AutoConfigSinkType(val config: AutoConfigSinkTypeConfig)
@@ -52,7 +53,10 @@ sealed class AutoConfigSinkTypeConfig {
 
 class AutoConfigSinkTypeSerializer : KSerializer<AutoConfigSinkType> {
     @Serializable
-    private data class AutoConfigSinkTypeSurrogate(val type: String, val config: JsonElement)
+    private data class AutoConfigSinkTypeSurrogate(
+        val type: String,
+        val config: JsonElement = buildJsonObject {},
+    )
 
     override val descriptor: SerialDescriptor = AutoConfigSinkTypeSurrogate.serializer().descriptor
 

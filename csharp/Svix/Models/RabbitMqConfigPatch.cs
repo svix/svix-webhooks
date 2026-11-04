@@ -16,6 +16,11 @@ namespace Svix.Models
 
         public bool ShouldSerializeUri() => Uri != null;
 
+        [JsonProperty("mandatory")]
+        public bool? Mandatory { get; set; } = null;
+
+        public bool ShouldSerializeMandatory() => Mandatory != null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -23,6 +28,7 @@ namespace Svix.Models
             sb.Append("class RabbitMqConfigPatch {\n");
             sb.Append("  RoutingKey: ").Append(RoutingKey).Append('\n');
             sb.Append("  Uri: ").Append(Uri).Append('\n');
+            sb.Append("  Mandatory: ").Append(Mandatory).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

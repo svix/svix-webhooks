@@ -117,6 +117,20 @@ class ApiBase:
         return httpx_kwargs
 
 
+@dataclass
+class WrappedResponse:
+    response: t.Optional[httpx.Response] = None
+    exception: t.Optional[httpx.RequestError] = None
+
+    def should_retry(self) -> bool:
+        if self.response is not None:
+            return self.response.status_code == 423 or self.response.status_code >= 500
+        elif self.exception is not None:
+            return True  # we only catch retriable errors
+        else:
+            return False
+
+
 class ApiBaseAsync(ApiBase):
     _httpx_client: httpx.AsyncClient
 
@@ -127,6 +141,13 @@ class ApiBaseAsync(ApiBase):
     ):
         super().__init__(client)
         self._httpx_client = httpx_async_client
+
+    async def _attempt_request(self, httpx_kwargs: dict[str, t.Any]) -> WrappedResponse:
+        try:
+            response = await self._httpx_client.request(**httpx_kwargs)
+            return WrappedResponse(response=response)
+        except httpx.RequestError as exception:
+            return WrappedResponse(exception=exception)
 
     async def _request_asyncio(
         self,
@@ -146,15 +167,15 @@ class ApiBaseAsync(ApiBase):
             json_body=json_body,
         )
 
-        response = await self._httpx_client.request(**httpx_kwargs)
+        response = await self._attempt_request(httpx_kwargs)
 
         for retry_count, sleep_time in enumerate(self._client.retry_schedule):
-            if response.status_code < 500:
+            if not response.should_retry():
                 break
 
             await asyncio.sleep(sleep_time)
-            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
-            response = await self._httpx_client.request(**httpx_kwargs)
+            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count + 1)
+            response = await self._attempt_request(httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
 
@@ -165,6 +186,13 @@ class ApiBaseSync(ApiBase):
     def __init__(self, client: AuthenticatedClient, httpx_client: httpx.Client):
         super().__init__(client)
         self._httpx_client = httpx_client
+
+    def _attempt_request(self, httpx_kwargs: dict[str, t.Any]) -> WrappedResponse:
+        try:
+            response = self._httpx_client.request(**httpx_kwargs)
+            return WrappedResponse(response=response)
+        except httpx.RequestError as exception:
+            return WrappedResponse(exception=exception)
 
     def _request_sync(
         self,
@@ -183,14 +211,14 @@ class ApiBaseSync(ApiBase):
             header_params=header_params,
             json_body=json_body,
         )
-        response = self._httpx_client.request(**httpx_kwargs)
+        response = self._attempt_request(httpx_kwargs)
         for retry_count, sleep_time in enumerate(self._client.retry_schedule):
-            if response.status_code < 500:
+            if not response.should_retry():
                 break
 
             time.sleep(sleep_time)
-            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count)
-            response = self._httpx_client.request(**httpx_kwargs)
+            httpx_kwargs["headers"]["svix-retry-count"] = str(retry_count + 1)
+            response = self._attempt_request(httpx_kwargs)
 
         return _filter_response_for_errors_response(response)
 
@@ -219,7 +247,14 @@ def _make_httpx_client(client: AuthenticatedClient) -> httpx.Client:
     return httpx.Client(mounts=proxy_mounts, cookies=client.get_cookies())
 
 
-def _filter_response_for_errors_response(response: httpx.Response) -> httpx.Response:
+def _filter_response_for_errors_response(
+    wrapped_response: WrappedResponse,
+) -> httpx.Response:
+    if wrapped_response.exception is not None:
+        raise wrapped_response.exception
+    if wrapped_response.response is None:
+        raise ValueError("Unreachable: neither exception nor response found")
+    response = wrapped_response.response
     if 200 <= response.status_code <= 299:
         return response
     else:

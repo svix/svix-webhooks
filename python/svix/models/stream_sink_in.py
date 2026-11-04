@@ -8,13 +8,17 @@ from .azure_blob_storage_config_in import AzureBlobStorageConfigIn
 from .big_query_config_in import BigQueryConfigIn
 from .clickhouse_config_in import ClickhouseConfigIn
 from .common import BaseModel
+from .elastic_search_config_in import ElasticSearchConfigIn
 from .event_bridge_config_in import EventBridgeConfigIn
 from .google_cloud_pub_sub_config_in import GoogleCloudPubSubConfigIn
 from .google_cloud_storage_config_in import GoogleCloudStorageConfigIn
 from .otel_tracing_config_in import OtelTracingConfigIn
+from .post_hog_config_in import PostHogConfigIn
+from .postgres_config_in import PostgresConfigIn
 from .rabbit_mq_config_in import RabbitMqConfigIn
 from .redshift_config_in import RedshiftConfigIn
 from .s3_config_in import S3ConfigIn
+from .segment_sink_config_in import SegmentSinkConfigIn
 from .sink_http_config_in import SinkHttpConfigIn
 from .sink_status_in import SinkStatusIn
 from .snowflake_config_in import SnowflakeConfigIn
@@ -29,7 +33,8 @@ class StreamSinkIn(BaseModel):
     status: t.Optional[SinkStatusIn] = None
     """Whether the sink will receive events.
 
-    If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+    If the sink is `enabled`, any events posted to the stream will be
+    dispatched to the Sink in the same order that events were posted to the stream.
 
     If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled."""
 
@@ -44,7 +49,8 @@ class StreamSinkIn(BaseModel):
     Note that we will never send an empty batch of events to the Sink."""
 
     event_types: t.Optional[t.List[str]] = None
-    """A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events."""
+    """A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out
+    any events."""
 
     channels: t.Optional[t.List[str]] = None
 
@@ -66,6 +72,10 @@ class StreamSinkIn(BaseModel):
         t.Literal["snowflake"],
         t.Literal["rabbitMq"],
         t.Literal["redshift"],
+        t.Literal["postgres"],
+        t.Literal["elasticSearch"],
+        t.Literal["postHog"],
+        t.Literal["segment"],
     ]
     config: t.Union[
         t.Dict[str, t.Any],
@@ -83,6 +93,10 @@ class StreamSinkIn(BaseModel):
         SnowflakeConfigIn,
         RabbitMqConfigIn,
         RedshiftConfigIn,
+        PostgresConfigIn,
+        ElasticSearchConfigIn,
+        PostHogConfigIn,
+        SegmentSinkConfigIn,
     ]
 
     @model_validator(mode="wrap")
@@ -131,6 +145,14 @@ class StreamSinkIn(BaseModel):
             output.config = RabbitMqConfigIn.model_validate(data.get("config", {}))
         elif output.type == "redshift":
             output.config = RedshiftConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "postgres":
+            output.config = PostgresConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "elasticSearch":
+            output.config = ElasticSearchConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "postHog":
+            output.config = PostHogConfigIn.model_validate(data.get("config", {}))
+        elif output.type == "segment":
+            output.config = SegmentSinkConfigIn.model_validate(data.get("config", {}))
         else:
             raise ValueError(f"Unexpected type `{output.type}`")
         return output

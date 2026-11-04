@@ -146,6 +146,10 @@ pub struct ConfigurationInner {
     pub opentelemetry_sample_ratio: Option<f64>,
     /// The service name to use for OpenTelemetry. If not provided, it defaults to "svix_server".
     pub opentelemetry_service_name: String,
+    /// Whether to additionally send log events to the configured OpenTelemetry collector. Disabled
+    /// by default. If the OpenTelemetry address is not set, this will do nothing. When disabled,
+    /// logs are only ever written to stdout.
+    pub opentelemetry_logs_enabled: bool,
     /// Whether to enable the logging of the databases at the configured log level. This may be
     /// useful for analyzing their response times.
     pub db_tracing: bool,
@@ -216,10 +220,22 @@ pub struct ConfigurationInner {
     /// Should this instance run the message worker
     pub worker_enabled: bool,
 
+    /// Should this instance run the expired message cleaner, which nulls payloads and deletes
+    /// message contents for messages past their expiration. Message rows themselves are kept
+    /// regardless, to preserve pagination, and can be deleted with the `prune` command.
+    #[serde(default = "default_true")]
+    pub expired_message_cleaner_enabled: bool,
+
     /// Subnets to whitelist for outbound webhooks. Note that allowing endpoints in private IP space
     /// is a security risk and should only be allowed if you are using the service internally or for
     /// testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`
     pub whitelist_subnets: Option<Arc<Vec<IpNet>>>,
+
+    /// Hostnames to whitelist for outbound webhooks. Note that allowing a name here will bypass any
+    /// IP filtering, and should only be done for hostnames which are fully in your control and
+    /// when your DNS configuration is fully-trusted.
+    #[serde(default)]
+    pub whitelist_names: Option<Arc<Vec<String>>>,
 
     /// Maximum number of concurrent worker tasks to spawn (0 is unlimited)
     pub worker_max_tasks: u16,
@@ -246,8 +262,20 @@ pub struct ConfigurationInner {
     /// Should this instance run background migrations
     pub background_migrations_enabled: bool,
 
+    /// Enable migration task for old redis queue tasks.
+    ///
+    /// Defaults to `true`. Can be safely set to `false` if redis contains no
+    /// (more) pre-v0.64.0 queue tasks.
+    /// Has no effect if the queue backend is not redis.
+    #[serde(default = "default_true")]
+    pub enable_redis_v1_v2_queue_migration: bool,
+
     #[serde(flatten)]
     pub internal: InternalConfig,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -472,6 +500,8 @@ pub enum CacheBackend<'a> {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum LogLevel {
+    Error,
+    Warn,
     Info,
     Debug,
     Trace,
@@ -536,6 +566,8 @@ impl std::fmt::Display for Environment {
 impl fmt::Display for LogLevel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
+            Self::Error => Level::ERROR,
+            Self::Warn => Level::WARN,
             Self::Info => Level::INFO,
             Self::Debug => Level::DEBUG,
             Self::Trace => Level::TRACE,

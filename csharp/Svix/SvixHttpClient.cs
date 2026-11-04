@@ -14,14 +14,30 @@ namespace Svix
     )
     {
         private readonly List<int> retryScheduleMilliseconds = retryScheduleMilliseconds;
-        private readonly string serverUrl = serverUrl;
+        private readonly string serverUrl = serverUrl.TrimEnd('/');
         private readonly HttpClient _httpClient = new();
         private readonly string _token = token;
-        private readonly JsonSerializerSettings patchJsonOptions = new();
+        private readonly JsonSerializerSettings patchJsonOptions = new()
+        {
+            Converters = { new SystemTextJsonConverter() },
+        };
         private readonly JsonSerializerSettings JsonOptions = new()
         {
             NullValueHandling = NullValueHandling.Ignore,
+            Converters = { new SystemTextJsonConverter() },
         };
+
+        public SvixHttpClient(
+            string token,
+            List<int> retryScheduleMilliseconds,
+            string userAgent,
+            string serverUrl,
+            int timeoutMilliseconds
+        )
+            : this(token, retryScheduleMilliseconds, userAgent, serverUrl)
+        {
+            _httpClient.Timeout = TimeSpan.FromMilliseconds(timeoutMilliseconds);
+        }
 
         public ApiResponse<T> SendRequest<T>(
             HttpMethod method,
@@ -78,15 +94,25 @@ namespace Svix
                 headerParams,
                 content
             );
-            var response = await _httpClient.SendAsync(request, cancellationToken);
             for (var index = 0; index < retryScheduleMilliseconds.Count; index++)
             {
-                if ((int)response.StatusCode < 500)
+                try
                 {
-                    break;
+                    var response = await _httpClient.SendAsync(request, cancellationToken);
+                    if ((int)response.StatusCode < 500)
+                    {
+                        return await FilterResponseForErrors<T>(response, cancellationToken);
+                    }
+                    response.Dispose();
                 }
-                Thread.Sleep(retryScheduleMilliseconds[index]);
-                HttpRequestMessage retryRequest = BuildRequest(
+                // Network errors are retried
+                catch (HttpRequestException) { }
+                // HttpClient.Timeout surfaces as TaskCanceledException; only retry it if the
+                // caller didn't cancel the request themselves
+                catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested) { }
+
+                await Task.Delay(retryScheduleMilliseconds[index], cancellationToken);
+                request = BuildRequest(
                     method,
                     path,
                     req_id,
@@ -95,10 +121,10 @@ namespace Svix
                     headerParams,
                     content
                 );
-                retryRequest.Headers.Add("svix-retry-count", (index + 1).ToString());
-                response = await _httpClient.SendAsync(retryRequest, cancellationToken);
+                request.Headers.Add("svix-retry-count", (index + 1).ToString());
             }
-            return await FilterResponseForErrors<T>(response, cancellationToken);
+            var lastResponse = await _httpClient.SendAsync(request, cancellationToken);
+            return await FilterResponseForErrors<T>(lastResponse, cancellationToken);
         }
 
         async Task<ApiResponse<T>> FilterResponseForErrors<T>(

@@ -722,6 +722,7 @@ mod tests {
                 updated_at: Default::default(),
                 url: "https://play.svix.com/in/token/".to_owned(),
                 channels: None,
+                expiry: None,
             },
             play_view_url: "https://play.svix.com/view/token/".to_owned(),
             channel: None,

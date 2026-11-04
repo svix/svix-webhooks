@@ -6,8 +6,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 class Svix(token: String, options: SvixOptions = SvixOptions()) {
     val application: Application
     val authentication: Authentication
+    val autoconfigSubscription: AutoconfigSubscription
     val backgroundTask: BackgroundTask
     val connector: Connector
+    val destination: Destination
     val endpoint: Endpoint
     val environment: Environment
     val eventType: EventType
@@ -27,8 +29,10 @@ class Svix(token: String, options: SvixOptions = SvixOptions()) {
 
         application = Application(httpClient)
         authentication = Authentication(httpClient)
+        autoconfigSubscription = AutoconfigSubscription(httpClient)
         backgroundTask = BackgroundTask(httpClient)
         connector = Connector(httpClient)
+        destination = Destination(httpClient)
         endpoint = Endpoint(httpClient)
         environment = Environment(httpClient)
         eventType = EventType(httpClient)

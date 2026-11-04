@@ -9,5 +9,7 @@ data class EventBridgeConfigPatch(
     val detailType: String? = null,
     val accessKeyId: String? = null,
     val secretAccessKey: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val region: String? = null,
 )

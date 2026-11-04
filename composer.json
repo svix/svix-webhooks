@@ -26,7 +26,10 @@
     "autoload": {
         "psr-4": {
             "Svix\\": "php/src/"
-        }
+        },
+        "classmap": [
+            "php/src/Models/"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

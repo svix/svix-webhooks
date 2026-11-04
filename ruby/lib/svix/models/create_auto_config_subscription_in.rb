@@ -1,0 +1,53 @@
+# frozen_string_literal: true
+# This file is @generated
+require "json"
+
+module Svix
+  class CreateAutoConfigSubscriptionIn
+    # The set of feature flags the created token will have access to.
+    #
+    # When omitted or empty, the token inherits the calling token's feature flags.
+    # When set, these flags are used instead. An application token may only grant a subset of its own flags.
+    attr_accessor :feature_flags
+
+    ALL_FIELD ||= ["feature_flags"].freeze
+    private_constant :ALL_FIELD
+
+    def initialize(attributes = {})
+      unless attributes.is_a?(Hash)
+        fail(
+          ArgumentError,
+          "The input argument (attributes) must be a hash in `Svix::CreateAutoConfigSubscriptionIn` new method"
+        )
+      end
+
+      attributes.each do |k, v|
+        unless ALL_FIELD.include?(k.to_s)
+          fail(ArgumentError, "The field #{k} is not part of Svix::CreateAutoConfigSubscriptionIn")
+        end
+
+        instance_variable_set("@#{k}", v)
+        instance_variable_set("@__#{k}_is_defined", true)
+      end
+    end
+
+    def self.deserialize(attributes = {})
+      attributes = attributes.transform_keys(&:to_s)
+      attrs = Hash.new
+      attrs["feature_flags"] = attributes["featureFlags"]
+      new(attrs)
+    end
+
+    def serialize
+      out = Hash.new
+      out["featureFlags"] = Svix::serialize_primitive(@feature_flags) unless @feature_flags.nil?
+      out
+    end
+
+    # Serializes the object to a json string
+    # @return String
+    def to_json(*args)
+      serialize.to_json(*args)
+    end
+  end
+end

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 func TestEndpoint_Serialization(t *testing.T) {

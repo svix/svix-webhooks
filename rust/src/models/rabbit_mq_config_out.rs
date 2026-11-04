@@ -3,6 +3,10 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct RabbitMqConfigOut {
+    pub uri: String,
+
     #[serde(rename = "routingKey")]
     pub routing_key: String,
+
+    pub mandatory: bool,
 }

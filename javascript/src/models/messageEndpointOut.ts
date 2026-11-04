@@ -24,6 +24,12 @@ export interface MessageEndpointOut {
   channels?: string[] | null;
   createdAt: Date;
   updatedAt: Date;
+  /**
+   * When the endpoint expires, if ever.
+   *
+   * No messages are sent to the endpoint after this time.
+   */
+  expiry?: Date | null;
 }
 
 export const MessageEndpointOutSerializer = {
@@ -42,6 +48,7 @@ export const MessageEndpointOutSerializer = {
       channels: object["channels"],
       createdAt: new Date(object["createdAt"]),
       updatedAt: new Date(object["updatedAt"]),
+      expiry: object["expiry"] ? new Date(object["expiry"]) : null,
     };
   },
 
@@ -60,6 +67,7 @@ export const MessageEndpointOutSerializer = {
       channels: self.channels,
       createdAt: self.createdAt,
       updatedAt: self.updatedAt,
+      expiry: self.expiry,
     };
   },
 };

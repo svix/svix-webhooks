@@ -16,6 +16,14 @@ pub struct S3ConfigPatch {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub secret_access_key: Option<String>,
 
+    #[serde(rename = "roleArn")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub role_arn: Option<String>,
+
+    #[serde(rename = "externalId")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub external_id: Option<String>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub region: Option<String>,
 
@@ -30,6 +38,8 @@ impl S3ConfigPatch {
             bucket: None,
             access_key_id: None,
             secret_access_key: None,
+            role_arn: None,
+            external_id: None,
             region: None,
             endpoint_url: None,
         }

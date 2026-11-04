@@ -102,54 +102,13 @@ pub fn initialize_openapi() -> OpenApi {
 /// Replaces OpenAPI 3.1 style `"foo": true` schemas with OpenAPI 3.0 style
 /// `"foo": {"type": "object"}` schemas.
 fn replace_true_schemas(openapi: &mut OpenApi) {
-    use schemars::schema::{InstanceType, ObjectValidation, Schema, SchemaObject, SingleOrVec};
-
-    // Checks if it's a plain boolean schema, and if yes replaces it with a
-    // `{"type": "object"}` schema. If it's an object then it will descend into
-    // its properties and `additionalProperties` too.
-    fn visit_schema(schema: &mut Schema) {
-        match schema {
-            Schema::Bool(true) => {
-                *schema = Schema::Object(SchemaObject {
-                    instance_type: Some(SingleOrVec::Single(Box::new(InstanceType::Object))),
-                    ..Default::default()
-                })
-            }
-            Schema::Bool(false) => {
-                tracing::warn!("unexpected `false` schema encountered");
-            }
-            Schema::Object(obj) => {
-                // When examples are added to a `"foo": bool` schema it gets
-                // expanded into an object, i.e. `"foo": {"example": ...}`, but
-                // no "type" field is set on it. Although the OpenAPI spec does
-                // not specifically say that the type field is mandatory, in
-                // practice a lack of the "type" field should only ever occur
-                // when a `true` schema gets replaced because it is somehow
-                // modified (e.g. example added), or because it's a "$ref"
-                // object.
-                // If it's not a reference, then we must add the "type" field
-                // back with the value "object" so code generators work correctly.
-                if obj.instance_type.is_none() && obj.reference.is_none() {
-                    obj.instance_type = Some(SingleOrVec::Single(Box::new(InstanceType::Object)));
-                }
-
-                obj.object.as_mut().map(visit_object_validation);
-            }
-        }
-    }
-
-    fn visit_object_validation(obj: &mut Box<ObjectValidation>) {
-        if let Some(additional_props) = &mut obj.additional_properties {
-            visit_schema(additional_props)
-        }
-        for (_, schema) in &mut obj.properties {
-            visit_schema(schema)
-        }
-    }
+    let mut visitor = schemars::visit::ReplaceBoolSchemas {
+        skip_additional_properties: true,
+    };
 
     if let Some(components) = &mut openapi.components {
         for (_, schema) in &mut components.schemas {
-            visit_schema(&mut schema.json_schema)
+            visitor.visit_schema(&mut schema.json_schema);
         }
     }
 }

@@ -38,15 +38,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["bucket"] = Svix::serialize_primitive(@bucket) if @bucket
-      out["credentials"] = Svix::serialize_primitive(@credentials) if @credentials
+      out["bucket"] = Svix::serialize_primitive(@bucket) unless @bucket.nil?
+      out["credentials"] = Svix::serialize_primitive(@credentials) unless @credentials.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

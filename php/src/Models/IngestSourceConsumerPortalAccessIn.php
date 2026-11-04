@@ -12,7 +12,8 @@ class IngestSourceConsumerPortalAccessIn implements \JsonSerializable
     /**
      * @param int|null $expiry How long the token will be valid for, in seconds.
      *
-     * Valid values are between 1 hour and 7 days. The default is 7 days.
+     * Valid values are between 1 hour and 7 days.
+     * The default is 7 days.
      * @param bool|null $readOnly whether the app portal should be in read-only mode
      */
     private function __construct(

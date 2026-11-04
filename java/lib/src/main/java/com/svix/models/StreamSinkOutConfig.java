@@ -32,6 +32,16 @@ public abstract class StreamSinkOutConfig {
         }
     }
 
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("pollingEndpoint")
+    public static class PollingEndpoint extends StreamSinkOutConfig {
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().createObjectNode();
+        }
+    }
+
     @Getter
     @Setter
     @AllArgsConstructor
@@ -242,6 +252,66 @@ public abstract class StreamSinkOutConfig {
         }
     }
 
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postgres")
+    public static class Postgres extends StreamSinkOutConfig {
+        private final PostgresConfigOut postgres;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postgres);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("elasticSearch")
+    public static class ElasticSearch extends StreamSinkOutConfig {
+        private final ElasticSearchConfigOut elasticSearch;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(elasticSearch);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("postHog")
+    public static class PostHog extends StreamSinkOutConfig {
+        private final PostHogConfigOut postHog;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(postHog);
+        }
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @ToString
+    @EqualsAndHashCode(callSuper = false)
+    @VariantName("segment")
+    public static class Segment extends StreamSinkOutConfig {
+        private final SegmentSinkConfigOut segment;
+
+        @Override
+        public JsonNode toJsonNode() {
+            return Utils.getObjectMapper().valueToTree(segment);
+        }
+    }
+
     @FunctionalInterface
     private interface TypeFactory {
         StreamSinkOutConfig create(JsonNode config);
@@ -252,6 +322,7 @@ public abstract class StreamSinkOutConfig {
 
     static {
         TY_M.put("poller", c -> new Poller());
+        TY_M.put("pollingEndpoint", c -> new PollingEndpoint());
         TY_M.put(
                 "azureBlobStorage",
                 c -> new AzureBlobStorage(m.convertValue(c, AzureBlobStorageConfigOut.class)));
@@ -274,6 +345,12 @@ public abstract class StreamSinkOutConfig {
         TY_M.put(
                 "eventBridge", c -> new EventBridge(m.convertValue(c, EventBridgeConfigOut.class)));
         TY_M.put("sns", c -> new Sns(m.convertValue(c, SnsConfigOut.class)));
+        TY_M.put("postgres", c -> new Postgres(m.convertValue(c, PostgresConfigOut.class)));
+        TY_M.put(
+                "elasticSearch",
+                c -> new ElasticSearch(m.convertValue(c, ElasticSearchConfigOut.class)));
+        TY_M.put("postHog", c -> new PostHog(m.convertValue(c, PostHogConfigOut.class)));
+        TY_M.put("segment", c -> new Segment(m.convertValue(c, SegmentSinkConfigOut.class)));
     }
 
     public static StreamSinkOutConfig fromTypeAndConfig(String type, JsonNode config) {

@@ -1,5 +1,6 @@
 // this file is @generated
 
+import type { ArchiveStatus } from "../models/archiveStatus";
 import {
   type ListResponseStreamEventTypeOut,
   ListResponseStreamEventTypeOutSerializer,
@@ -26,8 +27,18 @@ export interface StreamingEventTypeListOptions {
   iterator?: string | null;
   /** The sorting order of the returned items */
   order?: Ordering;
-  /** Include archived (deleted but not expunged) items in the response. */
+  /**
+   * Include archived items in the response.
+   *
+   * Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
+   */
   includeArchived?: boolean;
+  /**
+   * Which items to include based on whether they are archived.
+   *
+   * Defaults to `active`.
+   */
+  archiveStatus?: ArchiveStatus;
 }
 
 export interface StreamingEventTypeCreateOptions {
@@ -35,7 +46,7 @@ export interface StreamingEventTypeCreateOptions {
 }
 
 export interface StreamingEventTypeDeleteOptions {
-  /** By default, event types are archived when "deleted". With this flag, they are deleted entirely. */
+  /** Entirely delete the event type, rather than archiving it. */
   expunge?: boolean;
 }
 
@@ -53,6 +64,7 @@ export class StreamingEventType {
       iterator: options?.iterator,
       order: options?.order,
       include_archived: options?.includeArchived,
+      archive_status: options?.archiveStatus,
     });
 
     return await request.send(
@@ -105,7 +117,12 @@ export class StreamingEventType {
     );
   }
 
-  /** Delete an event type. */
+  /**
+   * Archive an event type.
+   *
+   * An event type can be unarchived with the
+   * [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
+   */
   public async delete(
     name: string,
     options?: StreamingEventTypeDeleteOptions

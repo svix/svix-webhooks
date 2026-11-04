@@ -19,6 +19,8 @@ public class SnsConfigOut {
     @JsonProperty private String topicArn;
     @JsonProperty private String region;
     @JsonProperty private String accessKeyId;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
 
     public SnsConfigOut() {}
 
@@ -70,13 +72,51 @@ public class SnsConfigOut {
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
 
     public void setAccessKeyId(String accessKeyId) {
         this.accessKeyId = accessKeyId;
+    }
+
+    public SnsConfigOut roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public SnsConfigOut externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     /**

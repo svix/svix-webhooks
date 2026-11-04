@@ -3,9 +3,11 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     adobe_sign_config_out::AdobeSignConfigOut, airwallex_config_out::AirwallexConfigOut,
+    ascend_config_out::AscendConfigOut, bitbucket_config_out::BitbucketConfigOut,
     checkbook_config_out::CheckbookConfigOut, cron_config::CronConfig,
     docusign_config_out::DocusignConfigOut, easypost_config_out::EasypostConfigOut,
-    github_config_out::GithubConfigOut, hubspot_config_out::HubspotConfigOut,
+    generic_config::GenericConfig, github_config_out::GithubConfigOut,
+    hubspot_config_out::HubspotConfigOut, merge_config_out::MergeConfigOut,
     meta_config_out::MetaConfigOut, nango_config_out::NangoConfigOut,
     open_claw_config_out::OpenClawConfigOut, orum_io_config_out::OrumIoConfigOut,
     panda_doc_config_out::PandaDocConfigOut, port_io_config_out::PortIoConfigOut,
@@ -13,8 +15,9 @@ use super::{
     shopify_config_out::ShopifyConfigOut, slack_config_out::SlackConfigOut,
     stripe_config_out::StripeConfigOut, svix_config_out::SvixConfigOut,
     tailscale_config_out::TailscaleConfigOut, telnyx_config_out::TelnyxConfigOut,
-    vapi_config_out::VapiConfigOut, veriff_config_out::VeriffConfigOut,
-    vgs_config_out::VgsConfigOut, zoom_config_out::ZoomConfigOut,
+    tricentis_qtest_config_out::TricentisQtestConfigOut, vapi_config_out::VapiConfigOut,
+    veriff_config_out::VeriffConfigOut, vgs_config_out::VgsConfigOut,
+    zoom_config_out::ZoomConfigOut,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -49,12 +52,18 @@ pub struct IngestSourceOut {
 pub enum IngestSourceOutConfig {
     #[serde(rename = "generic-webhook")]
     GenericWebhook,
+    #[serde(rename = "generic")]
+    Generic(GenericConfig),
     #[serde(rename = "cron")]
     Cron(CronConfig),
     #[serde(rename = "adobe-sign")]
     AdobeSign(AdobeSignConfigOut),
+    #[serde(rename = "ascend")]
+    Ascend(AscendConfigOut),
     #[serde(rename = "beehiiv")]
     Beehiiv(SvixConfigOut),
+    #[serde(rename = "bitbucket")]
+    Bitbucket(BitbucketConfigOut),
     #[serde(rename = "brex")]
     Brex(SvixConfigOut),
     #[serde(rename = "checkbook")]
@@ -75,6 +84,8 @@ pub enum IngestSourceOutConfig {
     IncidentIo(SvixConfigOut),
     #[serde(rename = "lithic")]
     Lithic(SvixConfigOut),
+    #[serde(rename = "merge")]
+    Merge(MergeConfigOut),
     #[serde(rename = "meta")]
     Meta(MetaConfigOut),
     #[serde(rename = "nango")]
@@ -121,6 +132,8 @@ pub enum IngestSourceOutConfig {
     Tailscale(TailscaleConfigOut),
     #[serde(rename = "telnyx")]
     Telnyx(TelnyxConfigOut),
+    #[serde(rename = "tricentis-qtest")]
+    TricentisQtest(TricentisQtestConfigOut),
     #[serde(rename = "vapi")]
     Vapi(VapiConfigOut),
     #[serde(rename = "open-ai")]

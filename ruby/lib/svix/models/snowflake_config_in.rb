@@ -5,13 +5,16 @@ require "json"
 module Svix
   # Configuration parameters for defining a Snowflake sink.
   class SnowflakeConfigIn
-    # PEM-encoded private key used for signing token-based requests to the Snowflake API.
+    # PEM-encoded private key used for signing token-based requests
+    # to the Snowflake API.
     #
     # Beginning/end delimiters are not required.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Currently a required field, but marked as optional because we may add
+    # different authentication in the future.
     attr_accessor :private_key
-    # Snowflake account identifier, which includes both the organization and account IDs separated by a hyphen.
+    # Snowflake account identifier, which includes both the organization and account
+    # IDs separated by a hyphen.
     attr_accessor :account_identifier
     # The Snowflake user id.
     attr_accessor :user_id
@@ -60,19 +63,19 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["privateKey"] = Svix::serialize_primitive(@private_key) if @private_key
-      out["accountIdentifier"] = Svix::serialize_primitive(@account_identifier) if @account_identifier
-      out["userId"] = Svix::serialize_primitive(@user_id) if @user_id
-      out["dbName"] = Svix::serialize_primitive(@db_name) if @db_name
-      out["schemaName"] = Svix::serialize_primitive(@schema_name) if @schema_name
-      out["tableName"] = Svix::serialize_primitive(@table_name) if @table_name
+      out["privateKey"] = Svix::serialize_primitive(@private_key) unless @private_key.nil?
+      out["accountIdentifier"] = Svix::serialize_primitive(@account_identifier) unless @account_identifier.nil?
+      out["userId"] = Svix::serialize_primitive(@user_id) unless @user_id.nil?
+      out["dbName"] = Svix::serialize_primitive(@db_name) unless @db_name.nil?
+      out["schemaName"] = Svix::serialize_primitive(@schema_name) unless @schema_name.nil?
+      out["tableName"] = Svix::serialize_primitive(@table_name) unless @table_name.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

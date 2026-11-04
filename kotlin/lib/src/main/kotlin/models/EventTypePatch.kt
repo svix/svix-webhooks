@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class EventTypePatch(
     val description: String? = null,
+    /** Translated descriptions keyed by BCP 47 language tag. */
+    val descriptionTranslations: MaybeUnset<Map<String, String>> = MaybeUnset.Unset,
     val archived: Boolean? = null,
     val deprecated: Boolean? = null,
     @Serializable(with = MaybeUnsetStringAnyMapSerializer::class)

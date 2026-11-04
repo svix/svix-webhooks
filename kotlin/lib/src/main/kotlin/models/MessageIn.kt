@@ -7,7 +7,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MessageIn(
-    /** Optional unique identifier for the message */
+    /**
+     * Optional unique identifier for the message
+     *
+     * This should not contain the '.' character
+     */
     val eventId: String? = null,
     /** The event type's name */
     val eventType: String,

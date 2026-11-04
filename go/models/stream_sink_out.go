@@ -8,17 +8,21 @@ import (
 )
 
 // When creating an StreamSinkOut, use the appropriate config structure based on the Type:
-//   - "poller": No config needed (nil or just ignore the config field)
+//   - "poller","pollingEndpoint": No config needed (nil or just ignore the config field)
 //   - "azureBlobStorage": Use AzureBlobStorageConfigOut
 //   - "bigQuery": Use BigQueryConfigOut
 //   - "clickhouse": Use ClickhouseConfigOut
+//   - "elasticSearch": Use ElasticSearchConfigOut
 //   - "eventBridge": Use EventBridgeConfigOut
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigOut
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigOut
 //   - "otelTracing": Use OtelTracingConfigOut
+//   - "postgres": Use PostgresConfigOut
+//   - "postHog": Use PostHogConfigOut
 //   - "rabbitMq": Use RabbitMqConfigOut
 //   - "redshift": Use RedshiftConfigOut
 //   - "amazonS3": Use S3ConfigOut
+//   - "segment": Use SegmentSinkConfigOut
 //   - "http": Use SinkHttpConfigOut
 //   - "snowflake": Use SnowflakeConfigOut
 //   - "sns": Use SnsConfigOut
@@ -45,6 +49,7 @@ type StreamSinkOutType string
 
 const (
 	StreamSinkOutTypePoller             StreamSinkOutType = "poller"
+	StreamSinkOutTypePollingEndpoint    StreamSinkOutType = "pollingEndpoint"
 	StreamSinkOutTypeAzureBlobStorage   StreamSinkOutType = "azureBlobStorage"
 	StreamSinkOutTypeOtelTracing        StreamSinkOutType = "otelTracing"
 	StreamSinkOutTypeHttp               StreamSinkOutType = "http"
@@ -59,6 +64,10 @@ const (
 	StreamSinkOutTypeSqs                StreamSinkOutType = "sqs"
 	StreamSinkOutTypeEventBridge        StreamSinkOutType = "eventBridge"
 	StreamSinkOutTypeSns                StreamSinkOutType = "sns"
+	StreamSinkOutTypePostgres           StreamSinkOutType = "postgres"
+	StreamSinkOutTypeElasticSearch      StreamSinkOutType = "elasticSearch"
+	StreamSinkOutTypePostHog            StreamSinkOutType = "postHog"
+	StreamSinkOutTypeSegment            StreamSinkOutType = "segment"
 )
 
 type StreamSinkOutConfig interface {
@@ -80,6 +89,10 @@ func (RabbitMqConfigOut) isStreamSinkOutConfig()           {}
 func (SqsConfigOut) isStreamSinkOutConfig()                {}
 func (EventBridgeConfigOut) isStreamSinkOutConfig()        {}
 func (SnsConfigOut) isStreamSinkOutConfig()                {}
+func (PostgresConfigOut) isStreamSinkOutConfig()           {}
+func (ElasticSearchConfigOut) isStreamSinkOutConfig()      {}
+func (PostHogConfigOut) isStreamSinkOutConfig()            {}
+func (SegmentSinkConfigOut) isStreamSinkOutConfig()        {}
 
 func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkOut
@@ -94,7 +107,7 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 
 	var err error
 	switch i.Type {
-	case "poller":
+	case "poller", "pollingEndpoint":
 	case "azureBlobStorage":
 		var c AzureBlobStorageConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -105,6 +118,10 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "clickhouse":
 		var c ClickhouseConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "eventBridge":
@@ -123,6 +140,14 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		var c OtelTracingConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "postgres":
+		var c PostgresConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postHog":
+		var c PostHogConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "rabbitMq":
 		var c RabbitMqConfigOut
 		err = json.Unmarshal(aux.Config, &c)
@@ -133,6 +158,10 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "amazonS3":
 		var c S3ConfigOut
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "http":
@@ -159,7 +188,8 @@ func (i *StreamSinkOut) UnmarshalJSON(data []byte) error {
 }
 
 var StreamSinkOutTypeWithNoConfig = map[string]bool{
-	"poller": true,
+	"poller":          true,
+	"pollingEndpoint": true,
 }
 
 func (i StreamSinkOut) MarshalJSON() ([]byte, error) {
@@ -172,6 +202,7 @@ func (i StreamSinkOut) MarshalJSON() ([]byte, error) {
 
 var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"poller":             StreamSinkOutTypePoller,
+	"pollingEndpoint":    StreamSinkOutTypePollingEndpoint,
 	"azureBlobStorage":   StreamSinkOutTypeAzureBlobStorage,
 	"otelTracing":        StreamSinkOutTypeOtelTracing,
 	"http":               StreamSinkOutTypeHttp,
@@ -186,4 +217,8 @@ var StreamSinkOutTypeFromString = map[string]StreamSinkOutType{
 	"sqs":                StreamSinkOutTypeSqs,
 	"eventBridge":        StreamSinkOutTypeEventBridge,
 	"sns":                StreamSinkOutTypeSns,
+	"postgres":           StreamSinkOutTypePostgres,
+	"elasticSearch":      StreamSinkOutTypeElasticSearch,
+	"postHog":            StreamSinkOutTypePostHog,
+	"segment":            StreamSinkOutTypeSegment,
 }

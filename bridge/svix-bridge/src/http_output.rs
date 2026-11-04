@@ -8,16 +8,11 @@ use url::Url;
 const BRIDGE_USER_AGENT: HeaderValue =
     HeaderValue::from_static(concat!("Svix-Bridge/", env!("CARGO_PKG_VERSION")));
 
-#[derive(Deserialize)]
-#[serde(tag = "type")]
-pub enum HttpOutputOpts {
-    // Single-variant enum so we can require the "type": "http" field in deserialization
-    #[serde(rename = "http")]
-    Inner {
-        url: Url,
-        #[serde(default)]
-        headers: IndexMap<String, String>,
-    },
+#[derive(Clone, Deserialize)]
+pub struct HttpOutputOpts {
+    url: Url,
+    #[serde(default)]
+    headers: IndexMap<String, String>,
 }
 
 pub(crate) struct HttpOutput {
@@ -32,7 +27,7 @@ impl HttpOutputOpts {
         self,
         name: String,
     ) -> anyhow::Result<Box<dyn ReceiverOutput>> {
-        let Self::Inner { url, headers } = self;
+        let Self { url, headers } = self;
         let mut headers: HeaderMap = headers
             .into_iter()
             .map(|(k, v)| {

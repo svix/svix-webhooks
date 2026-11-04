@@ -6,21 +6,15 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 {
     private const TOLERANCE = 5 * 60;
 
-    public function testValidSignatureIsValidAndReturnsJson()
+    public function testValidSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
-    public function testValidBrandlessSignatureIsValidAndReturnsJson()
+    public function testValidBrandlessSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
         $unbrandedHeaders = array(
@@ -32,12 +26,6 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $wh = new \Svix\Webhook($testPayload->secret);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
     public function testTitleCasedSignatureIsValidAndReturnsJson()
@@ -200,12 +188,6 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
     public function testCustomToleranceRejectsOldTimestampInsideDefault()
@@ -225,12 +207,6 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
 
         $wh = new \Svix\Webhook($testPayload->secret, 3 * self::TOLERANCE);
         $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
-        );
     }
 
     public function testCustomToleranceRejectsNewTimestampInsideDefault()
@@ -397,5 +373,77 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $wh = new \Svix\Webhook($key);
 
         $signature = $wh->sign($msgId, $timestamp, $payload);
+    }
+
+    public function testEmptySecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("");
+    }
+
+    public function testPrefixOnlySecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_");
+    }
+
+    public function testNonBase64SecretThrows()
+    {
+        // without the strict flag, base64_decode("@@@@") returns "" and became an empty HMAC key
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("whsec_@@@@");
+    }
+
+    public function testFromRawEmptySecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        \Svix\Webhook::fromRaw("");
+    }
+
+    public function testFromRawSignatureIsValid()
+    {
+        $testPayload = new TestPayload(time());
+
+        $wh = \Svix\Webhook::fromRaw(base64_decode($testPayload->secret));
+        $wh->verify($testPayload->payload, $testPayload->header);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testFromRawWrongSecretThrows()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("No matching signature found");
+
+        $testPayload = new TestPayload(time());
+
+        $wh = \Svix\Webhook::fromRaw("not the secret");
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
+    public function testFromRawWithCustomToleranceAcceptsOldTimestamp()
+    {
+        $testPayload = new TestPayload(time() - (2 * self::TOLERANCE));
+
+        $wh = \Svix\Webhook::fromRaw(base64_decode($testPayload->secret), 3 * self::TOLERANCE);
+        $wh->verify($testPayload->payload, $testPayload->header);
+        $this->addToAssertionCount(1);
+    }
+
+    public function testNoSecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook();
+    }
+
+    public function testSecretAndRawSecretThrows()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        new \Svix\Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw", 300, "raw");
     }
 }

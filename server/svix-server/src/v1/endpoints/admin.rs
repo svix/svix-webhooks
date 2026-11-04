@@ -2,10 +2,10 @@ use aide::{
     axum::{ApiRouter, routing::post_with},
     transform::TransformPathItem,
 };
-use axum::extract::State;
+use axum::{extract::State, response::NoContent};
 use svix_server_derive::aide_annotate;
 
-use crate::{AppState, core::permissions, error::Result, v1::utils::NoContent};
+use crate::{AppState, core::permissions, error::Result};
 
 /// Redrive DLQ
 #[aide_annotate(op_id = "v1.admin.redrive-dlq")]

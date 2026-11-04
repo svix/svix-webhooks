@@ -10,11 +10,13 @@ class EventTypePatch implements \JsonSerializable
     private array $setFields = [];
 
     /**
-     * @param list<string>|null $featureFlags
-     * @param string|null       $groupName    The event type group's name
+     * @param array<string, string>|null $descriptionTranslations translated descriptions keyed by BCP 47 language tag
+     * @param list<string>|null          $featureFlags
+     * @param string|null                $groupName               The event type group's name
      */
     private function __construct(
         public readonly ?string $description = null,
+        public readonly ?array $descriptionTranslations = null,
         public readonly ?bool $archived = null,
         public readonly ?bool $deprecated = null,
         public readonly ?array $schemas = null,
@@ -32,6 +34,7 @@ class EventTypePatch implements \JsonSerializable
     ): self {
         return new self(
             description: null,
+            descriptionTranslations: null,
             archived: null,
             deprecated: null,
             schemas: null,
@@ -48,6 +51,24 @@ class EventTypePatch implements \JsonSerializable
 
         return new self(
             description: $description,
+            descriptionTranslations: $this->descriptionTranslations,
+            archived: $this->archived,
+            deprecated: $this->deprecated,
+            schemas: $this->schemas,
+            featureFlags: $this->featureFlags,
+            groupName: $this->groupName,
+            setFields: $setFields
+        );
+    }
+
+    public function withDescriptionTranslations(?array $descriptionTranslations): self
+    {
+        $setFields = $this->setFields;
+        $setFields['descriptionTranslations'] = true;
+
+        return new self(
+            description: $this->description,
+            descriptionTranslations: $descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -64,6 +85,7 @@ class EventTypePatch implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -80,6 +102,7 @@ class EventTypePatch implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $deprecated,
             schemas: $this->schemas,
@@ -96,6 +119,7 @@ class EventTypePatch implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $schemas,
@@ -112,6 +136,7 @@ class EventTypePatch implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -128,6 +153,7 @@ class EventTypePatch implements \JsonSerializable
 
         return new self(
             description: $this->description,
+            descriptionTranslations: $this->descriptionTranslations,
             archived: $this->archived,
             deprecated: $this->deprecated,
             schemas: $this->schemas,
@@ -144,6 +170,9 @@ class EventTypePatch implements \JsonSerializable
 
         if (null !== $this->description) {
             $data['description'] = $this->description;
+        }
+        if (isset($this->setFields['descriptionTranslations'])) {
+            $data['descriptionTranslations'] = $this->descriptionTranslations;
         }
         if (null !== $this->archived) {
             $data['archived'] = $this->archived;
@@ -171,6 +200,7 @@ class EventTypePatch implements \JsonSerializable
     {
         return new self(
             description: \Svix\Utils::deserializeString($data, 'description', false, 'EventTypePatch'),
+            descriptionTranslations: \Svix\Utils::getValFromJson($data, 'descriptionTranslations', false, 'EventTypePatch'),
             archived: \Svix\Utils::deserializeBool($data, 'archived', false, 'EventTypePatch'),
             deprecated: \Svix\Utils::deserializeBool($data, 'deprecated', false, 'EventTypePatch'),
             schemas: \Svix\Utils::getValFromJson($data, 'schemas', false, 'EventTypePatch'),

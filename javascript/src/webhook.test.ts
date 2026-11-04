@@ -124,7 +124,7 @@ test("partial signature throws error", () => {
   }, WebhookVerificationError);
 });
 
-test("valid signature is valid and returns valid json", () => {
+test("valid signature is valid", () => {
   const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
 
   const testPayload = new TestPayload();
@@ -132,7 +132,7 @@ test("valid signature is valid and returns valid json", () => {
   wh.verify(testPayload.payload, testPayload.header);
 });
 
-test("valid unbranded signature is valid and returns valid json", () => {
+test("valid unbranded signature is valid", () => {
   const wh = new Webhook("MfKQ9r8GKYqrTwjUPD8ILPZIo2LaLaSw");
 
   const testPayload = new TestPayload();

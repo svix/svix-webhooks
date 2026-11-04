@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 data class RedshiftConfigPatch(
     val accessKeyId: String? = null,
     val secretAccessKey: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val region: String? = null,
     /**
      * Database name.

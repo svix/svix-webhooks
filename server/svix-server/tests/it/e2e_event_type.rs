@@ -16,6 +16,7 @@ use svix_server::{
         utils::ListResponse,
     },
 };
+use wiremock::{Mock, MockServer, ResponseTemplate, matchers};
 
 use crate::utils::{
     common_calls::{app_portal_access, application_in, common_test_list, event_type_in},
@@ -319,4 +320,134 @@ async fn test_schema() {
         )
         .await
         .unwrap();
+}
+
+#[tokio::test]
+async fn test_schema_external_http_ref_is_not_fetched() {
+    let (client, _jh) = start_svix_server().await;
+
+    let canary_server = MockServer::start().await;
+    Mock::given(matchers::any())
+        .respond_with(
+            ResponseTemplate::new(200)
+                .set_body_json(serde_json::json!({ "secret": "http-canary" })),
+        )
+        .expect(0)
+        .mount(&canary_server)
+        .await;
+    let external_uri = format!("{}/schema.json", canary_server.uri());
+    let schemas = serde_json::json!({
+        "1": {
+            "type": "object",
+            "properties": { "a": { "$ref": format!("{external_uri}#/secret") } },
+        },
+    });
+
+    let _: IgnoredAny = client
+        .post(
+            "api/v1/event-type/",
+            event_type_in("existing", None).unwrap(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+
+    let bodies: [serde_json::Value; 3] = [
+        client
+            .post(
+                "api/v1/event-type/",
+                serde_json::json!({ "name": "external-ref", "description": "x", "schemas": schemas }),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap(),
+        client
+            .put(
+                "api/v1/event-type/existing/",
+                serde_json::json!({ "description": "x", "schemas": schemas }),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap(),
+        client
+            .patch(
+                "api/v1/event-type/existing/",
+                serde_json::json!({ "schemas": schemas }),
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap(),
+    ];
+    for body in bodies {
+        assert_external_ref_rejected(&body, &external_uri);
+    }
+
+    canary_server.verify().await;
+}
+
+#[tokio::test]
+async fn test_schema_external_file_ref_is_not_read() {
+    let (client, _jh) = start_svix_server().await;
+
+    let openapi_path =
+        std::fs::canonicalize(concat!(env!("CARGO_MANIFEST_DIR"), "/../openapi.json")).unwrap();
+    let file_uri = format!("file://{}", openapi_path.display());
+
+    let body: serde_json::Value = client
+        .post(
+            "api/v1/event-type/",
+            serde_json::json!({
+                "name": "external-ref",
+                "description": "x",
+                "schemas": {
+                    "1": {
+                        "type": "object",
+                        "properties": { "a": { "$ref": format!("{file_uri}#/openapi") } },
+                    },
+                },
+            }),
+            StatusCode::UNPROCESSABLE_ENTITY,
+        )
+        .await
+        .unwrap();
+    assert_external_ref_rejected(&body, &file_uri);
+}
+
+#[tokio::test]
+async fn test_schema_internal_ref_ok() {
+    let (client, _jh) = start_svix_server().await;
+
+    let _: IgnoredAny = client
+        .post(
+            "api/v1/event-type/",
+            event_type_in(
+                "internal-ref",
+                serde_json::json!({
+                    "1": {
+                        "definitions": { "id": { "type": "string" } },
+                        "type": "object",
+                        "properties": { "a": { "$ref": "#/definitions/id" } },
+                    },
+                }),
+            )
+            .unwrap(),
+            StatusCode::CREATED,
+        )
+        .await
+        .unwrap();
+}
+
+#[track_caller]
+fn assert_external_ref_rejected(body: &serde_json::Value, uri: &str) {
+    assert_eq!(body["detail"][0]["type"], "value_error", "{body}");
+    assert_eq!(
+        body["detail"][0]["loc"],
+        serde_json::json!(["body", "schemas"]),
+        "{body}"
+    );
+    let msg = body["detail"][0]["msg"].as_str().unwrap();
+    assert!(
+        msg.contains(&format!("external `$ref` is not allowed: {uri}")),
+        "{msg}"
+    );
 }

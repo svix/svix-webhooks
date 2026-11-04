@@ -5,7 +5,9 @@ require "json"
 module Svix
   # Import a list of event types from webhooks defined in an OpenAPI spec.
   #
-  # The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw` (a `string`) which will be parsed as YAML or JSON by the server. Sending neither or both is invalid, resulting in a `400` **Bad Request**.
+  # The OpenAPI spec can be specified as either `spec` given the spec as a JSON object, or as `specRaw`
+  # (a `string`) which will be parsed as YAML or JSON by the server.
+  # Sending neither or both is invalid, resulting in a `400` **Bad Request**.
   class EventTypeImportOpenApiIn
     # If `true`, return the event types that would be modified without actually modifying them.
     attr_accessor :dry_run
@@ -49,17 +51,17 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["dryRun"] = Svix::serialize_primitive(@dry_run) if @dry_run
-      out["replaceAll"] = Svix::serialize_primitive(@replace_all) if @replace_all
-      out["spec"] = Svix::serialize_primitive(@spec) if @spec
-      out["specRaw"] = Svix::serialize_primitive(@spec_raw) if @spec_raw
+      out["dryRun"] = Svix::serialize_primitive(@dry_run) unless @dry_run.nil?
+      out["replaceAll"] = Svix::serialize_primitive(@replace_all) unless @replace_all.nil?
+      out["spec"] = Svix::serialize_primitive(@spec) unless @spec.nil?
+      out["specRaw"] = Svix::serialize_primitive(@spec_raw) unless @spec_raw.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

@@ -38,15 +38,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["code"] = Svix::serialize_primitive(@code) if @code
-      out["enabled"] = Svix::serialize_primitive(@enabled) if @enabled
+      out["code"] = Svix::serialize_primitive(@code) unless @code.nil?
+      out["enabled"] = Svix::serialize_primitive(@enabled) unless @enabled.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

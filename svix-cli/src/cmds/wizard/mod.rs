@@ -427,7 +427,7 @@ const portalUrl = access.url;"#
     Language {
         name: "Go",
         syntax: Syntax::Go,
-        install: "go get github.com/svix/svix-webhooks/go",
+        install: "go get github.com/svix/svix-webhooks/v2/go",
         create_app: |_| {
             format!(
                 r#"svixClient, err := svix.New(os.Getenv("SVIX_AUTH_TOKEN"), nil)

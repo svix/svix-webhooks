@@ -526,6 +526,12 @@ pub struct EndpointOutCommon {
     pub channels: Option<EventChannelSet>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    /// When the endpoint expires, if ever.
+    ///
+    /// This field currently exists only for compatibility with the Svix Cloud API.
+    /// If you want expiring endpoints in Svix Server OSS, please open an issue.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub expiry: Option<DateTime<Utc>>,
 }
 
 impl From<endpoint::Model> for EndpointOutCommon {
@@ -543,6 +549,7 @@ impl From<endpoint::Model> for EndpointOutCommon {
             channels: model.channels,
             created_at: model.created_at.into(),
             updated_at: model.updated_at.into(),
+            expiry: None,
         }
     }
 }

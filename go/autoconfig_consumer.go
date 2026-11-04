@@ -2,48 +2,73 @@ package svix
 
 import (
 	"context"
-	"net/url"
+	"fmt"
 
-	"github.com/svix/svix-webhooks/go/internalapi"
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/internalapi"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 // AutoConfigConsumer decodes an auto-configuration token for polling sink consumers.
 type AutoConfigConsumer struct {
-	appID  string
-	sinkID string
-	sinkIn models.SinkInCommon
-	svix   *internalapi.InternalSvix
+	appID        string
+	sinkID       string
+	autoconfigID string
+	sinkIn       models.SinkInCommon
+	svix         *internalapi.InternalSvix
 }
 
-// NewAutoConfigConsumer parses a v1 auto-config token and prepares consumer helpers.
+// NewAutoConfigConsumer parses an auto-config token and prepares consumer helpers.
 func NewAutoConfigConsumer(token string, sinkIn models.SinkInCommon) (*AutoConfigConsumer, error) {
-	content, err := decodeAutoConfigTokenV1(token)
+	decoded, err := decodeAutoConfigToken(token)
 	if err != nil {
 		return nil, err
 	}
 
-	serverURL, err := url.Parse(content.ServerURL)
+	svx, err := newInternalSvixFromAutoConfig(decoded.serverURL, decoded.tokenPlaintext)
 	if err != nil {
-		return nil, ErrInvalidAutoConfigToken
+		return nil, err
 	}
 
-	svx, err := internalapi.New(content.TokenPlaintext, serverURL, false, nil)
-	if err != nil {
-		return nil, ErrInvalidAutoConfigToken
-	}
-
-	return &AutoConfigConsumer{
-		appID:  content.AppID,
-		sinkID: content.EndpointID,
+	consumer := &AutoConfigConsumer{
+		appID:  decoded.appID,
 		sinkIn: sinkIn,
 		svix:   svx,
-	}, nil
+	}
+	if decoded.version == autoConfigTokenVersionV1 {
+		consumer.sinkID = decoded.endpointID
+	} else {
+		consumer.autoconfigID = decoded.autoconfigID
+	}
+	return consumer, nil
+}
+
+func sinkInCommonToPollingDestination(sink models.SinkInCommon) models.DestinationIn {
+	return models.DestinationIn{
+		Uid:        sink.Uid,
+		EventTypes: sink.EventTypes,
+		Channels:   sink.Channels,
+		Metadata:   sink.Metadata,
+		Type:       models.DestinationInTypePollingEndpoint,
+	}
 }
 
 // Subscribe registers or updates the polling sink via the auto-config API.
-func (a *AutoConfigConsumer) Subscribe(ctx context.Context) (*models.EndpointOut, error) {
-	return a.svix.Endpoint().AutoConfig().Update(
+func (a *AutoConfigConsumer) Subscribe(ctx context.Context) (*models.DestinationOut, error) {
+	if a.autoconfigID != "" {
+		dest, err := a.svix.AutoconfigSubscription().Destination().Subscribe(
+			ctx,
+			a.appID,
+			a.autoconfigID,
+			sinkInCommonToPollingDestination(a.sinkIn),
+		)
+		if err != nil {
+			return nil, err
+		}
+		a.sinkID = dest.Id
+		return dest, nil
+	}
+
+	endpoint, err := a.svix.Endpoint().AutoConfigDeprecated().Update(
 		ctx,
 		a.appID,
 		a.sinkID,
@@ -54,6 +79,45 @@ func (a *AutoConfigConsumer) Subscribe(ctx context.Context) (*models.EndpointOut
 			},
 		},
 	)
+	if err != nil {
+		return nil, err
+	}
+	return destinationOutFromV1Endpoint(endpoint), nil
+}
+
+func destinationOutFromV1Endpoint(endpoint *models.EndpointOut) *models.DestinationOut {
+	status := models.DESTINATIONSTATUS_ENABLED
+	if endpoint.Disabled != nil && *endpoint.Disabled {
+		status = models.DESTINATIONSTATUS_DISABLED
+	}
+	return &models.DestinationOut{
+		Id:         endpoint.Id,
+		Uid:        endpoint.Uid,
+		Status:     status,
+		CreatedAt:  endpoint.CreatedAt,
+		UpdatedAt:  endpoint.UpdatedAt,
+		EventTypes: endpoint.EventTypes,
+		Channels:   endpoint.Channels,
+		Metadata:   endpoint.Metadata,
+		Type:       models.DestinationOutTypePollingEndpoint,
+	}
+}
+
+func (a *AutoConfigConsumer) getSinkID(ctx context.Context) (string, error) {
+	if a.sinkID != "" {
+		// Already have the sink id from subscribe() or the v1 token
+		return a.sinkID, nil
+	}
+
+	// Get the sink id from the autoconfig id (v2)
+	sub, err := a.svix.AutoconfigSubscription().Get(ctx, a.appID, a.autoconfigID)
+	if err != nil {
+		return "", err
+	}
+	if sub.DestId == nil || *sub.DestId == "" {
+		return "", fmt.Errorf("autoconfig subscription is pending. Have you called subscribe()?")
+	}
+	return *sub.DestId, nil
 }
 
 // Receive polls messages from the sink for the given consumer.
@@ -62,10 +126,14 @@ func (a *AutoConfigConsumer) Receive(
 	consumerID string,
 	options *internalapi.MessagePollerv2ConsumerPollOptions,
 ) (*models.PollerV2PollOut, error) {
+	sinkID, err := a.getSinkID(ctx)
+	if err != nil {
+		return nil, err
+	}
 	return a.svix.Message().Pollerv2().ConsumerPoll(
 		ctx,
 		a.appID,
-		a.sinkID,
+		sinkID,
 		consumerID,
 		options,
 	)
@@ -78,10 +146,14 @@ func (a *AutoConfigConsumer) Commit(
 	offset uint64,
 	options *internalapi.MessagePollerv2ConsumerCommitOptions,
 ) error {
+	sinkID, err := a.getSinkID(ctx)
+	if err != nil {
+		return err
+	}
 	return a.svix.Message().Pollerv2().ConsumerCommit(
 		ctx,
 		a.appID,
-		a.sinkID,
+		sinkID,
 		consumerID,
 		models.PollerV2CommitIn{Offset: offset},
 		options,

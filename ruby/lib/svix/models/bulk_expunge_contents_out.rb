@@ -37,14 +37,14 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["results"] = Svix::serialize_primitive(@results) if @results
+      out["results"] = Svix::serialize_primitive(@results) unless @results.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

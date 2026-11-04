@@ -12,6 +12,7 @@ use futures_util::{
 use http::{HeaderMap, HeaderName, HeaderValue};
 use indoc::printdoc;
 use message::{MessageIn, MessageInEvent};
+use reqwest::redirect;
 use tokio::{
     net::TcpStream,
     sync::mpsc::{UnboundedReceiver, UnboundedSender},
@@ -224,6 +225,7 @@ pub async fn listen(
     let websocket_url = format!("{scheme}://{api_host}/{API_PREFIX}/listen/").parse()?;
 
     let http_client = HttpClient::builder()
+        .redirect(redirect::Policy::none())
         .danger_accept_invalid_certs(disable_tls_verification)
         .build()?;
 

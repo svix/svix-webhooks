@@ -9,6 +9,10 @@ import {
   ClickhouseConfigInSerializer,
 } from "./clickhouseConfigIn";
 import {
+  type ElasticSearchConfigIn,
+  ElasticSearchConfigInSerializer,
+} from "./elasticSearchConfigIn";
+import {
   type EventBridgeConfigIn,
   EventBridgeConfigInSerializer,
 } from "./eventBridgeConfigIn";
@@ -24,9 +28,15 @@ import {
   type OtelTracingConfigIn,
   OtelTracingConfigInSerializer,
 } from "./otelTracingConfigIn";
+import { type PostHogConfigIn, PostHogConfigInSerializer } from "./postHogConfigIn";
+import { type PostgresConfigIn, PostgresConfigInSerializer } from "./postgresConfigIn";
 import { type RabbitMqConfigIn, RabbitMqConfigInSerializer } from "./rabbitMqConfigIn";
 import { type RedshiftConfigIn, RedshiftConfigInSerializer } from "./redshiftConfigIn";
 import { type S3ConfigIn, S3ConfigInSerializer } from "./s3ConfigIn";
+import {
+  type SegmentSinkConfigIn,
+  SegmentSinkConfigInSerializer,
+} from "./segmentSinkConfigIn";
 import { type SinkHttpConfigIn, SinkHttpConfigInSerializer } from "./sinkHttpConfigIn";
 import { type SinkStatusIn, SinkStatusInSerializer } from "./sinkStatusIn";
 import { type SnowflakeConfigIn, SnowflakeConfigInSerializer } from "./snowflakeConfigIn";
@@ -39,7 +49,8 @@ interface _StreamSinkInFields {
   /**
    * Whether the sink will receive events.
    *
-   * If the sink is `enabled`, any events posted to the stream will be dispatched to the Sink in the same order that events were posted to the stream.
+   * If the sink is `enabled`, any events posted to the stream will be
+   * dispatched to the Sink in the same order that events were posted to the stream.
    *
    * If the sink is `disabled`, events will not be dispatched to the sink until the sink is reenabled.
    */
@@ -54,7 +65,10 @@ interface _StreamSinkInFields {
    * Note that we will never send an empty batch of events to the Sink.
    */
   maxWaitSecs?: number;
-  /** A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out any events. */
+  /**
+   * A list of event types that filter which events are dispatched to the Sink. An empty list (or null) will not filter out
+   * any events.
+   */
   eventTypes?: string[];
   channels?: string[];
   metadata?: { [key: string]: string };
@@ -138,6 +152,26 @@ interface StreamSinkInRedshift {
   config: RedshiftConfigIn;
 }
 
+interface StreamSinkInPostgres {
+  type: "postgres";
+  config: PostgresConfigIn;
+}
+
+interface StreamSinkInElasticSearch {
+  type: "elasticSearch";
+  config: ElasticSearchConfigIn;
+}
+
+interface StreamSinkInPostHog {
+  type: "postHog";
+  config: PostHogConfigIn;
+}
+
+interface StreamSinkInSegment {
+  type: "segment";
+  config: SegmentSinkConfigIn;
+}
+
 export type StreamSinkIn = _StreamSinkInFields &
   (
     | StreamSinkInPoller
@@ -155,6 +189,10 @@ export type StreamSinkIn = _StreamSinkInFields &
     | StreamSinkInSnowflake
     | StreamSinkInRabbitMq
     | StreamSinkInRedshift
+    | StreamSinkInPostgres
+    | StreamSinkInElasticSearch
+    | StreamSinkInPostHog
+    | StreamSinkInSegment
   );
 
 export const StreamSinkInSerializer = {
@@ -193,6 +231,14 @@ export const StreamSinkInSerializer = {
           return RabbitMqConfigInSerializer._fromJsonObject(object["config"]);
         case "redshift":
           return RedshiftConfigInSerializer._fromJsonObject(object["config"]);
+        case "postgres":
+          return PostgresConfigInSerializer._fromJsonObject(object["config"]);
+        case "elasticSearch":
+          return ElasticSearchConfigInSerializer._fromJsonObject(object["config"]);
+        case "postHog":
+          return PostHogConfigInSerializer._fromJsonObject(object["config"]);
+        case "segment":
+          return SegmentSinkConfigInSerializer._fromJsonObject(object["config"]);
         default:
           throw new Error(`Unexpected type: ${type}`);
       }
@@ -262,6 +308,18 @@ export const StreamSinkInSerializer = {
         break;
       case "redshift":
         config = RedshiftConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "postgres":
+        config = PostgresConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "elasticSearch":
+        config = ElasticSearchConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "postHog":
+        config = PostHogConfigInSerializer._toJsonObject(self.config);
+        break;
+      case "segment":
+        config = SegmentSinkConfigInSerializer._toJsonObject(self.config);
         break;
     }
 

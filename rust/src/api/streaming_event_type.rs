@@ -12,8 +12,16 @@ pub struct StreamingEventTypeListOptions {
     /// The sorting order of the returned items
     pub order: Option<Ordering>,
 
-    /// Include archived (deleted but not expunged) items in the response.
+    /// Include archived items in the response.
+    ///
+    /// Deprecated, use `archive_status` instead. Ignored when `archive_status`
+    /// is set.
     pub include_archived: Option<bool>,
+
+    /// Which items to include based on whether they are archived.
+    ///
+    /// Defaults to `active`.
+    pub archive_status: Option<ArchiveStatus>,
 }
 
 #[derive(Default)]
@@ -23,8 +31,7 @@ pub struct StreamingEventTypeCreateOptions {
 
 #[derive(Default)]
 pub struct StreamingEventTypeDeleteOptions {
-    /// By default, event types are archived when "deleted". With this flag,
-    /// they are deleted entirely.
+    /// Entirely delete the event type, rather than archiving it.
     pub expunge: Option<bool>,
 }
 
@@ -47,6 +54,7 @@ impl<'a> StreamingEventType<'a> {
             iterator,
             order,
             include_archived,
+            archive_status,
         } = options.unwrap_or_default();
 
         crate::request::Request::new(http::Method::GET, "/api/v1/stream/event-type")
@@ -54,6 +62,7 @@ impl<'a> StreamingEventType<'a> {
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)
             .with_optional_query_param("include_archived", include_archived)
+            .with_optional_query_param("archive_status", archive_status)
             .execute(self.cfg)
             .await
     }
@@ -94,7 +103,11 @@ impl<'a> StreamingEventType<'a> {
             .await
     }
 
-    /// Delete an event type.
+    /// Archive an event type.
+    ///
+    /// An event type can be unarchived with the
+    /// [patch operation](#operation/v1.streaming.event-type.patch) by setting
+    /// `archived` to `false`.
     pub async fn delete(
         &self,
         name: String,

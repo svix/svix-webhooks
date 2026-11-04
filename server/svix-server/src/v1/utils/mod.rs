@@ -309,18 +309,6 @@ pub fn apply_pagination<
     }
 }
 
-/// A response with no body content and HTTP status code 204, the standard code
-/// for such responses.
-#[derive(OperationIo)]
-#[aide(output_with = "()")]
-pub struct NoContent;
-
-impl IntoResponse for NoContent {
-    fn into_response(self) -> axum::response::Response {
-        StatusCode::NO_CONTENT.into_response()
-    }
-}
-
 #[derive(Serialize, JsonSchema)]
 pub struct EmptyResponse {}
 

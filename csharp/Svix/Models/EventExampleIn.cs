@@ -12,6 +12,9 @@ namespace Svix.Models
         [JsonProperty("exampleIndex")]
         public ulong? ExampleIndex { get; set; } = null;
 
+        [JsonProperty("payload")]
+        public Object? Payload { get; set; } = null;
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -19,6 +22,7 @@ namespace Svix.Models
             sb.Append("class EventExampleIn {\n");
             sb.Append("  EventType: ").Append(EventType).Append('\n');
             sb.Append("  ExampleIndex: ").Append(ExampleIndex).Append('\n');
+            sb.Append("  Payload: ").Append(Payload).Append('\n');
             sb.Append("}\n");
             return sb.ToString();
         }

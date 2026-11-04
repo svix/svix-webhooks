@@ -290,7 +290,7 @@ pub trait BaseUid: Deref<Target = String> {
 
 macro_rules! string_wrapper {
     ($name_id:ident) => {
-        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, Hash, Eq, PartialEq, Serialize, Deserialize, PartialOrd, Ord)]
         pub struct $name_id(pub String);
 
         string_wrapper_impl!($name_id);
@@ -321,7 +321,7 @@ macro_rules! string_wrapper_impl {
 
         impl From<$name_id> for sea_orm::Value {
             fn from(v: $name_id) -> Self {
-                Self::String(Some(Box::new(v.0)))
+                Self::String(Some(v.0))
             }
         }
 
@@ -357,7 +357,7 @@ macro_rules! string_wrapper_impl {
         impl sea_orm::sea_query::ValueType for $name_id {
             fn try_from(v: sea_orm::Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
                 match v {
-                    sea_orm::Value::String(Some(x)) => Ok($name_id(*x)),
+                    sea_orm::Value::String(Some(x)) => Ok($name_id(x.to_owned())),
                     _ => Err(sea_orm::sea_query::ValueTypeErr),
                 }
             }
@@ -384,6 +384,12 @@ macro_rules! string_wrapper_impl {
         impl From<String> for $name_id {
             fn from(s: String) -> Self {
                 $name_id(s)
+            }
+        }
+
+        impl From<&str> for $name_id {
+            fn from(s: &str) -> Self {
+                $name_id(s.to_owned())
             }
         }
     };
@@ -520,8 +526,17 @@ macro_rules! create_all_id_types {
         }
 
         // Id or uid
-        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize)]
+        #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, Hash, PartialOrd, Ord)]
         pub struct $name_id_or_uid(pub String);
+
+        // can't impl Deref to String/str or else we get an ambiguous type and
+        // need to add a whole bunch of annotations -- no fun
+
+        impl $name_id_or_uid {
+            pub fn as_str(&self) -> &str {
+                self.0.as_str()
+            }
+        }
 
         common_jsonschema_impl!(
             $name_id_or_uid,
@@ -542,7 +557,7 @@ macro_rules! create_all_id_types {
 
         impl From<$name_id_or_uid> for sea_orm::Value {
             fn from(v: $name_id_or_uid) -> Self {
-                Self::String(Some(Box::new(v.0)))
+                Self::String(Some(v.0))
             }
         }
 
@@ -881,7 +896,7 @@ impl<'de> Deserialize<'de> for EndpointSecretInternal {
 
 impl From<EndpointSecretInternal> for sea_orm::Value {
     fn from(v: EndpointSecretInternal) -> Self {
-        Self::Bytes(Some(Box::new(v.into_vec())))
+        Self::Bytes(Some(v.into_vec()))
     }
 }
 
@@ -920,7 +935,7 @@ impl sea_orm::sea_query::ValueType for EndpointSecretInternal {
     fn try_from(v: sea_orm::Value) -> Result<Self, sea_orm::sea_query::ValueTypeErr> {
         match v {
             sea_orm::Value::Bytes(Some(x)) => {
-                EndpointSecretInternal::from_vec(*x).map_err(|_| sea_orm::sea_query::ValueTypeErr)
+                EndpointSecretInternal::from_vec(x).map_err(|_| sea_orm::sea_query::ValueTypeErr)
             }
             _ => Err(sea_orm::sea_query::ValueTypeErr),
         }

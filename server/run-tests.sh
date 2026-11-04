@@ -19,7 +19,7 @@ fi
 
 # Common variables:
 export DATABASE_URL="postgresql://postgres:postgres@localhost:5432/postgres"
-export SVIX_JWT_SECRET="test value"
+export SVIX_JWT_SECRET="insecure test value"
 export SVIX_LOG_LEVEL="info"
 export SVIX_WHITELIST_SUBNETS="[127.0.0.1/32]"
 export SVIX_DB_POOL_MAX_SIZE="500"

@@ -11,6 +11,7 @@ namespace Svix
         public string? Iterator { get; set; }
         public Ordering? Order { get; set; }
         public bool? IncludeArchived { get; set; }
+        public ArchiveStatus? ArchiveStatus { get; set; }
 
         public new Dictionary<string, string> QueryParams()
         {
@@ -21,6 +22,7 @@ namespace Svix
                     { "iterator", Iterator },
                     { "order", Order },
                     { "include_archived", IncludeArchived },
+                    { "archive_status", ArchiveStatus },
                 }
             );
         }
@@ -283,7 +285,10 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete an event type.
+        /// Archive an event type.
+        ///
+        /// An event type can be unarchived with the
+        /// [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
         /// </summary>
         public async Task<bool> DeleteAsync(
             string name,
@@ -316,7 +321,10 @@ namespace Svix
         }
 
         /// <summary>
-        /// Delete an event type.
+        /// Archive an event type.
+        ///
+        /// An event type can be unarchived with the
+        /// [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`.
         /// </summary>
         public bool Delete(string name, StreamingEventTypeDeleteOptions? options = null)
         {

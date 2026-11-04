@@ -122,6 +122,31 @@ sealed class StreamSinkPatchConfig {
             Json.encodeToJsonElement(RedshiftConfigPatch.serializer(), redshift)
     }
 
+    @VariantName("postgres")
+    data class Postgres(val postgres: PostgresConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostgresConfigPatch.serializer(), postgres)
+    }
+
+    @VariantName("elasticSearch")
+    data class ElasticSearch(val elasticSearch: ElasticSearchConfigPatch) :
+        StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(ElasticSearchConfigPatch.serializer(), elasticSearch)
+    }
+
+    @VariantName("postHog")
+    data class PostHog(val postHog: PostHogConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(PostHogConfigPatch.serializer(), postHog)
+    }
+
+    @VariantName("segment")
+    data class Segment(val segment: SegmentSinkConfigPatch) : StreamSinkPatchConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(SegmentSinkConfigPatch.serializer(), segment)
+    }
+
     companion object {
         private val typeMap =
             mapOf<String, (JsonElement) -> StreamSinkPatchConfig>(
@@ -211,6 +236,31 @@ sealed class StreamSinkPatchConfig {
                             Json.decodeFromJsonElement(RedshiftConfigPatch.serializer(), config)
                         )
                     },
+                "postgres" to
+                    { config ->
+                        Postgres(
+                            Json.decodeFromJsonElement(PostgresConfigPatch.serializer(), config)
+                        )
+                    },
+                "elasticSearch" to
+                    { config ->
+                        ElasticSearch(
+                            Json.decodeFromJsonElement(
+                                ElasticSearchConfigPatch.serializer(),
+                                config,
+                            )
+                        )
+                    },
+                "postHog" to
+                    { config ->
+                        PostHog(Json.decodeFromJsonElement(PostHogConfigPatch.serializer(), config))
+                    },
+                "segment" to
+                    { config ->
+                        Segment(
+                            Json.decodeFromJsonElement(SegmentSinkConfigPatch.serializer(), config)
+                        )
+                    },
             )
 
         fun fromTypeAndConfig(type: String, config: JsonElement): StreamSinkPatchConfig {
@@ -232,7 +282,7 @@ class StreamSinkPatchSerializer : KSerializer<StreamSinkPatch> {
         val channels: List<String>? = null,
         val metadata: Map<String, String>? = null,
         val type: String,
-        val config: JsonElement,
+        val config: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = StreamSinkPatchSurrogate.serializer().descriptor

@@ -1,6 +1,6 @@
 [package]
 name = "svix"
-version = "2.0.0"
+version = "2.9.1"
 authors = ["Svix Inc. <oss@svix.com>"]
 edition = "2021"
 description = "Svix webhooks API client and webhook verification library"
@@ -16,7 +16,7 @@ categories = [
     "web-programming",
 ]
 include = ["src/**/*", "README.md"]
-# bump .github/workflows/rust-link.yml when changing this
+# keep this in sync with .github/workflows/rust-lint.yml
 rust-version = "1.88"
 
 [features]
@@ -45,7 +45,7 @@ itertools = "0.15.0"
 js_option = "0.2.0"
 percent-encoding = "2.3.1"
 rand = "0.10.2"
-rustls = { version = "0.23.31", optional = true }
+rustls = { version = "0.23.45", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 serde_repr = "0.1"

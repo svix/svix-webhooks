@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/svix/svix-webhooks/go/internal"
+	"github.com/svix/svix-webhooks/v2/go/internal"
 )
 
 type (
@@ -69,12 +69,20 @@ func (svix Svix) Authentication() Authentication {
 	return newAuthentication(svix.client)
 }
 
+func (svix Svix) AutoconfigSubscription() AutoconfigSubscription {
+	return newAutoconfigSubscription(svix.client)
+}
+
 func (svix Svix) BackgroundTask() BackgroundTask {
 	return newBackgroundTask(svix.client)
 }
 
 func (svix Svix) Connector() Connector {
 	return newConnector(svix.client)
+}
+
+func (svix Svix) Destination() Destination {
+	return newDestination(svix.client)
 }
 
 func (svix Svix) Endpoint() Endpoint {

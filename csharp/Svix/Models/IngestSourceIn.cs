@@ -79,14 +79,23 @@ namespace Svix.Models
         public static IngestSourceInConfig GenericWebhook() =>
             new(new Dictionary<string, string>(), ConfigType.GenericWebhook);
 
+        public static IngestSourceInConfig Generic(GenericConfig genericConfig) =>
+            new(genericConfig, ConfigType.Generic);
+
         public static IngestSourceInConfig Cron(CronConfig cronConfig) =>
             new(cronConfig, ConfigType.Cron);
 
         public static IngestSourceInConfig AdobeSign(AdobeSignConfig adobeSignConfig) =>
             new(adobeSignConfig, ConfigType.AdobeSign);
 
+        public static IngestSourceInConfig Ascend(AscendConfig ascendConfig) =>
+            new(ascendConfig, ConfigType.Ascend);
+
         public static IngestSourceInConfig Beehiiv(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Beehiiv);
+
+        public static IngestSourceInConfig Bitbucket(BitbucketConfig bitbucketConfig) =>
+            new(bitbucketConfig, ConfigType.Bitbucket);
 
         public static IngestSourceInConfig Brex(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Brex);
@@ -117,6 +126,9 @@ namespace Svix.Models
 
         public static IngestSourceInConfig Lithic(SvixConfig svixConfig) =>
             new(svixConfig, ConfigType.Lithic);
+
+        public static IngestSourceInConfig Merge(MergeConfig mergeConfig) =>
+            new(mergeConfig, ConfigType.Merge);
 
         public static IngestSourceInConfig Meta(MetaConfig metaConfig) =>
             new(metaConfig, ConfigType.Meta);
@@ -187,6 +199,10 @@ namespace Svix.Models
         public static IngestSourceInConfig Telnyx(TelnyxConfig telnyxConfig) =>
             new(telnyxConfig, ConfigType.Telnyx);
 
+        public static IngestSourceInConfig TricentisQtest(
+            TricentisQtestConfig tricentisQtestConfig
+        ) => new(tricentisQtestConfig, ConfigType.TricentisQtest);
+
         public static IngestSourceInConfig Vapi(VapiConfig vapiConfig) =>
             new(vapiConfig, ConfigType.Vapi);
 
@@ -210,14 +226,23 @@ namespace Svix.Models
             [EnumMember(Value = "generic-webhook")]
             GenericWebhook,
 
+            [EnumMember(Value = "generic")]
+            Generic,
+
             [EnumMember(Value = "cron")]
             Cron,
 
             [EnumMember(Value = "adobe-sign")]
             AdobeSign,
 
+            [EnumMember(Value = "ascend")]
+            Ascend,
+
             [EnumMember(Value = "beehiiv")]
             Beehiiv,
+
+            [EnumMember(Value = "bitbucket")]
+            Bitbucket,
 
             [EnumMember(Value = "brex")]
             Brex,
@@ -248,6 +273,9 @@ namespace Svix.Models
 
             [EnumMember(Value = "lithic")]
             Lithic,
+
+            [EnumMember(Value = "merge")]
+            Merge,
 
             [EnumMember(Value = "meta")]
             Meta,
@@ -318,6 +346,9 @@ namespace Svix.Models
             [EnumMember(Value = "telnyx")]
             Telnyx,
 
+            [EnumMember(Value = "tricentis-qtest")]
+            TricentisQtest,
+
             [EnumMember(Value = "vapi")]
             Vapi,
 
@@ -339,9 +370,12 @@ namespace Svix.Models
 
         public TResult Match<TResult>(
             Func<TResult> onGenericWebhook,
+            Func<GenericConfig, TResult> onGeneric,
             Func<CronConfig, TResult> onCron,
             Func<AdobeSignConfig, TResult> onAdobeSign,
+            Func<AscendConfig, TResult> onAscend,
             Func<SvixConfig, TResult> onBeehiiv,
+            Func<BitbucketConfig, TResult> onBitbucket,
             Func<SvixConfig, TResult> onBrex,
             Func<CheckbookConfig, TResult> onCheckbook,
             Func<SvixConfig, TResult> onClerk,
@@ -352,6 +386,7 @@ namespace Svix.Models
             Func<HubspotConfig, TResult> onHubspot,
             Func<SvixConfig, TResult> onIncidentIo,
             Func<SvixConfig, TResult> onLithic,
+            Func<MergeConfig, TResult> onMerge,
             Func<MetaConfig, TResult> onMeta,
             Func<NangoConfig, TResult> onNango,
             Func<SvixConfig, TResult> onNash,
@@ -375,6 +410,7 @@ namespace Svix.Models
             Func<ZoomConfig, TResult> onZoom,
             Func<TailscaleConfig, TResult> onTailscale,
             Func<TelnyxConfig, TResult> onTelnyx,
+            Func<TricentisQtestConfig, TResult> onTricentisQtest,
             Func<VapiConfig, TResult> onVapi,
             Func<SvixConfig, TResult> onOpenAi,
             Func<SvixConfig, TResult> onRender,
@@ -386,9 +422,12 @@ namespace Svix.Models
             return _type switch
             {
                 ConfigType.GenericWebhook => onGenericWebhook(),
+                ConfigType.Generic => onGeneric((GenericConfig)_value),
                 ConfigType.Cron => onCron((CronConfig)_value),
                 ConfigType.AdobeSign => onAdobeSign((AdobeSignConfig)_value),
+                ConfigType.Ascend => onAscend((AscendConfig)_value),
                 ConfigType.Beehiiv => onBeehiiv((SvixConfig)_value),
+                ConfigType.Bitbucket => onBitbucket((BitbucketConfig)_value),
                 ConfigType.Brex => onBrex((SvixConfig)_value),
                 ConfigType.Checkbook => onCheckbook((CheckbookConfig)_value),
                 ConfigType.Clerk => onClerk((SvixConfig)_value),
@@ -399,6 +438,7 @@ namespace Svix.Models
                 ConfigType.Hubspot => onHubspot((HubspotConfig)_value),
                 ConfigType.IncidentIo => onIncidentIo((SvixConfig)_value),
                 ConfigType.Lithic => onLithic((SvixConfig)_value),
+                ConfigType.Merge => onMerge((MergeConfig)_value),
                 ConfigType.Meta => onMeta((MetaConfig)_value),
                 ConfigType.Nango => onNango((NangoConfig)_value),
                 ConfigType.Nash => onNash((SvixConfig)_value),
@@ -422,6 +462,7 @@ namespace Svix.Models
                 ConfigType.Zoom => onZoom((ZoomConfig)_value),
                 ConfigType.Tailscale => onTailscale((TailscaleConfig)_value),
                 ConfigType.Telnyx => onTelnyx((TelnyxConfig)_value),
+                ConfigType.TricentisQtest => onTricentisQtest((TricentisQtestConfig)_value),
                 ConfigType.Vapi => onVapi((VapiConfig)_value),
                 ConfigType.OpenAi => onOpenAi((SvixConfig)_value),
                 ConfigType.Render => onRender((SvixConfig)_value),
@@ -434,181 +475,345 @@ namespace Svix.Models
         }
 
         public void Switch(
-            Action onGenericWebhook,
-            Action<CronConfig> onCron,
-            Action<AdobeSignConfig> onAdobeSign,
-            Action<SvixConfig> onBeehiiv,
-            Action<SvixConfig> onBrex,
-            Action<CheckbookConfig> onCheckbook,
-            Action<SvixConfig> onClerk,
-            Action<DocusignConfig> onDocusign,
-            Action<EasypostConfig> onEasypost,
-            Action<GithubConfig> onGithub,
-            Action<SvixConfig> onGuesty,
-            Action<HubspotConfig> onHubspot,
-            Action<SvixConfig> onIncidentIo,
-            Action<SvixConfig> onLithic,
-            Action<MetaConfig> onMeta,
-            Action<NangoConfig> onNango,
-            Action<SvixConfig> onNash,
-            Action<OpenClawConfig> onOpenclaw,
-            Action<OrumIoConfig> onOrumIo,
-            Action<PandaDocConfig> onPandaDoc,
-            Action<PortIoConfig> onPortIo,
-            Action<SvixConfig> onPleo,
-            Action<SvixConfig> onPsiFi,
-            Action<SvixConfig> onReplicate,
-            Action<SvixConfig> onResend,
-            Action<RutterConfig> onRutter,
-            Action<SvixConfig> onSafebase,
-            Action<SvixConfig> onSardine,
-            Action<SegmentConfig> onSegment,
-            Action<ShopifyConfig> onShopify,
-            Action<SlackConfig> onSlack,
-            Action<StripeConfig> onStripe,
-            Action<SvixConfig> onStych,
-            Action<SvixConfig> onSvix,
-            Action<ZoomConfig> onZoom,
-            Action<TailscaleConfig> onTailscale,
-            Action<TelnyxConfig> onTelnyx,
-            Action<VapiConfig> onVapi,
-            Action<SvixConfig> onOpenAi,
-            Action<SvixConfig> onRender,
-            Action<VeriffConfig> onVeriff,
-            Action<AirwallexConfig> onAirwallex,
-            Action<VgsConfig> onVgs
+            Action? onGenericWebhook = null,
+            Action<GenericConfig>? onGeneric = null,
+            Action<CronConfig>? onCron = null,
+            Action<AdobeSignConfig>? onAdobeSign = null,
+            Action<AscendConfig>? onAscend = null,
+            Action<SvixConfig>? onBeehiiv = null,
+            Action<BitbucketConfig>? onBitbucket = null,
+            Action<SvixConfig>? onBrex = null,
+            Action<CheckbookConfig>? onCheckbook = null,
+            Action<SvixConfig>? onClerk = null,
+            Action<DocusignConfig>? onDocusign = null,
+            Action<EasypostConfig>? onEasypost = null,
+            Action<GithubConfig>? onGithub = null,
+            Action<SvixConfig>? onGuesty = null,
+            Action<HubspotConfig>? onHubspot = null,
+            Action<SvixConfig>? onIncidentIo = null,
+            Action<SvixConfig>? onLithic = null,
+            Action<MergeConfig>? onMerge = null,
+            Action<MetaConfig>? onMeta = null,
+            Action<NangoConfig>? onNango = null,
+            Action<SvixConfig>? onNash = null,
+            Action<OpenClawConfig>? onOpenclaw = null,
+            Action<OrumIoConfig>? onOrumIo = null,
+            Action<PandaDocConfig>? onPandaDoc = null,
+            Action<PortIoConfig>? onPortIo = null,
+            Action<SvixConfig>? onPleo = null,
+            Action<SvixConfig>? onPsiFi = null,
+            Action<SvixConfig>? onReplicate = null,
+            Action<SvixConfig>? onResend = null,
+            Action<RutterConfig>? onRutter = null,
+            Action<SvixConfig>? onSafebase = null,
+            Action<SvixConfig>? onSardine = null,
+            Action<SegmentConfig>? onSegment = null,
+            Action<ShopifyConfig>? onShopify = null,
+            Action<SlackConfig>? onSlack = null,
+            Action<StripeConfig>? onStripe = null,
+            Action<SvixConfig>? onStych = null,
+            Action<SvixConfig>? onSvix = null,
+            Action<ZoomConfig>? onZoom = null,
+            Action<TailscaleConfig>? onTailscale = null,
+            Action<TelnyxConfig>? onTelnyx = null,
+            Action<TricentisQtestConfig>? onTricentisQtest = null,
+            Action<VapiConfig>? onVapi = null,
+            Action<SvixConfig>? onOpenAi = null,
+            Action<SvixConfig>? onRender = null,
+            Action<VeriffConfig>? onVeriff = null,
+            Action<AirwallexConfig>? onAirwallex = null,
+            Action<VgsConfig>? onVgs = null
         )
         {
             switch (_type)
             {
                 case ConfigType.GenericWebhook:
-                    onGenericWebhook();
+                    if (onGenericWebhook != null)
+                    {
+                        onGenericWebhook();
+                    }
+                    break;
+                case ConfigType.Generic:
+                    if (onGeneric != null)
+                    {
+                        onGeneric((GenericConfig)_value);
+                    }
                     break;
                 case ConfigType.Cron:
-                    onCron((CronConfig)_value);
+                    if (onCron != null)
+                    {
+                        onCron((CronConfig)_value);
+                    }
                     break;
                 case ConfigType.AdobeSign:
-                    onAdobeSign((AdobeSignConfig)_value);
+                    if (onAdobeSign != null)
+                    {
+                        onAdobeSign((AdobeSignConfig)_value);
+                    }
+                    break;
+                case ConfigType.Ascend:
+                    if (onAscend != null)
+                    {
+                        onAscend((AscendConfig)_value);
+                    }
                     break;
                 case ConfigType.Beehiiv:
-                    onBeehiiv((SvixConfig)_value);
+                    if (onBeehiiv != null)
+                    {
+                        onBeehiiv((SvixConfig)_value);
+                    }
+                    break;
+                case ConfigType.Bitbucket:
+                    if (onBitbucket != null)
+                    {
+                        onBitbucket((BitbucketConfig)_value);
+                    }
                     break;
                 case ConfigType.Brex:
-                    onBrex((SvixConfig)_value);
+                    if (onBrex != null)
+                    {
+                        onBrex((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Checkbook:
-                    onCheckbook((CheckbookConfig)_value);
+                    if (onCheckbook != null)
+                    {
+                        onCheckbook((CheckbookConfig)_value);
+                    }
                     break;
                 case ConfigType.Clerk:
-                    onClerk((SvixConfig)_value);
+                    if (onClerk != null)
+                    {
+                        onClerk((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Docusign:
-                    onDocusign((DocusignConfig)_value);
+                    if (onDocusign != null)
+                    {
+                        onDocusign((DocusignConfig)_value);
+                    }
                     break;
                 case ConfigType.Easypost:
-                    onEasypost((EasypostConfig)_value);
+                    if (onEasypost != null)
+                    {
+                        onEasypost((EasypostConfig)_value);
+                    }
                     break;
                 case ConfigType.Github:
-                    onGithub((GithubConfig)_value);
+                    if (onGithub != null)
+                    {
+                        onGithub((GithubConfig)_value);
+                    }
                     break;
                 case ConfigType.Guesty:
-                    onGuesty((SvixConfig)_value);
+                    if (onGuesty != null)
+                    {
+                        onGuesty((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Hubspot:
-                    onHubspot((HubspotConfig)_value);
+                    if (onHubspot != null)
+                    {
+                        onHubspot((HubspotConfig)_value);
+                    }
                     break;
                 case ConfigType.IncidentIo:
-                    onIncidentIo((SvixConfig)_value);
+                    if (onIncidentIo != null)
+                    {
+                        onIncidentIo((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Lithic:
-                    onLithic((SvixConfig)_value);
+                    if (onLithic != null)
+                    {
+                        onLithic((SvixConfig)_value);
+                    }
+                    break;
+                case ConfigType.Merge:
+                    if (onMerge != null)
+                    {
+                        onMerge((MergeConfig)_value);
+                    }
                     break;
                 case ConfigType.Meta:
-                    onMeta((MetaConfig)_value);
+                    if (onMeta != null)
+                    {
+                        onMeta((MetaConfig)_value);
+                    }
                     break;
                 case ConfigType.Nango:
-                    onNango((NangoConfig)_value);
+                    if (onNango != null)
+                    {
+                        onNango((NangoConfig)_value);
+                    }
                     break;
                 case ConfigType.Nash:
-                    onNash((SvixConfig)_value);
+                    if (onNash != null)
+                    {
+                        onNash((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Openclaw:
-                    onOpenclaw((OpenClawConfig)_value);
+                    if (onOpenclaw != null)
+                    {
+                        onOpenclaw((OpenClawConfig)_value);
+                    }
                     break;
                 case ConfigType.OrumIo:
-                    onOrumIo((OrumIoConfig)_value);
+                    if (onOrumIo != null)
+                    {
+                        onOrumIo((OrumIoConfig)_value);
+                    }
                     break;
                 case ConfigType.PandaDoc:
-                    onPandaDoc((PandaDocConfig)_value);
+                    if (onPandaDoc != null)
+                    {
+                        onPandaDoc((PandaDocConfig)_value);
+                    }
                     break;
                 case ConfigType.PortIo:
-                    onPortIo((PortIoConfig)_value);
+                    if (onPortIo != null)
+                    {
+                        onPortIo((PortIoConfig)_value);
+                    }
                     break;
                 case ConfigType.Pleo:
-                    onPleo((SvixConfig)_value);
+                    if (onPleo != null)
+                    {
+                        onPleo((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.PsiFi:
-                    onPsiFi((SvixConfig)_value);
+                    if (onPsiFi != null)
+                    {
+                        onPsiFi((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Replicate:
-                    onReplicate((SvixConfig)_value);
+                    if (onReplicate != null)
+                    {
+                        onReplicate((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Resend:
-                    onResend((SvixConfig)_value);
+                    if (onResend != null)
+                    {
+                        onResend((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Rutter:
-                    onRutter((RutterConfig)_value);
+                    if (onRutter != null)
+                    {
+                        onRutter((RutterConfig)_value);
+                    }
                     break;
                 case ConfigType.Safebase:
-                    onSafebase((SvixConfig)_value);
+                    if (onSafebase != null)
+                    {
+                        onSafebase((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Sardine:
-                    onSardine((SvixConfig)_value);
+                    if (onSardine != null)
+                    {
+                        onSardine((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Segment:
-                    onSegment((SegmentConfig)_value);
+                    if (onSegment != null)
+                    {
+                        onSegment((SegmentConfig)_value);
+                    }
                     break;
                 case ConfigType.Shopify:
-                    onShopify((ShopifyConfig)_value);
+                    if (onShopify != null)
+                    {
+                        onShopify((ShopifyConfig)_value);
+                    }
                     break;
                 case ConfigType.Slack:
-                    onSlack((SlackConfig)_value);
+                    if (onSlack != null)
+                    {
+                        onSlack((SlackConfig)_value);
+                    }
                     break;
                 case ConfigType.Stripe:
-                    onStripe((StripeConfig)_value);
+                    if (onStripe != null)
+                    {
+                        onStripe((StripeConfig)_value);
+                    }
                     break;
                 case ConfigType.Stych:
-                    onStych((SvixConfig)_value);
+                    if (onStych != null)
+                    {
+                        onStych((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Svix:
-                    onSvix((SvixConfig)_value);
+                    if (onSvix != null)
+                    {
+                        onSvix((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Zoom:
-                    onZoom((ZoomConfig)_value);
+                    if (onZoom != null)
+                    {
+                        onZoom((ZoomConfig)_value);
+                    }
                     break;
                 case ConfigType.Tailscale:
-                    onTailscale((TailscaleConfig)_value);
+                    if (onTailscale != null)
+                    {
+                        onTailscale((TailscaleConfig)_value);
+                    }
                     break;
                 case ConfigType.Telnyx:
-                    onTelnyx((TelnyxConfig)_value);
+                    if (onTelnyx != null)
+                    {
+                        onTelnyx((TelnyxConfig)_value);
+                    }
+                    break;
+                case ConfigType.TricentisQtest:
+                    if (onTricentisQtest != null)
+                    {
+                        onTricentisQtest((TricentisQtestConfig)_value);
+                    }
                     break;
                 case ConfigType.Vapi:
-                    onVapi((VapiConfig)_value);
+                    if (onVapi != null)
+                    {
+                        onVapi((VapiConfig)_value);
+                    }
                     break;
                 case ConfigType.OpenAi:
-                    onOpenAi((SvixConfig)_value);
+                    if (onOpenAi != null)
+                    {
+                        onOpenAi((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Render:
-                    onRender((SvixConfig)_value);
+                    if (onRender != null)
+                    {
+                        onRender((SvixConfig)_value);
+                    }
                     break;
                 case ConfigType.Veriff:
-                    onVeriff((VeriffConfig)_value);
+                    if (onVeriff != null)
+                    {
+                        onVeriff((VeriffConfig)_value);
+                    }
                     break;
                 case ConfigType.Airwallex:
-                    onAirwallex((AirwallexConfig)_value);
+                    if (onAirwallex != null)
+                    {
+                        onAirwallex((AirwallexConfig)_value);
+                    }
                     break;
                 case ConfigType.Vgs:
-                    onVgs((VgsConfig)_value);
+                    if (onVgs != null)
+                    {
+                        onVgs((VgsConfig)_value);
+                    }
                     break;
                 default:
                     // unreachable
@@ -631,8 +836,8 @@ namespace Svix.Models
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
 
-        [JsonProperty("config", Required = Required.Always)]
-        public required JObject Config { get; set; }
+        [JsonProperty("config")]
+        public JObject? Config { get; set; }
     }
 
     public class IngestSourceInConverter : JsonConverter
@@ -702,9 +907,12 @@ namespace Svix.Models
             new()
             {
                 ["generic-webhook"] = c => IngestSourceInConfig.GenericWebhook(),
+                ["generic"] = c => IngestSourceInConfig.Generic(ToObj<GenericConfig>(c)),
                 ["cron"] = c => IngestSourceInConfig.Cron(ToObj<CronConfig>(c)),
                 ["adobe-sign"] = c => IngestSourceInConfig.AdobeSign(ToObj<AdobeSignConfig>(c)),
+                ["ascend"] = c => IngestSourceInConfig.Ascend(ToObj<AscendConfig>(c)),
                 ["beehiiv"] = c => IngestSourceInConfig.Beehiiv(ToObj<SvixConfig>(c)),
+                ["bitbucket"] = c => IngestSourceInConfig.Bitbucket(ToObj<BitbucketConfig>(c)),
                 ["brex"] = c => IngestSourceInConfig.Brex(ToObj<SvixConfig>(c)),
                 ["checkbook"] = c => IngestSourceInConfig.Checkbook(ToObj<CheckbookConfig>(c)),
                 ["clerk"] = c => IngestSourceInConfig.Clerk(ToObj<SvixConfig>(c)),
@@ -715,6 +923,7 @@ namespace Svix.Models
                 ["hubspot"] = c => IngestSourceInConfig.Hubspot(ToObj<HubspotConfig>(c)),
                 ["incident-io"] = c => IngestSourceInConfig.IncidentIo(ToObj<SvixConfig>(c)),
                 ["lithic"] = c => IngestSourceInConfig.Lithic(ToObj<SvixConfig>(c)),
+                ["merge"] = c => IngestSourceInConfig.Merge(ToObj<MergeConfig>(c)),
                 ["meta"] = c => IngestSourceInConfig.Meta(ToObj<MetaConfig>(c)),
                 ["nango"] = c => IngestSourceInConfig.Nango(ToObj<NangoConfig>(c)),
                 ["nash"] = c => IngestSourceInConfig.Nash(ToObj<SvixConfig>(c)),
@@ -738,6 +947,8 @@ namespace Svix.Models
                 ["zoom"] = c => IngestSourceInConfig.Zoom(ToObj<ZoomConfig>(c)),
                 ["tailscale"] = c => IngestSourceInConfig.Tailscale(ToObj<TailscaleConfig>(c)),
                 ["telnyx"] = c => IngestSourceInConfig.Telnyx(ToObj<TelnyxConfig>(c)),
+                ["tricentis-qtest"] = c =>
+                    IngestSourceInConfig.TricentisQtest(ToObj<TricentisQtestConfig>(c)),
                 ["vapi"] = c => IngestSourceInConfig.Vapi(ToObj<VapiConfig>(c)),
                 ["open-ai"] = c => IngestSourceInConfig.OpenAi(ToObj<SvixConfig>(c)),
                 ["render"] = c => IngestSourceInConfig.Render(ToObj<SvixConfig>(c)),

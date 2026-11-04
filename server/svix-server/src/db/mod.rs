@@ -45,12 +45,12 @@ async fn exec_without_timeout(
     stmt: Statement,
 ) -> Result<ExecResult, DbErr> {
     let tx = db.begin().await?;
-    tx.execute(Statement::from_string(
+    tx.execute_raw(Statement::from_string(
         db.get_database_backend(),
         "SET LOCAL statement_timeout=0",
     ))
     .await?;
-    let res = tx.execute(stmt).await?;
+    let res = tx.execute_raw(stmt).await?;
     tx.commit().await?;
     Ok(res)
 }

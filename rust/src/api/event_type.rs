@@ -12,9 +12,16 @@ pub struct EventTypeListOptions {
     /// The sorting order of the returned items
     pub order: Option<Ordering>,
 
-    /// When `true` archived (deleted but not expunged) items are included in
-    /// the response.
+    /// Include archived items in the response.
+    ///
+    /// Deprecated, use `archive_status` instead. Ignored when `archive_status`
+    /// is set.
     pub include_archived: Option<bool>,
+
+    /// Which items to include based on whether they are archived.
+    ///
+    /// Defaults to `active`.
+    pub archive_status: Option<ArchiveStatus>,
 
     /// When `true` the full item (including the schema) is included in the
     /// response.
@@ -57,6 +64,7 @@ impl<'a> EventType<'a> {
             iterator,
             order,
             include_archived,
+            archive_status,
             with_content,
         } = options.unwrap_or_default();
 
@@ -65,6 +73,7 @@ impl<'a> EventType<'a> {
             .with_optional_query_param("iterator", iterator)
             .with_optional_query_param("order", order)
             .with_optional_query_param("include_archived", include_archived)
+            .with_optional_query_param("archive_status", archive_status)
             .with_optional_query_param("with_content", with_content)
             .execute(self.cfg)
             .await
@@ -135,8 +144,8 @@ impl<'a> EventType<'a> {
     /// Endpoints already configured to filter on an event type will continue to
     /// do so after archival. However, new messages can not be sent with it
     /// and endpoints can not filter on it. An event type can be unarchived
-    /// with the [create operation](#operation/
-    /// create_event_type_api_v1_event_type__post).
+    /// with the [patch operation](#operation/v1.event-type.patch) by
+    /// setting `archived` to `false`.
     pub async fn delete(
         &self,
         event_type_name: String,

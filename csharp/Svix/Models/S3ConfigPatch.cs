@@ -21,6 +21,16 @@ namespace Svix.Models
 
         public bool ShouldSerializeSecretAccessKey() => SecretAccessKey != null;
 
+        [JsonProperty("roleArn")]
+        public string? RoleArn { get; set; } = null;
+
+        public bool ShouldSerializeRoleArn() => RoleArn != null;
+
+        [JsonProperty("externalId")]
+        public string? ExternalId { get; set; } = null;
+
+        public bool ShouldSerializeExternalId() => ExternalId != null;
+
         [JsonProperty("region")]
         public string? Region { get; set; } = null;
 
@@ -39,6 +49,8 @@ namespace Svix.Models
             sb.Append("  Bucket: ").Append(Bucket).Append('\n');
             sb.Append("  AccessKeyId: ").Append(AccessKeyId).Append('\n');
             sb.Append("  SecretAccessKey: ").Append(SecretAccessKey).Append('\n');
+            sb.Append("  RoleArn: ").Append(RoleArn).Append('\n');
+            sb.Append("  ExternalId: ").Append(ExternalId).Append('\n');
             sb.Append("  Region: ").Append(Region).Append('\n');
             sb.Append("  EndpointUrl: ").Append(EndpointUrl).Append('\n');
             sb.Append("}\n");

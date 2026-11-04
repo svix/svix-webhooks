@@ -8,6 +8,7 @@ from deprecated import deprecated
 from .. import models
 from ..models import (
     BulkReplayIn,
+    EndpointAttemptStats,
     EndpointHeadersIn,
     EndpointHeadersOut,
     EndpointHeadersPatchIn,
@@ -28,6 +29,10 @@ from ..models import (
     ReplayOut,
 )
 from .common import ApiBaseAsync, ApiBaseSync, BaseOptions, serialize_params
+from .endpoint_mcp_events import (
+    EndpointMcpEvents,
+    EndpointMcpEventsAsync,
+)
 from .endpoint_transformation import (
     EndpointTransformation,
     EndpointTransformationAsync,
@@ -118,6 +123,22 @@ class EndpointGetStatsOptions(BaseOptions):
 
 
 @dataclass
+class EndpointGetAttemptStatsOptions(BaseOptions):
+    since: t.Optional[datetime] = None
+    """Filter the range to data starting from this date."""
+    until: t.Optional[datetime] = None
+    """Filter the range to data ending by this date."""
+
+    def _query_params(self) -> t.Dict[str, str]:
+        return serialize_params(
+            {
+                "since": self.since,
+                "until": self.until,
+            }
+        )
+
+
+@dataclass
 class EndpointRecoverOptions(BaseOptions):
     idempotency_key: t.Optional[str] = None
 
@@ -142,6 +163,10 @@ class EndpointSendExampleOptions(BaseOptions):
 
 
 class EndpointAsync(ApiBaseAsync):
+    @property
+    def mcp_events(self) -> EndpointMcpEventsAsync:
+        return EndpointMcpEventsAsync(self._client, self._httpx_client)
+
     @property
     def transformation(self) -> EndpointTransformationAsync:
         return EndpointTransformationAsync(self._client, self._httpx_client)
@@ -258,11 +283,11 @@ class EndpointAsync(ApiBaseAsync):
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
-    ) -> None:
+    ) -> EndpointSecretOut:
         """Rotates the endpoint's signing secret.
 
         The previous secret will remain valid for the specified grace period (default 24 hours)."""
-        await self._request_asyncio(
+        response = await self._request_asyncio(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -275,6 +300,7 @@ class EndpointAsync(ApiBaseAsync):
                 exclude_unset=True, by_alias=True
             ),
         )
+        return EndpointSecretOut.model_validate(response.json())
 
     async def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -414,6 +440,27 @@ class EndpointAsync(ApiBaseAsync):
         )
         return EndpointStats.model_validate(response.json())
 
+    async def get_attempt_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointGetAttemptStatsOptions = (EndpointGetAttemptStatsOptions()),
+    ) -> EndpointAttemptStats:
+        """Get basic statistics about attempted deliveries for the endpoint.
+
+        Time windows are always rounded to hour granularity"""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return EndpointAttemptStats.model_validate(response.json())
+
     async def recover(
         self,
         app_id: str,
@@ -494,6 +541,10 @@ class EndpointAsync(ApiBaseAsync):
 
 
 class Endpoint(ApiBaseSync):
+    @property
+    def mcp_events(self) -> EndpointMcpEvents:
+        return EndpointMcpEvents(self._client, self._httpx_client)
+
     @property
     def transformation(self) -> EndpointTransformation:
         return EndpointTransformation(self._client, self._httpx_client)
@@ -610,11 +661,11 @@ class Endpoint(ApiBaseSync):
         endpoint_id: str,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: EndpointRotateSecretOptions = (EndpointRotateSecretOptions()),
-    ) -> None:
+    ) -> EndpointSecretOut:
         """Rotates the endpoint's signing secret.
 
         The previous secret will remain valid for the specified grace period (default 24 hours)."""
-        self._request_sync(
+        response = self._request_sync(
             method="post",
             path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
             path_params={
@@ -627,6 +678,7 @@ class Endpoint(ApiBaseSync):
                 exclude_unset=True, by_alias=True
             ),
         )
+        return EndpointSecretOut.model_validate(response.json())
 
     def get_headers(self, app_id: str, endpoint_id: str) -> EndpointHeadersOut:
         """Get the additional headers to be sent with the webhook."""
@@ -765,6 +817,27 @@ class Endpoint(ApiBaseSync):
             header_params=options._header_params(),
         )
         return EndpointStats.model_validate(response.json())
+
+    def get_attempt_stats(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        options: EndpointGetAttemptStatsOptions = (EndpointGetAttemptStatsOptions()),
+    ) -> EndpointAttemptStats:
+        """Get basic statistics about attempted deliveries for the endpoint.
+
+        Time windows are always rounded to hour granularity"""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            query_params=options._query_params(),
+            header_params=options._header_params(),
+        )
+        return EndpointAttemptStats.model_validate(response.json())
 
     def recover(
         self,

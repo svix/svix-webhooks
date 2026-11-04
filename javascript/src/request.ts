@@ -1,7 +1,7 @@
 import { ApiException, type XOR } from "./util";
 import type { HttpErrorOut, HTTPValidationError } from "./HttpErrors";
 
-export const LIB_VERSION = "2.0.0";
+export const LIB_VERSION = "2.9.1";
 
 function getUserAgent() {
   var fields = [`svix-libs/${LIB_VERSION}/javascript`];
@@ -38,7 +38,7 @@ export type SvixRequestContext = {
   /** The 'bearer' scheme access token */
   token: string;
   /** Time in milliseconds to wait for requests to get a response. */
-  timeout?: number;
+  timeout: number;
   /**
    * Custom fetch implementation to use for HTTP requests.
    * Useful for testing, adding custom middleware, or running in non-standard environments.
@@ -79,29 +79,35 @@ const REGIONS = [
   { region: "au", url: "https://api.au.svix.com" },
 ];
 
+const DEFAULT_REQUEST_TIMEOUT_MS = 15_000;
+
 /** Shared by `Svix` and `api_internal` so the latter need not import the package barrel. */
 export function createSvixRequestContext(
   token: string,
   options: SvixRequestContextOptions = {}
 ): SvixRequestContext {
+  const timeout = options.requestTimeout ?? DEFAULT_REQUEST_TIMEOUT_MS;
   const regionalUrl = REGIONS.find((x) => x.region === token.split(".")[1])?.url;
   const baseUrl: string =
     options.serverUrl?.replace(/\/+$/, "") ?? regionalUrl ?? "https://api.svix.com";
 
-  if (options.retryScheduleInMs) {
+  if (options.retryScheduleInMs != null) {
     return {
       baseUrl,
       token,
-      timeout: options.requestTimeout,
+      timeout,
       retryScheduleInMs: options.retryScheduleInMs,
       fetch: options.fetch,
     };
   }
-  if (options.numRetries) {
+  if (options.numRetries != null) {
+    if (Number.isNaN(options.numRetries)) {
+      throw new TypeError("numRetries must not be NaN");
+    }
     return {
       baseUrl,
       token,
-      timeout: options.requestTimeout,
+      timeout,
       numRetries: options.numRetries,
       fetch: options.fetch,
     };
@@ -109,7 +115,7 @@ export function createSvixRequestContext(
   return {
     baseUrl,
     token,
-    timeout: options.requestTimeout,
+    timeout,
     fetch: options.fetch,
   };
 }
@@ -237,8 +243,8 @@ export class SvixRequest {
           ...this.headerParams,
         },
         credentials: isCredentialsSupported ? "same-origin" : undefined,
-        signal: ctx.timeout !== undefined ? AbortSignal.timeout(ctx.timeout) : undefined,
       },
+      ctx.timeout,
       ctx.retryScheduleInMs,
       ctx.retryScheduleInMs?.[0],
       ctx.retryScheduleInMs?.length ?? ctx.numRetries,
@@ -255,10 +261,21 @@ async function filterResponseForErrors(response: Response): Promise<Response> {
 
   const responseBody = await response.text();
 
+  // A 4xx can come from a proxy or load balancer in front of the API (e.g. an
+  // HTML 413 page) or have an empty body. Parsing that would throw a
+  // SyntaxError and lose the status code, so fall back to the raw text, as
+  // for 5xx responses below.
+  let parsedBody: unknown;
+  try {
+    parsedBody = JSON.parse(responseBody);
+  } catch {
+    throw new ApiException(response.status, responseBody, response.headers);
+  }
+
   if (response.status === 422) {
     throw new ApiException<HTTPValidationError>(
       response.status,
-      JSON.parse(responseBody) as HTTPValidationError,
+      parsedBody as HTTPValidationError,
       response.headers
     );
   }
@@ -266,7 +283,7 @@ async function filterResponseForErrors(response: Response): Promise<Response> {
   if (response.status >= 400 && response.status <= 499) {
     throw new ApiException<HttpErrorOut>(
       response.status,
-      JSON.parse(responseBody) as HttpErrorOut,
+      parsedBody as HttpErrorOut,
       response.headers
     );
   }
@@ -280,6 +297,7 @@ type SvixRequestInit = RequestInit & {
 async function sendWithRetry(
   url: URL,
   init: SvixRequestInit,
+  timeout: number,
   retryScheduleInMs?: number[],
   nextInterval = 50,
   triesLeft = 2,
@@ -290,10 +308,19 @@ async function sendWithRetry(
     new Promise((resolve) => setTimeout(resolve, interval));
 
   try {
-    const response = await fetchImpl(url, init);
+    // A fresh signal per attempt, so the timeout applies to each attempt separately
+    // rather than to all attempts combined.
+    const response = await fetchImpl(url, {
+      ...init,
+      signal: AbortSignal.timeout(timeout),
+    });
     if (triesLeft <= 0 || response.status < 500) {
       return response;
     }
+    // A retried response is never returned or read. Release its body before
+    // backoff so an unfinished error response cannot retain the connection.
+    // Cancellation failures follow the same retry path as fetch failures.
+    await response.body?.cancel();
   } catch (e) {
     if (triesLeft <= 0) {
       throw e;
@@ -306,6 +333,7 @@ async function sendWithRetry(
   return await sendWithRetry(
     url,
     init,
+    timeout,
     retryScheduleInMs,
     nextInterval,
     --triesLeft,

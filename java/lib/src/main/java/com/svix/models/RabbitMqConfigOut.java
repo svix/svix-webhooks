@@ -16,9 +16,30 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class RabbitMqConfigOut {
+    @JsonProperty private String uri;
     @JsonProperty private String routingKey;
+    @JsonProperty private Boolean mandatory;
 
     public RabbitMqConfigOut() {}
+
+    public RabbitMqConfigOut uri(String uri) {
+        this.uri = uri;
+        return this;
+    }
+
+    /**
+     * Get uri
+     *
+     * @return uri
+     */
+    @javax.annotation.Nonnull
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
 
     public RabbitMqConfigOut routingKey(String routingKey) {
         this.routingKey = routingKey;
@@ -37,6 +58,25 @@ public class RabbitMqConfigOut {
 
     public void setRoutingKey(String routingKey) {
         this.routingKey = routingKey;
+    }
+
+    public RabbitMqConfigOut mandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
+        return this;
+    }
+
+    /**
+     * Get mandatory
+     *
+     * @return mandatory
+     */
+    @javax.annotation.Nonnull
+    public Boolean getMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     /**

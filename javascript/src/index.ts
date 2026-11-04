@@ -1,8 +1,10 @@
 // this file is @generated
 import { Application } from "./api/application";
 import { Authentication } from "./api/authentication";
+import { AutoconfigSubscription } from "./api/autoconfigSubscription";
 import { BackgroundTask } from "./api/backgroundTask";
 import { Connector } from "./api/connector";
+import { Destination } from "./api/destination";
 import { Endpoint } from "./api/endpoint";
 import { Environment } from "./api/environment";
 import { EventType } from "./api/eventType";
@@ -33,7 +35,10 @@ export type { MessageAttemptListByEndpointOptions } from "./api/messageAttempt";
 export type SvixOptions = {
   debug?: boolean;
   serverUrl?: string;
-  /** Time in milliseconds to wait for requests to get a response. */
+  /**
+   * Time in milliseconds to wait for requests to get a response.
+   * Default: 15000
+   */
   requestTimeout?: number;
   /**
    * Custom fetch implementation to use for HTTP requests.
@@ -69,12 +74,20 @@ export class Svix {
     return new Authentication(this.requestCtx);
   }
 
+  public get autoconfigSubscription() {
+    return new AutoconfigSubscription(this.requestCtx);
+  }
+
   public get backgroundTask() {
     return new BackgroundTask(this.requestCtx);
   }
 
   public get connector() {
     return new Connector(this.requestCtx);
+  }
+
+  public get destination() {
+    return new Destination(this.requestCtx);
   }
 
   public get endpoint() {

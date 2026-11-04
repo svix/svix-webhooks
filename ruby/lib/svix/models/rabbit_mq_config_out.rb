@@ -4,9 +4,11 @@ require "json"
 
 module Svix
   class RabbitMqConfigOut
+    attr_accessor :uri
     attr_accessor :routing_key
+    attr_accessor :mandatory
 
-    ALL_FIELD ||= ["routing_key"].freeze
+    ALL_FIELD ||= ["uri", "routing_key", "mandatory"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -27,20 +29,24 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
+      attrs["uri"] = attributes["uri"]
       attrs["routing_key"] = attributes["routingKey"]
+      attrs["mandatory"] = attributes["mandatory"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["routingKey"] = Svix::serialize_primitive(@routing_key) if @routing_key
+      out["uri"] = Svix::serialize_primitive(@uri) unless @uri.nil?
+      out["routingKey"] = Svix::serialize_primitive(@routing_key) unless @routing_key.nil?
+      out["mandatory"] = Svix::serialize_primitive(@mandatory) unless @mandatory.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

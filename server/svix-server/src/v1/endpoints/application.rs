@@ -8,6 +8,7 @@ use aide::axum::{
 use axum::{
     Json,
     extract::{Path, State},
+    response::NoContent,
 };
 use chrono::{DateTime, Utc};
 use futures::FutureExt;
@@ -29,8 +30,8 @@ use crate::{
     error::{HttpError, Result, Traceable, http_error_on_conflict},
     v1::utils::{
         ApplicationPath, IteratorDirection, JsonStatusUpsert, ListResponse, ModelIn, ModelOut,
-        NoContent, Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson,
-        ValidatedQuery, apply_pagination, openapi_tag,
+        Ordering, Pagination, PaginationLimit, ReversibleIterator, ValidatedJson, ValidatedQuery,
+        apply_pagination, openapi_tag,
         patch::{
             UnrequiredField, UnrequiredNullableField, patch_field_non_nullable,
             patch_field_nullable,

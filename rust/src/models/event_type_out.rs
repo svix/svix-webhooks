@@ -8,6 +8,11 @@ pub struct EventTypeOut {
 
     pub description: String,
 
+    /// Translated descriptions keyed by BCP 47 language tag.
+    #[serde(rename = "descriptionTranslations")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description_translations: Option<std::collections::BTreeMap<String, String>>,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archived: Option<bool>,
 

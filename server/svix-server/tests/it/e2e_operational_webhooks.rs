@@ -7,7 +7,7 @@ use chrono::{DateTime, Utc};
 use http::StatusCode;
 use reqwest::Url;
 use serde::Deserialize;
-use svix::api::EventTypeOut;
+use svix::models::EventTypeOut;
 use svix_ksuid::KsuidLike;
 use svix_server::{
     cfg::ConfigurationInner,
@@ -253,7 +253,7 @@ async fn test_endpoint_create_update_and_delete() {
                 regular_app.id, regular_endp.id
             ),
             EndpointSecretRotateIn::default(),
-            StatusCode::NO_CONTENT,
+            StatusCode::OK,
         )
         .await
         .unwrap();

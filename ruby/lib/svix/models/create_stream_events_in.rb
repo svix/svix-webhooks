@@ -7,7 +7,8 @@ module Svix
     attr_accessor :events
     # Optionally creates a new Stream alongside the events.
     #
-    # If the stream id or uid that is used in the path already exists, this argument is ignored.
+    # If the stream id or uid that is used in the path already exists,
+    # this argument is ignored.
     attr_accessor :stream
 
     ALL_FIELD ||= ["events", "stream"].freeze
@@ -38,15 +39,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["events"] = @events.map { |v| v.serialize } if @events
-      out["stream"] = Svix::serialize_schema_ref(@stream) if @stream
+      out["events"] = @events.map { |v| v.serialize } unless @events.nil?
+      out["stream"] = Svix::serialize_schema_ref(@stream) unless @stream.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

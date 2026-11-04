@@ -28,7 +28,7 @@ permissions:
 
 jobs:
   filter:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       pull-requests: read
@@ -252,7 +252,7 @@ jobs:
       - pre-commit
       - codegen
     if: always()
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     # Always run so that this job is a stable required status check: if an
     # upstream job is skipped (e.g. due to path filters) that is fine; we only
     # fail if something actually failed or was cancelled.

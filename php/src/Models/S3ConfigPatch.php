@@ -13,6 +13,8 @@ class S3ConfigPatch implements \JsonSerializable
         public readonly ?string $bucket = null,
         public readonly ?string $accessKeyId = null,
         public readonly ?string $secretAccessKey = null,
+        public readonly ?string $roleArn = null,
+        public readonly ?string $externalId = null,
         public readonly ?string $region = null,
         public readonly ?string $endpointUrl = null,
         array $setFields = [],
@@ -29,6 +31,8 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: null,
             accessKeyId: null,
             secretAccessKey: null,
+            roleArn: null,
+            externalId: null,
             region: null,
             endpointUrl: null,
             setFields: []
@@ -44,6 +48,8 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: $bucket,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
@@ -59,6 +65,8 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: $this->bucket,
             accessKeyId: $accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
@@ -74,6 +82,42 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: $this->bucket,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withRoleArn(?string $roleArn): self
+    {
+        $setFields = $this->setFields;
+        $setFields['roleArn'] = true;
+
+        return new self(
+            bucket: $this->bucket,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $roleArn,
+            externalId: $this->externalId,
+            region: $this->region,
+            endpointUrl: $this->endpointUrl,
+            setFields: $setFields
+        );
+    }
+
+    public function withExternalId(?string $externalId): self
+    {
+        $setFields = $this->setFields;
+        $setFields['externalId'] = true;
+
+        return new self(
+            bucket: $this->bucket,
+            accessKeyId: $this->accessKeyId,
+            secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $externalId,
             region: $this->region,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
@@ -89,6 +133,8 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: $this->bucket,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $region,
             endpointUrl: $this->endpointUrl,
             setFields: $setFields
@@ -104,6 +150,8 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: $this->bucket,
             accessKeyId: $this->accessKeyId,
             secretAccessKey: $this->secretAccessKey,
+            roleArn: $this->roleArn,
+            externalId: $this->externalId,
             region: $this->region,
             endpointUrl: $endpointUrl,
             setFields: $setFields
@@ -124,6 +172,12 @@ class S3ConfigPatch implements \JsonSerializable
         if (null !== $this->secretAccessKey) {
             $data['secretAccessKey'] = $this->secretAccessKey;
         }
+        if (null !== $this->roleArn) {
+            $data['roleArn'] = $this->roleArn;
+        }
+        if (null !== $this->externalId) {
+            $data['externalId'] = $this->externalId;
+        }
         if (null !== $this->region) {
             $data['region'] = $this->region;
         }
@@ -143,6 +197,8 @@ class S3ConfigPatch implements \JsonSerializable
             bucket: \Svix\Utils::deserializeString($data, 'bucket', false, 'S3ConfigPatch'),
             accessKeyId: \Svix\Utils::deserializeString($data, 'accessKeyId', false, 'S3ConfigPatch'),
             secretAccessKey: \Svix\Utils::deserializeString($data, 'secretAccessKey', false, 'S3ConfigPatch'),
+            roleArn: \Svix\Utils::deserializeString($data, 'roleArn', false, 'S3ConfigPatch'),
+            externalId: \Svix\Utils::deserializeString($data, 'externalId', false, 'S3ConfigPatch'),
             region: \Svix\Utils::deserializeString($data, 'region', false, 'S3ConfigPatch'),
             endpointUrl: \Svix\Utils::getValFromJson($data, 'endpointUrl', false, 'S3ConfigPatch')
         );

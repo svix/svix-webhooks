@@ -8,7 +8,8 @@ module Svix
     attr_accessor :expiry
     # An optional list of session ids.
     #
-    # If any session ids are specified, only Stream tokens created with that session id will be expired.
+    # If any session ids are specified, only Stream tokens created with that
+    # session id will be expired.
     attr_accessor :session_ids
 
     ALL_FIELD ||= ["expiry", "session_ids"].freeze
@@ -39,15 +40,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["sessionIds"] = Svix::serialize_primitive(@session_ids) if @session_ids
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["sessionIds"] = Svix::serialize_primitive(@session_ids) unless @session_ids.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

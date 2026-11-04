@@ -5,8 +5,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/svix/svix-webhooks/go/internal"
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/internal"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 type Message struct {
@@ -34,7 +34,8 @@ type MessageListOptions struct {
 	After *time.Time
 	// When `true` message payloads are included in the response.
 	//
-	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+	// without specifying this parameter.
 	WithContent *bool
 	// Filter messages matching the provided tag.
 	Tag *string
@@ -45,7 +46,8 @@ type MessageListOptions struct {
 type MessageCreateOptions struct {
 	// When `true`, message payloads are included in the response.
 	//
-	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+	// without specifying this parameter.
 	WithContent    *bool
 	IdempotencyKey *string
 }
@@ -57,7 +59,8 @@ type MessagePrecheckOptions struct {
 type MessageGetOptions struct {
 	// When `true` message payloads are included in the response.
 	//
-	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+	// without specifying this parameter.
 	WithContent *bool
 }
 

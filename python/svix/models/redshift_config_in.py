@@ -7,22 +7,32 @@ from .common import BaseModel
 class RedshiftConfigIn(BaseModel):
     """Configuration parameters for defining a Redshift sink.
 
-    For provisioned clusters, set `cluster_identifier` and `db_user`. For Redshift Serverless, set `workgroup_name`."""
+    For provisioned clusters, set `cluster_identifier` and `db_user`.
+    For Redshift Serverless, set `workgroup_name`."""
 
     access_key_id: t.Optional[str] = None
     """Access key ID.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Required (along with `secret_access_key`) if `role_arn` is blank."""
 
     secret_access_key: t.Optional[str] = None
     """Secret access key.
 
-    Currently a required field, but marked as optional because we may add different authentication in the future."""
+    Required (along with `access_key_id`) if `role_arn` is blank."""
+
+    role_arn: t.Optional[str] = None
+    """Role ARN for delegated authentication"""
+
+    external_id: t.Optional[str] = None
+    """Shared secret passed as the STS ExternalId.
+
+    Can only be set if `role_arn` is Some"""
 
     region: t.Optional[str] = None
     """The region of the Redshift DB.
 
-    Currently a required field, but marked as optional because we may infer it from other fields in the future."""
+    Currently a required field, but marked as optional because we may infer
+    it from other fields in the future."""
 
     cluster_identifier: t.Optional[str] = None
     """Required for provisioned clusters."""

@@ -32,15 +32,21 @@ log_level = "info"
 # The log format that all output will follow. Supported: default, json
 log_format = "default"
 
-# The OpenTelemetry address to send trace information to. Disabled when omitted/null.
+# The OpenTelemetry address to send traces and metrics to (and logs too, if
+# opentelemetry_logs_enabled is set). Disabled when omitted/null.
 # opentelemetry_address = "http://localhost:4317"
 
 # The ratio at which to sample spans when sending to OpenTelemetry. When not given it defaults to
 # always sending. If the OpenTelemetry address is not set, this will do nothing.
 # opentelemetry_sample_ratio = 1.0
 
-# The name of the service to use when sending spans to OpenTelemetry.
+# The name of the service to use when sending traces, metrics, and logs to OpenTelemetry.
 opentelemetry_service_name = "svix_server"
+
+# Whether to additionally send log events to the configured OpenTelemetry collector, on top of the
+# existing stdout logging. Disabled by default. If opentelemetry_address is not set, this does
+# nothing.
+opentelemetry_logs_enabled = false
 
 # The Sentry DSN to use for error reporting. Disabled when omitted/null
 # sentry_dsn = "https://somedsn.ingest.sentry.io/12345"
@@ -109,6 +115,11 @@ api_enabled = true
 # Should this instance run the message worker
 worker_enabled = true
 
+# Should this instance run the expired message cleaner, which nulls payloads and deletes
+# message contents for messages past their expiration. Message rows themselves are kept
+# regardless, to preserve pagination, and can be deleted with the `prune` command.
+expired_message_cleaner_enabled = true
+
 # Should this instance run background migrations
 background_migrations_enabled = true
 
@@ -116,6 +127,12 @@ background_migrations_enabled = true
 # is a security risk and should only be allowed if you are using the service internally or for
 # testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`
 # whitelist_subnets = []
+
+
+# Hostnames to whitelist for outbound webhooks. Note that allowing a name here will bypass any
+# IP filtering, and should only be done for hostnames which are fully in your control and
+# when your DNS configuration is fully-trusted.
+# whitelist_names = []
 
 # Maximum number of concurrent worker tasks to spawn (0 is unlimited)
 worker_max_tasks = 500

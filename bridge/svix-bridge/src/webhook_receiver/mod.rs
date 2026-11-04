@@ -1,8 +1,13 @@
-use std::{convert::Infallible, net::SocketAddr, sync::Arc, time::Duration};
+use std::{
+    convert::Infallible,
+    net::SocketAddr,
+    sync::{Arc, LazyLock},
+    time::Duration,
+};
 
 use axum::{
     Router,
-    extract::{FromRequestParts, Path, State},
+    extract::{Extension, FromRequestParts, Path, State},
     http::{self, request},
     routing::{get, post},
 };
@@ -19,7 +24,8 @@ use tracing::instrument;
 use types::{IntegrationId, IntegrationState, InternalState, SerializableRequest, Unvalidated};
 
 use crate::{
-    config::{PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig},
+    config::{Configuration, PollerInputOpts, PollerReceiverConfig, WebhookReceiverConfig},
+    runtime::JsExecutor,
     webhook_receiver::types::SerializablePayload,
 };
 
@@ -39,8 +45,7 @@ fn router() -> Router<InternalState> {
         )
         .route("/health", get(health_handler))
 }
-static START_TIME: once_cell::sync::Lazy<std::time::Instant> =
-    once_cell::sync::Lazy::new(std::time::Instant::now);
+static START_TIME: LazyLock<std::time::Instant> = LazyLock::new(std::time::Instant::now);
 
 fn get_uptime_seconds() -> u64 {
     START_TIME.elapsed().as_secs()
@@ -50,12 +55,16 @@ struct HealthResponse {
     pub status: &'static str,
     pub version: &'static str,
     pub uptime: u64,
+    pub js_backend: JsExecutor,
 }
-async fn health_handler() -> impl axum::response::IntoResponse {
+async fn health_handler(
+    Extension(configuration): Extension<Configuration>,
+) -> impl axum::response::IntoResponse {
     let health_response = HealthResponse {
         status: "OK",
         version: env!("CARGO_PKG_VERSION"),
         uptime: get_uptime_seconds(),
+        js_backend: configuration.js_engine,
     };
     axum::Json(health_response)
 }
@@ -63,13 +72,14 @@ pub async fn run(
     listen_addr: SocketAddr,
     routes: Vec<WebhookReceiverConfig>,
     transformer_tx: TransformerTx,
+    configuration: Configuration,
 ) -> std::io::Result<()> {
-    once_cell::sync::Lazy::force(&START_TIME);
+    LazyLock::force(&START_TIME);
     let state = InternalState::from_receiver_configs(routes, transformer_tx)
         .await
         .map_err(std::io::Error::other)?;
 
-    let router = router().with_state(state);
+    let router = router().with_state(state).layer(Extension(configuration));
 
     tracing::info!("Listening on: {listen_addr}");
     let listener = tokio::net::TcpListener::bind(listen_addr).await.unwrap();
@@ -291,7 +301,7 @@ async fn run_inner(poller: &SvixEventsPoller) -> ! {
     const NO_SLEEP: Duration = Duration::ZERO;
     let mut sleep_time = NO_SLEEP;
 
-    let PollerInputOpts::SvixMessagePoller {
+    let PollerInputOpts {
         consumer_id,
         token: _,
         app_id,

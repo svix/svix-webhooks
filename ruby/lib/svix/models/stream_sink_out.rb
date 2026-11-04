@@ -5,13 +5,17 @@ require "json"
 require_relative "./azure_blob_storage_config_out"
 require_relative "./big_query_config_out"
 require_relative "./clickhouse_config_out"
+require_relative "./elastic_search_config_out"
 require_relative "./event_bridge_config_out"
 require_relative "./google_cloud_pub_sub_config_out"
 require_relative "./google_cloud_storage_config_out"
 require_relative "./otel_tracing_config_out"
+require_relative "./post_hog_config_out"
+require_relative "./postgres_config_out"
 require_relative "./rabbit_mq_config_out"
 require_relative "./redshift_config_out"
 require_relative "./s3_config_out"
+require_relative "./segment_sink_config_out"
 require_relative "./sink_http_config_out"
 require_relative "./sink_status"
 require_relative "./snowflake_config_out"
@@ -31,8 +35,24 @@ module Svix
       end
       # Serializes the object to a json string
       # @return String
-      def to_json
-        JSON.dump(serialize)
+      def to_json(*args)
+        serialize.to_json(*args)
+      end
+    end
+
+    class PollingEndpoint
+
+      def serialize
+        Hash.new
+      end
+
+      def self.deserialize(attributes = {})
+        new
+      end
+      # Serializes the object to a json string
+      # @return String
+      def to_json(*args)
+        serialize.to_json(*args)
       end
     end
 
@@ -77,6 +97,18 @@ module Svix
 
     class Sns < SnsConfigOut
     end
+
+    class Postgres < PostgresConfigOut
+    end
+
+    class ElasticSearch < ElasticSearchConfigOut
+    end
+
+    class PostHog < PostHogConfigOut
+    end
+
+    class Segment < SegmentSinkConfigOut
+    end
   end
 
   class StreamSinkOut
@@ -116,6 +148,7 @@ module Svix
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       StreamSinkOutConfig::Poller => "poller",
+      StreamSinkOutConfig::PollingEndpoint => "pollingEndpoint",
       StreamSinkOutConfig::AzureBlobStorage => "azureBlobStorage",
       StreamSinkOutConfig::OtelTracing => "otelTracing",
       StreamSinkOutConfig::Http => "http",
@@ -129,7 +162,11 @@ module Svix
       StreamSinkOutConfig::RabbitMq => "rabbitMq",
       StreamSinkOutConfig::Sqs => "sqs",
       StreamSinkOutConfig::EventBridge => "eventBridge",
-      StreamSinkOutConfig::Sns => "sns"
+      StreamSinkOutConfig::Sns => "sns",
+      StreamSinkOutConfig::Postgres => "postgres",
+      StreamSinkOutConfig::ElasticSearch => "elasticSearch",
+      StreamSinkOutConfig::PostHog => "postHog",
+      StreamSinkOutConfig::Segment => "segment"
     }
     private_constant :TYPE_TO_NAME
     NAME_TO_TYPE = TYPE_TO_NAME.invert
@@ -148,7 +185,7 @@ module Svix
           fail(ArgumentError, "The field #{k} is not part of Svix::StreamSinkOut")
         end
 
-        if k == "config"
+        if k.to_s == "config"
           unless TYPE_TO_NAME.key?(v.class)
             fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
           end
@@ -185,29 +222,25 @@ module Svix
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
 
-      unless attributes.key?("config")
-        fail(ArgumentError, "Missing required field config")
-      end
-
-      attrs["config"] = NAME_TO_TYPE[attributes["type"]].deserialize(attributes["config"])
+      attrs["config"] = NAME_TO_TYPE[attributes["type"]].deserialize(attributes["config"] || {})
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["currentIterator"] = Svix::serialize_primitive(@current_iterator) if @current_iterator
-      out["failureReason"] = Svix::serialize_primitive(@failure_reason) if @failure_reason
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
-      out["batchSize"] = Svix::serialize_primitive(@batch_size) if @batch_size
-      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) if @max_wait_secs
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) if @next_retry_at
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["currentIterator"] = Svix::serialize_primitive(@current_iterator) unless @current_iterator.nil?
+      out["failureReason"] = Svix::serialize_primitive(@failure_reason) unless @failure_reason.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["batchSize"] = Svix::serialize_primitive(@batch_size) unless @batch_size.nil?
+      out["maxWaitSecs"] = Svix::serialize_primitive(@max_wait_secs) unless @max_wait_secs.nil?
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["nextRetryAt"] = Svix::serialize_primitive(@next_retry_at) unless @next_retry_at.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out
@@ -215,8 +248,8 @@ module Svix
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
 
   end

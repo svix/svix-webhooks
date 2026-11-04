@@ -4,14 +4,16 @@ use serde::{Deserialize, Serialize};
 use super::{
     azure_blob_storage_config_out::AzureBlobStorageConfigOut,
     big_query_config_out::BigQueryConfigOut, clickhouse_config_out::ClickhouseConfigOut,
+    elastic_search_config_out::ElasticSearchConfigOut,
     event_bridge_config_out::EventBridgeConfigOut,
     google_cloud_pub_sub_config_out::GoogleCloudPubSubConfigOut,
     google_cloud_storage_config_out::GoogleCloudStorageConfigOut,
-    otel_tracing_config_out::OtelTracingConfigOut, rabbit_mq_config_out::RabbitMqConfigOut,
+    otel_tracing_config_out::OtelTracingConfigOut, post_hog_config_out::PostHogConfigOut,
+    postgres_config_out::PostgresConfigOut, rabbit_mq_config_out::RabbitMqConfigOut,
     redshift_config_out::RedshiftConfigOut, s3_config_out::S3ConfigOut,
-    sink_http_config_out::SinkHttpConfigOut, sink_status::SinkStatus,
-    snowflake_config_out::SnowflakeConfigOut, sns_config_out::SnsConfigOut,
-    sqs_config_out::SqsConfigOut,
+    segment_sink_config_out::SegmentSinkConfigOut, sink_http_config_out::SinkHttpConfigOut,
+    sink_status::SinkStatus, snowflake_config_out::SnowflakeConfigOut,
+    sns_config_out::SnsConfigOut, sqs_config_out::SqsConfigOut,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -66,6 +68,8 @@ pub struct StreamSinkOut {
 pub enum StreamSinkOutConfig {
     #[serde(rename = "poller")]
     Poller,
+    #[serde(rename = "pollingEndpoint")]
+    PollingEndpoint,
     #[serde(rename = "azureBlobStorage")]
     AzureBlobStorage(AzureBlobStorageConfigOut),
     #[serde(rename = "otelTracing")]
@@ -94,4 +98,12 @@ pub enum StreamSinkOutConfig {
     EventBridge(EventBridgeConfigOut),
     #[serde(rename = "sns")]
     Sns(SnsConfigOut),
+    #[serde(rename = "postgres")]
+    Postgres(PostgresConfigOut),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigOut),
+    #[serde(rename = "postHog")]
+    PostHog(PostHogConfigOut),
+    #[serde(rename = "segment")]
+    Segment(SegmentSinkConfigOut),
 }

@@ -5,18 +5,24 @@ require "json"
 module Svix
   class MessageIn
     # Optional unique identifier for the message
+    #
+    # This should not contain the '.' character
     attr_accessor :event_id
     # The event type's name
     attr_accessor :event_type
     # JSON payload to send as the request body of the webhook.
     #
     # We also support sending non-JSON payloads. Please contact us for more information.
+    #
+    # The serialized byte-length of this value should be under 1MiB. Please contact us
+    # if you need to send payloads large than 1MiB.
     attr_accessor :payload
     # List of free-form identifiers that endpoints can filter by
     attr_accessor :channels
     # Optionally creates a new application alongside the message.
     #
-    # If the application id or uid that is used in the path already exists, this argument is ignored.
+    # If the application id or uid that is used in the path already exists,
+    # this argument is ignored.
     attr_accessor :application
     # List of free-form tags that can be filtered by when listing messages
     attr_accessor :tags
@@ -24,11 +30,14 @@ module Svix
     attr_accessor :transformations_params
     # The date and time at which the message will be delivered.
     #
-    # Note that this time is best-effort-only. Must be at least one minute and no more than 24 hours in the future.
+    # Note that this time is best-effort-only. Must be at least one minute
+    # and no more than 24 hours in the future.
     attr_accessor :deliver_at
-    # Optional number of days to retain the message payload. Defaults to 90. Note that this is mutually exclusive with `payloadRetentionHours`.
+    # Optional number of days to retain the message payload. Defaults to 90.
+    # Note that this is mutually exclusive with `payloadRetentionHours`.
     attr_accessor :payload_retention_period
-    # Optional number of hours to retain the message payload. Note that this is mutually exclusive with `payloadRetentionPeriod`.
+    # Optional number of hours to retain the message payload. Note that
+    # this is mutually exclusive with `payloadRetentionPeriod`.
     attr_accessor :payload_retention_hours
 
     ALL_FIELD ||= [
@@ -78,23 +87,32 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["eventId"] = Svix::serialize_primitive(@event_id) if @event_id
-      out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
-      out["payload"] = Svix::serialize_primitive(@payload) if @payload
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["application"] = Svix::serialize_schema_ref(@application) if @application
-      out["tags"] = Svix::serialize_primitive(@tags) if @tags
-      out["transformationsParams"] = Svix::serialize_primitive(@transformations_params) if @transformations_params
-      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) if @deliver_at
-      out["payloadRetentionPeriod"] = Svix::serialize_primitive(@payload_retention_period) if @payload_retention_period
-      out["payloadRetentionHours"] = Svix::serialize_primitive(@payload_retention_hours) if @payload_retention_hours
+      out["eventId"] = Svix::serialize_primitive(@event_id) unless @event_id.nil?
+      out["eventType"] = Svix::serialize_primitive(@event_type) unless @event_type.nil?
+      out["payload"] = Svix::serialize_primitive(@payload) unless @payload.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["application"] = Svix::serialize_schema_ref(@application) unless @application.nil?
+      out["tags"] = Svix::serialize_primitive(@tags) unless @tags.nil?
+      unless @transformations_params.nil?
+        out["transformationsParams"] = Svix::serialize_primitive(@transformations_params)
+      end
+
+      out["deliverAt"] = Svix::serialize_primitive(@deliver_at) unless @deliver_at.nil?
+      unless @payload_retention_period.nil?
+        out["payloadRetentionPeriod"] = Svix::serialize_primitive(@payload_retention_period)
+      end
+
+      unless @payload_retention_hours.nil?
+        out["payloadRetentionHours"] = Svix::serialize_primitive(@payload_retention_hours)
+      end
+
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

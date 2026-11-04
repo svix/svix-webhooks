@@ -59,6 +59,11 @@ pub enum EnvironmentCommands {
   \"eventTypes\": [{
     \"name\": \"user.signup\",
     \"description\": \"A user has signed up\",
+    \"descriptionTranslations\": {
+      \"en\": \"A user has signed up\",
+      \"es\": \"Un usuario se ha registrado\",
+      \"pt-BR\": \"Um usuário se cadastrou\"
+    },
     \"archived\": false,
     \"deprecated\": true,
     \"schemas\": {
@@ -127,6 +132,11 @@ pub enum EnvironmentCommands {
   \"eventTypes\": [{
     \"name\": \"user.signup\",
     \"description\": \"A user has signed up\",
+    \"descriptionTranslations\": {
+      \"en\": \"A user has signed up\",
+      \"es\": \"Un usuario se ha registrado\",
+      \"pt-BR\": \"Um usuário se cadastrou\"
+    },
     \"archived\": false,
     \"deprecated\": true,
     \"schemas\": {

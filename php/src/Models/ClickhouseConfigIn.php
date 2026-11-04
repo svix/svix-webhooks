@@ -13,10 +13,12 @@ class ClickhouseConfigIn implements \JsonSerializable
      * @param string      $url      The HTTP URL of the ClickHouse server (e.g. `https://my_clickhouse:8443`).
      * @param string|null $username Username to access Clickhouse.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Currently a required field, but marked as optional because we may add
+     * different authentication in the future.
      * @param string|null $password Password to access Clickhouse.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Currently a required field, but marked as optional because we may add
+     * different authentication in the future.
      * @param string|null $database  the Clickhouse database to connect to
      * @param string      $tableName the Clickhouse table to write to
      */

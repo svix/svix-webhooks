@@ -5,7 +5,8 @@ using Newtonsoft.Json;
 namespace Svix.Models
 {
     /// <summary>
-    /// A model containing information on a given message plus additional fields on the last attempt for that message.
+    /// A model containing information on a given message plus additional fields on the last attempt for
+    /// that message.
     /// <summary>
     public class EndpointMessageOut
     {

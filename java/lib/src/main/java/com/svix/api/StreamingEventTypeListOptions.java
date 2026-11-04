@@ -1,6 +1,7 @@
 // this file is @generated
 package com.svix.api;
 
+import com.svix.models.ArchiveStatus;
 import com.svix.models.Ordering;
 
 import lombok.Data;
@@ -16,6 +17,17 @@ public class StreamingEventTypeListOptions {
     /** The sorting order of the returned items */
     Ordering order;
 
-    /** Include archived (deleted but not expunged) items in the response. */
+    /**
+     * Include archived items in the response.
+     *
+     * <p>Deprecated, use `archive_status` instead. Ignored when `archive_status` is set.
+     */
     Boolean includeArchived;
+
+    /**
+     * Which items to include based on whether they are archived.
+     *
+     * <p>Defaults to `active`.
+     */
+    ArchiveStatus archiveStatus;
 }

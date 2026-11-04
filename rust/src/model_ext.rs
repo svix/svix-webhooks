@@ -10,7 +10,9 @@ use std::str::FromStr;
 
 use serde_json::json;
 
-use crate::models::{ConnectorProduct, MessageIn, MessageStatus, Ordering, StatusCodeClass};
+use crate::models::{
+    ArchiveStatus, ConnectorProduct, MessageIn, MessageStatus, Ordering, StatusCodeClass,
+};
 
 impl MessageIn {
     /// Create a new message with a raw string payload.
@@ -44,6 +46,23 @@ impl MessageIn {
         transformations_params["headers"]["content-type"] = content_type.into();
 
         self
+    }
+}
+
+#[derive(Debug, thiserror::Error)]
+#[error("invalid value for archiveStatus")]
+pub struct ArchiveStatusFromStrError;
+
+impl FromStr for ArchiveStatus {
+    type Err = ArchiveStatusFromStrError;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "Active" => Ok(Self::Active),
+            "Archived" => Ok(Self::Archived),
+            "All" => Ok(Self::All),
+            _ => Err(ArchiveStatusFromStrError),
+        }
     }
 }
 
@@ -92,6 +111,7 @@ impl FromStr for MessageStatus {
             "1" | "pending" => Ok(Self::Pending),
             "2" | "fail" => Ok(Self::Fail),
             "3" | "sending" => Ok(Self::Sending),
+            "4" | "canceled" => Ok(Self::Canceled),
             _ => Err(MessageStatusFromStrError),
         }
     }

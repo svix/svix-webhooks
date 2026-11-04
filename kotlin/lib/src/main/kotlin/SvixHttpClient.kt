@@ -7,7 +7,11 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import okhttp3.*
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.coroutines.executeAsync
+import java.io.IOException
+import java.time.Duration
 import java.util.UUID
 
 internal fun baseUrlFromToken(token: String): String {
@@ -25,11 +29,19 @@ internal fun baseUrlFromToken(token: String): String {
 open class SvixHttpClient
 internal constructor(
     token: String,
-    private val baseUrl: HttpUrl,
+    rawBaseUrl: HttpUrl,
     private val retrySchedule: List<Long>,
 ) {
+    val baseUrl: HttpUrl =
+        if (rawBaseUrl.encodedPath.length > 1 && rawBaseUrl.encodedPath.endsWith('/')) {
+            val trimmedPath = rawBaseUrl.encodedPath.trimEnd('/')
+            rawBaseUrl.newBuilder().encodedPath(trimmedPath.ifEmpty { "/" }).build()
+        } else {
+            rawBaseUrl
+        }
     private val defaultHeaders: Map<String, String>
-    private val client: OkHttpClient = OkHttpClient()
+    private val client: OkHttpClient =
+        OkHttpClient.Builder().callTimeout(Duration.ofSeconds(15)).build()
     private val jsonDeserializer: Json = Json { ignoreUnknownKeys = true }
 
     init {
@@ -54,7 +66,12 @@ internal constructor(
     ): Res {
         val reqBuilder = Request.Builder().url(url)
         if (reqBody != null) {
-            reqBuilder.method(method, Json.encodeToString(reqBody).toRequestBody())
+            reqBuilder.method(
+                method,
+                Json.encodeToString(reqBody).toRequestBody("application/json".toMediaType()),
+            )
+        } else if (method == "POST" || method == "PUT" || method == "PATCH") {
+            reqBuilder.method(method, ByteArray(0).toRequestBody())
         } else {
             reqBuilder.method(method, null)
         }
@@ -70,7 +87,7 @@ internal constructor(
 
         if (headers?.get("idempotency-key") == null && method == "POST") {
             val uuid = UUID.randomUUID().toString()
-            reqBuilder.addHeader("idempotency-key", "auto_" + uuid)
+            reqBuilder.addHeader("idempotency-key", "auto_$uuid")
         }
 
         reqBuilder.addHeader("svix-req-id", Random.nextULong().toString())
@@ -78,11 +95,7 @@ internal constructor(
         val request = reqBuilder.build()
         val res = executeRequestWithRetry(request)
 
-        // if body is null panic
-        if (res.body == null) {
-            throw ApiException("Body is null", res.code)
-        }
-        val bodyString = res.body!!.string()
+        val bodyString = res.body.string()
         if (res.code == 204) {
             return jsonDeserializer.decodeFromString<Res>("true")
         }
@@ -93,22 +106,25 @@ internal constructor(
     }
 
     suspend fun executeRequestWithRetry(request: Request): Response {
-
-        var res = client.newCall(request).execute()
-
-        if (res.code >= 500) {
-            retrySchedule.forEachIndexed { index, sleepTime ->
-                run {
-                    delay(sleepTime)
-                    val newReq =
-                        request
-                            .newBuilder()
-                            .header("svix-retry-count", (index + 1).toString())
-                            .build()
-                    res = client.newCall(newReq).execute()
+        var currentRequest = request
+        retrySchedule.forEachIndexed { index, sleepTime ->
+            try {
+                val res = client.newCall(currentRequest).executeAsync()
+                if (!shouldRetry(res.code)) {
+                    return res
                 }
+                res.close()
+            } catch (e: IOException) {
+                // Network errors (timeouts, connection failures, etc.) are retried
             }
+
+            delay(sleepTime)
+            currentRequest =
+                request.newBuilder().header("svix-retry-count", (index + 1).toString()).build()
         }
-        return res
+        return client.newCall(currentRequest).executeAsync()
     }
 }
+
+private fun shouldRetry(statusCode: Int): Boolean =
+    statusCode >= 500 || statusCode == 423

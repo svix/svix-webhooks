@@ -406,7 +406,7 @@ async fn list_attempted_messages(
     let mut msg_content_map: Option<HashMap<_, _>> = if with_content {
         let msg_ids = results.iter().map(|msg| msg.id.clone());
         Some(
-            messagecontent::Entity::secure_find_by_id_in(msg_ids.collect())
+            messagecontent::Entity::secure_find_by_id_in(msg_ids)
                 .all(db)
                 .await?
                 .into_iter()

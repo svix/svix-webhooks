@@ -16,7 +16,7 @@ pub struct KafkaProducer {
 
 impl KafkaProducer {
     pub fn new(name: String, opts: KafkaOutputOpts) -> Result<Self, KafkaError> {
-        let KafkaOutputOpts::Inner { topic, .. } = &opts;
+        let KafkaOutputOpts { topic, .. } = &opts;
         let topic = topic.clone();
         let producer = opts.create_producer()?;
 

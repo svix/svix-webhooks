@@ -34,6 +34,7 @@ fn get_test_plugin(
         QueueInputOpts::Sqs(SqsInputOpts {
             queue_dsn,
             override_endpoint: true,
+            max_payload_size: None,
         }),
         use_transformation.map(|format| TransformationConfig::Explicit {
             format,

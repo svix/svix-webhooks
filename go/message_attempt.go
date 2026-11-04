@@ -5,8 +5,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/svix/svix-webhooks/go/internal"
-	"github.com/svix/svix-webhooks/go/models"
+	"github.com/svix/svix-webhooks/v2/go/internal"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 type MessageAttempt struct {
@@ -38,7 +38,8 @@ type MessageAttemptListByEndpointOptions struct {
 	After *time.Time
 	// When `true` attempt content is included in the response.
 	//
-	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+	// without specifying this parameter.
 	WithContent *bool
 	// When `true`, the message information is included in the response
 	//
@@ -75,7 +76,8 @@ type MessageAttemptListByMsgOptions struct {
 	After *time.Time
 	// When `true` attempt content is included in the response.
 	//
-	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+	// without specifying this parameter.
 	WithContent *bool
 	// When `true`, return the Canceled (4) status in attempts.
 	//
@@ -103,7 +105,8 @@ type MessageAttemptListAttemptedMessagesOptions struct {
 	After *time.Time
 	// When `true` message payloads are included in the response.
 	//
-	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request without specifying this parameter.
+	// Defaults to `false` in v2+ of the Svix SDKs, `true` in v1 or when manually making a request
+	// without specifying this parameter.
 	WithContent *bool
 	// When `true`, return the Canceled (4) status in attempts.
 	//

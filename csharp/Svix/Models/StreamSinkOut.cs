@@ -119,6 +119,9 @@ namespace Svix.Models
         public static StreamSinkOutConfig Poller() =>
             new(new Dictionary<string, string>(), ConfigType.Poller);
 
+        public static StreamSinkOutConfig PollingEndpoint() =>
+            new(new Dictionary<string, string>(), ConfigType.PollingEndpoint);
+
         public static StreamSinkOutConfig AzureBlobStorage(
             AzureBlobStorageConfigOut azureBlobStorageConfigOut
         ) => new(azureBlobStorageConfigOut, ConfigType.AzureBlobStorage);
@@ -164,10 +167,26 @@ namespace Svix.Models
         public static StreamSinkOutConfig Sns(SnsConfigOut snsConfigOut) =>
             new(snsConfigOut, ConfigType.Sns);
 
+        public static StreamSinkOutConfig Postgres(PostgresConfigOut postgresConfigOut) =>
+            new(postgresConfigOut, ConfigType.Postgres);
+
+        public static StreamSinkOutConfig ElasticSearch(
+            ElasticSearchConfigOut elasticSearchConfigOut
+        ) => new(elasticSearchConfigOut, ConfigType.ElasticSearch);
+
+        public static StreamSinkOutConfig PostHog(PostHogConfigOut postHogConfigOut) =>
+            new(postHogConfigOut, ConfigType.PostHog);
+
+        public static StreamSinkOutConfig Segment(SegmentSinkConfigOut segmentSinkConfigOut) =>
+            new(segmentSinkConfigOut, ConfigType.Segment);
+
         private enum ConfigType
         {
             [EnumMember(Value = "poller")]
             Poller,
+
+            [EnumMember(Value = "pollingEndpoint")]
+            PollingEndpoint,
 
             [EnumMember(Value = "azureBlobStorage")]
             AzureBlobStorage,
@@ -210,10 +229,23 @@ namespace Svix.Models
 
             [EnumMember(Value = "sns")]
             Sns,
+
+            [EnumMember(Value = "postgres")]
+            Postgres,
+
+            [EnumMember(Value = "elasticSearch")]
+            ElasticSearch,
+
+            [EnumMember(Value = "postHog")]
+            PostHog,
+
+            [EnumMember(Value = "segment")]
+            Segment,
         }
 
         public TResult Match<TResult>(
             Func<TResult> onPoller,
+            Func<TResult> onPollingEndpoint,
             Func<AzureBlobStorageConfigOut, TResult> onAzureBlobStorage,
             Func<OtelTracingConfigOut, TResult> onOtelTracing,
             Func<SinkHttpConfigOut, TResult> onHttp,
@@ -227,12 +259,17 @@ namespace Svix.Models
             Func<RabbitMqConfigOut, TResult> onRabbitMq,
             Func<SqsConfigOut, TResult> onSqs,
             Func<EventBridgeConfigOut, TResult> onEventBridge,
-            Func<SnsConfigOut, TResult> onSns
+            Func<SnsConfigOut, TResult> onSns,
+            Func<PostgresConfigOut, TResult> onPostgres,
+            Func<ElasticSearchConfigOut, TResult> onElasticSearch,
+            Func<PostHogConfigOut, TResult> onPostHog,
+            Func<SegmentSinkConfigOut, TResult> onSegment
         )
         {
             return _type switch
             {
                 ConfigType.Poller => onPoller(),
+                ConfigType.PollingEndpoint => onPollingEndpoint(),
                 ConfigType.AzureBlobStorage => onAzureBlobStorage(
                     (AzureBlobStorageConfigOut)_value
                 ),
@@ -253,75 +290,159 @@ namespace Svix.Models
                 ConfigType.Sqs => onSqs((SqsConfigOut)_value),
                 ConfigType.EventBridge => onEventBridge((EventBridgeConfigOut)_value),
                 ConfigType.Sns => onSns((SnsConfigOut)_value),
+                ConfigType.Postgres => onPostgres((PostgresConfigOut)_value),
+                ConfigType.ElasticSearch => onElasticSearch((ElasticSearchConfigOut)_value),
+                ConfigType.PostHog => onPostHog((PostHogConfigOut)_value),
+                ConfigType.Segment => onSegment((SegmentSinkConfigOut)_value),
                 // unreachable
                 _ => throw new InvalidOperationException("Unknown config type"),
             };
         }
 
         public void Switch(
-            Action onPoller,
-            Action<AzureBlobStorageConfigOut> onAzureBlobStorage,
-            Action<OtelTracingConfigOut> onOtelTracing,
-            Action<SinkHttpConfigOut> onHttp,
-            Action<S3ConfigOut> onAmazonS3,
-            Action<SnowflakeConfigOut> onSnowflake,
-            Action<GoogleCloudStorageConfigOut> onGoogleCloudStorage,
-            Action<GoogleCloudPubSubConfigOut> onGoogleCloudPubSub,
-            Action<RedshiftConfigOut> onRedshift,
-            Action<BigQueryConfigOut> onBigQuery,
-            Action<ClickhouseConfigOut> onClickhouse,
-            Action<RabbitMqConfigOut> onRabbitMq,
-            Action<SqsConfigOut> onSqs,
-            Action<EventBridgeConfigOut> onEventBridge,
-            Action<SnsConfigOut> onSns
+            Action? onPoller = null,
+            Action? onPollingEndpoint = null,
+            Action<AzureBlobStorageConfigOut>? onAzureBlobStorage = null,
+            Action<OtelTracingConfigOut>? onOtelTracing = null,
+            Action<SinkHttpConfigOut>? onHttp = null,
+            Action<S3ConfigOut>? onAmazonS3 = null,
+            Action<SnowflakeConfigOut>? onSnowflake = null,
+            Action<GoogleCloudStorageConfigOut>? onGoogleCloudStorage = null,
+            Action<GoogleCloudPubSubConfigOut>? onGoogleCloudPubSub = null,
+            Action<RedshiftConfigOut>? onRedshift = null,
+            Action<BigQueryConfigOut>? onBigQuery = null,
+            Action<ClickhouseConfigOut>? onClickhouse = null,
+            Action<RabbitMqConfigOut>? onRabbitMq = null,
+            Action<SqsConfigOut>? onSqs = null,
+            Action<EventBridgeConfigOut>? onEventBridge = null,
+            Action<SnsConfigOut>? onSns = null,
+            Action<PostgresConfigOut>? onPostgres = null,
+            Action<ElasticSearchConfigOut>? onElasticSearch = null,
+            Action<PostHogConfigOut>? onPostHog = null,
+            Action<SegmentSinkConfigOut>? onSegment = null
         )
         {
             switch (_type)
             {
                 case ConfigType.Poller:
-                    onPoller();
+                    if (onPoller != null)
+                    {
+                        onPoller();
+                    }
+                    break;
+                case ConfigType.PollingEndpoint:
+                    if (onPollingEndpoint != null)
+                    {
+                        onPollingEndpoint();
+                    }
                     break;
                 case ConfigType.AzureBlobStorage:
-                    onAzureBlobStorage((AzureBlobStorageConfigOut)_value);
+                    if (onAzureBlobStorage != null)
+                    {
+                        onAzureBlobStorage((AzureBlobStorageConfigOut)_value);
+                    }
                     break;
                 case ConfigType.OtelTracing:
-                    onOtelTracing((OtelTracingConfigOut)_value);
+                    if (onOtelTracing != null)
+                    {
+                        onOtelTracing((OtelTracingConfigOut)_value);
+                    }
                     break;
                 case ConfigType.Http:
-                    onHttp((SinkHttpConfigOut)_value);
+                    if (onHttp != null)
+                    {
+                        onHttp((SinkHttpConfigOut)_value);
+                    }
                     break;
                 case ConfigType.AmazonS3:
-                    onAmazonS3((S3ConfigOut)_value);
+                    if (onAmazonS3 != null)
+                    {
+                        onAmazonS3((S3ConfigOut)_value);
+                    }
                     break;
                 case ConfigType.Snowflake:
-                    onSnowflake((SnowflakeConfigOut)_value);
+                    if (onSnowflake != null)
+                    {
+                        onSnowflake((SnowflakeConfigOut)_value);
+                    }
                     break;
                 case ConfigType.GoogleCloudStorage:
-                    onGoogleCloudStorage((GoogleCloudStorageConfigOut)_value);
+                    if (onGoogleCloudStorage != null)
+                    {
+                        onGoogleCloudStorage((GoogleCloudStorageConfigOut)_value);
+                    }
                     break;
                 case ConfigType.GoogleCloudPubSub:
-                    onGoogleCloudPubSub((GoogleCloudPubSubConfigOut)_value);
+                    if (onGoogleCloudPubSub != null)
+                    {
+                        onGoogleCloudPubSub((GoogleCloudPubSubConfigOut)_value);
+                    }
                     break;
                 case ConfigType.Redshift:
-                    onRedshift((RedshiftConfigOut)_value);
+                    if (onRedshift != null)
+                    {
+                        onRedshift((RedshiftConfigOut)_value);
+                    }
                     break;
                 case ConfigType.BigQuery:
-                    onBigQuery((BigQueryConfigOut)_value);
+                    if (onBigQuery != null)
+                    {
+                        onBigQuery((BigQueryConfigOut)_value);
+                    }
                     break;
                 case ConfigType.Clickhouse:
-                    onClickhouse((ClickhouseConfigOut)_value);
+                    if (onClickhouse != null)
+                    {
+                        onClickhouse((ClickhouseConfigOut)_value);
+                    }
                     break;
                 case ConfigType.RabbitMq:
-                    onRabbitMq((RabbitMqConfigOut)_value);
+                    if (onRabbitMq != null)
+                    {
+                        onRabbitMq((RabbitMqConfigOut)_value);
+                    }
                     break;
                 case ConfigType.Sqs:
-                    onSqs((SqsConfigOut)_value);
+                    if (onSqs != null)
+                    {
+                        onSqs((SqsConfigOut)_value);
+                    }
                     break;
                 case ConfigType.EventBridge:
-                    onEventBridge((EventBridgeConfigOut)_value);
+                    if (onEventBridge != null)
+                    {
+                        onEventBridge((EventBridgeConfigOut)_value);
+                    }
                     break;
                 case ConfigType.Sns:
-                    onSns((SnsConfigOut)_value);
+                    if (onSns != null)
+                    {
+                        onSns((SnsConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.Postgres:
+                    if (onPostgres != null)
+                    {
+                        onPostgres((PostgresConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.ElasticSearch:
+                    if (onElasticSearch != null)
+                    {
+                        onElasticSearch((ElasticSearchConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.PostHog:
+                    if (onPostHog != null)
+                    {
+                        onPostHog((PostHogConfigOut)_value);
+                    }
+                    break;
+                case ConfigType.Segment:
+                    if (onSegment != null)
+                    {
+                        onSegment((SegmentSinkConfigOut)_value);
+                    }
                     break;
                 default:
                     // unreachable
@@ -374,8 +495,8 @@ namespace Svix.Models
         [JsonProperty("type", Required = Required.Always)]
         public required string Type { get; set; }
 
-        [JsonProperty("config", Required = Required.Always)]
-        public required JObject Config { get; set; }
+        [JsonProperty("config")]
+        public JObject? Config { get; set; }
     }
 
     public class StreamSinkOutConverter : JsonConverter
@@ -455,6 +576,7 @@ namespace Svix.Models
             new()
             {
                 ["poller"] = c => StreamSinkOutConfig.Poller(),
+                ["pollingEndpoint"] = c => StreamSinkOutConfig.PollingEndpoint(),
                 ["azureBlobStorage"] = c =>
                     StreamSinkOutConfig.AzureBlobStorage(ToObj<AzureBlobStorageConfigOut>(c)),
                 ["otelTracing"] = c =>
@@ -474,6 +596,11 @@ namespace Svix.Models
                 ["eventBridge"] = c =>
                     StreamSinkOutConfig.EventBridge(ToObj<EventBridgeConfigOut>(c)),
                 ["sns"] = c => StreamSinkOutConfig.Sns(ToObj<SnsConfigOut>(c)),
+                ["postgres"] = c => StreamSinkOutConfig.Postgres(ToObj<PostgresConfigOut>(c)),
+                ["elasticSearch"] = c =>
+                    StreamSinkOutConfig.ElasticSearch(ToObj<ElasticSearchConfigOut>(c)),
+                ["postHog"] = c => StreamSinkOutConfig.PostHog(ToObj<PostHogConfigOut>(c)),
+                ["segment"] = c => StreamSinkOutConfig.Segment(ToObj<SegmentSinkConfigOut>(c)),
             };
     }
 }

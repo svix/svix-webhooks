@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/svix/svix-webhooks/go/utils"
+	"github.com/svix/svix-webhooks/v2/go/utils"
 )
 
 // When creating an StreamSinkPatch, use the appropriate config structure based on the Type:
@@ -13,13 +13,17 @@ import (
 //   - "azureBlobStorage": Use AzureBlobStorageConfigPatch
 //   - "bigQuery": Use BigQueryConfigPatch
 //   - "clickhouse": Use ClickhouseConfigPatch
+//   - "elasticSearch": Use ElasticSearchConfigPatch
 //   - "eventBridge": Use EventBridgeConfigPatch
 //   - "googleCloudPubSub": Use GoogleCloudPubSubConfigPatch
 //   - "googleCloudStorage": Use GoogleCloudStorageConfigPatch
 //   - "otelTracing": Use OtelTracingConfigPatch
+//   - "postgres": Use PostgresConfigPatch
+//   - "postHog": Use PostHogConfigPatch
 //   - "rabbitMq": Use RabbitMqConfigPatch
 //   - "redshift": Use RedshiftConfigPatch
 //   - "amazonS3": Use S3ConfigPatch
+//   - "segment": Use SegmentSinkConfigPatch
 //   - "http": Use SinkHttpConfigPatch
 //   - "snowflake": Use SnowflakeConfigPatch
 //   - "sns": Use SnsConfigPatch
@@ -54,6 +58,10 @@ const (
 	StreamSinkPatchTypeSnowflake          StreamSinkPatchType = "snowflake"
 	StreamSinkPatchTypeRabbitMq           StreamSinkPatchType = "rabbitMq"
 	StreamSinkPatchTypeRedshift           StreamSinkPatchType = "redshift"
+	StreamSinkPatchTypePostgres           StreamSinkPatchType = "postgres"
+	StreamSinkPatchTypeElasticSearch      StreamSinkPatchType = "elasticSearch"
+	StreamSinkPatchTypePostHog            StreamSinkPatchType = "postHog"
+	StreamSinkPatchTypeSegment            StreamSinkPatchType = "segment"
 )
 
 type StreamSinkPatchConfig interface {
@@ -75,6 +83,10 @@ func (EventBridgeConfigPatch) isStreamSinkPatchConfig()        {}
 func (SnowflakeConfigPatch) isStreamSinkPatchConfig()          {}
 func (RabbitMqConfigPatch) isStreamSinkPatchConfig()           {}
 func (RedshiftConfigPatch) isStreamSinkPatchConfig()           {}
+func (PostgresConfigPatch) isStreamSinkPatchConfig()           {}
+func (ElasticSearchConfigPatch) isStreamSinkPatchConfig()      {}
+func (PostHogConfigPatch) isStreamSinkPatchConfig()            {}
+func (SegmentSinkConfigPatch) isStreamSinkPatchConfig()        {}
 
 func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 	type Alias StreamSinkPatch
@@ -102,6 +114,10 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		var c ClickhouseConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "elasticSearch":
+		var c ElasticSearchConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "eventBridge":
 		var c EventBridgeConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
@@ -118,6 +134,14 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		var c OtelTracingConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
+	case "postgres":
+		var c PostgresConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "postHog":
+		var c PostHogConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
 	case "rabbitMq":
 		var c RabbitMqConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
@@ -128,6 +152,10 @@ func (i *StreamSinkPatch) UnmarshalJSON(data []byte) error {
 		i.Config = c
 	case "amazonS3":
 		var c S3ConfigPatch
+		err = json.Unmarshal(aux.Config, &c)
+		i.Config = c
+	case "segment":
+		var c SegmentSinkConfigPatch
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "http":
@@ -181,4 +209,8 @@ var StreamSinkPatchTypeFromString = map[string]StreamSinkPatchType{
 	"snowflake":          StreamSinkPatchTypeSnowflake,
 	"rabbitMq":           StreamSinkPatchTypeRabbitMq,
 	"redshift":           StreamSinkPatchTypeRedshift,
+	"postgres":           StreamSinkPatchTypePostgres,
+	"elasticSearch":      StreamSinkPatchTypeElasticSearch,
+	"postHog":            StreamSinkPatchTypePostHog,
+	"segment":            StreamSinkPatchTypeSegment,
 }

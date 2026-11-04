@@ -11,7 +11,8 @@ module Svix
     attr_accessor :key
     # How long the old secret will be valid for, in seconds.
     #
-    # Valid values are between 0 (immediate expiry) and 7 days. The default is 24 hours.
+    # Valid values are between 0 (immediate expiry) and 7 days.
+    # The default is 24 hours.
     attr_accessor :grace_period_seconds
 
     ALL_FIELD ||= ["key", "grace_period_seconds"].freeze
@@ -45,15 +46,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["key"] = Svix::serialize_primitive(@key) if @key
-      out["gracePeriodSeconds"] = Svix::serialize_primitive(@grace_period_seconds) if @grace_period_seconds
+      out["key"] = Svix::serialize_primitive(@key) unless @key.nil?
+      out["gracePeriodSeconds"] = Svix::serialize_primitive(@grace_period_seconds) unless @grace_period_seconds.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

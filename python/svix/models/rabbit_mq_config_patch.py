@@ -8,3 +8,5 @@ class RabbitMqConfigPatch(BaseModel):
     routing_key: t.Optional[str] = None
 
     uri: t.Optional[str] = None
+
+    mandatory: t.Optional[bool] = None

@@ -5,7 +5,10 @@ declare(strict_types=1);
 
 namespace Svix\Models;
 
-/** A model containing information on a given message plus additional fields on the last attempt for that message. */
+/**
+ * A model containing information on a given message plus additional fields on the last attempt for
+ * that message.
+ */
 class EndpointMessageOut implements \JsonSerializable
 {
     private array $setFields = [];

@@ -1,31 +1,60 @@
 package com.svix.test;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.absent;
+import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.matching;
+import static com.github.tomakehurst.wiremock.client.WireMock.patchRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.fail;
 
-import static org.junit.Assert.*;
+import java.io.IOException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Rule;
+import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.http.Fault;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.github.tomakehurst.wiremock.stubbing.ServeEvent;
 import com.github.tomakehurst.wiremock.verification.LoggedRequest;
 import com.svix.Svix;
 import com.svix.SvixOptions;
-import com.svix.api.*;
+import com.svix.api.ApplicationCreateOptions;
+import com.svix.api.ApplicationListOptions;
+import com.svix.api.Message;
+import com.svix.api.MessageAttemptListByEndpointOptions;
+import com.svix.api.MessageListOptions;
 import com.svix.exceptions.ApiException;
-import com.svix.models.*;
-
-import org.junit.*;
-
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import com.svix.models.ApplicationIn;
+import com.svix.models.BackgroundTaskType;
+import com.svix.models.EndpointPatch;
+import com.svix.models.EventTypeImportOpenApiIn;
+import com.svix.models.EventTypeImportOpenApiOut;
+import com.svix.models.ListResponseBackgroundTaskOut;
+import com.svix.models.ListResponseMessageAttemptOut;
+import com.svix.models.MessageAttemptTriggerType;
+import com.svix.models.MessageIn;
+import com.svix.models.Ordering;
+import com.svix.models.ReplayIn;
 
 public class WiremockTests {
     @Rule
@@ -227,43 +256,88 @@ public class WiremockTests {
     }
 
     @Test
-    public void testRetryForStatus500() throws Exception {
-        Svix svx = testClient();
-        wireMockRule.stubFor(
-                WireMock.get(urlEqualTo("/api/v1/app")).willReturn(WireMock.status(500)));
+    public void testRetryForStatus() throws Exception {
+        for (int status : new int[] {500, 423}) {
+            wireMockRule.resetAll();
 
-        try {
-            svx.getApplication().list();
-        } catch (ApiException e) {
-            assertEquals(500, e.getCode());
-        }
-        List<ServeEvent> requests = wireMockRule.getAllServeEvents();
-        assertEquals(4, requests.size());
+            SvixOptions opts = new SvixOptions();
+            opts.setServerUrl(wireMockRule.baseUrl());
+            opts.setRetrySchedule(Arrays.asList(1L, 1L, 1L));
+            Svix svx = new Svix("testtk_asd12.eu", opts);
 
-        String req_id = requests.get(0).getRequest().header("svix-req-id").firstValue();
+            wireMockRule.stubFor(
+                    WireMock.get(urlEqualTo("/api/v1/app")).willReturn(WireMock.status(status)));
 
-        for (int i = 0; i < requests.size(); i++) {
-            // all retries have the same req id
-            LoggedRequest req = requests.get(0).getRequest();
-            assertEquals(req_id, req.header("svix-req-id").firstValue());
-            if (i == 0) {
-                // first request does not have svix-retry-count
-                wireMockRule.verify(
-                        1,
-                        getRequestedFor(urlEqualTo("/api/v1/app"))
-                                .withoutHeader("svix-retry-count"));
-            } else {
-                wireMockRule.verify(
-                        1,
-                        getRequestedFor(urlEqualTo("/api/v1/app"))
-                                .withHeader("svix-retry-count", equalTo(Integer.toString(i))));
+            try {
+                svx.getApplication().list();
+                fail("expected ApiException for status " + status);
+            } catch (ApiException e) {
+                assertEquals(status, e.getCode());
             }
+            List<ServeEvent> requests = wireMockRule.getAllServeEvents();
+            assertEquals(4, requests.size());
+
+            String req_id = requests.get(0).getRequest().header("svix-req-id").firstValue();
+
+            for (int i = 0; i < requests.size(); i++) {
+                LoggedRequest req = requests.get(0).getRequest();
+                assertEquals(req_id, req.header("svix-req-id").firstValue());
+                if (i == 0) {
+                    wireMockRule.verify(
+                            1,
+                            getRequestedFor(urlEqualTo("/api/v1/app"))
+                                    .withoutHeader("svix-retry-count"));
+                } else {
+                    wireMockRule.verify(
+                            1,
+                            getRequestedFor(urlEqualTo("/api/v1/app"))
+                                    .withHeader("svix-retry-count", equalTo(Integer.toString(i))));
+                }
+            }
+
+            wireMockRule.verify(
+                    4,
+                    getRequestedFor(urlEqualTo("/api/v1/app"))
+                            .withHeader("svix-req-id", equalTo(req_id)));
         }
+    }
+
+    @Test
+    public void testRetryOnNetworkError() throws Exception {
+        Svix svx = testClient();
+        // Initial attempts have their connection reset, our first retry succeeds. (OkHttp may
+        // itself transparently retry a reset connection, which is why we match on the header
+        // rather than on the number of requests.)
+        wireMockRule.stubFor(
+                WireMock.get(urlEqualTo("/api/v1/app"))
+                        .withHeader("svix-retry-count", absent())
+                        .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+        wireMockRule.stubFor(
+                WireMock.get(urlEqualTo("/api/v1/app"))
+                        .withHeader("svix-retry-count", equalTo("1"))
+                        .willReturn(WireMock.ok().withBodyFile("ListResponseApplicationOut.json")));
+
+        svx.getApplication().list();
 
         wireMockRule.verify(
-                4,
+                1,
                 getRequestedFor(urlEqualTo("/api/v1/app"))
-                        .withHeader("svix-req-id", equalTo(req_id)));
+                        .withHeader("svix-retry-count", equalTo("1")));
+    }
+
+    @Test
+    public void testNetworkErrorThrownAfterRetriesExhausted() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.get(urlEqualTo("/api/v1/app"))
+                        .willReturn(aResponse().withFault(Fault.CONNECTION_RESET_BY_PEER)));
+
+        assertThrows(IOException.class, () -> svx.getApplication().list());
+
+        // every retry in the default schedule was attempted
+        wireMockRule.verify(
+                getRequestedFor(urlEqualTo("/api/v1/app"))
+                        .withHeader("svix-retry-count", equalTo("3")));
     }
 
     @Test
@@ -274,6 +348,18 @@ public class WiremockTests {
 
         svx.getApplication().delete("ap");
         wireMockRule.verify(1, deleteRequestedFor(urlEqualTo("/api/v1/app/ap")));
+    }
+
+    @Test
+    public void postWithoutRequestBodyIsSent() throws Exception {
+        Svix svx = testClient();
+        wireMockRule.stubFor(
+                WireMock.post(urlEqualTo("/api/v1/app/ap/msg/msg1/endpoint/endp/resend"))
+                        .willReturn(WireMock.status(202).withBody("{}")));
+
+        svx.getMessageAttempt().resend("ap", "msg1", "endp");
+        wireMockRule.verify(
+                1, postRequestedFor(urlEqualTo("/api/v1/app/ap/msg/msg1/endpoint/endp/resend")));
     }
 
     @Test

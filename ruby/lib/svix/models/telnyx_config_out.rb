@@ -33,14 +33,14 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["publicKey"] = Svix::serialize_primitive(@public_key) if @public_key
+      out["publicKey"] = Svix::serialize_primitive(@public_key) unless @public_key.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

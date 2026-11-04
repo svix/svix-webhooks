@@ -41,15 +41,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["modified"] = Svix::serialize_primitive(@modified) if @modified
-      out["to_modify"] = @to_modify.map { |v| v.serialize } if @to_modify
+      out["modified"] = Svix::serialize_primitive(@modified) unless @modified.nil?
+      out["to_modify"] = @to_modify.map { |v| v.serialize } unless @to_modify.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

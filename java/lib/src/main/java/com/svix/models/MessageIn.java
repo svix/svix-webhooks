@@ -42,6 +42,8 @@ public class MessageIn {
     /**
      * Optional unique identifier for the message
      *
+     * <p>This should not contain the '.' character
+     *
      * @return eventId
      */
     @javax.annotation.Nullable
@@ -81,6 +83,9 @@ public class MessageIn {
      * JSON payload to send as the request body of the webhook.
      *
      * <p>We also support sending non-JSON payloads. Please contact us for more information.
+     *
+     * <p>The serialized byte-length of this value should be under 1MiB. Please contact us if you
+     * need to send payloads large than 1MiB.
      *
      * @return payload
      */

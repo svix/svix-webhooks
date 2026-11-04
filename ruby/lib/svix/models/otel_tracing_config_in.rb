@@ -35,15 +35,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["headers"] = Svix::serialize_primitive(@headers) if @headers
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["headers"] = Svix::serialize_primitive(@headers) unless @headers.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

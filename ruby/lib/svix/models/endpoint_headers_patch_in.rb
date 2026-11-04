@@ -39,15 +39,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["headers"] = Svix::serialize_primitive(@headers) if @headers
-      out["deleteHeaders"] = Svix::serialize_primitive(@delete_headers) if @delete_headers
+      out["headers"] = Svix::serialize_primitive(@headers) unless @headers.nil?
+      out["deleteHeaders"] = Svix::serialize_primitive(@delete_headers) unless @delete_headers.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

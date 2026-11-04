@@ -11,7 +11,7 @@
 Go library for interacting with the Svix API and verifying webhook signatures
 
 ![GitHub tag](https://img.shields.io/github/tag/svix/svix-webhooks.svg)
-[![PkgGoDev](https://pkg.go.dev/badge/github.com/svix/svix-webhooks)](https://pkg.go.dev/github.com/svix/svix-webhooks/go)
+[![PkgGoDev](https://pkg.go.dev/badge/github.com/svix/svix-webhooks)](https://pkg.go.dev/github.com/svix/svix-webhooks/v2/go)
 
 [![Join our slack](https://img.shields.io/badge/Slack-join%20the%20community-blue?logo=slack&style=social)](https://www.svix.com/slack/)
 

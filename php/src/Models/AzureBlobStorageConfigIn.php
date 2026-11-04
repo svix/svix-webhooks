@@ -12,7 +12,8 @@ class AzureBlobStorageConfigIn implements \JsonSerializable
     /**
      * @param string|null $accessKey Access key.
      *
-     * Currently a required field, but marked as optional because we may add different authentication in the future.
+     * Currently a required field, but marked as optional because we may add
+     * different authentication in the future.
      */
     private function __construct(
         public readonly string $container,

@@ -46,10 +46,12 @@ RUN cargo chef cook --release --package svix-server --bin svix-server --recipe-p
 
 # Build the server
 COPY . .
+
+ARG WRITE_EXECUTABLE_METADATA="1"
 RUN cargo build --release --package svix-server --bin svix-server --frozen
 
 # Production
-FROM docker.io/debian:trixie-20260713-slim AS prod
+FROM docker.io/debian:trixie-20261005-slim AS prod
 
 SHELL ["/bin/bash", "-eux", "-o", "pipefail", "-c"]
 RUN <<EOF
@@ -61,12 +63,15 @@ RUN <<EOF
     chown -R appuser: /home/appuser
 EOF
 
+ARG __BUST_DOCKER_BUILD_CACHE=2026-10-01
 RUN --mount=target=/var/lib/apt/lists,type=cache,sharing=locked --mount=target=/var/cache/apt,type=cache,sharing=locked <<EOF
     apt-get update -q
+    apt-get upgrade -y
     apt-get install -y \
         ca-certificates=20250419 \
-        libssl3t64=3.* \
         --no-install-recommends
+    # disable compromised emsign certificates
+    sed -i  -e '/emSign.*G3/ s/^/!/' -e '/Comodo_AAA_Services_root.crt/ s/^/!/' /etc/ca-certificates.conf
     update-ca-certificates
 EOF
 

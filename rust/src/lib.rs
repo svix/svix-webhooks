@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 //! Rust client library for Svix.
-//!
-//! The main entry points of this library are the API client [`api::Svix`], and
-//! [`webhooks::Webhook`].
 
 #![forbid(unsafe_code)]
 
@@ -19,4 +16,12 @@ pub mod models;
 mod request;
 pub mod webhooks;
 
-pub(crate) use api::client::Configuration;
+pub(crate) use crate::api::client::Configuration;
+
+pub use crate::{
+    api::Svix,
+    autoconfig::AutoConfig,
+    autoconfig_consumer::AutoConfigConsumer,
+    error::{Error, Result},
+    webhooks::Webhook,
+};

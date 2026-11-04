@@ -18,6 +18,9 @@ impl<T: DeserializeOwned> FromStr for JsonOf<T> {
                 .read_to_string(&mut input)
                 .context("Error reading stdin for '-' argument")?;
             Ok(JsonOf(serde_json::from_str(&input)?))
+        } else if let Some(remainder) = s.strip_prefix("@") {
+            let bytes = fs_err::read(remainder)?;
+            Ok(JsonOf(serde_json::from_slice(&bytes)?))
         } else {
             Ok(JsonOf(serde_json::from_str(s)?))
         }

@@ -3,7 +3,7 @@
 # NOTE: this should be built from the root of `svix-webhooks`
 # with `docker build -f svix-cli/Dockerfile .`# Base build
 
-FROM cgr.dev/chainguard/wolfi-base@sha256:02dab76bd852a70556b5b2002195c8a5fdab77d323c433bf6642aab080489795 AS build
+FROM cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7 AS build
 SHELL ["/bin/sh", "-eux", "-c"]
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
     apk add rust~1.96.1 \
@@ -30,6 +30,7 @@ WORKDIR /app/svix-cli
 COPY rust /app/rust
 COPY svix-cli /app/svix-cli
 
+ARG WRITE_EXECUTABLE_METADATA="1"
 RUN <<EOF
     cargo build --release
     cargo sbom > /app/svix-cli.spdx
@@ -42,12 +43,13 @@ RUN mkdir /scripts
 COPY bridge/scripts/check-deps.sh /scripts/check-deps.sh
 
 # Production
-FROM cgr.dev/chainguard/wolfi-base@sha256:02dab76bd852a70556b5b2002195c8a5fdab77d323c433bf6642aab080489795 AS prod
+FROM cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7 AS prod
 
 SHELL ["/bin/sh", "-eux", "-c"]
 
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
-    apk add ca-certificates~20260413
+    apk update
+    apk add ca-certificates~20260909-r3
     update-ca-certificates
 EOF
 

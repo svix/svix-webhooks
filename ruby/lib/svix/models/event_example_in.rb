@@ -10,8 +10,13 @@ module Svix
     #
     # Defaults to the first example. Ignored if the schema doesn't contain an array of examples.
     attr_accessor :example_index
+    # Custom payload to send as an example
+    #
+    # This is only available to allow-listed customers and should otherwise not be passed. Please
+    # contact us if you need access to this functionality
+    attr_accessor :payload
 
-    ALL_FIELD ||= ["event_type", "example_index"].freeze
+    ALL_FIELD ||= ["event_type", "example_index", "payload"].freeze
     private_constant :ALL_FIELD
 
     def initialize(attributes = {})
@@ -34,20 +39,22 @@ module Svix
       attrs = Hash.new
       attrs["event_type"] = attributes["eventType"]
       attrs["example_index"] = attributes["exampleIndex"]
+      attrs["payload"] = attributes["payload"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["eventType"] = Svix::serialize_primitive(@event_type) if @event_type
-      out["exampleIndex"] = Svix::serialize_primitive(@example_index) if @example_index
+      out["eventType"] = Svix::serialize_primitive(@event_type) unless @event_type.nil?
+      out["exampleIndex"] = Svix::serialize_primitive(@example_index) unless @example_index.nil?
+      out["payload"] = Svix::serialize_primitive(@payload) unless @payload.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

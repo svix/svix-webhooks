@@ -85,6 +85,19 @@ namespace Svix
         }
     }
 
+    public class EndpointGetAttemptStatsOptions : SvixOptionsBase
+    {
+        public DateTime? Since { get; set; }
+        public DateTime? Until { get; set; }
+
+        public new Dictionary<string, string> QueryParams()
+        {
+            return SerializeParams(
+                new Dictionary<string, object?> { { "since", Since }, { "until", Until } }
+            );
+        }
+    }
+
     public class EndpointRecoverOptions : SvixOptionsBase
     {
         public string? IdempotencyKey { get; set; }
@@ -112,6 +125,11 @@ namespace Svix
     public class Endpoint(SvixClient client)
     {
         readonly SvixClient _client = client;
+
+        public EndpointMcpEvents McpEvents
+        {
+            get => new EndpointMcpEvents(_client);
+        }
 
         public EndpointTransformation Transformation
         {
@@ -566,7 +584,7 @@ namespace Svix
         ///
         /// The previous secret will remain valid for the specified grace period (default 24 hours).
         /// </summary>
-        public async Task<bool> RotateSecretAsync(
+        public async Task<EndpointSecretOut> RotateSecretAsync(
             string appId,
             string endpointId,
             EndpointSecretRotateIn endpointSecretRotateIn,
@@ -583,7 +601,7 @@ namespace Svix
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
             try
             {
-                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointSecretOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>
@@ -611,7 +629,7 @@ namespace Svix
         ///
         /// The previous secret will remain valid for the specified grace period (default 24 hours).
         /// </summary>
-        public bool RotateSecret(
+        public EndpointSecretOut RotateSecret(
             string appId,
             string endpointId,
             EndpointSecretRotateIn endpointSecretRotateIn,
@@ -627,7 +645,7 @@ namespace Svix
                 ?? throw new ArgumentNullException(nameof(endpointSecretRotateIn));
             try
             {
-                var response = _client.SvixHttpClient.SendRequest<bool>(
+                var response = _client.SvixHttpClient.SendRequest<EndpointSecretOut>(
                     method: HttpMethod.Post,
                     path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/secret/rotate",
                     pathParams: new Dictionary<string, string>
@@ -1129,6 +1147,84 @@ namespace Svix
             catch (ApiException e)
             {
                 _client.Logger?.LogError(e, $"{nameof(GetStats)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get basic statistics about attempted deliveries for the endpoint.
+        ///
+        /// Time windows are always rounded to hour granularity
+        /// </summary>
+        public async Task<EndpointAttemptStats> GetAttemptStatsAsync(
+            string appId,
+            string endpointId,
+            EndpointGetAttemptStatsOptions? options = null,
+            CancellationToken cancellationToken = default
+        )
+        {
+            if (options == null)
+            {
+                options = new EndpointGetAttemptStatsOptions();
+            }
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointAttemptStats>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams(),
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAttemptStatsAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get basic statistics about attempted deliveries for the endpoint.
+        ///
+        /// Time windows are always rounded to hour granularity
+        /// </summary>
+        public EndpointAttemptStats GetAttemptStats(
+            string appId,
+            string endpointId,
+            EndpointGetAttemptStatsOptions? options = null
+        )
+        {
+            if (options == null)
+            {
+                options = new EndpointGetAttemptStatsOptions();
+            }
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointAttemptStats>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    queryParams: options.QueryParams(),
+                    headerParams: options.HeaderParams()
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetAttemptStats)} failed");
 
                 throw;
             }

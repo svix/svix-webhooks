@@ -2,7 +2,9 @@
 package models
 
 type RedshiftConfigOut struct {
-	AccessKeyId       string  `json:"accessKeyId"`
+	AccessKeyId       *string `json:"accessKeyId,omitempty"`
+	RoleArn           *string `json:"roleArn,omitempty"`
+	ExternalId        *string `json:"externalId,omitempty"`
 	Region            string  `json:"region"`
 	ClusterIdentifier *string `json:"clusterIdentifier,omitempty"`
 	DbUser            *string `json:"dbUser,omitempty"`

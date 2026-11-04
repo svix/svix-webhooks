@@ -4,12 +4,16 @@ require "json"
 
 require_relative "./adobe_sign_config"
 require_relative "./airwallex_config"
+require_relative "./ascend_config"
+require_relative "./bitbucket_config"
 require_relative "./checkbook_config"
 require_relative "./cron_config"
 require_relative "./docusign_config"
 require_relative "./easypost_config"
+require_relative "./generic_config"
 require_relative "./github_config"
 require_relative "./hubspot_config"
+require_relative "./merge_config"
 require_relative "./meta_config"
 require_relative "./nango_config"
 require_relative "./open_claw_config"
@@ -24,6 +28,7 @@ require_relative "./stripe_config"
 require_relative "./svix_config"
 require_relative "./tailscale_config"
 require_relative "./telnyx_config"
+require_relative "./tricentis_qtest_config"
 require_relative "./vapi_config"
 require_relative "./veriff_config"
 require_relative "./vgs_config"
@@ -42,9 +47,12 @@ module Svix
       end
       # Serializes the object to a json string
       # @return String
-      def to_json
-        JSON.dump(serialize)
+      def to_json(*args)
+        serialize.to_json(*args)
       end
+    end
+
+    class Generic < GenericConfig
     end
 
     class Cron < CronConfig
@@ -53,7 +61,13 @@ module Svix
     class AdobeSign < AdobeSignConfig
     end
 
+    class Ascend < AscendConfig
+    end
+
     class Beehiiv < SvixConfig
+    end
+
+    class Bitbucket < BitbucketConfig
     end
 
     class Brex < SvixConfig
@@ -84,6 +98,9 @@ module Svix
     end
 
     class Lithic < SvixConfig
+    end
+
+    class Merge < MergeConfig
     end
 
     class Meta < MetaConfig
@@ -155,6 +172,9 @@ module Svix
     class Telnyx < TelnyxConfig
     end
 
+    class TricentisQtest < TricentisQtestConfig
+    end
+
     class Vapi < VapiConfig
     end
 
@@ -185,9 +205,12 @@ module Svix
     private_constant :ALL_FIELD
     TYPE_TO_NAME = {
       IngestSourceInConfig::GenericWebhook => "generic-webhook",
+      IngestSourceInConfig::Generic => "generic",
       IngestSourceInConfig::Cron => "cron",
       IngestSourceInConfig::AdobeSign => "adobe-sign",
+      IngestSourceInConfig::Ascend => "ascend",
       IngestSourceInConfig::Beehiiv => "beehiiv",
+      IngestSourceInConfig::Bitbucket => "bitbucket",
       IngestSourceInConfig::Brex => "brex",
       IngestSourceInConfig::Checkbook => "checkbook",
       IngestSourceInConfig::Clerk => "clerk",
@@ -198,6 +221,7 @@ module Svix
       IngestSourceInConfig::Hubspot => "hubspot",
       IngestSourceInConfig::IncidentIo => "incident-io",
       IngestSourceInConfig::Lithic => "lithic",
+      IngestSourceInConfig::Merge => "merge",
       IngestSourceInConfig::Meta => "meta",
       IngestSourceInConfig::Nango => "nango",
       IngestSourceInConfig::Nash => "nash",
@@ -221,6 +245,7 @@ module Svix
       IngestSourceInConfig::Zoom => "zoom",
       IngestSourceInConfig::Tailscale => "tailscale",
       IngestSourceInConfig::Telnyx => "telnyx",
+      IngestSourceInConfig::TricentisQtest => "tricentis-qtest",
       IngestSourceInConfig::Vapi => "vapi",
       IngestSourceInConfig::OpenAi => "open-ai",
       IngestSourceInConfig::Render => "render",
@@ -245,7 +270,7 @@ module Svix
           fail(ArgumentError, "The field #{k} is not part of Svix::IngestSourceIn")
         end
 
-        if k == "config"
+        if k.to_s == "config"
           unless TYPE_TO_NAME.key?(v.class)
             fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
           end
@@ -272,19 +297,15 @@ module Svix
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
 
-      unless attributes.key?("config")
-        fail(ArgumentError, "Missing required field config")
-      end
-
-      attrs["config"] = NAME_TO_TYPE[attributes["type"]].deserialize(attributes["config"])
+      attrs["config"] = NAME_TO_TYPE[attributes["type"]].deserialize(attributes["config"] || {})
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["name"] = Svix::serialize_primitive(@name) if @name
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["name"] = Svix::serialize_primitive(@name) unless @name.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out["type"] = @__enum_discriminator
       out["config"] = @config.serialize
       out
@@ -292,8 +313,8 @@ module Svix
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
 
   end

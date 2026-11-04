@@ -70,7 +70,7 @@ class {{ type_name }}Serializer : KSerializer<{{ type_name }}> {
     private data class {{ type_name }}Surrogate(
         {% include "types/struct_fields.kt.jinja" %}
         val {{ discriminator_field_name }}: String,
-        val {{ content_field_name }}: JsonElement,
+        val {{ content_field_name }}: JsonElement = buildJsonObject {},
     )
 
     override val descriptor: SerialDescriptor = {{ type_name }}Surrogate.serializer().descriptor

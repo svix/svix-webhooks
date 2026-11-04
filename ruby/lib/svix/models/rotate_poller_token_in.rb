@@ -8,7 +8,8 @@ module Svix
     attr_accessor :expiry
     # Updates the previous token's expiration, in seconds.
     #
-    # If set to 0, the old token will immediately be revoked. Must be between 0 and 86,400 seconds (1 day).
+    # If set to 0, the old token will immediately be revoked.
+    # Must be between 0 and 86,400 seconds (1 day).
     #
     # Defaults to 300 seconds (5 minutes).
     attr_accessor :old_token_expiry
@@ -41,15 +42,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["oldTokenExpiry"] = Svix::serialize_primitive(@old_token_expiry) if @old_token_expiry
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["oldTokenExpiry"] = Svix::serialize_primitive(@old_token_expiry) unless @old_token_expiry.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

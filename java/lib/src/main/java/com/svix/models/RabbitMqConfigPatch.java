@@ -18,6 +18,7 @@ import lombok.ToString;
 public class RabbitMqConfigPatch {
     @JsonProperty private String routingKey;
     @JsonProperty private String uri;
+    @JsonProperty private Boolean mandatory;
 
     public RabbitMqConfigPatch() {}
 
@@ -57,6 +58,25 @@ public class RabbitMqConfigPatch {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    public RabbitMqConfigPatch mandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
+        return this;
+    }
+
+    /**
+     * Get mandatory
+     *
+     * @return mandatory
+     */
+    @javax.annotation.Nullable
+    public Boolean getMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(Boolean mandatory) {
+        this.mandatory = mandatory;
     }
 
     /**

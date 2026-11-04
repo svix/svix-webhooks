@@ -13,7 +13,8 @@ class CreateStreamEventsIn implements \JsonSerializable
      * @param list<EventIn> $events
      * @param StreamIn|null $stream Optionally creates a new Stream alongside the events.
      *
-     * If the stream id or uid that is used in the path already exists, this argument is ignored.
+     * If the stream id or uid that is used in the path already exists,
+     * this argument is ignored.
      */
     private function __construct(
         public readonly array $events,

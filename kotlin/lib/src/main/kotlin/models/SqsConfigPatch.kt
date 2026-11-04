@@ -10,5 +10,7 @@ data class SqsConfigPatch(
     val region: String? = null,
     val accessKeyId: String? = null,
     val secretAccessKey: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
     val endpointUrl: MaybeUnset<String> = MaybeUnset.Unset,
 )

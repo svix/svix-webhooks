@@ -252,7 +252,7 @@ namespace Svix.Tests
 
             var wh = new Webhook(key);
             var signature = wh.Sign(msgId, timestamp, payload);
-            Assert.Equal(signature, expected);
+            Assert.Equal(expected, signature);
         }
 
         [Theory]
@@ -268,7 +268,7 @@ namespace Svix.Tests
 
             var wh = new Webhook(key);
             var signature = wh.Sign(msgId, timestamp, payload);
-            Assert.Equal(signature, expected);
+            Assert.Equal(expected, signature);
         }
     }
 }

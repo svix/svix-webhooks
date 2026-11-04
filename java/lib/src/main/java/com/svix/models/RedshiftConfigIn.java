@@ -18,6 +18,8 @@ import lombok.ToString;
 public class RedshiftConfigIn {
     @JsonProperty private String accessKeyId;
     @JsonProperty private String secretAccessKey;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private String region;
     @JsonProperty private String clusterIdentifier;
     @JsonProperty private String dbUser;
@@ -36,8 +38,7 @@ public class RedshiftConfigIn {
     /**
      * Access key ID.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `secret_access_key`) if `role_arn` is blank.
      *
      * @return accessKeyId
      */
@@ -58,8 +59,7 @@ public class RedshiftConfigIn {
     /**
      * Secret access key.
      *
-     * <p>Currently a required field, but marked as optional because we may add different
-     * authentication in the future.
+     * <p>Required (along with `access_key_id`) if `role_arn` is blank.
      *
      * @return secretAccessKey
      */
@@ -70,6 +70,46 @@ public class RedshiftConfigIn {
 
     public void setSecretAccessKey(String secretAccessKey) {
         this.secretAccessKey = secretAccessKey;
+    }
+
+    public RedshiftConfigIn roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Role ARN for delegated authentication
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public RedshiftConfigIn externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Shared secret passed as the STS ExternalId.
+     *
+     * <p>Can only be set if `role_arn` is Some
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public RedshiftConfigIn region(String region) {

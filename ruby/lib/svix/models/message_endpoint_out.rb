@@ -23,6 +23,10 @@ module Svix
     attr_accessor :channels
     attr_accessor :created_at
     attr_accessor :updated_at
+    # When the endpoint expires, if ever.
+    #
+    # No messages are sent to the endpoint after this time.
+    attr_accessor :expiry
 
     ALL_FIELD ||= [
       "id",
@@ -37,7 +41,8 @@ module Svix
       "event_types",
       "channels",
       "created_at",
-      "updated_at"
+      "updated_at",
+      "expiry"
     ].freeze
     private_constant :ALL_FIELD
 
@@ -72,31 +77,33 @@ module Svix
       attrs["channels"] = attributes["channels"]
       attrs["created_at"] = DateTime.rfc3339(attributes["createdAt"]).to_time
       attrs["updated_at"] = DateTime.rfc3339(attributes["updatedAt"]).to_time
+      attrs["expiry"] = DateTime.rfc3339(attributes["expiry"]).to_time if attributes["expiry"]
       new(attrs)
     end
 
     def serialize
       out = Hash.new
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["statusText"] = Svix::serialize_schema_ref(@status_text) if @status_text
-      out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) if @next_attempt
-      out["url"] = Svix::serialize_primitive(@url) if @url
-      out["description"] = Svix::serialize_primitive(@description) if @description
-      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) if @throttle_rate
-      out["uid"] = Svix::serialize_primitive(@uid) if @uid
-      out["disabled"] = Svix::serialize_primitive(@disabled) if @disabled
-      out["eventTypes"] = Svix::serialize_primitive(@event_types) if @event_types
-      out["channels"] = Svix::serialize_primitive(@channels) if @channels
-      out["createdAt"] = Svix::serialize_primitive(@created_at) if @created_at
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["statusText"] = Svix::serialize_schema_ref(@status_text) unless @status_text.nil?
+      out["nextAttempt"] = Svix::serialize_primitive(@next_attempt) unless @next_attempt.nil?
+      out["url"] = Svix::serialize_primitive(@url) unless @url.nil?
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
+      out["throttleRate"] = Svix::serialize_primitive(@throttle_rate) unless @throttle_rate.nil?
+      out["uid"] = Svix::serialize_primitive(@uid) unless @uid.nil?
+      out["disabled"] = Svix::serialize_primitive(@disabled) unless @disabled.nil?
+      out["eventTypes"] = Svix::serialize_primitive(@event_types) unless @event_types.nil?
+      out["channels"] = Svix::serialize_primitive(@channels) unless @channels.nil?
+      out["createdAt"] = Svix::serialize_primitive(@created_at) unless @created_at.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

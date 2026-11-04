@@ -8,7 +8,8 @@ module Svix
     attr_accessor :account
     # Access key.
     #
-    # Currently a required field, but marked as optional because we may add different authentication in the future.
+    # Currently a required field, but marked as optional because we may add
+    # different authentication in the future.
     attr_accessor :access_key
 
     ALL_FIELD ||= ["container", "account", "access_key"].freeze
@@ -43,16 +44,16 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["container"] = Svix::serialize_primitive(@container) if @container
-      out["account"] = Svix::serialize_primitive(@account) if @account
-      out["accessKey"] = Svix::serialize_primitive(@access_key) if @access_key
+      out["container"] = Svix::serialize_primitive(@container) unless @container.nil?
+      out["account"] = Svix::serialize_primitive(@account) unless @account.nil?
+      out["accessKey"] = Svix::serialize_primitive(@access_key) unless @access_key.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

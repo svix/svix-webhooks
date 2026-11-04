@@ -8,10 +8,12 @@ import httpx
 
 from .application import Application, ApplicationAsync
 from .authentication import Authentication, AuthenticationAsync
+from .autoconfig_subscription import AutoconfigSubscription, AutoconfigSubscriptionAsync
 from .background_task import BackgroundTask, BackgroundTaskAsync
 from .client import AuthenticatedClient
 from .common import _make_httpx_async_client, _make_httpx_client
 from .connector import Connector, ConnectorAsync
+from .destination import Destination, DestinationAsync
 from .endpoint import Endpoint, EndpointAsync
 from .environment import Environment, EnvironmentAsync
 from .event_type import EventType, EventTypeAsync
@@ -112,12 +114,20 @@ class SvixAsync(ClientBase):
         return AuthenticationAsync(self._client, self._httpx_client)
 
     @property
+    def autoconfig_subscription(self) -> AutoconfigSubscriptionAsync:
+        return AutoconfigSubscriptionAsync(self._client, self._httpx_client)
+
+    @property
     def background_task(self) -> BackgroundTaskAsync:
         return BackgroundTaskAsync(self._client, self._httpx_client)
 
     @property
     def connector(self) -> ConnectorAsync:
         return ConnectorAsync(self._client, self._httpx_client)
+
+    @property
+    def destination(self) -> DestinationAsync:
+        return DestinationAsync(self._client, self._httpx_client)
 
     @property
     def endpoint(self) -> EndpointAsync:
@@ -180,12 +190,20 @@ class Svix(ClientBase):
         return Authentication(self._client, self._httpx_client)
 
     @property
+    def autoconfig_subscription(self) -> AutoconfigSubscription:
+        return AutoconfigSubscription(self._client, self._httpx_client)
+
+    @property
     def background_task(self) -> BackgroundTask:
         return BackgroundTask(self._client, self._httpx_client)
 
     @property
     def connector(self) -> Connector:
         return Connector(self._client, self._httpx_client)
+
+    @property
+    def destination(self) -> Destination:
+        return Destination(self._client, self._httpx_client)
 
     @property
     def endpoint(self) -> Endpoint:

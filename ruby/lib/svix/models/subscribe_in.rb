@@ -35,15 +35,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["endpoint"] = Svix::serialize_schema_ref(@endpoint) if @endpoint
-      out["sink"] = Svix::serialize_schema_ref(@sink) if @sink
+      out["endpoint"] = Svix::serialize_schema_ref(@endpoint) unless @endpoint.nil?
+      out["sink"] = Svix::serialize_schema_ref(@sink) unless @sink.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

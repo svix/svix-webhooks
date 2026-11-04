@@ -19,6 +19,8 @@ public class EventBridgeConfigOut {
     @JsonProperty private String eventBusName;
     @JsonProperty private String detailType;
     @JsonProperty private String accessKeyId;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private String region;
 
     public EventBridgeConfigOut() {}
@@ -71,13 +73,51 @@ public class EventBridgeConfigOut {
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
 
     public void setAccessKeyId(String accessKeyId) {
         this.accessKeyId = accessKeyId;
+    }
+
+    public EventBridgeConfigOut roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public EventBridgeConfigOut externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public EventBridgeConfigOut region(String region) {

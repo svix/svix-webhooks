@@ -6,7 +6,8 @@ module Svix
   class IngestSourceConsumerPortalAccessIn
     # How long the token will be valid for, in seconds.
     #
-    # Valid values are between 1 hour and 7 days. The default is 7 days.
+    # Valid values are between 1 hour and 7 days.
+    # The default is 7 days.
     attr_accessor :expiry
     # Whether the app portal should be in read-only mode.
     attr_accessor :read_only
@@ -42,15 +43,15 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["expiry"] = Svix::serialize_primitive(@expiry) if @expiry
-      out["readOnly"] = Svix::serialize_primitive(@read_only) if @read_only
+      out["expiry"] = Svix::serialize_primitive(@expiry) unless @expiry.nil?
+      out["readOnly"] = Svix::serialize_primitive(@read_only) unless @read_only.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

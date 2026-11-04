@@ -1,12 +1,12 @@
 [project]
 name = "svix"
-version = "2.0.0"
+version = "2.9.1"
 description = "Svix webhooks API client and webhook verification library"
 authors = [
     { name = "Svix", email = "development@svix.com" }
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "MIT"
 dependencies = [
     "pydantic >=2.10",
@@ -34,12 +34,12 @@ classifiers = [
     "Typing :: Typed",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
 ]
 
 [project.urls]
@@ -64,6 +64,7 @@ packages = ["svix"]
 dev = [
     "httpretty>=1,<2",
     "mypy",
+    "pytest-asyncio>=1,<2",
     "pytest-docker==3.*",
     "pytest-httpserver>=1.0.7,<2",
     "pytest-httpx>=0.22,<1.0",
@@ -79,7 +80,7 @@ dev = [
 
 [tool.ruff]
 line-length = 88
-target-version = "py38"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = [
@@ -104,10 +105,11 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "svix/api/**.py" = ["I001", "E501"]  # ignore style in generated code
+"svix/api_internal/**.py" = ["I001", "E501"]  # ignore style in generated code
 "svix/models/**.py" = ["I001", "E501"]  # ignore in generated code
 
 [tool.ty.environment]
-python-version = "3.9"
+python-version = "3.10"
 
 [tool.black]
 line-length = 88

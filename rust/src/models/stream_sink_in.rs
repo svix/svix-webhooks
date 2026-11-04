@@ -3,13 +3,16 @@ use serde::{Deserialize, Serialize};
 
 use super::{
     azure_blob_storage_config_in::AzureBlobStorageConfigIn, big_query_config_in::BigQueryConfigIn,
-    clickhouse_config_in::ClickhouseConfigIn, event_bridge_config_in::EventBridgeConfigIn,
+    clickhouse_config_in::ClickhouseConfigIn, elastic_search_config_in::ElasticSearchConfigIn,
+    event_bridge_config_in::EventBridgeConfigIn,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,
     google_cloud_storage_config_in::GoogleCloudStorageConfigIn,
-    otel_tracing_config_in::OtelTracingConfigIn, rabbit_mq_config_in::RabbitMqConfigIn,
+    otel_tracing_config_in::OtelTracingConfigIn, post_hog_config_in::PostHogConfigIn,
+    postgres_config_in::PostgresConfigIn, rabbit_mq_config_in::RabbitMqConfigIn,
     redshift_config_in::RedshiftConfigIn, s3_config_in::S3ConfigIn,
-    sink_http_config_in::SinkHttpConfigIn, sink_status_in::SinkStatusIn,
-    snowflake_config_in::SnowflakeConfigIn, sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
+    segment_sink_config_in::SegmentSinkConfigIn, sink_http_config_in::SinkHttpConfigIn,
+    sink_status_in::SinkStatusIn, snowflake_config_in::SnowflakeConfigIn,
+    sns_config_in::SnsConfigIn, sqs_config_in::SqsConfigIn,
 };
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -94,4 +97,12 @@ pub enum StreamSinkInConfig {
     RabbitMq(RabbitMqConfigIn),
     #[serde(rename = "redshift")]
     Redshift(RedshiftConfigIn),
+    #[serde(rename = "postgres")]
+    Postgres(PostgresConfigIn),
+    #[serde(rename = "elasticSearch")]
+    ElasticSearch(ElasticSearchConfigIn),
+    #[serde(rename = "postHog")]
+    PostHog(PostHogConfigIn),
+    #[serde(rename = "segment")]
+    Segment(SegmentSinkConfigIn),
 }

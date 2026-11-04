@@ -39,16 +39,16 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["description"] = Svix::serialize_primitive(@description) if @description
+      out["description"] = Svix::serialize_primitive(@description) unless @description.nil?
       out["uid"] = Svix::serialize_primitive(@uid) if @__uid_is_defined
-      out["metadata"] = Svix::serialize_primitive(@metadata) if @metadata
+      out["metadata"] = Svix::serialize_primitive(@metadata) unless @metadata.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

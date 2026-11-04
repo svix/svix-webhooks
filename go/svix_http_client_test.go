@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	"github.com/jarcoal/httpmock"
-	svix "github.com/svix/svix-webhooks/go"
-	"github.com/svix/svix-webhooks/go/models"
+	svix "github.com/svix/svix-webhooks/v2/go"
+	"github.com/svix/svix-webhooks/v2/go/models"
 )
 
 var msgListOut = `{

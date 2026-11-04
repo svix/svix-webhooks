@@ -40,7 +40,7 @@ module Svix
           fail(ArgumentError, "The field #{k} is not part of Svix::AutoConfigSinkType")
         end
 
-        if k == "config"
+        if k.to_s == "config"
           unless TYPE_TO_NAME.key?(v.class)
             fail(ArgumentError, "The field #{k} can't be a `#{v.class}` expected one of #{TYPE_TO_NAME.keys}")
           end
@@ -64,11 +64,7 @@ module Svix
         fail(ArgumentError, "Invalid type `#{attributes["type"]}` expected on of #{NAME_TO_TYPE.keys}")
       end
 
-      unless attributes.key?("config")
-        fail(ArgumentError, "Missing required field config")
-      end
-
-      attrs["config"] = NAME_TO_TYPE[attributes["type"]].deserialize(attributes["config"])
+      attrs["config"] = NAME_TO_TYPE[attributes["type"]].deserialize(attributes["config"] || {})
       new(attrs)
     end
 
@@ -81,8 +77,8 @@ module Svix
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
 
   end

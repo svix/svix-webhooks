@@ -6,7 +6,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class S3ConfigOut(
     val bucket: String,
-    val accessKeyId: String,
+    val accessKeyId: String? = null,
     val region: String,
     val endpointUrl: String? = null,
+    val roleArn: String? = null,
+    val externalId: String? = null,
 )

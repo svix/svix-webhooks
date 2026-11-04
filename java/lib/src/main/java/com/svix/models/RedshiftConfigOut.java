@@ -17,6 +17,8 @@ import lombok.ToString;
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
 public class RedshiftConfigOut {
     @JsonProperty private String accessKeyId;
+    @JsonProperty private String roleArn;
+    @JsonProperty private String externalId;
     @JsonProperty private String region;
     @JsonProperty private String clusterIdentifier;
     @JsonProperty private String dbUser;
@@ -37,13 +39,51 @@ public class RedshiftConfigOut {
      *
      * @return accessKeyId
      */
-    @javax.annotation.Nonnull
+    @javax.annotation.Nullable
     public String getAccessKeyId() {
         return accessKeyId;
     }
 
     public void setAccessKeyId(String accessKeyId) {
         this.accessKeyId = accessKeyId;
+    }
+
+    public RedshiftConfigOut roleArn(String roleArn) {
+        this.roleArn = roleArn;
+        return this;
+    }
+
+    /**
+     * Get roleArn
+     *
+     * @return roleArn
+     */
+    @javax.annotation.Nullable
+    public String getRoleArn() {
+        return roleArn;
+    }
+
+    public void setRoleArn(String roleArn) {
+        this.roleArn = roleArn;
+    }
+
+    public RedshiftConfigOut externalId(String externalId) {
+        this.externalId = externalId;
+        return this;
+    }
+
+    /**
+     * Get externalId
+     *
+     * @return externalId
+     */
+    @javax.annotation.Nullable
+    public String getExternalId() {
+        return externalId;
+    }
+
+    public void setExternalId(String externalId) {
+        this.externalId = externalId;
     }
 
     public RedshiftConfigOut region(String region) {

@@ -42,18 +42,18 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["data"] = Svix::serialize_primitive(@data) if @data
-      out["id"] = Svix::serialize_primitive(@id) if @id
-      out["status"] = Svix::serialize_schema_ref(@status) if @status
-      out["task"] = Svix::serialize_schema_ref(@task) if @task
-      out["updatedAt"] = Svix::serialize_primitive(@updated_at) if @updated_at
+      out["data"] = Svix::serialize_primitive(@data) unless @data.nil?
+      out["id"] = Svix::serialize_primitive(@id) unless @id.nil?
+      out["status"] = Svix::serialize_schema_ref(@status) unless @status.nil?
+      out["task"] = Svix::serialize_schema_ref(@task) unless @task.nil?
+      out["updatedAt"] = Svix::serialize_primitive(@updated_at) unless @updated_at.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

@@ -33,14 +33,14 @@ module Svix
 
     def serialize
       out = Hash.new
-      out["ingestUrl"] = Svix::serialize_primitive(@ingest_url) if @ingest_url
+      out["ingestUrl"] = Svix::serialize_primitive(@ingest_url) unless @ingest_url.nil?
       out
     end
 
     # Serializes the object to a json string
     # @return String
-    def to_json
-      JSON.dump(serialize)
+    def to_json(*args)
+      serialize.to_json(*args)
     end
   end
 end

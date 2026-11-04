@@ -2,7 +2,7 @@
 package internalapi
 
 import (
-	"github.com/svix/svix-webhooks/go/internal"
+	"github.com/svix/svix-webhooks/v2/go/internal"
 )
 
 type Endpoint struct {
@@ -13,6 +13,6 @@ func newEndpoint(client *internal.SvixHttpClient) Endpoint {
 	return Endpoint{client}
 }
 
-func (endpoint Endpoint) AutoConfig() EndpointAutoConfig {
-	return newEndpointAutoConfig(endpoint.client)
+func (endpoint Endpoint) AutoConfigDeprecated() EndpointAutoConfigDeprecated {
+	return newEndpointAutoConfigDeprecated(endpoint.client)
 }

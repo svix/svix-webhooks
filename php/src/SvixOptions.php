@@ -17,7 +17,7 @@ class SvixOptions
         public ?string $serverUrl = null,
 
         /** Request timeout in milliseconds */
-        public ?int $timeoutMs = 30000,
+        public ?int $timeoutMs = 15000,
 
         /** Number of retries
          *
@@ -41,7 +41,7 @@ class SvixOptions
         return new SvixOptions(
             debug: false,
             serverUrl: Utils::getServerUrlFromToken($token),
-            timeoutMs: 30000,
+            timeoutMs: 15000,
             numRetries: 2,
             retryScheduleMs: [60, 120, 240],
         );

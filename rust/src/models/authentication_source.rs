@@ -14,6 +14,8 @@ pub enum AuthenticationSource {
     RegionalAuthToken,
     #[serde(rename = "GlobalAuthToken")]
     GlobalAuthToken,
+    #[serde(rename = "McpToken")]
+    McpToken,
     #[serde(rename = "Unknown")]
     Unknown,
 }
@@ -25,6 +27,7 @@ impl fmt::Display for AuthenticationSource {
             Self::SvixJwt => "SvixJwt",
             Self::RegionalAuthToken => "RegionalAuthToken",
             Self::GlobalAuthToken => "GlobalAuthToken",
+            Self::McpToken => "McpToken",
             Self::Unknown => "Unknown",
         };
         f.write_str(value)

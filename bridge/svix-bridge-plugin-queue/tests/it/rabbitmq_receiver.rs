@@ -20,7 +20,7 @@ use tokio::{
 async fn declare_queue(name: &str, channel: &Channel) -> Queue {
     channel
         .queue_declare(
-            name,
+            name.into(),
             QueueDeclareOptions {
                 auto_delete: true,
                 ..Default::default()
@@ -32,11 +32,10 @@ async fn declare_queue(name: &str, channel: &Channel) -> Queue {
 }
 
 async fn mq_connection(uri: &str) -> Connection {
-    let options = ConnectionProperties::default()
-        .with_connection_name("test".into())
-        .with_executor(tokio_executor_trait::Tokio::current())
-        .with_reactor(tokio_reactor_trait::Tokio::current());
-    Connection::connect(uri, options).await.unwrap()
+    let options = ConnectionProperties::default().with_connection_name("test".into());
+    Connection::connect_with_runtime(uri, options, async_rs::Runtime::tokio_current())
+        .await
+        .unwrap()
 }
 
 const WAIT_MS: u64 = 200;

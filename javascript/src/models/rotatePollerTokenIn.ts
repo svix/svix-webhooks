@@ -6,7 +6,8 @@ export interface RotatePollerTokenIn {
   /**
    * Updates the previous token's expiration, in seconds.
    *
-   * If set to 0, the old token will immediately be revoked. Must be between 0 and 86,400 seconds (1 day).
+   * If set to 0, the old token will immediately be revoked.
+   * Must be between 0 and 86,400 seconds (1 day).
    *
    * Defaults to 300 seconds (5 minutes).
    */

@@ -11,10 +11,13 @@ enum ConnectorKind: string implements \JsonSerializable
     case AGENTIC_COMMERCE_PROTOCOL = 'AgenticCommerceProtocol';
     case CLOSE_CRM = 'CloseCRM';
     case CUSTOMER_IO = 'CustomerIO';
+    case DATADOG_TRACING = 'DatadogTracing';
     case DISCORD = 'Discord';
+    case GRAFANA_CLOUD_TRACING = 'GrafanaCloudTracing';
     case HUBSPOT = 'Hubspot';
     case INNGEST = 'Inngest';
     case LOOPS = 'Loops';
+    case NEW_RELIC_TRACING = 'NewRelicTracing';
     case OTEL = 'Otel';
     case RESEND = 'Resend';
     case SALESFORCE = 'Salesforce';

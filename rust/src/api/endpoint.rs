@@ -1,5 +1,5 @@
 // this file is @generated
-use super::EndpointTransformation;
+use super::{EndpointMcpEvents, EndpointTransformation};
 use crate::{error::Result, models::*, Configuration};
 
 #[derive(Default)]
@@ -44,6 +44,15 @@ pub struct EndpointGetStatsOptions {
 }
 
 #[derive(Default)]
+pub struct EndpointGetAttemptStatsOptions {
+    /// Filter the range to data starting from this date.
+    pub since: Option<chrono::DateTime<chrono::Utc>>,
+
+    /// Filter the range to data ending by this date.
+    pub until: Option<chrono::DateTime<chrono::Utc>>,
+}
+
+#[derive(Default)]
 pub struct EndpointRecoverOptions {
     pub idempotency_key: Option<String>,
 }
@@ -60,6 +69,10 @@ pub struct Endpoint<'a> {
 impl<'a> Endpoint<'a> {
     pub(super) fn new(cfg: &'a Configuration) -> Self {
         Self { cfg }
+    }
+
+    pub fn mcp_events(&self) -> EndpointMcpEvents<'a> {
+        EndpointMcpEvents::new(self.cfg)
     }
 
     pub fn transformation(&self) -> EndpointTransformation<'a> {
@@ -197,7 +210,7 @@ impl<'a> Endpoint<'a> {
         endpoint_id: String,
         endpoint_secret_rotate_in: EndpointSecretRotateIn,
         options: Option<EndpointRotateSecretOptions>,
-    ) -> Result<()> {
+    ) -> Result<EndpointSecretOut> {
         let EndpointRotateSecretOptions { idempotency_key } = options.unwrap_or_default();
 
         crate::request::Request::new(
@@ -208,7 +221,6 @@ impl<'a> Endpoint<'a> {
         .with_path_param("endpoint_id", endpoint_id)
         .with_optional_header_param("idempotency-key", idempotency_key)
         .with_body_param(endpoint_secret_rotate_in)
-        .returns_nothing()
         .execute(self.cfg)
         .await
     }
@@ -353,6 +365,29 @@ impl<'a> Endpoint<'a> {
         crate::request::Request::new(
             http::Method::GET,
             "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_optional_query_param("since", since)
+        .with_optional_query_param("until", until)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get basic statistics about attempted deliveries for the endpoint.
+    ///
+    /// Time windows are always rounded to hour granularity
+    pub async fn get_attempt_stats(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        options: Option<EndpointGetAttemptStatsOptions>,
+    ) -> Result<EndpointAttemptStats> {
+        let EndpointGetAttemptStatsOptions { since, until } = options.unwrap_or_default();
+
+        crate::request::Request::new(
+            http::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/attempt-stats",
         )
         .with_path_param("app_id", app_id)
         .with_path_param("endpoint_id", endpoint_id)

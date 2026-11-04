@@ -1,5 +1,5 @@
 // this file is @generated
-use super::EndpointAutoConfig;
+use super::EndpointAutoConfigDeprecated;
 use crate::{error::Result, models::*, Configuration};
 
 pub struct Endpoint<'a> {
@@ -11,8 +11,8 @@ impl<'a> Endpoint<'a> {
         Self { cfg }
     }
 
-    pub fn auto_config(&self) -> EndpointAutoConfig<'a> {
-        EndpointAutoConfig::new(self.cfg)
+    pub fn auto_config_deprecated(&self) -> EndpointAutoConfigDeprecated<'a> {
+        EndpointAutoConfigDeprecated::new(self.cfg)
     }
 
     /// This operation was renamed to `set-transformation`.

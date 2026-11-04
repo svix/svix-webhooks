@@ -26,6 +26,26 @@ describe "API Client" do
     )
   end
 
+  [
+    ["http://api.example/", "http://api.example/api/v1/app"],
+    ["http://api.example///", "http://api.example/api/v1/app"],
+    ["http://api.example/prefix/", "http://api.example/prefix/api/v1/app"],
+    ["http://api.example/prefix", "http://api.example/prefix/api/v1/app"]
+  ].each do |server_url, expected_url|
+    it "strips trailing slashes from server url #{server_url}" do
+      stub_request(:get, expected_url)
+        .to_return(
+          status: 200,
+          body: ListResponseAppOut_JSON
+        )
+
+      client = Svix::Client.new("testsk_token.eu", Svix::SvixOptions.new(false, server_url))
+      client.application.list
+
+      expect(WebMock).to(have_requested(:get, expected_url))
+    end
+  end
+
   it "test hashtag in query param" do
     stub_request(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id")
       .with(query: hash_including({}))
@@ -37,6 +57,24 @@ describe "API Client" do
     svx.message_attempt.list_by_endpoint("app_id", "endpoint_id", {tag: "#"})
 
     expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app/app_id/attempt/endpoint/endpoint_id?expanded_statuses=true&with_content=false&tag=%23"))
+  end
+
+  it "encodes integer and boolean query params" do
+    stub_request(:get, "#{host}/api/v1/app/app_id/msg")
+      .with(query: hash_including({}))
+      .to_return(
+        status: 200,
+        body: ListResponseMessageOut_JSON
+      )
+
+    svx.message.list("app_id", {limit: 5, with_content: true})
+
+    expect(WebMock).to(
+      have_requested(
+        :get,
+        "#{host}/api/v1/app/app_id/msg?limit=5&with_content=true"
+      )
+    )
   end
 
   it "test Date in query param" do
@@ -306,6 +344,29 @@ describe "API Client" do
     )
   end
 
+  it "accepts symbol keys for struct enum content" do
+    sink = Svix::AutoConfigSinkType.new(
+      config: Svix::AutoConfigSinkTypeConfig::Http.new(url: "https://example.com/webhook")
+    )
+
+    expect(sink.serialize).to(
+      eq(
+        "type" => "http",
+        "config" => {"url" => "https://example.com/webhook"}
+      )
+    )
+  end
+
+  it "supports the JSON generator protocol for models" do
+    model = Svix::ApplicationIn.new(name: "example")
+
+    expect(model.to_json).to(eq('{"name":"example"}'))
+    expect(JSON.generate([model])).to(eq('[{"name":"example"}]'))
+    expect(JSON.parse(JSON.generate({model: model}, space: " "))).to(
+      eq("model" => {"name" => "example"})
+    )
+  end
+
   it "serializes false values in patch models" do
     expect(Svix::EndpointTransformationPatch.new(enabled: false).serialize)
       .to(eq({"enabled" => false}))
@@ -315,6 +376,13 @@ describe "API Client" do
       .to(eq({"archived" => false, "deprecated" => false}))
     expect(Svix::StreamEventTypePatch.new(archived: false, deprecated: false).serialize)
       .to(eq({"archived" => false, "deprecated" => false}))
+  end
+
+  it "serializes false values in non-patch models" do
+    expect(Svix::EndpointIn.new(url: "http://example.com", disabled: false).serialize)
+      .to(eq({"url" => "http://example.com", "disabled" => false}))
+    expect(Svix::EventTypeIn.new(name: "event.type", archived: false).serialize)
+      .to(eq({"name" => "event.type", "archived" => false}))
   end
 
   it "arbitrary json object body" do
@@ -368,6 +436,37 @@ describe "API Client" do
     end
   end
 
+  it "retries on timeout" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_timeout.then
+      .to_return(status: 200, body: ListResponseAppOut_JSON)
+
+    svx.application.list
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").twice)
+    expect(WebMock).to(
+      have_requested(:get, "#{host}/api/v1/app").with(headers: {"Svix-Retry-Count" => "1"}).once
+    )
+  end
+
+  it "retries on connection error" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_raise(Errno::ECONNREFUSED).then
+      .to_return(status: 200, body: ListResponseAppOut_JSON)
+
+    svx.application.list
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").twice)
+  end
+
+  it "raises a Timeout::Error after retries are exhausted" do
+    stub_request(:get, "#{host}/api/v1/app").to_timeout
+
+    expect { svx.application.list }.to(raise_error(Timeout::Error))
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").times(4))
+  end
+
   it "struct enum with extra fields" do
     json_source_in = '{"name":"My Stripe Source","uid":"src_123","type":"cron","config":{"contentType":"test","payload":"boom","schedule":"* * * * *"}}'
     source_in = Svix::IngestSourceIn.new(
@@ -392,6 +491,11 @@ describe "API Client" do
     expect(loaded_from_json.config.content_type).to eql(source_in.config.content_type)
     expect(loaded_from_json.config.payload).to eql(source_in.config.payload)
     expect(loaded_from_json.config.schedule).to eql(source_in.config.schedule)
+  end
+
+  it "deserializes struct enum when config is omitted" do
+    loaded = Svix::DestinationIn.deserialize(JSON.parse('{"type":"pollingEndpoint"}'))
+    expect(loaded.config).to be_a(Svix::DestinationInConfig::PollingEndpoint)
   end
 
   it "struct enum without any fields" do

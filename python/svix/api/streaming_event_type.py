@@ -21,7 +21,13 @@ class StreamingEventTypeListOptions(BaseOptions):
     order: t.Optional[models.Ordering] = None
     """The sorting order of the returned items"""
     include_archived: t.Optional[bool] = None
-    """Include archived (deleted but not expunged) items in the response."""
+    """Include archived items in the response.
+
+Deprecated, use `archive_status` instead. Ignored when `archive_status` is set."""
+    archive_status: t.Optional[models.ArchiveStatus] = None
+    """Which items to include based on whether they are archived.
+
+Defaults to `active`."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -30,6 +36,7 @@ class StreamingEventTypeListOptions(BaseOptions):
                 "iterator": self.iterator,
                 "order": self.order,
                 "include_archived": self.include_archived,
+                "archive_status": self.archive_status,
             }
         )
 
@@ -49,7 +56,7 @@ class StreamingEventTypeCreateOptions(BaseOptions):
 @dataclass
 class StreamingEventTypeDeleteOptions(BaseOptions):
     expunge: t.Optional[bool] = None
-    """By default, event types are archived when "deleted". With this flag, they are deleted entirely."""
+    """Entirely delete the event type, rather than archiving it."""
 
     def _query_params(self) -> t.Dict[str, str]:
         return serialize_params(
@@ -123,7 +130,10 @@ class StreamingEventTypeAsync(ApiBaseAsync):
         name: str,
         options: StreamingEventTypeDeleteOptions = (StreamingEventTypeDeleteOptions()),
     ) -> None:
-        """Delete an event type."""
+        """Archive an event type.
+
+        An event type can be unarchived with the
+        [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`."""
         await self._request_asyncio(
             method="delete",
             path="/api/v1/stream/event-type/{name}",
@@ -215,7 +225,10 @@ class StreamingEventType(ApiBaseSync):
         name: str,
         options: StreamingEventTypeDeleteOptions = (StreamingEventTypeDeleteOptions()),
     ) -> None:
-        """Delete an event type."""
+        """Archive an event type.
+
+        An event type can be unarchived with the
+        [patch operation](#operation/v1.streaming.event-type.patch) by setting `archived` to `false`."""
         self._request_sync(
             method="delete",
             path="/api/v1/stream/event-type/{name}",
