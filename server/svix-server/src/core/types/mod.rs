@@ -1210,24 +1210,27 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
     }
 }
 
+fn validate_header_value(v: &str, errors: &mut ValidationErrors) {
+    if let Err(_e) = http::header::HeaderValue::try_from(v) {
+        errors.add(
+            ALL_ERROR,
+            validation_error(Some("header"), Some("Invalid Header Value.")),
+        );
+    }
+
+    if v.len() > HEADER_MAX_LENGTH {
+        errors.add(
+            ALL_ERROR,
+            validation_error(Some("header"), Some("Maximum header length is 4096 bytes")),
+        );
+    }
+}
+
 fn validate_header_map(headers: &HashMap<String, String>) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
     for (k, v) in headers {
         validate_header_key(k, &mut errors);
-
-        if let Err(_e) = http::header::HeaderValue::try_from(v) {
-            errors.add(
-                ALL_ERROR,
-                validation_error(Some("header"), Some("Invalid Header Value.")),
-            );
-        }
-
-        if v.len() > HEADER_MAX_LENGTH {
-            errors.add(
-                ALL_ERROR,
-                validation_error(Some("header"), Some("Maximum header length is 4096 bytes")),
-            );
-        }
+        validate_header_value(v, &mut errors);
     }
     if errors.is_empty() {
         Ok(())
@@ -1255,9 +1258,12 @@ impl<'de> Deserialize<'de> for EndpointHeadersPatch {
 impl Validate for EndpointHeadersPatch {
     fn validate(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
-        self.0
-            .iter()
-            .for_each(|(k, _)| validate_header_key(k, &mut errors));
+        self.0.iter().for_each(|(k, v)| {
+            validate_header_key(k, &mut errors);
+            if let Some(v) = v {
+                validate_header_value(v, &mut errors);
+            }
+        });
         if errors.is_empty() {
             Ok(())
         } else {
@@ -1451,7 +1457,7 @@ mod tests {
 
     use super::{
         ApplicationId, ApplicationUid, EndpointHeaders, EndpointHeadersPatch, EndpointSecret,
-        EventChannel, EventTypeName, validate_header_map,
+        EventChannel, EventTypeName, HEADER_MAX_LENGTH, validate_header_map,
     };
     use crate::core::cryptography::AsymmetricKey;
 
@@ -1588,6 +1594,27 @@ mod tests {
 
         let hdr_map = HashMap::from([("X-Amz-".to_string(), Some("true".to_owned()))]);
         let endpoint_headers = EndpointHeadersPatch(hdr_map);
+        assert!(endpoint_headers.validate().is_err());
+    }
+
+    #[test]
+    fn test_endpoint_headers_patch_value_validation() {
+        let endpoint_headers = EndpointHeadersPatch(HashMap::from([(
+            "x-valid".to_owned(),
+            Some("valid-value".to_owned()),
+        )]));
+        endpoint_headers.validate().unwrap();
+
+        let endpoint_headers = EndpointHeadersPatch(HashMap::from([(
+            "x-invalid".to_owned(),
+            Some("invalid\nvalue".to_owned()),
+        )]));
+        assert!(endpoint_headers.validate().is_err());
+
+        let endpoint_headers = EndpointHeadersPatch(HashMap::from([(
+            "x-too-long".to_owned(),
+            Some("a".repeat(HEADER_MAX_LENGTH + 1)),
+        )]));
         assert!(endpoint_headers.validate().is_err());
     }
 
