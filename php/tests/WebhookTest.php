@@ -28,7 +28,7 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $json = $wh->verify($testPayload->payload, $testPayload->header);
     }
 
-    public function testTitleCasedSignatureIsValidAndReturnsJson()
+    public function testTitleCasedSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
         $testPayload->header = array(
@@ -38,16 +38,13 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         );
 
         $wh = new \Svix\Webhook($testPayload->secret);
-        $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
+        $this->assertNull(
+            $wh->verify($testPayload->payload, $testPayload->header),
+            "verify() should accept the headers and return nothing"
         );
     }
 
-    public function testMixedCaseSignatureIsValidAndReturnsJson()
+    public function testMixedCaseSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
         $testPayload->header = array(
@@ -57,16 +54,13 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         );
 
         $wh = new \Svix\Webhook($testPayload->secret);
-        $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
+        $this->assertNull(
+            $wh->verify($testPayload->payload, $testPayload->header),
+            "verify() should accept the headers and return nothing"
         );
     }
 
-    public function testTitleCasedBrandlessSignatureIsValidAndReturnsJson()
+    public function testTitleCasedBrandlessSignatureIsValid()
     {
         $testPayload = new TestPayload(time());
         $testPayload->header = array(
@@ -76,12 +70,9 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         );
 
         $wh = new \Svix\Webhook($testPayload->secret);
-        $json = $wh->verify($testPayload->payload, $testPayload->header);
-
-        $this->assertEquals(
-            $json['test'],
-            2432232315,
-            "did not return expected json"
+        $this->assertNull(
+            $wh->verify($testPayload->payload, $testPayload->header),
+            "verify() should accept the headers and return nothing"
         );
     }
 
