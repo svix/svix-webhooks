@@ -59,11 +59,13 @@ class Webhook
         } else {
             $lowerHeaders = null;
             if (is_array($headers)) {
-                $lowerHeaders = array_change_key_case($headers, CASE_LOWER);
+                $lowerHeaders = array_map(function ($v) {
+                    return is_array($v) ? reset($v) : $v;
+                }, array_change_key_case($headers, CASE_LOWER));
             } elseif (is_iterable($headers)) {
                 $lowerHeaders = [];
                 foreach ($headers as $k => $v) {
-                    $lowerHeaders[strtolower($k)] = $v;
+                    $lowerHeaders[strtolower($k)] = is_array($v) ? reset($v) : $v;
                 }
             }
 

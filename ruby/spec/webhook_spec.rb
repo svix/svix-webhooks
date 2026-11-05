@@ -126,6 +126,20 @@ describe Svix::Webhook do
       "webhook-TIMESTAMP" => testPayload.headers["svix-timestamp"]
     }
     expect { wh.verify(testPayload.payload, unbranded_mixed) }.not_to raise_error
+
+    symbol_headers = {
+      :"Svix-Id" => testPayload.headers["svix-id"],
+      :"SVIX-SIGNATURE" => testPayload.headers["svix-signature"],
+      :"svix-TIMESTAMP" => testPayload.headers["svix-timestamp"]
+    }
+    expect { wh.verify(testPayload.payload, symbol_headers) }.not_to raise_error
+
+    mixed_brands = {
+      "Svix-Id" => testPayload.headers["svix-id"],
+      "Webhook-Signature" => testPayload.headers["svix-signature"],
+      "webhook-Timestamp" => testPayload.headers["svix-timestamp"]
+    }
+    expect { wh.verify(testPayload.payload, mixed_brands) }.to raise_error(Svix::WebhookVerificationError, "Missing required headers")
   end
 
   it "invalid signature raises error" do

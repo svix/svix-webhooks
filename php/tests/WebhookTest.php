@@ -45,6 +45,13 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
             "webhook-TIMESTAMP" => $testPayload->header['svix-timestamp'],
         );
         $wh->verify($testPayload->payload, $mixedCaseUnbranded);
+
+        $psr7Headers = array(
+            "Svix-Id" => array($testPayload->header['svix-id']),
+            "SVIX-SIGNATURE" => array($testPayload->header['svix-signature']),
+            "svix-TIMESTAMP" => array($testPayload->header['svix-timestamp']),
+        );
+        $wh->verify($testPayload->payload, $psr7Headers);
         $this->assertTrue(true);
     }
 
