@@ -12,8 +12,8 @@ mod engine_quickjs;
 #[derive(Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum JsExecutor {
-    #[default]
     Deno,
+    #[default]
     QuickJs,
     Both,
 }
