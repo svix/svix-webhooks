@@ -44,7 +44,25 @@ module Svix
         msgSignature = headers["webhook-signature"]
         msgTimestamp = headers["webhook-timestamp"]
         if !msgSignature || !msgId || !msgTimestamp
-          raise WebhookVerificationError, "Missing required headers"
+          if headers.respond_to?(:transform_keys)
+            lower_headers = headers.transform_keys { |k| k.to_s.downcase }
+            if lower_headers["svix-id"] && lower_headers["svix-signature"] && lower_headers["svix-timestamp"]
+              msgId = lower_headers["svix-id"]
+              msgSignature = lower_headers["svix-signature"]
+              msgTimestamp = lower_headers["svix-timestamp"]
+            elsif lower_headers["webhook-id"] && lower_headers["webhook-signature"] && lower_headers["webhook-timestamp"]
+              msgId = lower_headers["webhook-id"]
+              msgSignature = lower_headers["webhook-signature"]
+              msgTimestamp = lower_headers["webhook-timestamp"]
+            else
+              msgId = nil
+              msgSignature = nil
+              msgTimestamp = nil
+            end
+          end
+          if !msgSignature || !msgId || !msgTimestamp
+            raise WebhookVerificationError, "Missing required headers"
+          end
         end
       end
 
