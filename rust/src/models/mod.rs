@@ -106,8 +106,9 @@ mod event_type_patch;
 mod event_type_upsert_in;
 mod expunge_all_contents_out;
 mod fifo_endpoint_config_in;
-mod generic_config;
-mod generic_response;
+mod generic_webhook_config;
+mod generic_webhook_config_out;
+mod generic_webhook_response;
 mod github_config;
 mod github_config_out;
 mod google_cloud_pub_sub_config_in;
@@ -399,8 +400,9 @@ pub use self::{
     event_type_upsert_in::EventTypeUpsertIn,
     expunge_all_contents_out::ExpungeAllContentsOut,
     fifo_endpoint_config_in::FifoEndpointConfigIn,
-    generic_config::GenericConfig,
-    generic_response::GenericResponse,
+    generic_webhook_config::GenericWebhookConfig,
+    generic_webhook_config_out::GenericWebhookConfigOut,
+    generic_webhook_response::GenericWebhookResponse,
     github_config::GithubConfig,
     github_config_out::GithubConfigOut,
     google_cloud_pub_sub_config_in::GoogleCloudPubSubConfigIn,

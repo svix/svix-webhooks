@@ -3,7 +3,7 @@
 require "json"
 
 module Svix
-  class GenericResponse
+  class GenericWebhookResponse
     attr_accessor :content_type
     attr_accessor :body
 
@@ -12,12 +12,15 @@ module Svix
 
     def initialize(attributes = {})
       unless attributes.is_a?(Hash)
-        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::GenericResponse` new method")
+        fail(
+          ArgumentError,
+          "The input argument (attributes) must be a hash in `Svix::GenericWebhookResponse` new method"
+        )
       end
 
       attributes.each do |k, v|
         unless ALL_FIELD.include?(k.to_s)
-          fail(ArgumentError, "The field #{k} is not part of Svix::GenericResponse")
+          fail(ArgumentError, "The field #{k} is not part of Svix::GenericWebhookResponse")
         end
 
         instance_variable_set("@#{k}", v)

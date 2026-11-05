@@ -39,7 +39,7 @@ public abstract class IngestSourceOutConfig {
     @EqualsAndHashCode(callSuper = false)
     @VariantName("generic")
     public static class Generic extends IngestSourceOutConfig {
-        private final GenericConfig generic;
+        private final GenericWebhookConfigOut generic;
 
         @Override
         public JsonNode toJsonNode() {
@@ -747,7 +747,7 @@ public abstract class IngestSourceOutConfig {
 
     static {
         TY_M.put("generic-webhook", c -> new GenericWebhook());
-        TY_M.put("generic", c -> new Generic(m.convertValue(c, GenericConfig.class)));
+        TY_M.put("generic", c -> new Generic(m.convertValue(c, GenericWebhookConfigOut.class)));
         TY_M.put("cron", c -> new Cron(m.convertValue(c, CronConfig.class)));
         TY_M.put("adobe-sign", c -> new AdobeSign(m.convertValue(c, AdobeSignConfigOut.class)));
         TY_M.put("ascend", c -> new Ascend(m.convertValue(c, AscendConfigOut.class)));

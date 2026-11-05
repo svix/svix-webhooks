@@ -15,13 +15,13 @@ import lombok.ToString;
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class GenericResponse {
+public class GenericWebhookResponse {
     @JsonProperty private String contentType;
     @JsonProperty private String body;
 
-    public GenericResponse() {}
+    public GenericWebhookResponse() {}
 
-    public GenericResponse contentType(String contentType) {
+    public GenericWebhookResponse contentType(String contentType) {
         this.contentType = contentType;
         return this;
     }
@@ -40,7 +40,7 @@ public class GenericResponse {
         this.contentType = contentType;
     }
 
-    public GenericResponse body(String body) {
+    public GenericWebhookResponse body(String body) {
         this.body = body;
         return this;
     }
@@ -60,18 +60,20 @@ public class GenericResponse {
     }
 
     /**
-     * Create an instance of GenericResponse given an JSON string
+     * Create an instance of GenericWebhookResponse given an JSON string
      *
      * @param jsonString JSON string
-     * @return An instance of GenericResponse
-     * @throws JsonProcessingException if the JSON string is invalid with respect to GenericResponse
+     * @return An instance of GenericWebhookResponse
+     * @throws JsonProcessingException if the JSON string is invalid with respect to
+     *     GenericWebhookResponse
      */
-    public static GenericResponse fromJson(String jsonString) throws JsonProcessingException {
-        return Utils.getObjectMapper().readValue(jsonString, GenericResponse.class);
+    public static GenericWebhookResponse fromJson(String jsonString)
+            throws JsonProcessingException {
+        return Utils.getObjectMapper().readValue(jsonString, GenericWebhookResponse.class);
     }
 
     /**
-     * Convert an instance of GenericResponse to an JSON string
+     * Convert an instance of GenericWebhookResponse to an JSON string
      *
      * @return JSON string
      */

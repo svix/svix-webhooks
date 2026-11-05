@@ -3,7 +3,7 @@
 require "json"
 
 module Svix
-  class GenericConfig
+  class GenericWebhookConfigOut
     attr_accessor :response
 
     ALL_FIELD ||= ["response"].freeze
@@ -11,12 +11,15 @@ module Svix
 
     def initialize(attributes = {})
       unless attributes.is_a?(Hash)
-        fail(ArgumentError, "The input argument (attributes) must be a hash in `Svix::GenericConfig` new method")
+        fail(
+          ArgumentError,
+          "The input argument (attributes) must be a hash in `Svix::GenericWebhookConfigOut` new method"
+        )
       end
 
       attributes.each do |k, v|
         unless ALL_FIELD.include?(k.to_s)
-          fail(ArgumentError, "The field #{k} is not part of Svix::GenericConfig")
+          fail(ArgumentError, "The field #{k} is not part of Svix::GenericWebhookConfigOut")
         end
 
         instance_variable_set("@#{k}", v)
@@ -27,7 +30,7 @@ module Svix
     def self.deserialize(attributes = {})
       attributes = attributes.transform_keys(&:to_s)
       attrs = Hash.new
-      attrs["response"] = Svix::GenericResponse.deserialize(attributes["response"]) if attributes["response"]
+      attrs["response"] = Svix::GenericWebhookResponse.deserialize(attributes["response"]) if attributes["response"]
       new(attrs)
     end
 
