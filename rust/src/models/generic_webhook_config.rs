@@ -1,21 +1,21 @@
 // this file is @generated
 use serde::{Deserialize, Serialize};
 
-use super::generic_response::GenericResponse;
+use super::generic_webhook_response::GenericWebhookResponse;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-pub struct GenericConfig {
+pub struct GenericWebhookConfig {
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub response: Option<GenericResponse>,
+    pub response: Option<GenericWebhookResponse>,
 }
 
-impl GenericConfig {
+impl GenericWebhookConfig {
     pub fn new() -> Self {
         Self { response: None }
     }
 }
 
-impl Default for GenericConfig {
+impl Default for GenericWebhookConfig {
     fn default() -> Self {
         Self::new()
     }

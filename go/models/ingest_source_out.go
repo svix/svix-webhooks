@@ -17,7 +17,7 @@ import (
 //   - "cron": Use CronConfig
 //   - "docusign": Use DocusignConfigOut
 //   - "easypost": Use EasypostConfigOut
-//   - "generic": Use GenericConfig
+//   - "generic": Use GenericWebhookConfigOut
 //   - "github": Use GithubConfigOut
 //   - "hubspot": Use HubspotConfigOut
 //   - "merge": Use MergeConfigOut
@@ -110,7 +110,7 @@ type IngestSourceOutConfig interface {
 }
 
 func (emptyMap) isIngestSourceOutConfig()                {}
-func (GenericConfig) isIngestSourceOutConfig()           {}
+func (GenericWebhookConfigOut) isIngestSourceOutConfig() {}
 func (CronConfig) isIngestSourceOutConfig()              {}
 func (AdobeSignConfigOut) isIngestSourceOutConfig()      {}
 func (AscendConfigOut) isIngestSourceOutConfig()         {}
@@ -189,7 +189,7 @@ func (i *IngestSourceOut) UnmarshalJSON(data []byte) error {
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "generic":
-		var c GenericConfig
+		var c GenericWebhookConfigOut
 		err = json.Unmarshal(aux.Config, &c)
 		i.Config = c
 	case "github":

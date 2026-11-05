@@ -15,12 +15,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonAutoDetect(getterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE)
-public class GenericConfig {
-    @JsonProperty private GenericResponse response;
+public class GenericWebhookConfig {
+    @JsonProperty private GenericWebhookResponse response;
 
-    public GenericConfig() {}
+    public GenericWebhookConfig() {}
 
-    public GenericConfig response(GenericResponse response) {
+    public GenericWebhookConfig response(GenericWebhookResponse response) {
         this.response = response;
         return this;
     }
@@ -31,27 +31,28 @@ public class GenericConfig {
      * @return response
      */
     @javax.annotation.Nullable
-    public GenericResponse getResponse() {
+    public GenericWebhookResponse getResponse() {
         return response;
     }
 
-    public void setResponse(GenericResponse response) {
+    public void setResponse(GenericWebhookResponse response) {
         this.response = response;
     }
 
     /**
-     * Create an instance of GenericConfig given an JSON string
+     * Create an instance of GenericWebhookConfig given an JSON string
      *
      * @param jsonString JSON string
-     * @return An instance of GenericConfig
-     * @throws JsonProcessingException if the JSON string is invalid with respect to GenericConfig
+     * @return An instance of GenericWebhookConfig
+     * @throws JsonProcessingException if the JSON string is invalid with respect to
+     *     GenericWebhookConfig
      */
-    public static GenericConfig fromJson(String jsonString) throws JsonProcessingException {
-        return Utils.getObjectMapper().readValue(jsonString, GenericConfig.class);
+    public static GenericWebhookConfig fromJson(String jsonString) throws JsonProcessingException {
+        return Utils.getObjectMapper().readValue(jsonString, GenericWebhookConfig.class);
     }
 
     /**
-     * Convert an instance of GenericConfig to an JSON string
+     * Convert an instance of GenericWebhookConfig to an JSON string
      *
      * @return JSON string
      */

@@ -39,8 +39,9 @@ sealed class IngestSourceOutConfig {
     }
 
     @VariantName("generic")
-    data class Generic(val generic: GenericConfig) : IngestSourceOutConfig() {
-        override fun toJsonElement() = Json.encodeToJsonElement(GenericConfig.serializer(), generic)
+    data class Generic(val generic: GenericWebhookConfigOut) : IngestSourceOutConfig() {
+        override fun toJsonElement() =
+            Json.encodeToJsonElement(GenericWebhookConfigOut.serializer(), generic)
     }
 
     @VariantName("cron")
@@ -304,7 +305,9 @@ sealed class IngestSourceOutConfig {
                 "generic-webhook" to { _ -> GenericWebhook },
                 "generic" to
                     { config ->
-                        Generic(Json.decodeFromJsonElement(GenericConfig.serializer(), config))
+                        Generic(
+                            Json.decodeFromJsonElement(GenericWebhookConfigOut.serializer(), config)
+                        )
                     },
                 "cron" to
                     { config ->

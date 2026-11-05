@@ -4,16 +4,16 @@ using Newtonsoft.Json;
 
 namespace Svix.Models
 {
-    public class GenericConfig
+    public class GenericWebhookConfig
     {
         [JsonProperty("response")]
-        public GenericResponse? Response { get; set; } = null;
+        public GenericWebhookResponse? Response { get; set; } = null;
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
 
-            sb.Append("class GenericConfig {\n");
+            sb.Append("class GenericWebhookConfig {\n");
             sb.Append("  Response: ").Append(Response).Append('\n');
             sb.Append("}\n");
             return sb.ToString();

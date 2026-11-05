@@ -6,7 +6,7 @@ use super::{
     ascend_config_out::AscendConfigOut, bitbucket_config_out::BitbucketConfigOut,
     checkbook_config_out::CheckbookConfigOut, cron_config::CronConfig,
     docusign_config_out::DocusignConfigOut, easypost_config_out::EasypostConfigOut,
-    generic_config::GenericConfig, github_config_out::GithubConfigOut,
+    generic_webhook_config_out::GenericWebhookConfigOut, github_config_out::GithubConfigOut,
     hubspot_config_out::HubspotConfigOut, merge_config_out::MergeConfigOut,
     meta_config_out::MetaConfigOut, nango_config_out::NangoConfigOut,
     open_claw_config_out::OpenClawConfigOut, orum_io_config_out::OrumIoConfigOut,
@@ -53,7 +53,7 @@ pub enum IngestSourceOutConfig {
     #[serde(rename = "generic-webhook")]
     GenericWebhook,
     #[serde(rename = "generic")]
-    Generic(GenericConfig),
+    Generic(GenericWebhookConfigOut),
     #[serde(rename = "cron")]
     Cron(CronConfig),
     #[serde(rename = "adobe-sign")]

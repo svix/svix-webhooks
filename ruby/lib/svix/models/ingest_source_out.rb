@@ -10,7 +10,7 @@ require_relative "./checkbook_config_out"
 require_relative "./cron_config"
 require_relative "./docusign_config_out"
 require_relative "./easypost_config_out"
-require_relative "./generic_config"
+require_relative "./generic_webhook_config_out"
 require_relative "./github_config_out"
 require_relative "./hubspot_config_out"
 require_relative "./merge_config_out"
@@ -52,7 +52,7 @@ module Svix
       end
     end
 
-    class Generic < GenericConfig
+    class Generic < GenericWebhookConfigOut
     end
 
     class Cron < CronConfig

@@ -3,4 +3,4 @@ package com.svix.kotlin.models
 
 import kotlinx.serialization.Serializable
 
-@Serializable data class GenericResponse(val contentType: String, val body: String)
+@Serializable data class GenericWebhookConfigOut(val response: GenericWebhookResponse? = null)
