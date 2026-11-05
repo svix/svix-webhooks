@@ -25,7 +25,7 @@ pub use case_preserving_header_map::CasePreservingHeaderMap;
 
 use super::cryptography::{AsymmetricKey, Encryption};
 
-const ALL_ERROR: &str = "__all__";
+pub(crate) const ALL_ERROR: &str = "__all__";
 
 macro_rules! enum_wrapper {
     ($name_id:ty) => {
