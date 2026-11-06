@@ -177,6 +177,11 @@ pub struct ConfigurationInner {
     #[validate(range(min = 10))]
     pub redis_pool_max_size: u16,
 
+    /// Whether to probe the Redis connection on server startup, failing fast
+    /// if it is unreachable. Can be disabled to skip the probe, e.g. in tests.
+    #[serde(default = "default_true")]
+    pub redis_startup_probe_enabled: bool,
+
     #[serde(flatten, default)]
     pub redis_sentinel_cfg: Option<SentinelConfig>,
 
