@@ -722,6 +722,7 @@ impl ModelIn for EndpointHeadersPatchIn {
                 .collect();
             Set(Some(EndpointHeaders(headers)))
         };
+        model.updated_at = Set(Utc::now().into());
     }
 }
 

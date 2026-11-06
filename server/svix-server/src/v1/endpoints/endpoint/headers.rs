@@ -48,6 +48,11 @@ pub(super) async fn update_endpoint_headers(
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
+    if let Some(headers) = endp.headers.as_option() {
+        headers
+            .validate()
+            .map_err(HttpError::unprocessable_entity_from_validation)?
+    }
     endp.update(db).await?;
 
     Ok(NoContent)
@@ -68,6 +73,11 @@ pub(super) async fn patch_endpoint_headers(
 
     let mut endp: endpoint::ActiveModel = endp.into();
     data.update_model(&mut endp);
+    if let Some(headers) = endp.headers.as_option() {
+        headers
+            .validate()
+            .map_err(HttpError::unprocessable_entity_from_validation)?
+    }
     endp.update(db).await?;
 
     Ok(NoContent)

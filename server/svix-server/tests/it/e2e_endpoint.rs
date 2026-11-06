@@ -17,7 +17,7 @@ use sea_orm::{
     QueryResult, Set, Statement,
 };
 use serde::{Deserialize, de::IgnoredAny};
-use serde_json::json;
+use serde_json::{Value as JsonValue, json};
 use svix::webhooks::Webhook;
 use svix_server::{
     cfg::DefaultSignatureType,
@@ -2207,6 +2207,55 @@ async fn test_endpoint_headers_manipulation() {
         HashSet::from(["authorization".to_owned()]),
         recvd_headers.sensitive
     );
+
+    for (key, value, error) in [
+        (
+            "x-value-invalid",
+            "\r\n1337 haxxor",
+            "Invalid Header Value.",
+        ),
+        (
+            "x-value-too-long",
+            &"a".repeat(8192),
+            "Maximum header length of 4096 bytes exceeded by 'x-value-too-long'.",
+        ),
+        (
+            "x-illegal-name\r\n",
+            "ok value",
+            "Invalid Header Name 'x-illegal-name\r\n'.",
+        ),
+        (
+            "user-agent",
+            "should be forbidden key",
+            "Header uses a forbidden key 'user-agent'.",
+        ),
+        (
+            "svix-sekret",
+            "should be a forbidden key",
+            "Header 'svix-sekret' starts with a forbidden prefix.",
+        ),
+        (
+            "HTTP_PRAGMA",
+            "should be a forbidden key",
+            "Header uses a forbidden key 'HTTP_PRAGMA'.",
+        ),
+    ] {
+        let patched_headers_in = EndpointHeadersPatchIn {
+            headers: EndpointHeadersPatch(HashMap::from([(
+                (key).to_owned(),
+                Some((value).to_owned()),
+            )])),
+        };
+        let resp: JsonValue = client
+            .patch(
+                &format!("api/v1/app/{app_id}/endpoint/{}/headers/", endp.id),
+                &patched_headers_in,
+                StatusCode::UNPROCESSABLE_ENTITY,
+            )
+            .await
+            .unwrap();
+        assert_eq!(resp["detail"][0]["msg"], error);
+    }
 }
 
 #[tokio::test]
