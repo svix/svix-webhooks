@@ -46,5 +46,8 @@
   },
   "types": "./dist/index.d.mts",
   "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs"
+  "module": "./dist/index.mjs",
+  "overrides": {
+    "basic-ftp": "^6.2.1"
+  }
 }
