@@ -16,7 +16,7 @@ use serde::{Deserialize, Serialize};
 use svix_ksuid::*;
 use validator::{Validate, ValidationErrors};
 
-use crate::v1::utils::validation_error;
+use crate::v1::utils::{owned_validation_error, validation_error};
 
 mod case_preserving_header_map;
 pub mod metadata;
@@ -1163,27 +1163,40 @@ const FORBIDDEN_PREFIXES: [&str; 10] = [
     "svix-",
 ];
 
-fn validate_header_key(k: &str, errors: &mut ValidationErrors) {
-    let k = &k.to_lowercase();
+fn validate_header_key(original_name: &str, errors: &mut ValidationErrors) {
+    // Many HTTP servers (e.g., anything using CGI) can't distinguish between `-` and `_` in
+    // a header name
+    let k = original_name.to_lowercase().replace('_', "-");
+    // Similarly, some janky HTTP servers follow the legacy of CGI and blindly strip any `HTTP_`
+    // prefix on incoming headers
+    let k = k.strip_prefix("http-").unwrap_or(&k);
     if let Err(_e) = http::header::HeaderName::try_from(k) {
         errors.add(
             ALL_ERROR,
-            validation_error(Some("header"), Some("Invalid Header Name.")),
+            owned_validation_error(
+                Some("header"),
+                Some(format!("Invalid Header Name '{original_name}'.")),
+            ),
         );
     }
-    if FORBIDDEN_KEYS.contains(&k.as_str()) {
+    if FORBIDDEN_KEYS.contains(&k) {
         errors.add(
             ALL_ERROR,
-            validation_error(Some("header"), Some("Header uses a forbidden key.")),
+            owned_validation_error(
+                Some("header"),
+                Some(format!("Header uses a forbidden key '{original_name}'.")),
+            ),
         );
     }
     FORBIDDEN_PREFIXES.iter().for_each(|p| {
         if k.starts_with(p) {
             errors.add(
                 ALL_ERROR,
-                validation_error(
+                owned_validation_error(
                     Some("header"),
-                    Some("Header starts with a forbidden prefix."),
+                    Some(format!(
+                        "Header '{original_name}' starts with a forbidden prefix."
+                    )),
                 ),
             )
         }
@@ -1210,7 +1223,7 @@ impl<'de> Deserialize<'de> for EndpointHeaders {
     }
 }
 
-fn validate_header_map(headers: &HashMap<String, String>) -> Result<(), ValidationErrors> {
+pub fn validate_header_map(headers: &HashMap<String, String>) -> Result<(), ValidationErrors> {
     let mut errors = ValidationErrors::new();
     for (k, v) in headers {
         validate_header_key(k, &mut errors);
@@ -1225,7 +1238,12 @@ fn validate_header_map(headers: &HashMap<String, String>) -> Result<(), Validati
         if v.len() > HEADER_MAX_LENGTH {
             errors.add(
                 ALL_ERROR,
-                validation_error(Some("header"), Some("Maximum header length is 4096 bytes")),
+                owned_validation_error(
+                    Some("header"),
+                    Some(format!(
+                        "Maximum header length of 4096 bytes exceeded by '{k}'."
+                    )),
+                ),
             );
         }
     }
@@ -1233,6 +1251,12 @@ fn validate_header_map(headers: &HashMap<String, String>) -> Result<(), Validati
         Ok(())
     } else {
         Err(errors)
+    }
+}
+
+impl EndpointHeaders {
+    pub fn validate(&self) -> Result<(), ValidationErrors> {
+        validate_header_map(&self.0)
     }
 }
 

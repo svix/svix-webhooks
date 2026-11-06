@@ -449,6 +449,15 @@ pub fn validation_error(code: Option<&'static str>, msg: Option<&'static str>) -
     }
 }
 
+// Helper method to simplify the somewhat egregious API for creating a ValidationError
+pub fn owned_validation_error(code: Option<&'static str>, msg: Option<String>) -> ValidationError {
+    ValidationError {
+        code: std::borrow::Cow::from(code.unwrap_or("validation")),
+        message: msg.map(std::borrow::Cow::from),
+        params: std::collections::HashMap::new(),
+    }
+}
+
 /// Recursively searches a [`validator::ValidationErrors`] tree into a linear list of errors to be
 /// sent to the user
 pub fn validation_errors(
