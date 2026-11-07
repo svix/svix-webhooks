@@ -50,8 +50,8 @@ export type SvixRequestContext = {
     retryScheduleInMs?: number[];
   },
   {
-    /** The number of times the client will retry if a server-side error
-     *  or timeout is received.
+    /** The number of times the client will retry if a server-side error,
+     *  HTTP 423 (Locked), or a timeout is received.
      *  Default: 2
      */
     numRetries?: number;
@@ -186,7 +186,8 @@ export class SvixRequest {
    * If the server returns a 422 error, an `ApiException<HTTPValidationError>` is thrown.
    * If the server returns another 4xx error, an `ApiException<HttpErrorOut>` is thrown.
    *
-   * If the server returns a 5xx error, the request is retried up to two times with exponential backoff.
+   * If the server returns a 5xx error or HTTP 423 (Locked), the request is retried up to
+   * two times with exponential backoff.
    * If retries are exhausted, an `ApiException<HttpErrorOut>` is thrown.
    */
   public async send<R>(
@@ -314,7 +315,10 @@ async function sendWithRetry(
       ...init,
       signal: AbortSignal.timeout(timeout),
     });
-    if (triesLeft <= 0 || response.status < 500) {
+    // 423 Locked is retryable, same as the Python, Java, and Kotlin clients:
+    // the API usually answers the next attempt with 200 or 409.
+    const retryable = response.status >= 500 || response.status === 423;
+    if (triesLeft <= 0 || !retryable) {
       return response;
     }
     // A retried response is never returned or read. Release its body before
