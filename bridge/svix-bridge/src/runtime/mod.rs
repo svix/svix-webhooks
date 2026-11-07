@@ -9,6 +9,8 @@ use tokio::sync::oneshot;
 mod engine_deno;
 mod engine_quickjs;
 
+pub use engine_quickjs::validate_script;
+
 #[derive(Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum JsExecutor {
@@ -154,8 +156,4 @@ fn compare(
             Err(q)
         }
     }
-}
-
-pub(super) fn validate_script(src: &str) -> Result<()> {
-    engine_deno::validate_script(src)
 }

@@ -155,15 +155,10 @@ pub async fn run_script(
 // TODO: move to cfg
 const MAX_RAM_BYTES: usize = 26_214_400;
 
-async fn run_script_inner(
-    input: TransformerInput,
-    mut script: String,
-    max_duration: Duration,
-) -> Result<TransformerOutput, ScriptError> {
-    let runtime = rquickjs::AsyncRuntime::new().map_err(ScriptError::InternalError)?;
-    runtime.set_memory_limit(MAX_RAM_BYTES).await;
-
-    let context = rquickjs::AsyncContext::full(&runtime)
+async fn init_context(
+    runtime: &rquickjs::AsyncRuntime,
+) -> Result<rquickjs::AsyncContext, ScriptError> {
+    let context = rquickjs::AsyncContext::full(runtime)
         .await
         .map_err(ScriptError::InternalError)?;
     context
@@ -181,6 +176,19 @@ async fn run_script_inner(
             Ok(())
         })
         .await?;
+    Ok(context)
+}
+
+async fn run_script_inner(
+    input: TransformerInput,
+    mut script: String,
+    max_duration: Duration,
+) -> Result<TransformerOutput, ScriptError> {
+    let runtime = rquickjs::AsyncRuntime::new().map_err(ScriptError::InternalError)?;
+    runtime.set_memory_limit(MAX_RAM_BYTES).await;
+
+    let context = init_context(&runtime).await?;
+
     context
         .with(move |ctx| {
             let globals = ctx.globals();
@@ -258,6 +266,54 @@ async fn run_script_inner(
     Ok(value)
 }
 
+/// Checks that the input parses as valid JavaScript, giving the parser's error back on failure.
+pub async fn validate_script(src: &str) -> Result<()> {
+    let runtime = rquickjs::AsyncRuntime::new().map_err(ScriptError::InternalError)?;
+    runtime.set_memory_limit(MAX_RAM_BYTES).await;
+
+    let max_duration = Duration::from_millis(20);
+
+    let context = init_context(&runtime).await?;
+
+    let start = Instant::now();
+    runtime
+        .set_interrupt_handler(Some(Box::new(move || start.elapsed() > max_duration)))
+        .await;
+
+    context
+        .async_with(async |ctx| {
+            let options = assign::assign!(EvalOptions::default(), {
+                global: true,
+                strict: false,
+                promise: true,
+                backtrace_barrier: true,
+                filename: Some("transformation_input.js".to_owned())
+            });
+
+            let mut script = "(function wrapper() { ".to_owned();
+            script.push_str(src);
+            script.push_str("})");
+
+            let span = tracing::debug_span!("rquickjs_validate");
+            let future = span.in_scope(|| {
+                ctx.eval_with_options::<Promise<'_>, String>(script, options)
+                    .catch(&ctx)
+                    .map_err(handle_caught_error)
+            })?;
+            tokio::time::timeout_at(
+                tokio::time::Instant::from_std(start + max_duration),
+                future.into_future::<rquickjs::Value<'_>>().instrument(span),
+            )
+            .await
+            .map_err(|_elapsed| ScriptError::ProcessTimeout)?
+            .catch(&ctx)
+            .map_err(handle_caught_error)?;
+
+            Ok(())
+        })
+        .await
+}
+
 #[cfg(test)]
 mod tests {
     use std::{
@@ -268,7 +324,7 @@ mod tests {
     use serde_json::json;
     use svix_bridge_types::{TransformerInput, TransformerOutput};
 
-    use super::{ScriptError, run_script_inner};
+    use super::{ScriptError, run_script_inner, validate_script};
 
     const MAX_RUNTIME: Duration = Duration::from_secs(5);
 
@@ -417,5 +473,62 @@ mod tests {
         assert!(dur >= Duration::from_millis(9));
         assert!(dur <= Duration::from_millis(100));
         Ok(())
+    }
+
+    #[tokio::test]
+    async fn test_validate_script_bad_syntax_is_err() {
+        assert_matches!(validate_script("let 123 = ';").await, Err(_));
+        assert_matches!(validate_script("function handler() {").await, Err(_));
+    }
+
+    #[tokio::test]
+    async fn test_validate_script_empty_handler_is_ok() {
+        assert_matches!(validate_script("function handler() { }").await, Ok(_));
+    }
+
+    #[tokio::test]
+    async fn test_validate_script_arrow_fn_is_ok() {
+        assert_matches!(
+            validate_script("const handler = () => ({ a: 123 })").await,
+            Ok(_)
+        );
+    }
+
+    /// Technically, this should be legal though the utility is questionable.
+    #[tokio::test]
+    async fn test_validate_script_empty_is_ok() {
+        assert_matches!(validate_script("").await, Ok(_));
+        assert_matches!(validate_script("    ").await, Ok(_));
+    }
+
+    #[tokio::test]
+    async fn test_validate_script_does_not_detect_nonexistent_function_calls() {
+        assert_matches!(
+            validate_script("function handler() { this_does_not_exist() }").await,
+            Ok(_)
+        );
+    }
+
+    #[tokio::test]
+    async fn test_validate_script_does_not_actually_run_the_script_mostly() {
+        assert_matches!(
+            validate_script("function handler() { while(1) { console.log('1'); } }").await,
+            Ok(_)
+        );
+        assert_matches!(
+            validate_script("while(1) { console.log('1'); }").await,
+            Ok(_)
+        );
+    }
+
+    #[tokio::test]
+    async fn test_validate_script_catches_clever_wrapper_escapes() {
+        // we prevent running the script by wrapping it in an anonymous function; a very clever
+        // malicious config writer could escape this by closing the curly braces. we still put
+        // a total timeout on execution, so the best they can do is annoy themselves
+        assert_matches!(
+            validate_script("});\nwhile(1) { console.log('1') } ; (function f() {").await,
+            Err(e) if e.to_string() == "maximum processing time exceeded"
+        );
     }
 }
