@@ -1,25 +1,9 @@
-use std::str::FromStr;
-
 use anyhow::Result;
-use deno_ast::{MediaType, ParseParams};
 use deno_core::{
-    JsRuntime, extension, serde_v8, url,
+    JsRuntime, extension, serde_v8,
     v8::{self},
 };
 use svix_bridge_types::{JsObject, TransformerInput, TransformerOutput};
-
-/// Checks that the input parses as valid JavaScript, giving the parser's error back on failure.
-pub(super) fn validate_script(src: &str) -> Result<()> {
-    Ok(deno_ast::parse_script(ParseParams {
-        specifier: url::Url::from_str("file:///x.js").expect("static string"),
-        text: src.into(),
-        media_type: MediaType::JavaScript,
-        capture_tokens: false,
-        scope_analysis: false,
-        maybe_syntax: None,
-    })
-    .map(|_| ())?)
-}
 
 pub fn build_runtime() -> JsRuntime {
     JsRuntime::new(deno_core::RuntimeOptions {
@@ -83,7 +67,7 @@ mod tests {
     use serde_json::json;
     use svix_bridge_types::{TransformerInput, TransformerOutput};
 
-    use super::{build_runtime, run_script_inner, validate_script};
+    use super::{build_runtime, run_script_inner};
 
     // Really just trying to figure out if the deno runtime is working the way I hope.
     #[test]
@@ -193,27 +177,5 @@ mod tests {
         if !err.contains("op is disabled") {
             panic!("Wrong error {err}")
         }
-    }
-
-    #[test]
-    fn test_validate_script_bad_syntax_is_err() {
-        assert!(validate_script("let 123 = ';").is_err());
-    }
-
-    #[test]
-    fn test_validate_script_empty_handler_is_ok() {
-        assert!(validate_script("function handler() { }").is_ok());
-    }
-
-    #[test]
-    fn test_validate_script_arrow_fn_is_ok() {
-        assert!(validate_script("const handler = () => ({ a: 123 })").is_ok());
-    }
-
-    /// Technically, this should be legal though the utility is questionable.
-    #[test]
-    fn test_validate_script_empty_is_ok() {
-        assert!(validate_script("").is_ok());
-        assert!(validate_script("    ").is_ok());
     }
 }

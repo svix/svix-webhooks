@@ -17,7 +17,6 @@ async-trait = "0.1.89"
 axum.workspace = true
 clap = { version = "4.2.4", features = ["env", "derive"] }
 deadpool = { version = "0.12.1", features = ["unmanaged", "rt_tokio_1"] }
-deno_ast = "0.53.0"
 deno_core = "0.352.1"
 enum_dispatch = "0.3"
 fs-err = "3.3.2"
