@@ -402,12 +402,17 @@ async fn make_local_request(
         .await?)
 }
 
-fn format_resp_headers(headers: &HeaderMap) -> Result<HashMap<String, String>> {
+fn format_resp_headers(headers: &HeaderMap) -> HashMap<String, String> {
     let mut out = HashMap::new();
     for (k, v) in headers {
-        out.insert(k.to_string(), v.to_str()?.to_string());
+        // Header values may contain obs-text (non-ASCII) bytes, which `to_str` rejects.
+        // Don't drop the whole response over that; convert lossily instead.
+        out.insert(
+            k.to_string(),
+            String::from_utf8_lossy(v.as_bytes()).into_owned(),
+        );
     }
-    Ok(out)
+    out
 }
 
 async fn handle_incoming_message(
@@ -444,7 +449,7 @@ async fn process_response(
     tx: UnboundedSender<MessageOut>,
 ) -> Result<()> {
     let status = resp.status().as_u16();
-    let headers = format_resp_headers(resp.headers())?;
+    let headers = format_resp_headers(resp.headers());
     #[allow(deprecated)]
     let body = base64::encode(resp.bytes().await?);
     let msg = MessageOut::Event {
@@ -459,4 +464,28 @@ async fn process_response(
 
     println!("-> Received \"{status}\" response from local server, forwarding to webhook sender");
     Ok(tx.send(msg)?)
+}
+
+#[cfg(test)]
+mod tests {
+    use http::{HeaderMap, HeaderValue};
+
+    use super::format_resp_headers;
+
+    #[test]
+    fn format_resp_headers_keeps_non_ascii_values() {
+        let mut headers = HeaderMap::new();
+        headers.insert("x-ascii", HeaderValue::from_static("plain"));
+        headers.insert(
+            "x-non-ascii",
+            HeaderValue::from_bytes(b"caf\xc3\xa9").unwrap(),
+        );
+        headers.insert("x-latin1", HeaderValue::from_bytes(b"caf\xe9").unwrap());
+
+        let out = format_resp_headers(&headers);
+
+        assert_eq!(out["x-ascii"], "plain");
+        assert_eq!(out["x-non-ascii"], "caf\u{e9}");
+        assert_eq!(out["x-latin1"], "caf\u{fffd}");
+    }
 }
