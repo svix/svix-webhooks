@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Go: Preserve fractional seconds in date-time query parameters
 * Libs/PHP: `Webhook` now throws `InvalidArgumentException` for an empty or non-base64 secret
   instead of verifying with an empty HMAC key
 * Libs/PHP: Fix `Webhook::fromRaw()`, which always threw `ArgumentCountError`; it now also

@@ -878,25 +878,37 @@ func TestDatetimeInQueryParam(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
-	expectedTime := time.Date(2019, 8, 24, 14, 15, 22, 0, time.UTC)
-
-	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app/app1/attempt/endpoint/endp",
-		func(r *http.Request) (*http.Response, error) {
-			queryParams := r.URL.Query()
-			beforeParam := queryParams.Get("before")
-			if beforeParam != "2019-08-24T14:15:22Z" {
-				t.Errorf("Expected before param to be '2019-08-24T14:15:22Z', got '%s'", beforeParam)
-			}
-			return httpmock.NewStringResponse(200, listAttemptOut), nil
-		},
-	)
-
-	opts := svix.MessageAttemptListByEndpointOptions{
-		Before: &expectedTime,
-	}
-	_, err := svx.MessageAttempt().ListByEndpoint(ctx, "app1", "endp", &opts)
-	if err != nil {
-		t.Error(err)
+	for _, stamp := range []string{
+		"2019-08-24T14:15:22Z",
+		"2019-08-24T14:15:22.75Z",
+		"2019-08-24T14:15:22.123456789+05:30",
+	} {
+		for _, field := range []string{"before", "after"} {
+			t.Run(stamp+"/"+field, func(t *testing.T) {
+				expectedTime, err := time.Parse(time.RFC3339Nano, stamp)
+				if err != nil {
+					t.Fatal(err)
+				}
+				httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app/app1/attempt/endpoint/endp",
+					func(r *http.Request) (*http.Response, error) {
+						if got := r.URL.Query().Get(field); got != stamp {
+							t.Errorf("Expected %s param to be %q, got %q", field, stamp, got)
+						}
+						return httpmock.NewStringResponse(200, listAttemptOut), nil
+					},
+				)
+				opts := svix.MessageAttemptListByEndpointOptions{}
+				if field == "before" {
+					opts.Before = &expectedTime
+				} else {
+					opts.After = &expectedTime
+				}
+				_, err = svx.MessageAttempt().ListByEndpoint(ctx, "app1", "endp", &opts)
+				if err != nil {
+					t.Fatal(err)
+				}
+			})
+		}
 	}
 }
 
