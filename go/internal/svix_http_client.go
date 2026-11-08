@@ -291,7 +291,7 @@ func serializeQueryOrHeaderParam(val interface{}, key string) (string, error) {
 	case reflect.Struct:
 		// if it's a time.time
 		if t, ok := v.Interface().(time.Time); ok {
-			return t.Format(time.RFC3339), nil
+			return t.Format(time.RFC3339Nano), nil
 		}
 
 		// else fallthrough
