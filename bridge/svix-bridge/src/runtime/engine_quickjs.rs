@@ -179,6 +179,38 @@ async fn init_context(
     Ok(context)
 }
 
+fn options() -> EvalOptions {
+    assign::assign!(EvalOptions::default(), {
+        global: true,
+        strict: false,
+        promise: true,
+        backtrace_barrier: true,
+        filename: Some("transformation_input.js".to_owned())
+    })
+}
+
+async fn exec_script<'a>(
+    ctx: Ctx<'a>,
+    script: String,
+    deadline: Instant,
+) -> Result<rquickjs::Value<'a>, ScriptError> {
+    let future = ctx
+        .eval_with_options::<Promise<'_>, String>(script, options())
+        .catch(&ctx)
+        .map_err(handle_caught_error)?;
+    // A script can await a promise that never settles, and while it does so no JavaScript is
+    // running for the interrupt handler to interrupt, so the same deadline is enforced here
+    // too.
+    tokio::time::timeout_at(
+        tokio::time::Instant::from_std(deadline),
+        future.into_future::<rquickjs::Value<'_>>(),
+    )
+    .await
+    .map_err(|_elapsed| ScriptError::ProcessTimeout)?
+    .catch(&ctx)
+    .map_err(handle_caught_error)
+}
+
 async fn run_script_inner(
     input: TransformerInput,
     mut script: String,
@@ -209,35 +241,14 @@ async fn run_script_inner(
 
     let value = context
         .async_with(async |ctx| {
-            let options = assign::assign!(EvalOptions::default(), {
-                global: true,
-                strict: false,
-                promise: true,
-                backtrace_barrier: true,
-                filename: Some("transformation_input.js".to_owned())
-            });
-
             // The script is evaluated as an async function (see `promise` above), so awaiting here
             // lets `handler` be async as well; awaiting a plain value is a no-op.
             script.push_str(";\n await handler(script_input)");
-            let span = tracing::debug_span!("rquickjs_execute");
 
-            let future = span.in_scope(|| {
-                ctx.eval_with_options::<Promise<'_>, String>(script, options)
-                    .catch(&ctx)
-                    .map_err(handle_caught_error)
-            })?;
-            // A script can await a promise that never settles, and while it does so no JavaScript is
-            // running for the interrupt handler to interrupt, so the same deadline is enforced here
-            // too.
-            let value = tokio::time::timeout_at(
-                tokio::time::Instant::from_std(start + max_duration),
-                future.into_future::<rquickjs::Value<'_>>().instrument(span),
-            )
-            .await
-            .map_err(|_elapsed| ScriptError::ProcessTimeout)?
-            .catch(&ctx)
-            .map_err(handle_caught_error)?;
+            let value = exec_script(ctx, script, start + max_duration)
+                .instrument(tracing::debug_span!("rquickjs_execute"))
+                .await?;
+
             // https://github.com/DelSkayn/rquickjs/issues/360
             let object = value.as_object().ok_or(ScriptError::InvalidPromise)?;
             let value: Value<'_> = object
@@ -282,32 +293,13 @@ pub async fn validate_script(src: &str) -> Result<()> {
 
     context
         .async_with(async |ctx| {
-            let options = assign::assign!(EvalOptions::default(), {
-                global: true,
-                strict: false,
-                promise: true,
-                backtrace_barrier: true,
-                filename: Some("transformation_input.js".to_owned())
-            });
-
             let mut script = "(function wrapper() { ".to_owned();
             script.push_str(src);
             script.push_str("})");
 
-            let span = tracing::debug_span!("rquickjs_validate");
-            let future = span.in_scope(|| {
-                ctx.eval_with_options::<Promise<'_>, String>(script, options)
-                    .catch(&ctx)
-                    .map_err(handle_caught_error)
-            })?;
-            tokio::time::timeout_at(
-                tokio::time::Instant::from_std(start + max_duration),
-                future.into_future::<rquickjs::Value<'_>>().instrument(span),
-            )
-            .await
-            .map_err(|_elapsed| ScriptError::ProcessTimeout)?
-            .catch(&ctx)
-            .map_err(handle_caught_error)?;
+            exec_script(ctx, script, start + max_duration)
+                .instrument(tracing::debug_span!("rquickjs_validate"))
+                .await?;
 
             Ok(())
         })
