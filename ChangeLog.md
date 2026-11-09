@@ -6,11 +6,18 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+
+## Version 2.10.0
+* Libs/JavaScript: Cancel discarded response bodies (part of retry logic)
 * Libs/PHP: `Webhook` now throws `InvalidArgumentException` for an empty or non-base64 secret
   instead of verifying with an empty HMAC key
 * Libs/PHP: Fix `Webhook::fromRaw()`, which always threw `ArgumentCountError`; it now also
   accepts an optional `$tolerance`
-* Libs/All: Update to latest Svix Cloud spec
+* Libs/Java: Improve retry logic (retry on HTTP 423, allow `retrySchedule` to be set)
+* Libs/Kotlin: Improve retry logic (retry on HTTP 423)
+* Libs/Ruby: Fix wrong exception being thrown on some malformed requests in `Webhook#verify`
+* Libs/All: Update to latest Svix Cloud spec (if you are using the open-source Svix Server,
+  please upgrade it to v1.104.0 or later before upgrading the SDK)
 
 ## Version 2.9.1
 * Libs/JavaScript: Throw `ApiException` (with the raw response text as `body`) instead of a
