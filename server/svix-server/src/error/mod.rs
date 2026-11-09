@@ -366,6 +366,14 @@ impl HttpError {
         }
     }
 
+    pub fn unprocessable_entity_from_validation(errors: validator::ValidationErrors) -> Self {
+        let detail = crate::v1::utils::validation_errors(vec![], errors);
+        Self {
+            status: StatusCode::UNPROCESSABLE_ENTITY,
+            body: HttpErrorBody::Validation(ValidationHttpError { detail }),
+        }
+    }
+
     pub fn internal_server_error(code: Option<String>, detail: Option<String>) -> Self {
         Self::new_standard(
             StatusCode::INTERNAL_SERVER_ERROR,
