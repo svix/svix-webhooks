@@ -87,10 +87,12 @@ class ApiBase:
             path = path.format(**path_params)
         url = f"{self._client.base_url}{path}"
 
-        headers: t.Dict[str, str] = {
-            **self._client.get_headers(),
-            "svix-req-id": f"{random.getrandbits(64)}",
-        }
+        headers = httpx.Headers(
+            {
+                **self._client.get_headers(),
+                "svix-req-id": f"{random.getrandbits(64)}",
+            }
+        )
         if header_params is not None:
             headers.update(header_params)
 
