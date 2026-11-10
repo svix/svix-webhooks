@@ -33,7 +33,7 @@ module Svix
   # the secret length. This should be considered when using secure_compare
   # to compare weak, short secrets to user input.
   def secure_compare(a, b)
-    a.length == b.length && fixed_length_secure_compare(a, b)
+    a.bytesize == b.bytesize && fixed_length_secure_compare(a, b)
   end
 
   module_function :secure_compare
