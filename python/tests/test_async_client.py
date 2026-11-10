@@ -209,3 +209,36 @@ async def test_does_not_retry_on_http_422(httpx_mock):
     )
     with pytest.raises(HTTPValidationError):
         await svix_api.application.list()
+
+
+@pytest.mark.asyncio
+async def test_non_json_error_response_raises_http_error(httpx_mock):
+    svix_api = SvixAsync(auth_token="not-a-real-auth-token")
+
+    httpx_mock.add_response(
+        url="https://api.svix.com/api/v1/app",
+        status_code=502,
+        headers={"content-type": "text/html"},
+        text="<html><body><h1>502 Bad Gateway</h1></body></html>",
+        is_reusable=True,
+    )
+    with pytest.raises(HttpError) as exc_info:
+        await svix_api.application.list()
+    assert exc_info.value.status_code == 502
+    assert "502 Bad Gateway" in exc_info.value.detail
+    # the request is still retried before the error is raised
+    assert len(httpx_mock.get_requests()) == 4
+
+
+@pytest.mark.asyncio
+async def test_empty_error_response_raises_http_error(httpx_mock):
+    svix_api = SvixAsync(auth_token="not-a-real-auth-token")
+
+    httpx_mock.add_response(
+        url="https://api.svix.com/api/v1/app",
+        status_code=404,
+        text="",
+    )
+    with pytest.raises(HttpError) as exc_info:
+        await svix_api.application.list()
+    assert exc_info.value.status_code == 404
