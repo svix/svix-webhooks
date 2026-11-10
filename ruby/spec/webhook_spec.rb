@@ -301,7 +301,7 @@ describe Svix::Webhook do
     wh.verify(testPayload.payload, testPayload.headers)
   end
 
-  it "rejects a multibyte signature of the same character length without raising" do
+  it "rejects a multibyte signature of the same codepoint count with WebhookVerificationError" do
     testPayload = TestPayload.new
 
     wh = Svix::Webhook.new(testPayload.secret)
@@ -310,7 +310,7 @@ describe Svix::Webhook do
     expect { wh.verify(testPayload.payload, headers) }.to(raise_error(Svix::WebhookVerificationError))
   end
 
-  it "secure_compare handles multibyte strings of equal character length" do
+  it "secure_compare handles multibyte strings of equal codepoint count" do
     expect(Svix.secure_compare("é" * 44, "e" * 44)).to(be(false))
     expect(Svix.secure_compare("é" * 44, "é" * 44)).to(be(true))
   end
