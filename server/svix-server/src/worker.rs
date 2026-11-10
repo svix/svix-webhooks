@@ -10,7 +10,7 @@ use std::{
 };
 
 use base64::{Engine, engine::general_purpose::STANDARD};
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, TimeDelta, Utc};
 use futures::future;
 use http::{
     HeaderMap, HeaderName, HeaderValue, StatusCode, Version,
@@ -145,7 +145,7 @@ async fn process_endpoint_failure(
         .map_err(Error::generic)?
     {
         if now - first_failure_at
-            > chrono::Duration::from_std(disable_in).expect("Given `disable_in` is too large")
+            > TimeDelta::from_std(disable_in).expect("Given `disable_in` is too large")
         {
             Ok(Some(EndpointDisableInfo { first_failure_at }))
         } else {
@@ -490,7 +490,9 @@ async fn handle_successful_dispatch(
     Ok(())
 }
 
-fn retry_after(hdr_map: &HeaderMap) -> Option<DateTime<Utc>> {
+const MAX_RETRY_AFTER: TimeDelta = TimeDelta::days(7);
+
+pub fn retry_after(hdr_map: &HeaderMap) -> Option<DateTime<Utc>> {
     let retry_after = hdr_map.get(RETRY_AFTER)?;
     let retry_after_str = retry_after.to_str().ok()?;
 
@@ -499,11 +501,28 @@ fn retry_after(hdr_map: &HeaderMap) -> Option<DateTime<Utc>> {
     }
 
     if let Ok(seconds_f64) = retry_after_str.parse::<f64>() {
+        let now = Utc::now();
         let seconds = seconds_f64.ceil() as i64;
-        return Some(Utc::now() + chrono::Duration::seconds(seconds));
+        let duration = TimeDelta::try_seconds(seconds).unwrap_or(MAX_RETRY_AFTER);
+        let upper_bound = now + MAX_RETRY_AFTER;
+        return Some(
+            now.checked_add_signed(duration)
+                .unwrap_or_else(|| {
+                    tracing::warn!(
+                        header_value = retry_after_str,
+                        "unreasonably long value for retry-after"
+                    );
+                    upper_bound
+                })
+                .clamp(now, upper_bound),
+        );
     }
 
-    tracing::warn!("Failed to parse retry-after header: {retry_after_str}");
+    tracing::warn!(
+        header_value = retry_after_str,
+        "Failed to parse retry-after header"
+    );
+
     None
 }
 
@@ -578,7 +597,7 @@ async fn handle_failed_dispatch(
     } else if attempt_count < retry_schedule.len() {
         let retry_delay = calculate_retry_delay(retry_schedule[attempt_count], &err, retry_after);
         let next_attempt_time =
-            Utc::now() + chrono::Duration::from_std(retry_delay).expect("Error parsing duration");
+            Utc::now() + TimeDelta::from_std(retry_delay).expect("Error parsing duration");
 
         attempt.next_attempt = Set(Some(next_attempt_time.into()));
         let attempt = attempt.insert(*db).await?;
@@ -1129,11 +1148,13 @@ pub async fn queue_handler(
 mod tests {
     use std::collections::HashMap;
 
+    use assert_matches::assert_matches;
     use base64::{Engine, engine::general_purpose::STANDARD};
     use bytes::Bytes;
-    use chrono::{DateTime, Utc};
+    use chrono::{DateTime, TimeDelta, Utc};
     use ed25519_compact::Signature;
     use http::HeaderMap;
+    use more_asserts::assert_lt;
 
     use super::{
         CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers,
@@ -1292,6 +1313,7 @@ mod tests {
 
     #[test]
     fn test_retry_after() {
+        let max_time = Utc::now() + TimeDelta::days(7) + TimeDelta::seconds(30);
         let mut headers = HeaderMap::new();
 
         headers.insert(
@@ -1308,30 +1330,41 @@ mod tests {
 
         headers.insert("retry-after", "120".parse().unwrap());
         let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + chrono::Duration::seconds(120);
-        assert!((result - expected).num_seconds().abs() < 2);
+        let expected = Utc::now() + TimeDelta::seconds(120);
+        assert_lt!((result - expected).num_seconds().abs(), 2);
 
         headers.insert("retry-after", "120.1".parse().unwrap());
         let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + chrono::Duration::seconds(121);
-        assert!((result - expected).num_seconds().abs() < 2);
+        let expected = Utc::now() + TimeDelta::seconds(121);
+        assert_lt!((result - expected).num_seconds().abs(), 2);
 
         headers.insert("retry-after", "120.6".parse().unwrap());
         let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + chrono::Duration::seconds(121);
-        assert!((result - expected).num_seconds().abs() < 2);
+        let expected = Utc::now() + TimeDelta::seconds(121);
+        assert_lt!((result - expected).num_seconds().abs(), 2);
 
         headers.insert("retry-after", "120.0".parse().unwrap());
         let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + chrono::Duration::seconds(120);
-        assert!((result - expected).num_seconds().abs() < 2);
+        let expected = Utc::now() + TimeDelta::seconds(120);
+        assert_lt!((result - expected).num_seconds().abs(), 2);
 
+        // it should ignore things that don't look at all like dates or intervals
         headers.clear();
         headers.insert("retry-after", "invalid".parse().unwrap());
-        assert!(retry_after(&headers).is_none());
+        assert_matches!(retry_after(&headers), None);
+
+        // it should clamp very large (but valid) values to 7 days from now
+        headers.clear();
+        headers.insert("retry-after", "4611686018427387904".parse().unwrap());
+        assert_matches!(retry_after(&headers), Some(x) if x < max_time);
+
+        // it should handle values > i64::MAX
+        headers.clear();
+        headers.insert("retry-after", "36893488147419103232".parse().unwrap());
+        assert_matches!(retry_after(&headers), Some(x) if x < max_time);
 
         headers.clear();
-        assert!(retry_after(&headers).is_none());
+        assert_matches!(retry_after(&headers), None);
     }
 
     #[tokio::test]
