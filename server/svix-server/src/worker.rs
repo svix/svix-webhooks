@@ -2,6 +2,7 @@
 // SPDX-Licensepub(crate) -Identifier: MIT
 
 use std::{
+    num::NonZeroU16,
     sync::{
         Arc, LazyLock,
         atomic::{AtomicU64, AtomicUsize, Ordering},
@@ -1013,6 +1014,77 @@ async fn update_last_poll_time() {
     LAST_QUEUE_POLL.swap(get_unix_timestamp(), Ordering::Relaxed);
 }
 
+struct WorkerConcurrencyGuard {
+    num_workers: Arc<AtomicUsize>,
+}
+
+impl Drop for WorkerConcurrencyGuard {
+    fn drop(&mut self) {
+        self.num_workers.fetch_sub(1, Ordering::Release);
+    }
+}
+
+#[derive(Clone)]
+struct WorkerConcurrencyLimiter {
+    num_workers: Arc<AtomicUsize>,
+    limit: Option<NonZeroU16>,
+}
+
+impl WorkerConcurrencyLimiter {
+    fn new(task_limit: u16) -> Self {
+        let limit = if let Some(limit) = NonZeroU16::new(task_limit) {
+            tracing::info!("Worker concurrent task limit: {}", task_limit);
+            Some(limit)
+        } else {
+            tracing::info!("Worker concurrent task limit: unlimited");
+            None
+        };
+        Self {
+            num_workers: Arc::new(AtomicUsize::new(0)),
+            limit,
+        }
+    }
+
+    fn has_capacity(&self) -> bool {
+        if let Some(limit) = self.limit {
+            // this is intentionally racy; we're allowed to burst above
+            // num_workers
+            let current = self.num_workers.load(Ordering::Acquire);
+            current < (limit.get() as usize)
+        } else {
+            true
+        }
+    }
+
+    fn start(&self) -> WorkerConcurrencyGuard {
+        self.num_workers.fetch_add(1, Ordering::Release);
+        WorkerConcurrencyGuard {
+            num_workers: Arc::clone(&self.num_workers),
+        }
+    }
+
+    async fn wait_for_shutdown(self) {
+        let mut timer = tokio::time::interval(Duration::from_millis(500));
+        loop {
+            timer.tick().await;
+            let num_workers = self.count();
+            if num_workers > 0 {
+                tracing::info!(
+                    "{} active workers, waiting to shut down worker.",
+                    num_workers
+                );
+            } else {
+                tracing::info!("No active workers, shutting down worker.");
+                return;
+            }
+        }
+    }
+
+    fn count(&self) -> usize {
+        self.num_workers.load(Ordering::Relaxed)
+    }
+}
+
 /// Listens on the message queue for new tasks
 #[allow(clippy::too_many_arguments)]
 pub async fn queue_handler(
@@ -1025,14 +1097,7 @@ pub async fn queue_handler(
 ) -> Result<()> {
     let recv_deadline = Duration::from_secs(cfg.queue_max_poll_secs.into());
 
-    static NUM_WORKERS: AtomicUsize = AtomicUsize::new(0);
-
-    let task_limit = cfg.worker_max_tasks;
-    if task_limit == 0 {
-        tracing::info!("Worker concurrent task limit: unlimited");
-    } else {
-        tracing::info!("Worker concurrent task limit: {}", task_limit);
-    }
+    let workers = WorkerConcurrencyLimiter::new(cfg.worker_max_tasks);
 
     let webhook_client = WebhookClient::new(
         cfg.whitelist_subnets.clone(),
@@ -1041,12 +1106,13 @@ pub async fn queue_handler(
         cfg.proxy_config.as_ref(),
     );
 
-    tokio::spawn(
+    tokio::spawn({
+        let workers = workers.clone();
         async move {
             let mut interval = tokio::time::interval(Duration::from_millis(500));
             loop {
                 interval.tick().await;
-                let num_workers = NUM_WORKERS.load(Ordering::Relaxed);
+                let num_workers = workers.count();
                 if num_workers > 0 {
                     tracing::info!("{} active workers", num_workers);
                 }
@@ -1055,37 +1121,19 @@ pub async fn queue_handler(
         .instrument(tracing::error_span!(
             "worker_monitor",
             instance_id = tracing::field::Empty
-        )),
-    );
+        ))
+    });
 
     loop {
-        if task_limit > 0 {
-            let num_workers = NUM_WORKERS.load(Ordering::Relaxed);
-            if num_workers > task_limit.into() {
-                tokio::time::sleep(Duration::from_millis(100)).await;
-                continue;
-            }
-        }
-
         if crate::is_shutting_down() {
-            tokio::join!(async move {
-                let mut interval = tokio::time::interval(Duration::from_millis(500));
-                loop {
-                    interval.tick().await;
-                    let num_workers = NUM_WORKERS.load(Ordering::Relaxed);
-                    if num_workers > 0 {
-                        tracing::info!(
-                            "{} active workers, waiting to shut down worker.",
-                            num_workers
-                        );
-                    } else {
-                        tracing::info!("No active workers, shutting down worker.");
-                        break;
-                    }
-                }
-            });
+            workers.wait_for_shutdown().await;
             break;
         }
+
+        if !workers.has_capacity() {
+            tokio::time::sleep(Duration::from_millis(100)).await;
+            continue;
+        };
 
         match queue_rx.receive_all(recv_deadline).await {
             Ok(batch) => {
@@ -1098,8 +1146,9 @@ pub async fn queue_handler(
                     let op_webhook_sender = op_webhook_sender.clone();
                     let webhook_client = webhook_client.clone();
 
+                    let guard = workers.start();
+
                     tokio::spawn(async move {
-                        NUM_WORKERS.fetch_add(1, Ordering::Relaxed);
                         let worker_context = WorkerContext {
                             cfg: &cfg,
                             db: &db,
@@ -1128,7 +1177,7 @@ pub async fn queue_handler(
                             );
                         }
 
-                        NUM_WORKERS.fetch_sub(1, Ordering::Relaxed);
+                        drop(guard); // make sure the guard is moved into the spawned task
                     });
                 }
             }
