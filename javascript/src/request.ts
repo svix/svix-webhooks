@@ -315,8 +315,6 @@ async function sendWithRetry(
       ...init,
       signal: AbortSignal.timeout(timeout),
     });
-    // 423 Locked is retryable, same as the Python, Java, and Kotlin clients:
-    // the API usually answers the next attempt with 200 or 409.
     const retryable = response.status >= 500 || response.status === 423;
     if (triesLeft <= 0 || !retryable) {
       return response;
