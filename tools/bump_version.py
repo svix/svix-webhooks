@@ -83,8 +83,8 @@ VERSION_FILES = [
     ),
     # Java
     VersionFile(
-        "java/gradle.properties",
-        [r"(VERSION_NAME=)([^\n]+)"],
+        "java/pom.xml",
+        [r"(<artifactId>svix</artifactId>\s*<version>)([^<]+)(</version>)"],
     ),
     VersionFile(
         "java/README.md",
