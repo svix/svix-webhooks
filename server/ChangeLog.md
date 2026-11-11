@@ -5,6 +5,9 @@
   memory use of the worker no longer depends on the size of the response
 * Improve validation of EndpointHeaders to reject invalid values and more forbidden keys.
 * **(Security)** Clamp the `Retry-After` header to 7 days; a malicious endpoint could previously cause a panic with a very long Retry-After. This can cause denial-of-service by exhausting available workers.
+* Fix `cache_type = "redissentinel"` opening a new Redis connection for every cache operation, one at a time for the
+  whole process, which limited worker throughput. The cache now shares one connection and asks Sentinel for the master
+  again only after that connection fails
 
 ## Version 1.104.0
 * **(Breaking)** Reject event type schemas with external `$ref`s (`http://`, `file://`, etc.) with a 422. Refs within the schema itself, such as `#/definitions/...`, still work.

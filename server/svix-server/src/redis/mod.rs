@@ -1,16 +1,17 @@
 mod cluster;
 mod sentinel;
 
-use std::{sync::Arc, time::Duration};
+use std::time::Duration;
 
 use bb8::{Pool, RunError};
 use bb8_redis::RedisConnectionManager;
 use redis::{
-    AsyncConnectionConfig, ProtocolVersion, RedisConnectionInfo, RedisError, TlsMode,
-    aio::ConnectionManagerConfig, sentinel::SentinelNodeConnectionInfo,
+    ProtocolVersion, RedisConnectionInfo, RedisError, TlsMode, aio::ConnectionManagerConfig,
+    sentinel::SentinelNodeConnectionInfo,
 };
-use sentinel::RedisSentinelConnectionManager;
-use tokio::sync::Mutex;
+use sentinel::{
+    RedisSentinelConnectionManager, RedisSentinelUnpooledConnection, RedisSentinelUnpooledManager,
+};
 
 pub use self::cluster::RedisClusterConnectionManager;
 use crate::cfg::{CacheBackend, QueueBackend, SentinelConfig};
@@ -30,7 +31,7 @@ pub enum RedisManager {
     Sentinel(Pool<crate::redis::sentinel::RedisSentinelConnectionManager>),
     ClusteredUnpooled(redis::cluster_async::ClusterConnection),
     NonClusteredUnpooled(redis::aio::ConnectionManager),
-    SentinelUnpooled(Arc<Mutex<redis::sentinel::SentinelClient>>),
+    SentinelUnpooled(RedisSentinelUnpooledManager),
 }
 
 impl RedisManager {
@@ -137,7 +138,7 @@ impl RedisManager {
                 )
                 .expect("Failed to build sentinel client");
 
-                RedisManager::SentinelUnpooled(Arc::new(Mutex::new(cli)))
+                RedisManager::SentinelUnpooled(RedisSentinelUnpooledManager::new(cli))
             }
         }
     }
@@ -179,15 +180,7 @@ impl RedisManager {
             Self::NonClusteredUnpooled(conn) => {
                 Ok(RedisConnection::NonClusteredUnpooled(conn.clone()))
             }
-            Self::SentinelUnpooled(conn) => {
-                let mut conn = conn.lock().await;
-                let con = conn
-                    .get_async_connection_with_config(
-                        &AsyncConnectionConfig::new().set_response_timeout(REDIS_CONN_TIMEOUT),
-                    )
-                    .await?;
-                Ok(RedisConnection::SentinelUnpooled(con))
-            }
+            Self::SentinelUnpooled(mgr) => Ok(RedisConnection::SentinelUnpooled(mgr.get().await?)),
         }
     }
 }
@@ -198,7 +191,7 @@ pub enum RedisConnection<'a> {
     SentinelPooled(bb8::PooledConnection<'a, RedisSentinelConnectionManager>),
     ClusteredUnpooled(redis::cluster_async::ClusterConnection),
     NonClusteredUnpooled(redis::aio::ConnectionManager),
-    SentinelUnpooled(redis::aio::MultiplexedConnection),
+    SentinelUnpooled(RedisSentinelUnpooledConnection),
 }
 
 impl redis::aio::ConnectionLike for RedisConnection<'_> {
@@ -250,9 +243,10 @@ impl redis::aio::ConnectionLike for RedisConnection<'_> {
 
 #[cfg(test)]
 mod tests {
-    use redis::AsyncCommands;
+    use redis::{AsyncCommands, RedisResult};
 
     use super::RedisManager;
+    use crate::cfg::CacheBackend;
 
     // Ensure basic set/get works -- should test sharding as well:
     #[tokio::test]
@@ -270,5 +264,44 @@ mod tests {
             let _: () = conn.set(key.clone(), val).await.unwrap();
             assert_eq!(conn.get::<_, usize>(&key).await.unwrap(), val);
         }
+    }
+
+    // The Sentinel cache backend shares one connection between all callers and replaces it once it
+    // is broken.
+    #[tokio::test]
+    // run with `cargo test -- --ignored redis` only when redis is up and configured
+    #[ignore]
+    async fn test_sentinel_unpooled_reuses_and_replaces_connection() {
+        async fn client_id(mgr: &RedisManager) -> RedisResult<i64> {
+            let mut conn = mgr.get().await.unwrap();
+            redis::cmd("CLIENT").arg("ID").query_async(&mut conn).await
+        }
+
+        dotenvy::dotenv().ok();
+        let cfg = crate::cfg::load().unwrap();
+        let cache_backend = cfg.cache_backend();
+        if !matches!(cache_backend, CacheBackend::RedisSentinel(..)) {
+            return;
+        }
+
+        let mgr = RedisManager::from_cache_backend(&cache_backend).await;
+        let id = client_id(&mgr).await.unwrap();
+        assert_eq!(client_id(&mgr).await.unwrap(), id);
+
+        // Close the connection on the server side, which is also what Sentinel does to the clients
+        // of a master it demotes.
+        let mut conn = mgr.get().await.unwrap();
+        let _: RedisResult<()> = redis::cmd("CLIENT")
+            .arg(&["KILL", "ID"])
+            .arg(id)
+            .arg(&["SKIPME", "no"])
+            .query_async(&mut conn)
+            .await;
+
+        // The command that finds the connection closed fails, the ones after it get a new one.
+        let _ = client_id(&mgr).await;
+        let new_id = client_id(&mgr).await.unwrap();
+        assert_ne!(new_id, id);
+        assert_eq!(client_id(&mgr).await.unwrap(), new_id);
     }
 }
