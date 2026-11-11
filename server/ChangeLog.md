@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.105.0
 * Read at most 20000 bytes of an endpoint's response body instead of buffering it whole and truncating afterwards, so
   memory use of the worker no longer depends on the size of the response
 * Improve validation of EndpointHeaders to reject invalid values and more forbidden keys.
