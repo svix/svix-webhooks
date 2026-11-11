@@ -478,14 +478,14 @@ mod tests {
         headers.insert("x-ascii", HeaderValue::from_static("plain"));
         headers.insert(
             "x-non-ascii",
-            HeaderValue::from_bytes(b"caf\xc3\xa9").unwrap(),
+            HeaderValue::from_bytes(b"calf\xc3\xa9").unwrap(),
         );
-        headers.insert("x-latin1", HeaderValue::from_bytes(b"caf\xe9").unwrap());
+        headers.insert("x-latin1", HeaderValue::from_bytes(b"calf\xe9").unwrap());
 
         let out = format_resp_headers(&headers);
 
         assert_eq!(out["x-ascii"], "plain");
-        assert_eq!(out["x-non-ascii"], "caf\u{e9}");
-        assert_eq!(out["x-latin1"], "caf\u{fffd}");
+        assert_eq!(out["x-non-ascii"], "calf\u{e9}");
+        assert_eq!(out["x-latin1"], "calf\u{fffd}");
     }
 }
