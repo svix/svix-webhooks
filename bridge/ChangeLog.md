@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+
+## Version 1.102.0
 * Change Docker images to be based on wolfi instead of debian
 * Bump MSRV to 1.96
 * Replace `serde_yaml` with `serde_saphyr` for parsing configuration; please let us know if you encounter any config files that fail to parse
