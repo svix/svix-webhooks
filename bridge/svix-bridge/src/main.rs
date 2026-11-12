@@ -265,7 +265,9 @@ async fn main() -> Result<()> {
     };
 
     let vars = std::env::vars().collect();
-    let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())?.into_configuration();
+    let cfg = Config::from_src(&cfg_source, Some(vars).as_ref())
+        .await?
+        .into_configuration();
     let otel_tracer_provider = setup_tracing(&cfg);
     setup_metrics(&cfg);
     tracing::info!("starting");
