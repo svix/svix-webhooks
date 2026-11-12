@@ -3,7 +3,7 @@
 # NOTE: this should be built from the root of `svix-webhooks`
 # with `docker build -f svix-cli/Dockerfile .`# Base build
 
-FROM cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7 AS build
+FROM cgr.dev/chainguard/wolfi-base@sha256:94fa13e26d449f7d78dbcd02d12ea37a0da80d24fcc3e1f17b95d515dec607a7 AS build
 SHELL ["/bin/sh", "-eux", "-c"]
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
     apk add rust~1.96.1 \
@@ -43,13 +43,14 @@ RUN mkdir /scripts
 COPY bridge/scripts/check-deps.sh /scripts/check-deps.sh
 
 # Production
-FROM cgr.dev/chainguard/wolfi-base@sha256:360896efb0753a5701c48f860e17130c205eae5a264797aa3e7ea126ee2923a7 AS prod
+FROM cgr.dev/chainguard/wolfi-base@sha256:94fa13e26d449f7d78dbcd02d12ea37a0da80d24fcc3e1f17b95d515dec607a7 AS prod
 
 SHELL ["/bin/sh", "-eux", "-c"]
 
+# hadolint ignore=DL3018
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
     apk update
-    apk add ca-certificates~20260909-r3
+    apk add ca-certificates
     update-ca-certificates
 EOF
 
