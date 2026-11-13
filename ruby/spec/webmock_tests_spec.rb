@@ -436,6 +436,19 @@ describe "API Client" do
     end
   end
 
+  it "retries on status => 423" do
+    stub_request(:get, "#{host}/api/v1/app")
+      .to_return(status: 423).then
+      .to_return(status: 200, body: ListResponseAppOut_JSON)
+
+    svx.application.list
+
+    expect(WebMock).to(have_requested(:get, "#{host}/api/v1/app").twice)
+    expect(WebMock).to(
+      have_requested(:get, "#{host}/api/v1/app").with(headers: {"Svix-Retry-Count" => "1"}).once
+    )
+  end
+
   it "retries on timeout" do
     stub_request(:get, "#{host}/api/v1/app")
       .to_timeout.then

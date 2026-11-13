@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Ruby: Retry HTTP 423 Locked responses, like the other SDKs
 
 ## Version 2.10.0
 * Libs/JavaScript: Cancel discarded response bodies (part of retry logic)
