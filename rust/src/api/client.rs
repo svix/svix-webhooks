@@ -27,8 +27,8 @@ pub struct SvixOptions {
 
     /// Number of retries
     ///
-    /// The number of times the client will retry if a server-side error
-    /// or timeout is received.
+    /// The number of times the client will retry if a server-side error,
+    /// HTTP 423 (Locked), or a timeout is received.
     ///
     /// Default: 2
     pub num_retries: Option<u32>,

@@ -7,6 +7,7 @@ use std::{
 use serde_json::json;
 use svix::{
     api::{MessageListOptions, Svix, SvixOptions},
+    error::Error,
     models::{ApplicationIn, MessageIn},
 };
 
@@ -290,4 +291,73 @@ async fn test_connection_error_is_retried() {
 
     let retried_request = server.join().unwrap().to_lowercase();
     assert!(retried_request.contains("svix-retry-count: 1\r\n"));
+}
+
+#[tokio::test]
+async fn test_http_423_locked_is_retried() {
+    let mock_server = MockServer::start().await;
+
+    Mock::given(method("GET"))
+        .and(path("/api/v1/app/app1"))
+        .respond_with(ResponseTemplate::new(423).set_body_string(
+            r#"{"code":"LOCKED","detail":"Another request is currently in your castle"}"#,
+        ))
+        .up_to_n_times(1)
+        .with_priority(1)
+        .mount(&mock_server)
+        .await;
+    Mock::given(method("GET"))
+        .and(path("/api/v1/app/app1"))
+        .respond_with(ResponseTemplate::new(200).set_body_string(APPLICATION_OUT))
+        .mount(&mock_server)
+        .await;
+
+    let svx = Svix::new(
+        "token".to_owned(),
+        Some(SvixOptions {
+            server_url: Some(mock_server.uri()),
+            retry_schedule: Some(vec![Duration::from_millis(10)]),
+            ..Default::default()
+        }),
+    );
+    let app = svx.application().get("app1".to_owned()).await.unwrap();
+    assert_eq!(app.id, "app_1srOrx2ZWZBpBUvZwXKQmoEYga2");
+
+    let requests = mock_server.received_requests().await.unwrap();
+    assert_eq!(2, requests.len());
+    assert!(requests[0].headers.get("svix-retry-count").is_none());
+    assert_eq!("1", requests[1].headers["svix-retry-count"]);
+}
+
+#[tokio::test]
+async fn test_http_409_conflict_is_not_retried() {
+    let mock_server = MockServer::start().await;
+
+    Mock::given(method("GET"))
+        .and(path("/api/v1/app/app1"))
+        .respond_with(ResponseTemplate::new(409).set_body_string(
+            r#"{"code":"CONFLICT","detail":"Sorry, someone else already ate this cake"}"#,
+        ))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let svx = Svix::new(
+        "token".to_owned(),
+        Some(SvixOptions {
+            server_url: Some(mock_server.uri()),
+            retry_schedule: Some(vec![Duration::from_millis(10)]),
+            ..Default::default()
+        }),
+    );
+    let err = svx
+        .application()
+        .get("app1".to_owned())
+        .await
+        .expect_err("409 must fail the call");
+    match err {
+        Error::Http(http_err) => assert_eq!(http_err.status.as_u16(), 409),
+        other => panic!("expected HTTP 409, got {other:?}"),
+    }
+    mock_server.verify().await;
 }

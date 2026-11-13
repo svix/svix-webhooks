@@ -178,7 +178,12 @@ impl Request {
             match res {
                 Ok(result) => return Ok(result),
                 e @ Err(Error::Validation(_)) => return e,
-                Err(Error::Http(err)) if err.status.as_u16() < 500 => return Err(Error::Http(err)),
+                // 423 Locked is retried, alongside 5xx.
+                Err(Error::Http(err))
+                    if err.status.as_u16() < 500 && err.status.as_u16() != 423 =>
+                {
+                    return Err(Error::Http(err));
+                }
                 e @ Err(_) => {
                     if next_backoff.is_none() {
                         return e;
