@@ -14,11 +14,7 @@ ignored = [
 ]
 
 [features]
-default = ["jemalloc"]
-jemalloc = ["dep:tikv-jemallocator"]
-
-[target.'cfg(not(target_env = "msvc"))'.dependencies]
-tikv-jemallocator = { version = "0.7.0", optional = true }
+default = []
 
 [dependencies]
 aide.workspace = true
@@ -71,6 +67,7 @@ rand = "0.10"
 redis = { version = "0.32.5", features = ["tokio-comp", "tokio-native-tls-comp", "streams", "cluster-async", "tcp_nodelay", "connection-manager", "sentinel"] }
 regex = "1.5.5"
 reqwest = { version = "0.13.4", default-features = false, features = ["json", "rustls", "hickory-dns"] }
+rustfs-mimalloc = "0.7.4"
 rustls = "0.23.43"
 schemars = { version = "0.8.11", features = ["chrono", "url", "preserve_order"] }
 sea-orm = { version = "2", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono", "with-json"], default-features = false }
