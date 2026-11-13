@@ -26,7 +26,12 @@
 
 <body>
   <redoc spec-url="/api/v1/openapi.json"></redoc>
-  <script src="https://cdn.jsdelivr.net/npm/redoc@latest/bundles/redoc.standalone.js"> </script>
+  <!-- Pinned to the last ReDoc 2.x release (https://github.com/svix/svix-webhooks/issues/2808):
+       ReDoc 3.x uses `import.meta` in its standalone bundle, which throws
+       "Cannot use 'import.meta' outside a module" when loaded as a classic <script>,
+       leaving /docs blank. Pinning (instead of @latest) so a future ReDoc major
+       release can't break this page again. -->
+  <script src="https://cdn.jsdelivr.net/npm/redoc@2.5.4/bundles/redoc.standalone.js"> </script>
 </body>
 
 </html>
