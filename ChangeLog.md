@@ -6,6 +6,10 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Ruby, Libs/PHP: Webhook verification now lowercases the header names
+  before looking them up, so header sets like `Svix-Id` (as returned by PHP's
+  `getallheaders()` and by Rack) verify instead of failing with
+  "Missing required headers"
 
 ## Version 2.10.0
 * Libs/JavaScript: Cancel discarded response bodies (part of retry logic)

@@ -28,6 +28,69 @@ final class WebhookTest extends \PHPUnit\Framework\TestCase
         $json = $wh->verify($testPayload->payload, $testPayload->header);
     }
 
+    public function testTitleCasedSignatureIsValid()
+    {
+        $testPayload = new TestPayload(time());
+        $testPayload->header = array(
+            "Svix-Id" => $testPayload->header['svix-id'],
+            "Svix-Signature" => $testPayload->header['svix-signature'],
+            "Svix-Timestamp" => $testPayload->header['svix-timestamp'],
+        );
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $this->assertNull(
+            $wh->verify($testPayload->payload, $testPayload->header),
+            "verify() should accept the headers and return nothing"
+        );
+    }
+
+    public function testMixedCaseSignatureIsValid()
+    {
+        $testPayload = new TestPayload(time());
+        $testPayload->header = array(
+            "SVIX-ID" => $testPayload->header['svix-id'],
+            "sViX-SiGnAtUrE" => $testPayload->header['svix-signature'],
+            "Svix-TimeStamp" => $testPayload->header['svix-timestamp'],
+        );
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $this->assertNull(
+            $wh->verify($testPayload->payload, $testPayload->header),
+            "verify() should accept the headers and return nothing"
+        );
+    }
+
+    public function testTitleCasedBrandlessSignatureIsValid()
+    {
+        $testPayload = new TestPayload(time());
+        $testPayload->header = array(
+            "Webhook-Id" => $testPayload->header['svix-id'],
+            "Webhook-Signature" => $testPayload->header['svix-signature'],
+            "Webhook-Timestamp" => $testPayload->header['svix-timestamp'],
+        );
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $this->assertNull(
+            $wh->verify($testPayload->payload, $testPayload->header),
+            "verify() should accept the headers and return nothing"
+        );
+    }
+
+    public function testMissingTitleCasedIdThrowsException()
+    {
+        $this->expectException(\Svix\Exception\WebhookVerificationException::class);
+        $this->expectExceptionMessage("Missing required headers");
+
+        $testPayload = new TestPayload(time());
+        $testPayload->header = array(
+            "Svix-Signature" => $testPayload->header['svix-signature'],
+            "Svix-Timestamp" => $testPayload->header['svix-timestamp'],
+        );
+
+        $wh = new \Svix\Webhook($testPayload->secret);
+        $wh->verify($testPayload->payload, $testPayload->header);
+    }
+
     public function testInvalidSignatureThrowsException()
     {
         $this->expectException(\Svix\Exception\WebhookVerificationException::class);
