@@ -236,6 +236,32 @@ fn limit_message_join<Q: QuerySelect + QueryOrder + QueryFilter>(
     query.filter(SORT_COLUMN.lt(MessageId::start_id(now + FUTURE_QUERY_LIMIT)))
 }
 
+/// Build the lookup of the latest matching attempt for each message in `msg_ids`.
+///
+/// The attempt time-window (`limit_messageattempt_join`) is only added when `before` or `after`
+/// bound the query. Without them, the first query already guarantees that every returned message
+/// has an in-window attempt, so its latest attempt is in-window too and the range is redundant.
+/// Keeping that redundant range makes Postgres' generic plan estimate the id range at a single row
+/// and scan the whole primary-key range instead of using `ix_messageattempt_per_msg_no_status
+/// (msg_id, id DESC)` (issue #2805).
+fn latest_attempts_query(
+    endp_id: EndpointId,
+    msg_ids: impl Iterator<Item = MessageId>,
+    before: Option<DateTime<Utc>>,
+    after: Option<DateTime<Utc>>,
+    now: DateTime<Utc>,
+) -> Select<messageattempt::Entity> {
+    let query = messageattempt::Entity::secure_find_by_endpoint(endp_id)
+        .filter(messageattempt::Column::MsgId.is_in(msg_ids))
+        .latest_per_msg();
+
+    if before.is_some() || after.is_some() {
+        limit_messageattempt_join(query, before, after, now)
+    } else {
+        query
+    }
+}
+
 /// List messages for a particular endpoint. Additionally includes metadata about the latest message attempt.
 ///
 /// The `before` parameter lets you filter all items created before a certain date and is ignored if an iterator is passed.
@@ -385,15 +411,18 @@ async fn list_attempted_messages(
     // We've found messages that have at least one matching 'messageattempt' row. Now, lookup the *latest*
     // matching messageattempt row for each messages.
     let results = msgs_and_dests.all(db).await?;
-    let mut latest_attempts = messageattempt::Entity::secure_find_by_endpoint(endp.id.clone())
-        .filter(messageattempt::Column::MsgId.is_in(results.iter().map(|msg| msg.id.clone())))
-        .latest_per_msg();
+    let mut latest_attempts = latest_attempts_query(
+        endp.id.clone(),
+        results.iter().map(|msg| msg.id.clone()),
+        before,
+        after,
+        now,
+    );
 
     // Make sure we apply the 'status' filter (if it exists), so that we get the latest attempt matching
     // the query parameters. All of our other filters only apply to 'message'.
     latest_attempts =
         apply_status_filter(latest_attempts, endp.id.clone(), status, before, after, now);
-    latest_attempts = limit_messageattempt_join(latest_attempts, before, after, now);
 
     let mut latest_attempts: HashMap<_, _> = latest_attempts
         .all(db)
@@ -1118,9 +1147,9 @@ mod tests {
     use validator::Validate;
 
     use super::{
-        AttemptListFetchQueryParams, ListAttemptedMessagesQueryParams,
+        AttemptListFetchQueryParams, EndpointId, ListAttemptedMessagesQueryParams,
         ListAttemptsByEndpointQueryParams, ListAttemptsByMsgQueryParams,
-        ListAttemptsForEndpointQueryParams,
+        ListAttemptsForEndpointQueryParams, MessageId, QueryTrait, Utc, latest_attempts_query,
     };
 
     const INVALID_CHANNEL: &str = "$$invalid-channel";
@@ -1195,5 +1224,46 @@ mod tests {
         ))
         .unwrap();
         q.validate().unwrap();
+    }
+
+    #[test]
+    fn test_latest_attempts_query_is_index_friendly_without_time_window() {
+        let endp_id = EndpointId::from("ep_test".to_string());
+        let msg_ids: Vec<MessageId> = (0..3)
+            .map(|i| MessageId::from(format!("msg_test{i}")))
+            .collect();
+        let now = Utc::now();
+
+        let normalize = |sql: String| sql.split_whitespace().collect::<Vec<_>>().join(" ");
+        let id_gt = r#""messageattempt"."id" >"#;
+        let id_lt = r#""messageattempt"."id" <"#;
+
+        // Without before/after the latest-attempt lookup must stay keyed on msg_id so the
+        // planner can use ix_messageattempt_per_msg_no_status (msg_id, id DESC) even with a
+        // generic plan; the redundant attempt id-range is what triggered the full PK scan (#2805).
+        let no_window = normalize(
+            latest_attempts_query(
+                endp_id.clone(),
+                msg_ids.clone().into_iter(),
+                None,
+                None,
+                now,
+            )
+            .build(sea_orm::DbBackend::Postgres)
+            .sql,
+        );
+        assert!(no_window.contains("DISTINCT ON"));
+        assert!(no_window.contains("IN ("));
+        assert!(!no_window.contains(id_gt));
+        assert!(!no_window.contains(id_lt));
+
+        // With before/after the time-window is preserved, so the semantics are unchanged.
+        let with_window = normalize(
+            latest_attempts_query(endp_id, msg_ids.into_iter(), Some(now), None, now)
+                .build(sea_orm::DbBackend::Postgres)
+                .sql,
+        );
+        assert!(with_window.contains(id_gt));
+        assert!(with_window.contains(id_lt));
     }
 }
