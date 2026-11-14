@@ -380,3 +380,67 @@ func Test_executeRequestWithRetriesOnNetworkErrors(t *testing.T) {
 		})
 	}
 }
+
+func Test_executeRequestWithRetriesOnStatus(t *testing.T) {
+	tests := []struct {
+		name          string
+		status        int
+		expectedCalls int32
+	}{
+		{name: "retries on 423 Locked", status: http.StatusLocked, expectedCalls: 2},
+		{name: "does not retry on 409 Conflict", status: http.StatusConflict, expectedCalls: 1},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var requestCount int32
+			var retryHeaders []string
+
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				count := atomic.AddInt32(&requestCount, 1)
+				retryHeaders = append(retryHeaders, r.Header.Get("svix-retry-count"))
+				if count == 1 {
+					w.WriteHeader(tt.status)
+					return
+				}
+				w.WriteHeader(http.StatusOK)
+			}))
+			defer server.Close()
+
+			client := &SvixHttpClient{
+				HTTPClient:     &http.Client{},
+				BaseURL:        server.URL,
+				RetrySchedule:  []time.Duration{10 * time.Millisecond},
+				DefaultHeaders: map[string]string{},
+			}
+
+			req, err := http.NewRequest("POST", server.URL+"/api/v1/app/test_app/msg", bytes.NewBufferString(`{}`))
+			if err != nil {
+				t.Fatalf("Failed to create request: %v", err)
+			}
+
+			resp, err := executeRequestWithRetries(client, req)
+			if err != nil {
+				t.Fatalf("request failed: %v", err)
+			}
+			defer resp.Body.Close()
+
+			if requestCount != tt.expectedCalls {
+				t.Errorf("Expected %d requests, got %d", tt.expectedCalls, requestCount)
+			}
+			if tt.expectedCalls == 2 {
+				if len(retryHeaders) < 2 {
+					t.Fatalf("Expected a retry, got %d request(s) and status %d", len(retryHeaders), resp.StatusCode)
+				}
+				if resp.StatusCode != http.StatusOK {
+					t.Errorf("Expected final status 200, got %d", resp.StatusCode)
+				}
+				if retryHeaders[1] != "1" {
+					t.Errorf("Expected svix-retry-count 1 on retry, got %q", retryHeaders[1])
+				}
+			} else if resp.StatusCode != tt.status {
+				t.Errorf("Expected status %d, got %d", tt.status, resp.StatusCode)
+			}
+		})
+	}
+}
