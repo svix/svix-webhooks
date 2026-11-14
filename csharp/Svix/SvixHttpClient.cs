@@ -99,7 +99,11 @@ namespace Svix
                 try
                 {
                     var response = await _httpClient.SendAsync(request, cancellationToken);
-                    if ((int)response.StatusCode < 500)
+                    // 423 Locked is retried, alongside 5xx.
+                    if (
+                        (int)response.StatusCode < 500
+                        && response.StatusCode != HttpStatusCode.Locked
+                    )
                     {
                         return await FilterResponseForErrors<T>(response, cancellationToken);
                     }

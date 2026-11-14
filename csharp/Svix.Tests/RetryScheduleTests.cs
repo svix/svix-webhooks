@@ -89,6 +89,50 @@ namespace Svix.Tests
         }
 
         [Fact]
+        public void Http423LockedIsRetriedAndLaterSuccessIsReturned()
+        {
+            var lockedClient = new SvixClient(
+                "",
+                new SvixOptions(baseUrl, retryScheduleMilliseconds: new List<int> { 1 })
+            );
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .InScenario("http-423")
+                .WillSetStateTo("unlocked")
+                .RespondWith(Response.Create().WithStatusCode(423).WithBody("{}"));
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .InScenario("http-423")
+                .WhenStateIs("unlocked")
+                .RespondWith(
+                    Response
+                        .Create()
+                        .WithStatusCode(200)
+                        .WithBody("""{"data":[],"iterator":null,"prevIterator":null,"done":true}""")
+                );
+
+            var result = lockedClient.Application.List();
+
+            Assert.Empty(result.Data);
+            Assert.True(result.Done);
+            Assert.Equal(2, stub.LogEntries.Count);
+            Assert.Throws<KeyNotFoundException>(() =>
+                stub.LogEntries[0].RequestMessage.Headers["svix-retry-count"]
+            );
+            Assert.Equal("1", stub.LogEntries[1].RequestMessage.Headers["svix-retry-count"]);
+        }
+
+        [Fact]
+        public void Http409ConflictIsNotRetried()
+        {
+            stub.Given(Request.Create().WithPath("/api/v1/app"))
+                .RespondWith(Response.Create().WithStatusCode(409).WithBody("{}"));
+
+            var error = Assert.Throws<ApiException>(() => client.Application.List());
+
+            Assert.Equal(409, error.ErrorCode);
+            Assert.Single(stub.LogEntries);
+        }
+
+        [Fact]
         public async Task CancellationDuringRetryDelayAbortsTheCall()
         {
             var retryDelayMs = 5000;
