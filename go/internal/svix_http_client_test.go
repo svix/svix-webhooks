@@ -380,3 +380,40 @@ func Test_executeRequestWithRetriesOnNetworkErrors(t *testing.T) {
 		})
 	}
 }
+
+func Test_executeRequestWithRetries_retriesLocked(t *testing.T) {
+	var requestCount int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if atomic.AddInt32(&requestCount, 1) == 1 {
+			w.WriteHeader(http.StatusLocked)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	client := &SvixHttpClient{
+		HTTPClient:     &http.Client{},
+		BaseURL:        server.URL,
+		RetrySchedule:  []time.Duration{10 * time.Millisecond},
+		DefaultHeaders: map[string]string{},
+	}
+
+	req, err := http.NewRequest("GET", server.URL+"/api/v1/app", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+
+	resp, err := executeRequestWithRetries(client, req)
+	if err != nil {
+		t.Fatalf("request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Errorf("Expected status %d, got %d", http.StatusOK, resp.StatusCode)
+	}
+	if got := atomic.LoadInt32(&requestCount); got != 2 {
+		t.Errorf("Expected 2 requests, got %d", got)
+	}
+}
