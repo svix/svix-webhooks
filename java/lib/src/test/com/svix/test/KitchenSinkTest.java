@@ -18,7 +18,6 @@ import org.junit.Test;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 public class KitchenSinkTest {
     static final int HTTP_CONFLICT = 409;
@@ -67,7 +66,11 @@ public class KitchenSinkTest {
 
         EndpointIn epIn = new EndpointIn();
         epIn.setUrl(new URI("https://example.svix.com/"));
+        epIn.setEventTypes(new HashSet<>(Arrays.asList("event.started")));
         EndpointOut ep1 = client.getEndpoint().create(app.getId(), epIn);
+
+        assertEquals(
+                ep1.getEventTypes(), new HashSet<>(Arrays.asList("event.started")));
 
         EndpointPatch epPatched = new EndpointPatch();
 
