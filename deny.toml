@@ -16,12 +16,6 @@ ignore = [
     # TODO: Update dependencies that use rsa crate
     "RUSTSEC-2023-0071",
     "RUSTSEC-2026-0173",
-    # TODO: Wait for dependencies to upgrade off of paste
-    "RUSTSEC-2024-0436",
-    # bincode (depended on by deno) is unmaintained
-    "RUSTSEC-2025-0141",
-    # smartstring (dependency of deno) is unmaintained
-    "RUSTSEC-2026-0249",
     # TODO(15015): move from chrono to jiff
     "RUSTSEC-2026-0543",
 ]

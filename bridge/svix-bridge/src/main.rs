@@ -311,19 +311,14 @@ async fn main() -> Result<()> {
                 cfg.transformation_worker_count
             );
 
-            deno_core::JsRuntime::init_platform(None, false);
-            let pooler: runtime::JsPooler =
-                runtime::JsPooler::new(cfg.transformation_worker_count, cfg.js_engine);
-
             while let Some(TransformerJob {
                 input,
                 script,
                 callback_tx,
             }) = xform_rx.recv().await
             {
-                let tp = pooler.clone();
                 tokio::spawn(async move {
-                    let out = tp.run_script(input, script).await;
+                    let out = runtime::run_script(input, script).await;
                     // FIXME: seeing this Err case come up during load testing.
                     //   Seems like we shouldn't be hitting this so easily while the process is not terminating.
                     //   Regularly there are group error log lines that show up right at the end of an
