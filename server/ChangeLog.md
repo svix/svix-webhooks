@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Replace `jemalloc` with `mimalloc`
 
 ## Version 1.105.0
 * Read at most 20000 bytes of an endpoint's response body instead of buffering it whole and truncating afterwards, so
