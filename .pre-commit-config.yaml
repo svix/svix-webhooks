@@ -38,13 +38,18 @@ repos:
       - id: shellcheck
         exclude: gradlew
 
-  - repo: https://github.com/hyland/github-actions-ensure-sha-pinned-actions
-    rev: 22ca7a8cf33e873ba1d6fbcd2b71fa0ec5006b17 # v1.1.0
-    hooks:
-      - id: gha-sha-convert
-        args: ["--allowlist", "actions/*"]
-
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: f805888065fdb6162e1f800e50bb9460cbd223d6 # v0.37.2
     hooks:
       - id: check-dependabot
+
+  - repo: https://github.com/kjanat/actionlint
+    rev: 220b76cfa568e00ed8b3c476898f849a722b88e2 # frozen: v1.17.1
+    hooks:
+      - id: actionlint
+
+  - repo: https://github.com/zendern/pre-commit-hooks
+    rev: cb3feef6aa5b1864d521e8bc84acc35391146974 # frozen: v1.3.0
+    hooks:
+      - id: gh-actions-lock-verify-local
+      - id: gh-actions-lock-verify # manual stage: run in CI with GH_TOKEN

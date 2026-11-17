@@ -15,10 +15,10 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+        uses: ruby/setup-ruby@v1.335.0
         with:
           ruby-version: 3.4.2
 
@@ -33,7 +33,7 @@ jobs:
           bundler exec rake build
 
       - name: Configure RubyGems credentials (trusted publishing)
-        uses: rubygems/configure-rubygems-credentials@dc5a8d8553e6ee01fc26761a49e99e733d17954a # v2.1.0
+        uses: rubygems/configure-rubygems-credentials@v2.1.0
 
       - name: Publish
         run: |
