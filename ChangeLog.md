@@ -7,6 +7,9 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 * Libs/Ruby: Retry HTTP 423 Locked responses, like the other SDKs
+* Libs/C#: Improve retry logic (retry on HTTP 423)
+* Libs/Go: Improve retry logic (retry on HTTP 423)
+* Libs/Rust: Improve retry logic (retry on HTTP 423)
 * Libs/Ruby, Libs/PHP: Webhook verification now lowercases the header names
   before looking them up, so header sets like `Svix-Id` (as returned by PHP's
   `getallheaders()` and by Rack) verify instead of failing with

@@ -21,12 +21,8 @@ use svix_server::{
 use tracing_subscriber::util::SubscriberInitExt;
 use validator::Validate;
 
-#[cfg(all(target_env = "msvc", feature = "jemalloc"))]
-compile_error!("jemalloc cannot be enabled on msvc");
-
-#[cfg(all(not(target_env = "msvc"), feature = "jemalloc"))]
 #[global_allocator]
-static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+static GLOBAL: rustfs_mimalloc::MiMalloc = rustfs_mimalloc::MiMalloc;
 
 mod wait_for;
 use wait_for::wait_for_dsn;
