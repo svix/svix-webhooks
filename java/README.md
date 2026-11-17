@@ -71,11 +71,11 @@ First checkout the [core README](../README.md#development) for details on how to
 ## Requirements
 
  - Java 1.8+
- - Gradle
+ - Maven 3.6.3+
 
 ## Building the library
 ```sh
-./gradlew build
+mvn package
 ```
 
 ## Running Tests
@@ -83,11 +83,11 @@ First checkout the [core README](../README.md#development) for details on how to
 Simply run:
 
 ```sh
-./gradlew test
+mvn test
 ```
 
 ## Publishing to Maven
 
 ```sh
-./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+mvn -P release deploy
 ```
