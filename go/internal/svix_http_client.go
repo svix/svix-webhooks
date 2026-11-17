@@ -165,7 +165,8 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 
 	resp, err := client.HTTPClient.Do(request)
 	for try := 0; try < len(client.RetrySchedule); try++ {
-		if err == nil && resp.StatusCode < 500 {
+		// 423 Locked is retried, alongside 5xx.
+		if err == nil && resp.StatusCode < 500 && resp.StatusCode != http.StatusLocked {
 			break
 		}
 		// don't retry if the caller cancelled the request or its deadline passed

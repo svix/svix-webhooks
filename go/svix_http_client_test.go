@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 	svix "github.com/svix/svix-webhooks/v2/go"
@@ -159,6 +160,70 @@ func TestRetryCountHeadersIsSetCorrectly(t *testing.T) {
 	if !reflect.DeepEqual(retryCounts, []string{"1", "2", "3"}) {
 		t.Errorf("Expected client to incorrect the svix-retry-count header by one each request, got: %v", retryCounts)
 
+	}
+}
+
+func TestRetriesHttp423ThenSucceeds(t *testing.T) {
+	serverURL, err := url.Parse("http://testapi.test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	schedule := []time.Duration{time.Millisecond}
+	svx, err := svix.New("randomToken", &svix.SvixOptions{
+		ServerUrl:     serverURL,
+		HTTPClient:    http.DefaultClient,
+		RetrySchedule: &schedule,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	calls := 0
+	retryCounts := []string{}
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			calls++
+			retryCounts = append(retryCounts, r.Header.Get("svix-retry-count"))
+			if calls == 1 {
+				return httpmock.NewStringResponse(http.StatusLocked, `{"code":"LOCKED","detail":"locked"}`), nil
+			}
+			return httpmock.NewStringResponse(http.StatusOK, appListOut), nil
+		},
+	)
+
+	res, err := svx.Application().List(context.Background(), nil)
+	if err != nil {
+		t.Fatalf("expected success after HTTP 423, got %v", err)
+	}
+	if res.Iterator == nil || *res.Iterator != "iterator" {
+		t.Fatalf("unexpected list iterator: %v", res.Iterator)
+	}
+	if calls != 2 {
+		t.Fatalf("expected 2 requests, got %d", calls)
+	}
+	if !reflect.DeepEqual(retryCounts, []string{"", "1"}) {
+		t.Fatalf("svix-retry-count headers: got %v", retryCounts)
+	}
+}
+
+func TestDoesNotRetryHttp409(t *testing.T) {
+	svx := newMockClient()
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+
+	httpmock.RegisterResponder("GET", "http://testapi.test/api/v1/app",
+		func(r *http.Request) (*http.Response, error) {
+			return httpmock.NewStringResponse(http.StatusConflict, `{"code":"CONFLICT"}`), nil
+		},
+	)
+
+	_, err := svx.Application().List(context.Background(), nil)
+	assertExpectedError(t, err, "status code 409")
+	if httpmock.GetTotalCallCount() != 1 {
+		t.Errorf("expected a single request for HTTP 409, got %v", httpmock.GetTotalCallCount())
 	}
 }
 
