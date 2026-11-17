@@ -19,10 +19,10 @@ jobs:
           distribution: 'temurin'
           java-version: '25'
           server-id: central
-          server-username: NEXUS_USERNAME
-          server-password: NEXUS_PASSWORD
+          server-username-env-var: NEXUS_USERNAME
+          server-password-env-var: NEXUS_PASSWORD
+          gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
           gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Publish
         run: |
