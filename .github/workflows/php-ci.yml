@@ -11,16 +11,16 @@ jobs:
         dependencies: ['highest', 'lowest']
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Install php
-        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        uses: shivammathur/setup-php@2.40.0
         with:
           php-version: ${{ matrix.php-versions }}
           tools: composer
 
       - name: Install Composer dependencies ${{ matrix.dependencies }}
-        uses: ramsey/composer-install@65e4f84970763564f46a70b8a54b90d033b3bdda # 4.0.0
+        uses: ramsey/composer-install@4.0.0
         with:
           dependency-versions: ${{ matrix.dependencies }}
           composer-options: --prefer-dist --prefer-stable

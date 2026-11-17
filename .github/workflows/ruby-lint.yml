@@ -13,14 +13,14 @@ jobs:
         ruby-version: [3.2.10, 3.3.10, 3.4.9, 4.0.2]
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Pull svix server image (and dependencies)
         run: docker compose pull
         working-directory: ./client-integration-tests
 
       - name: Setup Ruby
-        uses: ruby/setup-ruby@7f797815d8adceb1c412e7abefdd1ab4abc47a5f # v1.335.0
+        uses: ruby/setup-ruby@v1.335.0
         with:
           ruby-version: ${{ matrix.ruby-version }}
 

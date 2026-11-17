@@ -1,0 +1,5 @@
+paths:
+  .github/workflows/sdks-release.yml:
+    ignore:
+      # SC2129 makes these scripts messier
+      - "shellcheck reported issue in this script: SC2129"
