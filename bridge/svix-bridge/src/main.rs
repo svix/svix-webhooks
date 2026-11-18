@@ -304,12 +304,8 @@ async fn main() -> Result<()> {
     // help keep the coupling more loose, with less stateful baggage.
     // Starting with this just to keep the JS executor stuff here in the binary.
     tokio::spawn({
-        let cfg = Arc::clone(&cfg);
         async move {
-            tracing::info!(
-                "Starting JS Transformation Workers: {}",
-                cfg.transformation_worker_count
-            );
+            tracing::info!("Starting JS Transformation Worker");
 
             while let Some(TransformerJob {
                 input,

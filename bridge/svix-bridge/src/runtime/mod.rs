@@ -6,11 +6,13 @@ mod engine_quickjs;
 
 pub use engine_quickjs::validate_script;
 
-#[derive(Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize)]
+#[derive(Clone, Copy, PartialEq, Eq, Default, Deserialize, Serialize, Debug)]
 #[serde(rename_all = "kebab-case")]
 pub enum JsExecutor {
     #[default]
     QuickJs,
+    Deno,
+    Both,
 }
 
 const MAX_QJS_DURATION: std::time::Duration = std::time::Duration::from_millis(100);
