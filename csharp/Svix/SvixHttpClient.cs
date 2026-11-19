@@ -10,12 +10,13 @@ namespace Svix
         string token,
         List<int> retryScheduleMilliseconds,
         string userAgent,
-        string serverUrl
+        string serverUrl,
+        Func<HttpClient> httpClientFactory
     )
     {
         private readonly List<int> retryScheduleMilliseconds = retryScheduleMilliseconds;
         private readonly string serverUrl = serverUrl.TrimEnd('/');
-        private readonly HttpClient _httpClient = new();
+        private readonly HttpClient _httpClient = httpClientFactory();
         private readonly string _token = token;
         private readonly JsonSerializerSettings patchJsonOptions = new()
         {
@@ -26,6 +27,15 @@ namespace Svix
             NullValueHandling = NullValueHandling.Ignore,
             Converters = { new SystemTextJsonConverter() },
         };
+
+        public SvixHttpClient(
+            string token,
+            List<int> retryScheduleMilliseconds,
+            string userAgent,
+            string serverUrl
+        ) : this(token, retryScheduleMilliseconds, userAgent, serverUrl, () => new HttpClient())
+        {
+        }
 
         public SvixHttpClient(
             string token,
