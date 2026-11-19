@@ -115,7 +115,7 @@ class SvixHttpClient
                 ];
 
                 // Check if we should retry based on status code
-                if ($statusCode >= 500 && $attempt < $maxRetries) {
+                if (($statusCode >= 500 || $statusCode === 423) && $attempt < $maxRetries) {
                     $this->sleepFromSchedule($attempt);
                     $attempt++;
                     continue;
@@ -148,7 +148,7 @@ class SvixHttpClient
                     ];
 
                     // Check if we should retry based on status code
-                    if ($statusCode >= 500 && $attempt < $maxRetries) {
+                    if (($statusCode >= 500 || $statusCode === 423) && $attempt < $maxRetries) {
                         $this->sleepFromSchedule($attempt);
                         $attempt++;
                         continue;
