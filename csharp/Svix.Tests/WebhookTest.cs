@@ -230,6 +230,36 @@ namespace Svix.Tests
         }
 
         [Fact]
+        public void TestMultiSigPayloadSkipsMalformedEntry()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+
+            string[] sigs = new string[]
+            {
+                "malformed", // no version separator
+                testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY), // valid signature
+            };
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, String.Join(" ", sigs));
+
+            var wh = new Webhook(testPayload.secret);
+
+            wh.Verify(testPayload.payload, testPayload.headers);
+        }
+
+        [Fact]
+        public void TestOnlyMalformedSignatureThrowsNoMatch()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, "malformed");
+
+            var wh = new Webhook(testPayload.secret);
+
+            Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
+            );
+        }
+
+        [Fact]
         public void TestSignatureVerificationWorksWithoutPrefix()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);

@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/C#: Skip malformed signature entries in `Webhook.Verify` instead of rejecting the whole header, like the other SDKs
 * Libs/Ruby: Retry HTTP 423 Locked responses, like the other SDKs
 * Libs/C#: Improve retry logic (retry on HTTP 423)
 * Libs/Go: Improve retry logic (retry on HTTP 423)
