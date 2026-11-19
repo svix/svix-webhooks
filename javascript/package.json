@@ -29,6 +29,7 @@
     "build": "npm run typecheck && tsdown",
     "prepare": "npm run build",
     "test": "tsc -p tsconfig.test.json && printf '%s\\n' '{\"type\":\"commonjs\"}' > test_build/package.json && node --enable-source-maps test_build/src/index.test.js",
+    "test:bun": "bun test src/bun_compat.test.ts src/mockttp.test.ts src/webhook.test.ts src/request.test.ts",
     "prepublishOnly": "biome check",
     "check": "biome check",
     "check:fix": "biome check --write",
