@@ -65,7 +65,8 @@ impl ReceiverOutput for HttpOutput {
             .headers(self.headers.clone())
             .json(&request.payload)
             .send()
-            .await?;
+            .await?
+            .error_for_status()?;
         Ok(())
     }
 }
