@@ -44,6 +44,7 @@ mod checkbook_config_out;
 mod clickhouse_config_in;
 mod clickhouse_config_out;
 mod clickhouse_config_patch;
+mod client_secret_jwt_params_in;
 mod connector_in;
 mod connector_kind;
 mod connector_out;
@@ -78,6 +79,12 @@ mod endpoint_headers_out;
 mod endpoint_headers_patch_in;
 mod endpoint_in;
 mod endpoint_message_out;
+mod endpoint_mtls_config_in;
+mod endpoint_mtls_config_out;
+mod endpoint_mtls_out;
+mod endpoint_oauth_config_in;
+mod endpoint_oauth_config_out;
+mod endpoint_oauth_out;
 mod endpoint_out;
 mod endpoint_patch;
 mod endpoint_secret_out;
@@ -174,6 +181,9 @@ mod meta_config;
 mod meta_config_out;
 mod nango_config;
 mod nango_config_out;
+mod oauth2_auth_method_in_out;
+mod oauth2_grant_type_in_out;
+mod oauth_jws_signing_algorithm;
 mod open_claw_config;
 mod open_claw_config_out;
 mod operational_webhook_endpoint_headers_in;
@@ -338,6 +348,7 @@ pub use self::{
     clickhouse_config_in::ClickhouseConfigIn,
     clickhouse_config_out::ClickhouseConfigOut,
     clickhouse_config_patch::ClickhouseConfigPatch,
+    client_secret_jwt_params_in::ClientSecretJwtParamsIn,
     connector_in::ConnectorIn,
     connector_kind::ConnectorKind,
     connector_out::ConnectorOut,
@@ -372,6 +383,12 @@ pub use self::{
     endpoint_headers_patch_in::EndpointHeadersPatchIn,
     endpoint_in::EndpointIn,
     endpoint_message_out::EndpointMessageOut,
+    endpoint_mtls_config_in::EndpointMtlsConfigIn,
+    endpoint_mtls_config_out::EndpointMtlsConfigOut,
+    endpoint_mtls_out::EndpointMtlsOut,
+    endpoint_oauth_config_in::EndpointOauthConfigIn,
+    endpoint_oauth_config_out::EndpointOauthConfigOut,
+    endpoint_oauth_out::EndpointOauthOut,
     endpoint_out::EndpointOut,
     endpoint_patch::EndpointPatch,
     endpoint_secret_out::EndpointSecretOut,
@@ -468,6 +485,9 @@ pub use self::{
     meta_config_out::MetaConfigOut,
     nango_config::NangoConfig,
     nango_config_out::NangoConfigOut,
+    oauth2_auth_method_in_out::Oauth2AuthMethodInOut,
+    oauth2_grant_type_in_out::Oauth2GrantTypeInOut,
+    oauth_jws_signing_algorithm::OauthJwsSigningAlgorithm,
     open_claw_config::OpenClawConfig,
     open_claw_config_out::OpenClawConfigOut,
     operational_webhook_endpoint_headers_in::OperationalWebhookEndpointHeadersIn,

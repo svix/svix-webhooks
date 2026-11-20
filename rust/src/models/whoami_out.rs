@@ -16,6 +16,11 @@ pub struct WhoamiOut {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub app_id: Option<String>,
 
+    /// The organization group the current token is attached to
+    #[serde(rename = "orgGroupId")]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub org_group_id: Option<String>,
+
     /// The stream application that the current token is limited to, if there is
     /// one
     #[serde(rename = "streamAppId")]

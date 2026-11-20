@@ -353,6 +353,112 @@ impl<'a> Endpoint<'a> {
         .await
     }
 
+    /// Get endpoint OAuth status and configuration.
+    ///
+    /// Returns a 200 with `enabled: false` and `config: null` when OAuth is not
+    /// enabled.
+    pub async fn get_oauth_config(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<EndpointOauthOut> {
+        crate::request::Request::new(
+            http::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Set endpoint OAuth configuration.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+    pub async fn set_oauth_config(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_oauth_config_in: EndpointOauthConfigIn,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http::Method::PUT,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(endpoint_oauth_config_in)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Delete endpoint OAuth configuration.
+    pub async fn delete_oauth_config(&self, app_id: String, endpoint_id: String) -> Result<()> {
+        crate::request::Request::new(
+            http::Method::DELETE,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Get endpoint mTLS status and configuration.
+    ///
+    /// Returns a 200 with `enabled: false` and `config: null` when mTLS is not
+    /// enabled.
+    pub async fn get_mtls_config(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+    ) -> Result<EndpointMtlsOut> {
+        crate::request::Request::new(
+            http::Method::GET,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Set endpoint mTLS configuration.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+    pub async fn set_mtls_config(
+        &self,
+        app_id: String,
+        endpoint_id: String,
+        endpoint_mtls_config_in: EndpointMtlsConfigIn,
+    ) -> Result<()> {
+        crate::request::Request::new(
+            http::Method::PUT,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .with_body_param(endpoint_mtls_config_in)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
+    /// Delete endpoint mTLS configuration.
+    pub async fn delete_mtls_config(&self, app_id: String, endpoint_id: String) -> Result<()> {
+        crate::request::Request::new(
+            http::Method::DELETE,
+            "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+        )
+        .with_path_param("app_id", app_id)
+        .with_path_param("endpoint_id", endpoint_id)
+        .returns_nothing()
+        .execute(self.cfg)
+        .await
+    }
+
     /// Get basic statistics for the endpoint.
     pub async fn get_stats(
         &self,

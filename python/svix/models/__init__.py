@@ -42,6 +42,7 @@ from .checkbook_config_out import CheckbookConfigOut
 from .clickhouse_config_in import ClickhouseConfigIn
 from .clickhouse_config_out import ClickhouseConfigOut
 from .clickhouse_config_patch import ClickhouseConfigPatch
+from .client_secret_jwt_params_in import ClientSecretJwtParamsIn
 from .connector_in import ConnectorIn
 from .connector_kind import ConnectorKind
 from .connector_out import ConnectorOut
@@ -76,6 +77,12 @@ from .endpoint_headers_out import EndpointHeadersOut
 from .endpoint_headers_patch_in import EndpointHeadersPatchIn
 from .endpoint_in import EndpointIn
 from .endpoint_message_out import EndpointMessageOut
+from .endpoint_mtls_config_in import EndpointMtlsConfigIn
+from .endpoint_mtls_config_out import EndpointMtlsConfigOut
+from .endpoint_mtls_out import EndpointMtlsOut
+from .endpoint_oauth_config_in import EndpointOauthConfigIn
+from .endpoint_oauth_config_out import EndpointOauthConfigOut
+from .endpoint_oauth_out import EndpointOauthOut
 from .endpoint_out import EndpointOut
 from .endpoint_patch import EndpointPatch
 from .endpoint_secret_out import EndpointSecretOut
@@ -174,6 +181,9 @@ from .meta_config import MetaConfig
 from .meta_config_out import MetaConfigOut
 from .nango_config import NangoConfig
 from .nango_config_out import NangoConfigOut
+from .oauth2_auth_method_in_out import Oauth2AuthMethodInOut
+from .oauth2_grant_type_in_out import Oauth2GrantTypeInOut
+from .oauth_jws_signing_algorithm import OauthJwsSigningAlgorithm
 from .open_claw_config import OpenClawConfig
 from .open_claw_config_out import OpenClawConfigOut
 from .operational_webhook_endpoint_headers_in import OperationalWebhookEndpointHeadersIn
@@ -332,6 +342,7 @@ __all__ = [
     "ClickhouseConfigIn",
     "ClickhouseConfigOut",
     "ClickhouseConfigPatch",
+    "ClientSecretJwtParamsIn",
     "ConnectorIn",
     "ConnectorKind",
     "ConnectorOut",
@@ -366,6 +377,12 @@ __all__ = [
     "EndpointHeadersPatchIn",
     "EndpointIn",
     "EndpointMessageOut",
+    "EndpointMtlsConfigIn",
+    "EndpointMtlsConfigOut",
+    "EndpointMtlsOut",
+    "EndpointOauthConfigIn",
+    "EndpointOauthConfigOut",
+    "EndpointOauthOut",
     "EndpointOut",
     "EndpointPatch",
     "EndpointSecretOut",
@@ -462,6 +479,9 @@ __all__ = [
     "MetaConfigOut",
     "NangoConfig",
     "NangoConfigOut",
+    "Oauth2AuthMethodInOut",
+    "Oauth2GrantTypeInOut",
+    "OauthJwsSigningAlgorithm",
     "OpenClawConfig",
     "OpenClawConfigOut",
     "OperationalWebhookEndpointHeadersIn",
