@@ -16,8 +16,6 @@ assign = "1"
 async-trait = "0.1.89"
 axum.workspace = true
 clap = { version = "4.2.4", features = ["env", "derive"] }
-deadpool = { version = "0.12.1", features = ["unmanaged", "rt_tokio_1"] }
-deno_core = "0.352.1"
 enum_dispatch = "0.3"
 fs-err = "3.3.2"
 indexmap = { version = "2.10.0", features = ["serde"] }
@@ -42,7 +40,7 @@ tokio.workspace = true
 tracing.workspace = true
 tracing-opentelemetry = "0.33.0"
 tracing-subscriber = { workspace = true, features = ["fmt", "json"] }
-url = "2.5.4"
+url = { version = "2.5.4", features = ["serde"] }
 
 [build-dependencies]
 rust-executable-metadata = { git = "https://github.com/svix/rust-executable-metadata", rev = "7a32435fbdab53f33e6abab9c1ab500afef0a7a8" }
