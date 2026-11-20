@@ -123,7 +123,7 @@ namespace Svix
                 var commaIndex = versionedSignature.IndexOf(',');
                 if (commaIndex < 0)
                 {
-                    throw new WebhookVerificationException("Invalid Signature Headers");
+                    continue;
                 }
                 var version = versionedSignature.Slice(0, commaIndex);
                 if (!version.Equals("v1", StringComparison.InvariantCulture))
