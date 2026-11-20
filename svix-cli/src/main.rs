@@ -2,7 +2,6 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use clap_complete::Shell;
 use colored_json::{ColorMode, Output};
-use concolor_clap::{Color, ColorChoice};
 use svix::api::SvixOptions;
 
 use self::{
@@ -35,10 +34,10 @@ const BIN_NAME: &str = env!("CARGO_BIN_NAME");
 
 #[derive(Parser)]
 #[command(version, about, long_about = None, bin_name = BIN_NAME)]
-#[clap(color = concolor_clap::color_choice())]
 struct Cli {
-    #[command(flatten)]
-    color: Color,
+    /// Controls when to use color.
+    #[arg(long, default_value_t = clap::ColorChoice::Auto, value_name = "WHEN", value_enum, global = true)]
+    color: clap::ColorChoice,
     #[arg(
         short,
         long,
@@ -56,10 +55,10 @@ impl Cli {
     /// When the color choice is "auto", this considers whether stdout is a tty or not so that
     /// color codes are only produced when actually writing directly to a terminal.
     fn color_mode(&self) -> ColorMode {
-        match self.color.color {
-            ColorChoice::Auto => ColorMode::Auto(Output::StdOut),
-            ColorChoice::Always => ColorMode::On,
-            ColorChoice::Never => ColorMode::Off,
+        match self.color {
+            clap::ColorChoice::Auto => ColorMode::Auto(Output::StdOut),
+            clap::ColorChoice::Always => ColorMode::On,
+            clap::ColorChoice::Never => ColorMode::Off,
         }
     }
 
