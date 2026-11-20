@@ -15,7 +15,8 @@ RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,
         shadow~4 \
         cmake~3 \
         git~2 \
-        curl~8
+        curl~8 \
+        curl-dev~8
 EOF
 
 RUN cargo install --locked cargo-sbom@0.10.0

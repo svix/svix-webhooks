@@ -91,9 +91,6 @@ jobs:
         with:
           tool: nextest
 
-      - name: Clippy
-        run: cargo clippy --locked --all-targets --all-features -- -D warnings
-
       - name: Install system dependencies
         # Packages should align with whatever is in the bridge/Dockerfile
         run: |
@@ -103,7 +100,11 @@ jobs:
             curl \
             libssl-dev=* \
             pkg-config=1.8.* \
-            zlib1g-dev=1:*
+            zlib1g-dev=1:* \
+            libcurl4-openssl-dev
+
+      - name: Clippy
+        run: cargo clippy --locked --all-targets --all-features -- -D warnings
 
       - name: Build (no features)
         run: cargo check --no-default-features
