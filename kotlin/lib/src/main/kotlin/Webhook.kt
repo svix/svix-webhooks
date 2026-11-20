@@ -1,5 +1,6 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.EmptyWebhookSecretException
 import com.svix.kotlin.exceptions.WebhookSigningException
 import com.svix.kotlin.exceptions.WebhookVerificationException
 import java.net.http.HttpHeaders
@@ -102,15 +103,23 @@ class Webhook {
         }
     }
 
+    @Throws(EmptyWebhookSecretException::class)
     constructor(secret: String) {
         var sec = secret
         if (sec.startsWith(SECRET_PREFIX)) {
             sec = sec.substring(SECRET_PREFIX.length)
         }
         key = Base64.getDecoder().decode(sec)
+        if (key.isEmpty()) {
+            throw EmptyWebhookSecretException("Webhook secret should not be empty")
+        }
     }
 
+    @Throws(EmptyWebhookSecretException::class)
     constructor(secret: ByteArray) {
+        if (secret.isEmpty()) {
+            throw EmptyWebhookSecretException("Webhook secret should not be empty")
+        }
         key = secret
     }
 }
