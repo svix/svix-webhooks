@@ -1,14 +1,20 @@
 //! Syntax highlighting for the code samples, drawn on the theme's own background so
 //! they read the same whether the terminal is light or dark.
 
-use std::sync::OnceLock;
+use std::{
+    cmp::Reverse,
+    sync::{Arc, OnceLock},
+};
 
+use arborium::{
+    theme::{builtin, Theme},
+    GrammarStore, Highlighter,
+};
+use arborium_theme::{capture_to_slot, slot_to_highlight_index};
 use ratatui::{
     style::{Color, Style},
-    text::Line,
+    text::{Line, Span},
 };
-use syntect::{highlighting::ThemeSet, parsing::SyntaxSet};
-use tui_syntax_highlight::Highlighter;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub(super) enum Syntax {
@@ -25,7 +31,6 @@ pub(super) enum Syntax {
 }
 
 impl Syntax {
-    /// Looked up by extension, which is stabler than syntect's display names.
     fn extension(self) -> &'static str {
         match self {
             Self::Python => "py",
@@ -33,8 +38,7 @@ impl Syntax {
             Self::Go => "go",
             Self::Rust => "rs",
             Self::Java => "java",
-            // syntect ships no Kotlin grammar; Java's is close enough.
-            Self::Kotlin => "java",
+            Self::Kotlin => "kt",
             Self::CSharp => "cs",
             Self::Ruby => "rb",
             Self::Php => "php",
@@ -43,59 +47,76 @@ impl Syntax {
     }
 }
 
-/// The syntax and theme dumps are slow to load, so this is built once on first use.
 struct Engine {
-    syntaxes: SyntaxSet,
-    highlighter: Highlighter,
-    background: Option<Color>,
+    store: Arc<GrammarStore>,
+    theme: Theme,
 }
-
-/// A dark theme on its own background: readable on any terminal, close to the docs.
-const THEME: &str = "base16-ocean.dark";
 
 fn engine() -> &'static Engine {
     static ENGINE: OnceLock<Engine> = OnceLock::new();
 
-    ENGINE.get_or_init(|| {
-        let theme = ThemeSet::load_defaults().themes[THEME].clone();
-        let highlighter = Highlighter::new(theme).line_numbers(false);
-
-        Engine {
-            syntaxes: SyntaxSet::load_defaults_newlines(),
-            background: highlighter.get_background_color(),
-            highlighter,
-        }
+    ENGINE.get_or_init(|| Engine {
+        store: Arc::new(GrammarStore::new()),
+        theme: builtin::one_dark(),
     })
+}
+
+fn colour(colour: arborium::theme::Color) -> Color {
+    Color::Rgb(colour.r, colour.g, colour.b)
 }
 
 /// The background the samples are drawn on, for the box around them to match.
 pub(super) fn background() -> Style {
-    match engine().background {
-        Some(background) => Style::new().bg(background),
+    match engine().theme.background {
+        Some(background) => Style::new().bg(colour(background)),
         None => Style::new(),
     }
 }
 
-/// Highlights `code`, falling back to unstyled lines if the syntax or theme won't load.
-pub(super) fn highlight(syntax: Syntax, code: &str) -> Vec<Line<'static>> {
-    let engine = engine();
-    let plain = || {
-        code.lines()
-            .map(|line| Line::styled(line.to_owned(), background()))
-            .collect::<Vec<_>>()
-    };
+fn style(index: Option<usize>) -> Style {
+    let theme = &engine().theme;
+    let fg = index
+        .and_then(|index| theme.style(index))
+        .and_then(|style| style.fg)
+        .or(theme.foreground);
 
-    let Some(reference) = engine.syntaxes.find_syntax_by_extension(syntax.extension()) else {
-        return plain();
-    };
-
-    match engine
-        .highlighter
-        .highlight_lines(code.lines(), reference, &engine.syntaxes)
-    {
-        Ok(text) => text.lines,
-        Err(_) => plain(),
+    match fg {
+        Some(fg) => background().fg(colour(fg)),
+        None => background(),
     }
+}
+
+/// Highlights `code`, falling back to unstyled lines if the language won't parse.
+pub(super) fn highlight(syntax: Syntax, code: &str) -> Vec<Line<'static>> {
+    let mut spans = Highlighter::with_store(engine().store.clone())
+        .highlight_spans(syntax.extension(), code)
+        .unwrap_or_default();
+    spans.sort_by_key(|span| (span.start, Reverse(span.end), span.pattern_index));
+
+    let mut styles = vec![None; code.len()];
+    for span in spans {
+        if let (Some(index), Some(range)) = (
+            slot_to_highlight_index(capture_to_slot(&span.capture)),
+            styles.get_mut(span.start as usize..span.end as usize),
+        ) {
+            range.fill(Some(index));
+        }
+    }
+
+    code.lines()
+        .map(|line| {
+            let offset = line.as_ptr() as usize - code.as_ptr() as usize;
+            let mut rest = line;
+            styles[offset..offset + line.len()]
+                .chunk_by(|a, b| a == b)
+                .map(|run| {
+                    let (text, tail) = rest.split_at(run.len());
+                    rest = tail;
+                    Span::styled(text.to_owned(), style(run[0]))
+                })
+                .collect()
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -143,10 +164,7 @@ mod tests {
             Syntax::Shell,
         ] {
             assert!(
-                engine()
-                    .syntaxes
-                    .find_syntax_by_extension(syntax.extension())
-                    .is_some(),
+                engine().store.get(syntax.extension()).is_some(),
                 "no syntax for .{}",
                 syntax.extension()
             );
