@@ -6,16 +6,20 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
-* Libs/Kotlin: `Webhook` constructors now throw `EmptyWebhookSecretException` for an empty secret, like the Java SDK
-* Libs/Ruby: Retry HTTP 423 Locked responses, like the other SDKs
+
+## Version 2.11.0
 * Libs/C#: Improve retry logic (retry on HTTP 423)
 * Libs/Go: Improve retry logic (retry on HTTP 423)
-* Libs/Rust: Improve retry logic (retry on HTTP 423)
+* Libs/Java: Use maven instead of gradle, publish proper docs jar on release
+* Libs/Kotlin: `Webhook` constructors now throw `EmptyWebhookSecretException` for an empty secret, like the Java SDK
 * Libs/PHP: Improve retry logic (retry on HTTP 423)
+* Libs/Ruby: Retry HTTP 423 Locked responses, like the other SDKs
 * Libs/Ruby, Libs/PHP: Webhook verification now lowercases the header names
   before looking them up, so header sets like `Svix-Id` (as returned by PHP's
   `getallheaders()` and by Rack) verify instead of failing with
   "Missing required headers"
+* Libs/Rust: Improve retry logic (retry on HTTP 423)
+* Libs/All: Update to latest Svix Cloud spec
 
 ## Version 2.10.0
 * Libs/JavaScript: Cancel discarded response bodies (part of retry logic)
