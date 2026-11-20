@@ -10,6 +10,7 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 ## Version 2.11.0
 * Libs/C#: Improve retry logic (retry on HTTP 423)
 * Libs/Go: Improve retry logic (retry on HTTP 423)
+* Libs/Java: Use maven instead of gradle, publish proper docs jar on release
 * Libs/Kotlin: `Webhook` constructors now throw `EmptyWebhookSecretException` for an empty secret, like the Java SDK
 * Libs/PHP: Improve retry logic (retry on HTTP 423)
 * Libs/Ruby: Retry HTTP 423 Locked responses, like the other SDKs
