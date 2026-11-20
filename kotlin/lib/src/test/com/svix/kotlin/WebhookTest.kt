@@ -1,5 +1,6 @@
 package com.svix.kotlin
 
+import com.svix.kotlin.exceptions.EmptyWebhookSecretException
 import com.svix.kotlin.exceptions.WebhookVerificationException
 import java.net.http.HttpHeaders
 import java.nio.charset.StandardCharsets
@@ -44,6 +45,17 @@ class WebhookTest {
         testPayload.headerMap["svix-signature"] = ArrayList(listOf(sigs.joinToString(" ")))
         val webhook = Webhook(testPayload.secret)
         webhook.verify(testPayload.payload, testPayload.headers())
+    }
+
+    @Test
+    fun emptyStringSecretThrowsException() {
+        assertFailsWith<EmptyWebhookSecretException> { Webhook("") }
+        assertFailsWith<EmptyWebhookSecretException> { Webhook("whsec_") }
+    }
+
+    @Test
+    fun emptyByteArraySecretThrowsException() {
+        assertFailsWith<EmptyWebhookSecretException> { Webhook(ByteArray(0)) }
     }
 
     @Test

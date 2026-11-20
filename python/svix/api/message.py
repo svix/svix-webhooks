@@ -240,12 +240,13 @@ class MessageAsync(ApiBaseAsync):
         batch_create_messages_in: BatchCreateMessagesIn,
         options: MessageCreateBatchOptions = (MessageCreateBatchOptions()),
     ) -> EmptyResponse:
-        """Creates a batch of messages in a fire-or-forget fashion.
+        """Creates one or more messages in a fire-or-forget fashion.
 
-        This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
-        if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
-        doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
-        to the `v1.create.message` action.
+
+        It works much like the `v1.create.message` action but is optimized for throughput, so it
+        skips per-message validation feedback (such as the `eventId` uniqueness check) and doesn't
+        apply back-pressure when rate limits are reached. If you need either of those guarantees,
+        use `v1.create.message` instead.
 
         The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
         generally a good idea to keep webhook payloads under 40KiB."""
@@ -445,12 +446,13 @@ class Message(ApiBaseSync):
         batch_create_messages_in: BatchCreateMessagesIn,
         options: MessageCreateBatchOptions = (MessageCreateBatchOptions()),
     ) -> EmptyResponse:
-        """Creates a batch of messages in a fire-or-forget fashion.
+        """Creates one or more messages in a fire-or-forget fashion.
 
-        This is the fastest and most-scalable way to create messages, but doesn't allow you to detect
-        if your message failed certain validation steps (e.g., the `eventId` uniqueness check), and
-        doesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar
-        to the `v1.create.message` action.
+
+        It works much like the `v1.create.message` action but is optimized for throughput, so it
+        skips per-message validation feedback (such as the `eventId` uniqueness check) and doesn't
+        apply back-pressure when rate limits are reached. If you need either of those guarantees,
+        use `v1.create.message` instead.
 
         The entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's
         generally a good idea to keep webhook payloads under 40KiB."""

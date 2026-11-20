@@ -3,7 +3,7 @@ name = "svix-cli"
 description = "A CLI to interact with the Svix API."
 homepage = "https://www.svix.com"
 authors = ["Svix Inc. <oss@svix.com>"]
-version = "2.10.0"
+version = "2.11.0"
 edition = "2021"
 license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
@@ -44,7 +44,6 @@ chrono = "0.4.39"
 clap = { version = "4.5.23", features = ["derive"] }
 clap_complete = "4.5.38"
 colored_json = "5.0.0"
-concolor-clap = "0.1.0"
 dialoguer = "0.12.0"
 dirs = "6.0.0"
 figment = { version = "0.10.19", features = ["toml", "env"] }

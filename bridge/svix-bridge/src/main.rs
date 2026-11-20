@@ -304,16 +304,8 @@ async fn main() -> Result<()> {
     // help keep the coupling more loose, with less stateful baggage.
     // Starting with this just to keep the JS executor stuff here in the binary.
     tokio::spawn({
-        let cfg = Arc::clone(&cfg);
         async move {
-            tracing::info!(
-                "Starting JS Transformation Workers: {}",
-                cfg.transformation_worker_count
-            );
-
-            deno_core::JsRuntime::init_platform(None, false);
-            let pooler: runtime::JsPooler =
-                runtime::JsPooler::new(cfg.transformation_worker_count, cfg.js_engine);
+            tracing::info!("Starting JS Transformation Worker");
 
             while let Some(TransformerJob {
                 input,
@@ -321,9 +313,8 @@ async fn main() -> Result<()> {
                 callback_tx,
             }) = xform_rx.recv().await
             {
-                let tp = pooler.clone();
                 tokio::spawn(async move {
-                    let out = tp.run_script(input, script).await;
+                    let out = runtime::run_script(input, script).await;
                     // FIXME: seeing this Err case come up during load testing.
                     //   Seems like we shouldn't be hitting this so easily while the process is not terminating.
                     //   Regularly there are group error log lines that show up right at the end of an

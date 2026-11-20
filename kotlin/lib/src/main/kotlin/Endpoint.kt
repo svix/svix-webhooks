@@ -7,6 +7,10 @@ import com.svix.kotlin.models.EndpointHeadersIn
 import com.svix.kotlin.models.EndpointHeadersOut
 import com.svix.kotlin.models.EndpointHeadersPatchIn
 import com.svix.kotlin.models.EndpointIn
+import com.svix.kotlin.models.EndpointMtlsConfigIn
+import com.svix.kotlin.models.EndpointMtlsOut
+import com.svix.kotlin.models.EndpointOauthConfigIn
+import com.svix.kotlin.models.EndpointOauthOut
 import com.svix.kotlin.models.EndpointOut
 import com.svix.kotlin.models.EndpointPatch
 import com.svix.kotlin.models.EndpointSecretOut
@@ -294,6 +298,81 @@ class Endpoint(private val client: SvixHttpClient) {
             headers = headers.build(),
             reqBody = bulkReplayIn,
         )
+    }
+
+    /**
+     * Get endpoint OAuth status and configuration.
+     *
+     * Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+     */
+    suspend fun getOauthConfig(appId: String, endpointId: String): EndpointOauthOut {
+        val url =
+            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/oauth")
+        return client.executeRequest<Any, EndpointOauthOut>("GET", url.build())
+    }
+
+    /**
+     * Set endpoint OAuth configuration.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     */
+    suspend fun setOauthConfig(
+        appId: String,
+        endpointId: String,
+        endpointOauthConfigIn: EndpointOauthConfigIn,
+    ) {
+        val url =
+            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/oauth")
+
+        client.executeRequest<EndpointOauthConfigIn, Boolean>(
+            "PUT",
+            url.build(),
+            reqBody = endpointOauthConfigIn,
+        )
+    }
+
+    /** Delete endpoint OAuth configuration. */
+    suspend fun deleteOauthConfig(appId: String, endpointId: String) {
+        val url =
+            client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/oauth")
+        client.executeRequest<Any, Boolean>("DELETE", url.build())
+    }
+
+    /**
+     * Get endpoint mTLS status and configuration.
+     *
+     * Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+     */
+    suspend fun getMtlsConfig(appId: String, endpointId: String): EndpointMtlsOut {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/mtls")
+        return client.executeRequest<Any, EndpointMtlsOut>("GET", url.build())
+    }
+
+    /**
+     * Set endpoint mTLS configuration.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     */
+    suspend fun setMtlsConfig(
+        appId: String,
+        endpointId: String,
+        endpointMtlsConfigIn: EndpointMtlsConfigIn,
+    ) {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/mtls")
+
+        client.executeRequest<EndpointMtlsConfigIn, Boolean>(
+            "PUT",
+            url.build(),
+            reqBody = endpointMtlsConfigIn,
+        )
+    }
+
+    /** Delete endpoint mTLS configuration. */
+    suspend fun deleteMtlsConfig(appId: String, endpointId: String) {
+        val url = client.newUrlBuilder().encodedPath("/api/v1/app/$appId/endpoint/$endpointId/mtls")
+        client.executeRequest<Any, Boolean>("DELETE", url.build())
     }
 
     /** Get basic statistics for the endpoint. */

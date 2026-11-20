@@ -1523,9 +1523,9 @@
                                 "string",
                                 "null"
                             ],
-                            "maxLength": 31,
+                            "maxLength": 26,
                             "minLength": 25,
-                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "pattern": "^mcp_[A-Za-z0-9]{21,22}$",
                             "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                         },
                         "style": "form"
@@ -1796,9 +1796,9 @@
                         "schema": {
                             "description": "The MCP token's ID.",
                             "type": "string",
-                            "maxLength": 31,
+                            "maxLength": 26,
                             "minLength": 25,
-                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "pattern": "^mcp_[A-Za-z0-9]{21,22}$",
                             "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                         },
                         "style": "simple"
@@ -1919,9 +1919,9 @@
                                 "string",
                                 "null"
                             ],
-                            "maxLength": 31,
+                            "maxLength": 26,
                             "minLength": 25,
-                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "pattern": "^mcp_[A-Za-z0-9]{21,22}$",
                             "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                         },
                         "style": "form"
@@ -2162,9 +2162,9 @@
                         "schema": {
                             "description": "The MCP token's ID.",
                             "type": "string",
-                            "maxLength": 31,
+                            "maxLength": 26,
                             "minLength": 25,
-                            "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                            "pattern": "^mcp_[A-Za-z0-9]{21,22}$",
                             "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                         },
                         "style": "simple"
@@ -5975,6 +5975,244 @@
                 "x-internal": true
             }
         },
+        "/api/v1/app/{app_id}/settings-internal": {
+            "get": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Get Application Settings",
+                "description": "Get application settings.",
+                "operationId": "v1.application.get-settings",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationSettingsOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            },
+            "patch": {
+                "tags": [
+                    "Application"
+                ],
+                "summary": "Patch Application Settings",
+                "description": "Partially update application settings.",
+                "operationId": "v1.application.patch-settings",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ApplicationSettingsPatch"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ApplicationSettingsOut"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
         "/api/v1/app/stats/count-active": {
             "get": {
                 "tags": [
@@ -7525,6 +7763,275 @@
                     },
                     "204": {
                         "description": "no content"
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            }
+        },
+        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/settings-internal": {
+            "get": {
+                "tags": [
+                    "Endpoint"
+                ],
+                "summary": "Get Endpoint Settings",
+                "description": "Get endpoint settings.",
+                "operationId": "v1.endpoint.get-settings",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "description": "The Endpoint's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Mirrors [`super::application::ApplicationSettings`]. Intended for misc knobs\nthat annoying customers request that shouldn't warrant a new migration each time.\n\nlambda_sql has access to this column, so don't put sensitive things in here",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointSettings"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HttpErrorOut"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "HTTPBearer": []
+                    }
+                ],
+                "x-internal": true
+            },
+            "patch": {
+                "tags": [
+                    "Endpoint"
+                ],
+                "summary": "Patch Endpoint Settings",
+                "description": "Internal: update endpoint settings.",
+                "operationId": "v1.endpoint.patch-settings",
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "app_id",
+                        "description": "The Application's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Application's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    },
+                    {
+                        "in": "path",
+                        "name": "endpoint_id",
+                        "description": "The Endpoint's ID or UID.",
+                        "required": true,
+                        "schema": {
+                            "description": "The Endpoint's ID or UID.",
+                            "type": "string",
+                            "maxLength": 256,
+                            "minLength": 1,
+                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
+                            "example": "unique-identifier"
+                        },
+                        "style": "simple"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Mirrors [`super::application::ApplicationSettings`]. Intended for misc knobs\nthat annoying customers request that shouldn't warrant a new migration each time.\n\nlambda_sql has access to this column, so don't put sensitive things in here",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EndpointSettings"
+                            }
+                        }
+                    },
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "Mirrors [`super::application::ApplicationSettings`]. Intended for misc knobs\nthat annoying customers request that shouldn't warrant a new migration each time.\n\nlambda_sql has access to this column, so don't put sensitive things in here",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EndpointSettings"
+                                }
+                            }
+                        }
                     },
                     "400": {
                         "description": "Bad request",
@@ -10119,8 +10626,8 @@
                     "Endpoint"
                 ],
                 "summary": "Get Endpoint Oauth Config",
-                "description": "Get endpoint OAuth configuration.",
-                "operationId": "v1.endpoint.get-oauth",
+                "description": "Get endpoint OAuth status and configuration.\n\nReturns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.",
+                "operationId": "v1.endpoint.get-oauth-config",
                 "parameters": [
                     {
                         "in": "path",
@@ -10159,7 +10666,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EndpointOauthConfigOut"
+                                    "$ref": "#/components/schemas/EndpointOauthOut"
                                 }
                             }
                         }
@@ -10240,14 +10747,80 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.endpoint.getOauthConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.endpoint.getOauthConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.endpoint.get_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.endpoint.get_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Endpoint.GetOauthConfig(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.endpoint.getOauthConfig(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    )"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getEndpoint()\n        .getOauthConfig(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.endpoint.get_oauth_config(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .endpoint()\n    .get_oauth_config(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Endpoint.GetOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->endpoint->getOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint get-oauth-config \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "put": {
                 "tags": [
                     "Endpoint"
                 ],
                 "summary": "Set Endpoint Oauth Config",
-                "description": "Set endpoint OAuth configuration.",
+                "description": "Set endpoint OAuth configuration.\n\nThis operation is only available in the <a href=\"https://svix.com/pricing\" target=\"_blank\">Enterprise</a> plan.",
                 "operationId": "v1.endpoint.set-oauth-config",
                 "parameters": [
                     {
@@ -10371,7 +10944,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "await svix.endpoint.setOauthConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    grantType: Oauth2GrantTypeInOut.ClientCredentials,\n    authMethod: Oauth2AuthMethodInOut.ClientSecretJwt,\n    jwtParams: {\n      secretBase64: \"sample string\",\n      signingAlgorithm: OauthJwsSigningAlgorithm.Rs256,\n      secretId: \"sample string\",\n      tokenExpirySecs: 1,\n    },\n    clientId: \"sample string\",\n    clientSecret: \"sample string\",\n    tokenUrl: \"sample string\",\n    scopes: [],\n    extraParams: {},\n    refreshToken: \"sample string\",\n    extraHeaders: {},\n  }\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "await svix.endpoint.setOauthConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    grantType: Oauth2GrantTypeInOut.ClientCredentials,\n    authMethod: Oauth2AuthMethodInOut.ClientSecretJwt,\n    jwtParams: {\n      secretBase64: \"sample string\",\n      signingAlgorithm: OauthJwsSigningAlgorithm.Rs256,\n      secretId: \"sample string\",\n      tokenExpirySecs: 1,\n    },\n    clientId: \"sample string\",\n    clientSecret: \"sample string\",\n    tokenUrl: \"sample string\",\n    scopes: [],\n    extraParams: {},\n    refreshToken: \"sample string\",\n    extraHeaders: {},\n  }\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.endpoint.set_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointOauthConfigIn(\n        grant_type=Oauth2GrantTypeInOut.CLIENT_CREDENTIALS,\n        auth_method=Oauth2AuthMethodInOut.CLIENT_SECRET_JWT,\n        jwt_params=ClientSecretJwtParamsIn(\n            secret_base64=\"sample string\",\n            signing_algorithm=OauthJwsSigningAlgorithm.RS256,\n            secret_id=\"sample string\",\n            token_expiry_secs=1,\n        ),\n        client_id=\"sample string\",\n        client_secret=\"sample string\",\n        token_url=\"sample string\",\n        scopes=[],\n        extra_params={},\n        refresh_token=\"sample string\",\n        extra_headers={},\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "await svix.endpoint.set_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointOauthConfigIn(\n        grant_type=Oauth2GrantTypeInOut.CLIENT_CREDENTIALS,\n        auth_method=Oauth2AuthMethodInOut.CLIENT_SECRET_JWT,\n        jwt_params=ClientSecretJwtParamsIn(\n            secret_base64=\"sample string\",\n            signing_algorithm=OauthJwsSigningAlgorithm.RS256,\n            secret_id=\"sample string\",\n            token_expiry_secs=1,\n        ),\n        client_id=\"sample string\",\n        client_secret=\"sample string\",\n        token_url=\"sample string\",\n        scopes=[],\n        extra_params={},\n        refresh_token=\"sample string\",\n        extra_headers={},\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svix.Endpoint.SetOauthConfig(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointOauthConfigIn{\n\t\tGrantType:  OAUTH2GRANTTYPEINOUT_CLIENT_CREDENTIALS,\n\t\tAuthMethod: OAUTH2AUTHMETHODINOUT_CLIENT_SECRET_JWT,\n\t\tJwtParams: new(\n\t\t\tClientSecretJwtParamsIn{\n\t\t\t\tSecretBase64:     \"sample string\",\n\t\t\t\tSigningAlgorithm: OAUTHJWSSIGNINGALGORITHM_RS256,\n\t\t\t\tSecretId:         new(\"sample string\"),\n\t\t\t\tTokenExpirySecs:  new(uint64(1)),\n\t\t\t},\n\t\t),\n\t\tClientId:     \"sample string\",\n\t\tClientSecret: new(\"sample string\"),\n\t\tTokenUrl:     \"sample string\",\n\t\tScopes:       []string{},\n\t\tExtraParams:  nil,\n\t\tRefreshToken: new(\"sample string\"),\n\t\tExtraHeaders: nil,\n\t},\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.endpoint.setOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointOauthConfigIn(\n        grantType = Oauth2GrantTypeInOut.CLIENT_CREDENTIALS,\n        authMethod = Oauth2AuthMethodInOut.CLIENT_SECRET_JWT,\n        jwtParams =\n            ClientSecretJwtParamsIn(\n                secretBase64 = \"sample string\",\n                signingAlgorithm = OauthJwsSigningAlgorithm.RS256,\n                secretId = \"sample string\",\n                tokenExpirySecs = 1u,\n            ),\n        clientId = \"sample string\",\n        clientSecret = \"sample string\",\n        tokenUrl = \"https://example.com/\",\n        scopes = listOf(),\n        extraParams = mapOf(),\n        refreshToken = \"sample string\",\n        extraHeaders = mapOf(),\n    ),\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getEndpoint()\n        .setOauthConfig(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointOauthConfigIn()\n                .grantType(Oauth2GrantTypeInOut.CLIENT_CREDENTIALS)\n                .authMethod(Oauth2AuthMethodInOut.CLIENT_SECRET_JWT)\n                .jwtParams(new ClientSecretJwtParamsIn()\n                    .secretBase64(\"sample string\")\n                    .signingAlgorithm(OauthJwsSigningAlgorithm.RS256)\n                    .secretId(\"sample string\")\n                    .tokenExpirySecs(1L))\n                .clientId(\"sample string\")\n                .clientSecret(\"sample string\")\n                .tokenUrl(URI.create(\"https://example.com/\"))\n                .scopes(List.of())\n                .extraParams(Map.of())\n                .refreshToken(\"sample string\")\n                .extraHeaders(Map.of()));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix\n  .endpoint\n  .set_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    {\n      grantType: Oauth2GrantTypeInOut::CLIENT_CREDENTIALS,\n      authMethod: Oauth2AuthMethodInOut::CLIENT_SECRET_JWT,\n      jwtParams: {\n        secretBase64: \"sample string\",\n        signingAlgorithm: OauthJwsSigningAlgorithm::RS256,\n        secretId: \"sample string\",\n        tokenExpirySecs: 1\n      },\n      clientId: \"sample string\",\n      clientSecret: \"sample string\",\n      tokenUrl: \"sample string\",\n      scopes: [],\n      extraParams: {},\n      refreshToken: \"sample string\",\n      extraHeaders: {}\n    }\n  )"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "svix.endpoint()\n    .set_oauth_config(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointOauthConfigIn {\n            grant_type: Oauth2GrantTypeInOut::ClientCredentials,\n            auth_method: Oauth2AuthMethodInOut::ClientSecretJwt,\n            jwt_params: Some(ClientSecretJwtParamsIn {\n                secret_base64: \"sample string\".to_string(),\n                signing_algorithm: OauthJwsSigningAlgorithm::Rs256,\n                secret_id: Some(\"sample string\".to_string()),\n                token_expiry_secs: Some(1),\n            }),\n            client_id: \"sample string\".to_string(),\n            client_secret: Some(\"sample string\".to_string()),\n            token_url: \"sample string\".to_string(),\n            scopes: Some(vec![]),\n            extra_params: Some(HashMap::new()),\n            refresh_token: Some(\"sample string\".to_string()),\n            extra_headers: Some(HashMap::new()),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Endpoint.SetOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointOauthConfigIn\n    {\n        GrantType = Oauth2GrantTypeInOut.ClientCredentials,\n        AuthMethod = Oauth2AuthMethodInOut.ClientSecretJwt,\n        JwtParams = new ClientSecretJwtParamsIn\n        {\n            SecretBase64 = \"sample string\",\n            SigningAlgorithm = OauthJwsSigningAlgorithm.Rs256,\n            SecretId = \"sample string\",\n            TokenExpirySecs = 1,\n        },\n        ClientId = \"sample string\",\n        ClientSecret = \"sample string\",\n        TokenUrl = \"sample string\",\n        Scopes = [],\n        ExtraParams = [],\n        RefreshToken = \"sample string\",\n        ExtraHeaders = [],\n    }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$svix->endpoint->setOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointOauthConfigIn::create(\n        grantType: Oauth2GrantTypeInOut::CLIENT_CREDENTIALS,\n        authMethod: Oauth2AuthMethodInOut::CLIENT_SECRET_JWT,\n        clientId: \"sample string\",\n        tokenUrl: \"sample string\"\n    )\n    ->withJwtParams(ClientSecretJwtParamsIn::create(\n        secretBase64: \"sample string\",\n        signingAlgorithm: OauthJwsSigningAlgorithm::RS256\n    )\n    ->withSecretId(\"sample string\")\n    ->withTokenExpirySecs(1))\n    ->withClientSecret(\"sample string\")\n    ->withScopes([])\n    ->withExtraParams([])\n    ->withRefreshToken(\"sample string\")\n    ->withExtraHeaders([])\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint set-oauth-config \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"grantType\": \"clientCredentials\",\n    \"authMethod\": \"clientSecretJwt\",\n    \"jwtParams\": {\n      \"secretBase64\": \"sample string\",\n      \"signingAlgorithm\": \"RS256\",\n      \"secretId\": \"sample string\",\n      \"tokenExpirySecs\": 1\n    },\n    \"clientId\": \"sample string\",\n    \"clientSecret\": \"sample string\",\n    \"tokenUrl\": \"sample string\",\n    \"scopes\": [],\n    \"extraParams\": {},\n    \"refreshToken\": \"sample string\",\n    \"extraHeaders\": {}\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"grantType\": \"clientCredentials\",\n    \"authMethod\": \"clientSecretJwt\",\n    \"jwtParams\": {\n      \"secretBase64\": \"sample string\",\n      \"signingAlgorithm\": \"RS256\",\n      \"secretId\": \"sample string\",\n      \"tokenExpirySecs\": 1\n    },\n    \"clientId\": \"sample string\",\n    \"clientSecret\": \"sample string\",\n    \"tokenUrl\": \"sample string\",\n    \"scopes\": [],\n    \"extraParams\": {},\n    \"refreshToken\": \"sample string\",\n    \"extraHeaders\": {}\n  }'"
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -10492,137 +11131,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
-            }
-        },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth-config": {
-            "get": {
-                "tags": [
-                    "Endpoint"
-                ],
-                "summary": "Get Endpoint Oauth Config 2",
-                "description": "Get endpoint OAuth status and configuration.\n\nThis is basically the same as v1.endpoint.get-oauth, but instead of returning a 404 when OAuth\nis not enabled, it returns a 200 with `enabled: false` and `config: null`.",
-                "operationId": "v1.endpoint.get-oauth-2",
-                "parameters": [
+                "x-codeSamples": [
                     {
-                        "in": "path",
-                        "name": "app_id",
-                        "description": "The Application's ID or UID.",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "type": "string",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "unique-identifier"
-                        },
-                        "style": "simple"
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "await svix.endpoint.deleteOauthConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
-                        "in": "path",
-                        "name": "endpoint_id",
-                        "description": "The Endpoint's ID or UID.",
-                        "required": true,
-                        "schema": {
-                            "description": "The Endpoint's ID or UID.",
-                            "type": "string",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "unique-identifier"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EndpointOauthOut"
-                                }
-                            }
-                        }
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "await svix.endpoint.deleteOauthConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
-                    "400": {
-                        "description": "Bad request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
                     {
-                        "HTTPBearer": []
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.endpoint.delete_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "await svix.endpoint.delete_oauth_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svix.Endpoint.DeleteOauthConfig(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.endpoint.deleteOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getEndpoint()\n        .deleteOauthConfig(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.endpoint.delete_oauth_config(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "svix.endpoint()\n    .delete_oauth_config(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Endpoint.DeleteOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$svix->endpoint->deleteOauthConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint delete-oauth-config \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/oauth' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
                     }
-                ],
-                "x-internal": true
+                ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/ca": {
@@ -10892,8 +11467,8 @@
                     "Endpoint"
                 ],
                 "summary": "Get Endpoint Mtls Config",
-                "description": "Get endpoint mTLS configuration.",
-                "operationId": "v1.endpoint.get-mtls",
+                "description": "Get endpoint mTLS status and configuration.\n\nReturns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.",
+                "operationId": "v1.endpoint.get-mtls-config",
                 "parameters": [
                     {
                         "in": "path",
@@ -10932,7 +11507,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/EndpointMtlsConfigOut"
+                                    "$ref": "#/components/schemas/EndpointMtlsOut"
                                 }
                             }
                         }
@@ -11013,14 +11588,80 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "const response = await svix.endpoint.getMtlsConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "const response = await svix.endpoint.getMtlsConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "response = svix.endpoint.get_mtls_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "response = await svix.endpoint.get_mtls_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "response, err := svix.Endpoint.GetMtlsConfig(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "val response =\n    svix.endpoint.getMtlsConfig(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\")"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "var response = svix.getEndpoint()\n        .getMtlsConfig(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.endpoint.get_mtls_config(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "let response = svix\n    .endpoint()\n    .get_mtls_config(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Endpoint.GetMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$response = $svix->endpoint->getMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint get-mtls-config \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'GET' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Accept: application/json'"
+                    }
+                ]
             },
             "put": {
                 "tags": [
                     "Endpoint"
                 ],
-                "summary": "Set Endpoint Mtls Config",
-                "description": "Set endpoint mTLS configuration.",
+                "summary": "Set Endpoint mTLS Config",
+                "description": "Set endpoint mTLS configuration.\n\nThis operation is only available in the <a href=\"https://svix.com/pricing\" target=\"_blank\">Enterprise</a> plan.",
                 "operationId": "v1.endpoint.set-mtls-config",
                 "parameters": [
                     {
@@ -11144,7 +11785,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
+                "x-codeSamples": [
+                    {
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "await svix.endpoint.setMtlsConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    identity: \"sample string\",\n  }\n);"
+                    },
+                    {
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "await svix.endpoint.setMtlsConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n  {\n    identity: \"sample string\",\n  }\n);"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.endpoint.set_mtls_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointMtlsConfigIn(\n        identity=\"sample string\",\n    ),\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "await svix.endpoint.set_mtls_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointMtlsConfigIn(\n        identity=\"sample string\",\n    ),\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svix.Endpoint.SetMtlsConfig(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n\tEndpointMtlsConfigIn{Identity: \"sample string\"},\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.endpoint.setMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointMtlsConfigIn(identity = \"sample string\"),\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getEndpoint()\n        .setMtlsConfig(\n            \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n            \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n            new EndpointMtlsConfigIn().identity(\"sample string\"));"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix\n  .endpoint\n  .set_mtls_config(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\", {identity: \"sample string\"})"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "svix.endpoint()\n    .set_mtls_config(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n        EndpointMtlsConfigIn {\n            identity: \"sample string\".to_string(),\n        },\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Endpoint.SetMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    new EndpointMtlsConfigIn { Identity = \"sample string\" }\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$svix->endpoint->setMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n    EndpointMtlsConfigIn::create(\n        identity: \"sample string\"\n    )\n\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint set-mtls-config \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\" '{\n    \"identity\": \"sample string\"\n  }'"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'PUT' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"identity\": \"sample string\"\n  }'"
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -11265,137 +11972,73 @@
                         "HTTPBearer": []
                     }
                 ],
-                "x-internal": true
-            }
-        },
-        "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls-config": {
-            "get": {
-                "tags": [
-                    "Endpoint"
-                ],
-                "summary": "Get Endpoint Mtls Config 2",
-                "description": "Get endpoint mTLS status and configuration.\n\nThis is basically the same as v1.endpoint.get-mtls, but instead of returning a 404 when mTLS is\nnot enabled, it returns a 200 with `enabled: false` and `config: null`.",
-                "operationId": "v1.endpoint.get-mtls-2",
-                "parameters": [
+                "x-codeSamples": [
                     {
-                        "in": "path",
-                        "name": "app_id",
-                        "description": "The Application's ID or UID.",
-                        "required": true,
-                        "schema": {
-                            "description": "The Application's ID or UID.",
-                            "type": "string",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "unique-identifier"
-                        },
-                        "style": "simple"
+                        "lang": "TypeScript",
+                        "label": "JavaScript",
+                        "source": "await svix.endpoint.deleteMtlsConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
                     {
-                        "in": "path",
-                        "name": "endpoint_id",
-                        "description": "The Endpoint's ID or UID.",
-                        "required": true,
-                        "schema": {
-                            "description": "The Endpoint's ID or UID.",
-                            "type": "string",
-                            "maxLength": 256,
-                            "minLength": 1,
-                            "pattern": "^[a-zA-Z0-9\\-_.]+$",
-                            "example": "unique-identifier"
-                        },
-                        "style": "simple"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/EndpointMtlsOut"
-                                }
-                            }
-                        }
+                        "lang": "TypeScript",
+                        "label": "TypeScript",
+                        "source": "await svix.endpoint.deleteMtlsConfig(\n  \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n  \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
                     },
-                    "400": {
-                        "description": "Bad request",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "Forbidden",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "409": {
-                        "description": "Conflict",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HTTPValidationError"
-                                }
-                            }
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/HttpErrorOut"
-                                }
-                            }
-                        }
-                    }
-                },
-                "security": [
                     {
-                        "HTTPBearer": []
+                        "lang": "Python",
+                        "label": "Python",
+                        "source": "svix.endpoint.delete_mtls_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Python",
+                        "label": "Python (Async)",
+                        "source": "await svix.endpoint.delete_mtls_config(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Go",
+                        "label": "Go",
+                        "source": "err := svix.Endpoint.DeleteMtlsConfig(\n\tctx,\n\t\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n\t\"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Kotlin",
+                        "label": "Kotlin",
+                        "source": "svix.endpoint.deleteMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\",\n)"
+                    },
+                    {
+                        "lang": "Java",
+                        "label": "Java",
+                        "source": "svix.getEndpoint()\n        .deleteMtlsConfig(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\");"
+                    },
+                    {
+                        "lang": "Ruby",
+                        "label": "Ruby",
+                        "source": "response = svix.endpoint.delete_mtls_config(\"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\", \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\")"
+                    },
+                    {
+                        "lang": "Rust",
+                        "label": "Rust",
+                        "source": "svix.endpoint()\n    .delete_mtls_config(\n        \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\".to_string(),\n        \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\".to_string(),\n    )\n    .await?;"
+                    },
+                    {
+                        "lang": "C#",
+                        "label": "C#",
+                        "source": "var response = svix.Endpoint.DeleteMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "PHP",
+                        "label": "PHP",
+                        "source": "$svix->endpoint->deleteMtlsConfig(\n    \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",\n    \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\"\n);"
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "CLI",
+                        "source": "svix endpoint delete-mtls-config \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\" \"ep_33ZIBDmz66FcPG35FnsbM6Ie4X1\""
+                    },
+                    {
+                        "lang": "Shell",
+                        "label": "cURL",
+                        "source": "curl -X 'DELETE' \\\n  'https://api.eu.svix.com/api/v1/app/app_1srOrx2ZWZBpBUvZwXKQmoEYga2/endpoint/ep_33ZIBDmz66FcPG35FnsbM6Ie4X1/mtls' \\\n  -H 'Authorization: Bearer AUTH_TOKEN'"
                     }
-                ],
-                "x-internal": true
+                ]
             }
         },
         "/api/v1/app/{app_id}/endpoint/{endpoint_id}/stats": {
@@ -17943,8 +18586,8 @@
                     "Message"
                 ],
                 "summary": "Quickly Create a Batch of Messages",
-                "description": "Creates a batch of messages in a fire-or-forget fashion.\n\nThis is the fastest and most-scalable way to create messages, but doesn't allow you to detect\nif your message failed certain validation steps (e.g., the `eventId` uniqueness check), and\ndoesn't provide any back-pressure in the event of rate-limit exhaustion. Otherwise very similar\nto the `v1.create.message` action.\n\nThe entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's\ngenerally a good idea to keep webhook payloads under 40KiB.",
-                "operationId": "v1.message.create_batch",
+                "description": "Creates one or more messages in a fire-or-forget fashion.\n\n\nIt works much like the `v1.create.message` action but is optimized for throughput, so it\nskips per-message validation feedback (such as the `eventId` uniqueness check) and doesn't\napply back-pressure when rate limits are reached. If you need either of those guarantees,\nuse `v1.create.message` instead.\n\nThe entire batch may not exceed 5MB, and each individual payload may not exceed 1MiB; it's\ngenerally a good idea to keep webhook payloads under 40KiB.",
+                "operationId": "v1.message.create-batch",
                 "parameters": [
                     {
                         "in": "path",
@@ -19158,15 +19801,6 @@
                             "minLength": 1,
                             "pattern": "^[a-zA-Z0-9\\-_.]+$",
                             "example": "unique-identifier"
-                        },
-                        "style": "simple"
-                    },
-                    {
-                        "in": "header",
-                        "name": "idempotency-key",
-                        "description": "The request's idempotency key",
-                        "schema": {
-                            "type": "string"
                         },
                         "style": "simple"
                     }
@@ -47866,6 +48500,17 @@
                         "pattern": "^app_[A-Za-z0-9]{27}$",
                         "example": "app_1srOrx2ZWZBpBUvZwXKQmoEYga2"
                     },
+                    "orgGroupId": {
+                        "description": "The organization group the current token is attached to",
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 33,
+                        "minLength": 33,
+                        "pattern": "^orgrp_[A-Za-z0-9]{27}$",
+                        "example": "orgrp_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
                     "streamAppId": {
                         "description": "The stream application that the current token is limited to, if there is one",
                         "type": [
@@ -48198,9 +48843,9 @@
                     "id": {
                         "description": "The MCP token's ID.",
                         "type": "string",
-                        "maxLength": 31,
+                        "maxLength": 26,
                         "minLength": 25,
-                        "pattern": "^(mcp_[A-Za-z0-9]{21,22}|key_[A-Za-z0-9]{27})$",
+                        "pattern": "^mcp_[A-Za-z0-9]{21,22}$",
                         "example": "mcp_2yZwUhtgs5Ai8T9yRQJXA"
                     },
                     "censoredToken": {
@@ -48381,6 +49026,11 @@
                             "null"
                         ],
                         "format": "date-time"
+                    },
+                    "user": {
+                        "description": "The dashboard user who approved the grant. Null when they are no\nlonger a member of the organization, or for grants made before grants\nrecorded their user.",
+                        "$ref": "#/components/schemas/McpOAuthGrantUserOut",
+                        "nullable": true
                     }
                 },
                 "required": [
@@ -48388,6 +49038,30 @@
                     "clientName",
                     "createdAt",
                     "expiresAt",
+                    "id"
+                ]
+            },
+            "McpOAuthGrantUserOut": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "The User's ID.",
+                        "type": "string",
+                        "maxLength": 31,
+                        "minLength": 31,
+                        "pattern": "^usr_[A-Za-z0-9]{27}$",
+                        "example": "usr_1srOrx2ZWZBpBUvZwXKQmoEYga2"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "fullName": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "email",
+                    "fullName",
                     "id"
                 ]
             },
@@ -48715,6 +49389,41 @@
                         ],
                         "maxLength": 4096,
                         "example": "user1@example.com, user2@example.com"
+                    }
+                }
+            },
+            "ApplicationSettingsOut": {
+                "type": "object",
+                "properties": {
+                    "nonRetryableStatusCodes": {
+                        "description": "HTTP status codes that are not retried.",
+                        "type": "array",
+                        "items": {
+                            "description": "An HTTP status code.",
+                            "type": "integer",
+                            "format": "int",
+                            "minimum": 100,
+                            "maximum": 999
+                        }
+                    }
+                },
+                "required": [
+                    "nonRetryableStatusCodes"
+                ]
+            },
+            "ApplicationSettingsPatch": {
+                "type": "object",
+                "properties": {
+                    "nonRetryableStatusCodes": {
+                        "description": "HTTP status codes that are not retried. Send an empty list to clear them.",
+                        "type": "array",
+                        "items": {
+                            "description": "An HTTP status code.",
+                            "type": "integer",
+                            "format": "int",
+                            "minimum": 100,
+                            "maximum": 999
+                        }
                     }
                 }
             },
@@ -49378,6 +50087,38 @@
                     "Stream"
                 ]
             },
+            "EndpointSettings": {
+                "description": "Mirrors [`super::application::ApplicationSettings`]. Intended for misc knobs\nthat annoying customers request that shouldn't warrant a new migration each time.\n\nlambda_sql has access to this column, so don't put sensitive things in here",
+                "type": "object",
+                "properties": {
+                    "responseTimeout": {
+                        "description": "The overridden response timeout allowed when sending webhooks\nin the worker to this endpoint.",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "uint16",
+                        "minimum": 1,
+                        "maximum": 65535
+                    },
+                    "disableEndpointOnFailureCount": {
+                        "description": "Disable this endpoint after this many consecutive retry-exhausted\ndeliveries. Overrides the app- and org-level settings of the same name.",
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "uint32",
+                        "minimum": 1
+                    },
+                    "skipAutoDisableOnFailure": {
+                        "description": "When true, this endpoint is never auto-disabled on delivery failure\n(both the time-based and count-based mechanisms). Overrides the app- and\norg-level settings of the same name.",
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    }
+                }
+            },
             "McpEventsSubscribeIn": {
                 "type": "object",
                 "properties": {
@@ -49973,6 +50714,21 @@
                     "Code5xx"
                 ]
             },
+            "EndpointOauthOut": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "config": {
+                        "$ref": "#/components/schemas/EndpointOauthConfigOut",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "enabled"
+                ]
+            },
             "EndpointOauthConfigOut": {
                 "type": "object",
                 "properties": {
@@ -50080,7 +50836,8 @@
                         ],
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "maxItems": 32
                     },
                     "extraParams": {
                         "description": "Extra parameters added to the request body as key-value pairs.",
@@ -50159,21 +50916,6 @@
                     "RS256"
                 ]
             },
-            "EndpointOauthOut": {
-                "type": "object",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean"
-                    },
-                    "config": {
-                        "$ref": "#/components/schemas/EndpointOauthConfigOut",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "enabled"
-                ]
-            },
             "EndpointServerCaOut": {
                 "type": "object",
                 "properties": {
@@ -50199,6 +50941,21 @@
                     }
                 }
             },
+            "EndpointMtlsOut": {
+                "type": "object",
+                "properties": {
+                    "enabled": {
+                        "type": "boolean"
+                    },
+                    "config": {
+                        "$ref": "#/components/schemas/EndpointMtlsConfigOut",
+                        "nullable": true
+                    }
+                },
+                "required": [
+                    "enabled"
+                ]
+            },
             "EndpointMtlsConfigOut": {
                 "type": "object"
             },
@@ -50213,21 +50970,6 @@
                 },
                 "required": [
                     "identity"
-                ]
-            },
-            "EndpointMtlsOut": {
-                "type": "object",
-                "properties": {
-                    "enabled": {
-                        "type": "boolean"
-                    },
-                    "config": {
-                        "$ref": "#/components/schemas/EndpointMtlsConfigOut",
-                        "nullable": true
-                    }
-                },
-                "required": [
-                    "enabled"
                 ]
             },
             "EndpointStats": {
@@ -52389,6 +53131,15 @@
                         "format": "uint32",
                         "minimum": 1
                     },
+                    "channelsPerEndpointLimit": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "uint32",
+                        "minimum": 1,
+                        "maximum": 50
+                    },
                     "mcpToken": {
                         "type": "boolean",
                         "default": false
@@ -52400,7 +53151,8 @@
                 "enum": [
                     "endpoint.disabled",
                     "message.attempt.exhausted",
-                    "stream.sink.disabled"
+                    "stream.sink.disabled",
+                    "endpoint.response.status_code"
                 ]
             },
             "SettingsInternalIn": {
@@ -52613,6 +53365,15 @@
                         ],
                         "format": "uint32",
                         "minimum": 1
+                    },
+                    "channelsPerEndpointLimit": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "uint32",
+                        "minimum": 1,
+                        "maximum": 50
                     },
                     "mcpToken": {
                         "type": "boolean",
@@ -52831,6 +53592,15 @@
                         "format": "uint32",
                         "minimum": 1
                     },
+                    "channelsPerEndpointLimit": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "format": "uint32",
+                        "minimum": 1,
+                        "maximum": 50
+                    },
                     "mcpToken": {
                         "type": "boolean",
                         "default": false
@@ -53021,6 +53791,12 @@
                         "type": "integer",
                         "format": "uint32",
                         "minimum": 1
+                    },
+                    "channelsPerEndpointLimit": {
+                        "type": "integer",
+                        "format": "uint32",
+                        "minimum": 1,
+                        "maximum": 50
                     },
                     "mcpToken": {
                         "type": "boolean"

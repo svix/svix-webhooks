@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+* Remove `deno` backend entirely for transformations
 
 ## Version 1.102.0
 * Change Docker images to be based on wolfi instead of debian

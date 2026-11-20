@@ -144,6 +144,52 @@ module Svix
       ReplayOut.deserialize(res)
     end
 
+    def get_oauth_config(app_id, endpoint_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/oauth"
+      )
+      EndpointOauthOut.deserialize(res)
+    end
+
+    def set_oauth_config(app_id, endpoint_id, endpoint_oauth_config_in)
+      @client.execute_request(
+        "PUT",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/oauth",
+        body: endpoint_oauth_config_in
+      )
+    end
+
+    def delete_oauth_config(app_id, endpoint_id)
+      @client.execute_request(
+        "DELETE",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/oauth"
+      )
+    end
+
+    def get_mtls_config(app_id, endpoint_id)
+      res = @client.execute_request(
+        "GET",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/mtls"
+      )
+      EndpointMtlsOut.deserialize(res)
+    end
+
+    def set_mtls_config(app_id, endpoint_id, endpoint_mtls_config_in)
+      @client.execute_request(
+        "PUT",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/mtls",
+        body: endpoint_mtls_config_in
+      )
+    end
+
+    def delete_mtls_config(app_id, endpoint_id)
+      @client.execute_request(
+        "DELETE",
+        "/api/v1/app/#{app_id}/endpoint/#{endpoint_id}/mtls"
+      )
+    end
+
     def get_stats(app_id, endpoint_id, options = {})
       options = options.transform_keys(&:to_s)
       res = @client.execute_request(

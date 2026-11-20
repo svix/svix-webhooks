@@ -1079,6 +1079,390 @@ namespace Svix
         }
 
         /// <summary>
+        /// Get endpoint OAuth status and configuration.
+        ///
+        /// Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+        /// </summary>
+        public async Task<EndpointOauthOut> GetOauthConfigAsync(
+            string appId,
+            string endpointId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointOauthOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetOauthConfigAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get endpoint OAuth status and configuration.
+        ///
+        /// Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+        /// </summary>
+        public EndpointOauthOut GetOauthConfig(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointOauthOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetOauthConfig)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set endpoint OAuth configuration.
+        ///
+        /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+        /// </summary>
+        public async Task<bool> SetOauthConfigAsync(
+            string appId,
+            string endpointId,
+            EndpointOauthConfigIn endpointOauthConfigIn,
+            CancellationToken cancellationToken = default
+        )
+        {
+            endpointOauthConfigIn =
+                endpointOauthConfigIn
+                ?? throw new ArgumentNullException(nameof(endpointOauthConfigIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointOauthConfigIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SetOauthConfigAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set endpoint OAuth configuration.
+        ///
+        /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+        /// </summary>
+        public bool SetOauthConfig(
+            string appId,
+            string endpointId,
+            EndpointOauthConfigIn endpointOauthConfigIn
+        )
+        {
+            endpointOauthConfigIn =
+                endpointOauthConfigIn
+                ?? throw new ArgumentNullException(nameof(endpointOauthConfigIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointOauthConfigIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SetOauthConfig)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete endpoint OAuth configuration.
+        /// </summary>
+        public async Task<bool> DeleteOauthConfigAsync(
+            string appId,
+            string endpointId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteOauthConfigAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete endpoint OAuth configuration.
+        /// </summary>
+        public bool DeleteOauthConfig(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteOauthConfig)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get endpoint mTLS status and configuration.
+        ///
+        /// Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+        /// </summary>
+        public async Task<EndpointMtlsOut> GetMtlsConfigAsync(
+            string appId,
+            string endpointId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<EndpointMtlsOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetMtlsConfigAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get endpoint mTLS status and configuration.
+        ///
+        /// Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+        /// </summary>
+        public EndpointMtlsOut GetMtlsConfig(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<EndpointMtlsOut>(
+                    method: HttpMethod.Get,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(GetMtlsConfig)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set endpoint mTLS configuration.
+        ///
+        /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+        /// </summary>
+        public async Task<bool> SetMtlsConfigAsync(
+            string appId,
+            string endpointId,
+            EndpointMtlsConfigIn endpointMtlsConfigIn,
+            CancellationToken cancellationToken = default
+        )
+        {
+            endpointMtlsConfigIn =
+                endpointMtlsConfigIn
+                ?? throw new ArgumentNullException(nameof(endpointMtlsConfigIn));
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointMtlsConfigIn,
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SetMtlsConfigAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Set endpoint mTLS configuration.
+        ///
+        /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+        /// </summary>
+        public bool SetMtlsConfig(
+            string appId,
+            string endpointId,
+            EndpointMtlsConfigIn endpointMtlsConfigIn
+        )
+        {
+            endpointMtlsConfigIn =
+                endpointMtlsConfigIn
+                ?? throw new ArgumentNullException(nameof(endpointMtlsConfigIn));
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Put,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    content: endpointMtlsConfigIn
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(SetMtlsConfig)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete endpoint mTLS configuration.
+        /// </summary>
+        public async Task<bool> DeleteMtlsConfigAsync(
+            string appId,
+            string endpointId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var response = await _client.SvixHttpClient.SendRequestAsync<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    },
+                    cancellationToken: cancellationToken
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteMtlsConfigAsync)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Delete endpoint mTLS configuration.
+        /// </summary>
+        public bool DeleteMtlsConfig(string appId, string endpointId)
+        {
+            try
+            {
+                var response = _client.SvixHttpClient.SendRequest<bool>(
+                    method: HttpMethod.Delete,
+                    path: "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+                    pathParams: new Dictionary<string, string>
+                    {
+                        { "app_id", appId },
+                        { "endpoint_id", endpointId },
+                    }
+                );
+                return response.Data;
+            }
+            catch (ApiException e)
+            {
+                _client.Logger?.LogError(e, $"{nameof(DeleteMtlsConfig)} failed");
+
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Get basic statistics for the endpoint.
         /// </summary>
         public async Task<EndpointStats> GetStatsAsync(
