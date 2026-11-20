@@ -10,6 +10,10 @@ import com.svix.models.EndpointHeadersIn;
 import com.svix.models.EndpointHeadersOut;
 import com.svix.models.EndpointHeadersPatchIn;
 import com.svix.models.EndpointIn;
+import com.svix.models.EndpointMtlsConfigIn;
+import com.svix.models.EndpointMtlsOut;
+import com.svix.models.EndpointOauthConfigIn;
+import com.svix.models.EndpointOauthOut;
 import com.svix.models.EndpointOut;
 import com.svix.models.EndpointPatch;
 import com.svix.models.EndpointSecretOut;
@@ -342,6 +346,102 @@ public class Endpoint {
         }
         return this.client.executeRequest(
                 "POST", url.build(), Headers.of(headers), bulkReplayIn, ReplayOut.class);
+    }
+
+    /**
+     * Get endpoint OAuth status and configuration.
+     *
+     * <p>Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+     */
+    public EndpointOauthOut getOauthConfig(final String appId, final String endpointId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/oauth", appId, endpointId));
+        return this.client.executeRequest("GET", url.build(), null, null, EndpointOauthOut.class);
+    }
+
+    /**
+     * Set endpoint OAuth configuration.
+     *
+     * <p>This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     */
+    public void setOauthConfig(
+            final String appId,
+            final String endpointId,
+            final EndpointOauthConfigIn endpointOauthConfigIn)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/oauth", appId, endpointId));
+        this.client.executeRequest("PUT", url.build(), null, endpointOauthConfigIn, null);
+    }
+
+    /** Delete endpoint OAuth configuration. */
+    public void deleteOauthConfig(final String appId, final String endpointId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/oauth", appId, endpointId));
+        this.client.executeRequest("DELETE", url.build(), null, null, null);
+    }
+
+    /**
+     * Get endpoint mTLS status and configuration.
+     *
+     * <p>Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+     */
+    public EndpointMtlsOut getMtlsConfig(final String appId, final String endpointId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/mtls", appId, endpointId));
+        return this.client.executeRequest("GET", url.build(), null, null, EndpointMtlsOut.class);
+    }
+
+    /**
+     * Set endpoint mTLS configuration.
+     *
+     * <p>This operation is only available in the <a href="https://svix.com/pricing"
+     * target="_blank">Enterprise</a> plan.
+     */
+    public void setMtlsConfig(
+            final String appId,
+            final String endpointId,
+            final EndpointMtlsConfigIn endpointMtlsConfigIn)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/mtls", appId, endpointId));
+        this.client.executeRequest("PUT", url.build(), null, endpointMtlsConfigIn, null);
+    }
+
+    /** Delete endpoint mTLS configuration. */
+    public void deleteMtlsConfig(final String appId, final String endpointId)
+            throws IOException, ApiException {
+        HttpUrl.Builder url =
+                this.client
+                        .newUrlBuilder()
+                        .encodedPath(
+                                String.format(
+                                        "/api/v1/app/%s/endpoint/%s/mtls", appId, endpointId));
+        this.client.executeRequest("DELETE", url.build(), null, null, null);
     }
 
     /** Get basic statistics for the endpoint. */

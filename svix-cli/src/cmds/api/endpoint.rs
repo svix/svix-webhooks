@@ -560,6 +560,135 @@ pub enum EndpointCommands {
         #[clap(flatten)]
         options: EndpointBulkReplayOptions,
     },
+    /// Get endpoint OAuth status and configuration.
+    ///
+    /// Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint get-oauth-config app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"enabled\": true,
+  \"config\": {
+    \"grantType\": \"clientCredentials\",
+    \"authMethod\": \"clientSecretJwt\",
+    \"clientId\": \"...\",
+    \"tokenUrl\": \"...\",
+    \"scopes\": [\"...\"],
+    \"extraParams\": {\"key\": \"...\"},
+    \"extraHeaders\": {\"key\": \"...\"}
+  }
+}\n")]
+    GetOauthConfig {
+        app_id: String,
+        id: String,
+    },
+    /// Set endpoint OAuth configuration.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint set-oauth-config app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"grantType\": \"clientCredentials\",
+  \"authMethod\": \"clientSecretJwt\",
+  \"jwtParams\": {
+    \"secretBase64\": \"...\",
+    \"signingAlgorithm\": \"RS256\",
+    \"secretId\": \"...\",
+    \"tokenExpirySecs\": 123
+  },
+  \"clientId\": \"...\",
+  \"clientSecret\": \"...\",
+  \"tokenUrl\": \"...\",
+  \"scopes\": [\"...\"],
+  \"extraParams\": {\"key\": \"...\"},
+  \"refreshToken\": \"...\",
+  \"extraHeaders\": {\"key\": \"...\"}
+}\n")]
+    SetOauthConfig {
+        app_id: String,
+        id: String,
+        endpoint_oauth_config_in: crate::json::JsonOf<EndpointOauthConfigIn>,
+    },
+    /// Delete endpoint OAuth configuration.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint delete-oauth-config app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    DeleteOauthConfig {
+        app_id: String,
+        id: String,
+    },
+    /// Get endpoint mTLS status and configuration.
+    ///
+    /// Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint get-mtls-config app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example response:
+{
+  \"enabled\": true,
+  \"config\": {
+  }
+}\n")]
+    GetMtlsConfig {
+        app_id: String,
+        id: String,
+    },
+    /// Set endpoint mTLS configuration.
+    ///
+    /// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint set-mtls-config app_abc000000000000000000000000 ep_abc000000000000000000000000 {...}\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    #[command(after_help = "Example body:
+{
+  \"identity\": \"...\"
+}\n")]
+    SetMtlsConfig {
+        app_id: String,
+        id: String,
+        endpoint_mtls_config_in: crate::json::JsonOf<EndpointMtlsConfigIn>,
+    },
+    /// Delete endpoint mTLS configuration.
+    #[command(help_template = concat!(
+            "{about-with-newline}\n",
+            "{usage-heading} {usage}\n\n",
+            "Example: svix endpoint delete-mtls-config app_abc000000000000000000000000 ep_abc000000000000000000000000\n",
+            "{after-help}",
+            "\n",
+            "{all-args}",
+        ))]
+    DeleteMtlsConfig {
+        app_id: String,
+        id: String,
+    },
     /// Get basic statistics for the endpoint.
     #[command(help_template = concat!(
             "{about-with-newline}\n",
@@ -834,6 +963,40 @@ impl EndpointCommands {
                     )
                     .await?;
                 crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::GetOauthConfig { app_id, id } => {
+                let resp = client.endpoint().get_oauth_config(app_id, id).await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::SetOauthConfig {
+                app_id,
+                id,
+                endpoint_oauth_config_in,
+            } => {
+                client
+                    .endpoint()
+                    .set_oauth_config(app_id, id, endpoint_oauth_config_in.into_inner())
+                    .await?;
+            }
+            Self::DeleteOauthConfig { app_id, id } => {
+                client.endpoint().delete_oauth_config(app_id, id).await?;
+            }
+            Self::GetMtlsConfig { app_id, id } => {
+                let resp = client.endpoint().get_mtls_config(app_id, id).await?;
+                crate::json::print_json_output(&resp, color_mode)?;
+            }
+            Self::SetMtlsConfig {
+                app_id,
+                id,
+                endpoint_mtls_config_in,
+            } => {
+                client
+                    .endpoint()
+                    .set_mtls_config(app_id, id, endpoint_mtls_config_in.into_inner())
+                    .await?;
+            }
+            Self::DeleteMtlsConfig { app_id, id } => {
+                client.endpoint().delete_mtls_config(app_id, id).await?;
             }
             Self::GetStats {
                 app_id,

@@ -12,6 +12,10 @@ use Svix\Models\EndpointHeadersIn;
 use Svix\Models\EndpointHeadersOut;
 use Svix\Models\EndpointHeadersPatchIn;
 use Svix\Models\EndpointIn;
+use Svix\Models\EndpointMtlsConfigIn;
+use Svix\Models\EndpointMtlsOut;
+use Svix\Models\EndpointOauthConfigIn;
+use Svix\Models\EndpointOauthOut;
 use Svix\Models\EndpointOut;
 use Svix\Models\EndpointPatch;
 use Svix\Models\EndpointSecretOut;
@@ -290,6 +294,100 @@ class Endpoint
         $res = $this->client->send($request);
 
         return ReplayOut::fromJson($res);
+    }
+
+    /**
+     * Get endpoint OAuth status and configuration.
+     *
+     * Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+     *
+     * @throws ApiException
+     */
+    public function getOauthConfig(
+        string $appId,
+        string $endpointId,
+    ): EndpointOauthOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/oauth");
+        $res = $this->client->send($request);
+
+        return EndpointOauthOut::fromJson($res);
+    }
+
+    /**
+     * Set endpoint OAuth configuration.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+     *
+     * @throws ApiException
+     */
+    public function setOauthConfig(
+        string $appId,
+        string $endpointId,
+        EndpointOauthConfigIn $endpointOauthConfigIn,
+    ): void {
+        $request = $this->client->newReq('PUT', "/api/v1/app/{$appId}/endpoint/{$endpointId}/oauth");
+        $request->setBody(json_encode($endpointOauthConfigIn));
+        $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Delete endpoint OAuth configuration.
+     *
+     * @throws ApiException
+     */
+    public function deleteOauthConfig(
+        string $appId,
+        string $endpointId,
+    ): void {
+        $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/endpoint/{$endpointId}/oauth");
+        $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Get endpoint mTLS status and configuration.
+     *
+     * Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+     *
+     * @throws ApiException
+     */
+    public function getMtlsConfig(
+        string $appId,
+        string $endpointId,
+    ): EndpointMtlsOut {
+        $request = $this->client->newReq('GET', "/api/v1/app/{$appId}/endpoint/{$endpointId}/mtls");
+        $res = $this->client->send($request);
+
+        return EndpointMtlsOut::fromJson($res);
+    }
+
+    /**
+     * Set endpoint mTLS configuration.
+     *
+     * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+     *
+     * @throws ApiException
+     */
+    public function setMtlsConfig(
+        string $appId,
+        string $endpointId,
+        EndpointMtlsConfigIn $endpointMtlsConfigIn,
+    ): void {
+        $request = $this->client->newReq('PUT', "/api/v1/app/{$appId}/endpoint/{$endpointId}/mtls");
+        $request->setBody(json_encode($endpointMtlsConfigIn));
+        $res = $this->client->sendNoResponseBody($request);
+    }
+
+    /**
+     * Delete endpoint mTLS configuration.
+     *
+     * @throws ApiException
+     */
+    public function deleteMtlsConfig(
+        string $appId,
+        string $endpointId,
+    ): void {
+        $request = $this->client->newReq('DELETE', "/api/v1/app/{$appId}/endpoint/{$endpointId}/mtls");
+        $res = $this->client->sendNoResponseBody($request);
     }
 
     /**

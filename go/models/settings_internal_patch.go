@@ -51,6 +51,7 @@ type SettingsInternalPatch struct {
 	ShowFeatureTooltips           *bool                              `json:"showFeatureTooltips,omitempty"`
 	WebhooksAutoConfig            *bool                              `json:"webhooksAutoConfig,omitempty"`
 	EndpointsPerAppLimit          *uint32                            `json:"endpointsPerAppLimit,omitempty"`
+	ChannelsPerEndpointLimit      *uint32                            `json:"channelsPerEndpointLimit,omitempty"`
 	McpToken                      *bool                              `json:"mcpToken,omitempty"`
 }
 
@@ -169,6 +170,9 @@ func (o SettingsInternalPatch) MarshalJSON() ([]byte, error) {
 	}
 	if o.EndpointsPerAppLimit != nil {
 		toSerialize["endpointsPerAppLimit"] = o.EndpointsPerAppLimit
+	}
+	if o.ChannelsPerEndpointLimit != nil {
+		toSerialize["channelsPerEndpointLimit"] = o.ChannelsPerEndpointLimit
 	}
 	if o.McpToken != nil {
 		toSerialize["mcpToken"] = o.McpToken

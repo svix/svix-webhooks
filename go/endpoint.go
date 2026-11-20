@@ -466,6 +466,156 @@ func (endpoint Endpoint) BulkReplay(
 	)
 }
 
+// Get endpoint OAuth status and configuration.
+//
+// Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+func (endpoint Endpoint) GetOauthConfig(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*models.EndpointOauthOut, error) {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.EndpointOauthOut](
+		ctx,
+		endpoint.client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Set endpoint OAuth configuration.
+//
+// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+func (endpoint Endpoint) SetOauthConfig(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointOauthConfigIn models.EndpointOauthConfigIn,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err = internal.ExecuteRequest[models.EndpointOauthConfigIn, any](
+		ctx,
+		endpoint.client,
+		"PUT",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+		pathMap,
+		nil,
+		nil,
+		&endpointOauthConfigIn,
+	)
+	return err
+}
+
+// Delete endpoint OAuth configuration.
+func (endpoint Endpoint) DeleteOauthConfig(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err = internal.ExecuteRequest[any, any](
+		ctx,
+		endpoint.client,
+		"DELETE",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+	return err
+}
+
+// Get endpoint mTLS status and configuration.
+//
+// Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+func (endpoint Endpoint) GetMtlsConfig(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) (*models.EndpointMtlsOut, error) {
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	return internal.ExecuteRequest[any, models.EndpointMtlsOut](
+		ctx,
+		endpoint.client,
+		"GET",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+}
+
+// Set endpoint mTLS configuration.
+//
+// This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+func (endpoint Endpoint) SetMtlsConfig(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+	endpointMtlsConfigIn models.EndpointMtlsConfigIn,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err = internal.ExecuteRequest[models.EndpointMtlsConfigIn, any](
+		ctx,
+		endpoint.client,
+		"PUT",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+		pathMap,
+		nil,
+		nil,
+		&endpointMtlsConfigIn,
+	)
+	return err
+}
+
+// Delete endpoint mTLS configuration.
+func (endpoint Endpoint) DeleteMtlsConfig(
+	ctx context.Context,
+	appId string,
+	endpointId string,
+) error {
+	var err error
+	pathMap := map[string]string{
+		"app_id":      appId,
+		"endpoint_id": endpointId,
+	}
+	_, err = internal.ExecuteRequest[any, any](
+		ctx,
+		endpoint.client,
+		"DELETE",
+		"/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+		pathMap,
+		nil,
+		nil,
+		nil,
+	)
+	return err
+}
+
 // Get basic statistics for the endpoint.
 func (endpoint Endpoint) GetStats(
 	ctx context.Context,

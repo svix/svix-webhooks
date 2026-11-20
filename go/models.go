@@ -45,6 +45,7 @@ type (
 	ClickhouseConfigIn                        = models.ClickhouseConfigIn
 	ClickhouseConfigOut                       = models.ClickhouseConfigOut
 	ClickhouseConfigPatch                     = models.ClickhouseConfigPatch
+	ClientSecretJwtParamsIn                   = models.ClientSecretJwtParamsIn
 	ConnectorIn                               = models.ConnectorIn
 	ConnectorKind                             = models.ConnectorKind
 	ConnectorOut                              = models.ConnectorOut
@@ -79,6 +80,12 @@ type (
 	EndpointHeadersPatchIn                    = models.EndpointHeadersPatchIn
 	EndpointIn                                = models.EndpointIn
 	EndpointMessageOut                        = models.EndpointMessageOut
+	EndpointMtlsConfigIn                      = models.EndpointMtlsConfigIn
+	EndpointMtlsConfigOut                     = models.EndpointMtlsConfigOut
+	EndpointMtlsOut                           = models.EndpointMtlsOut
+	EndpointOauthConfigIn                     = models.EndpointOauthConfigIn
+	EndpointOauthConfigOut                    = models.EndpointOauthConfigOut
+	EndpointOauthOut                          = models.EndpointOauthOut
 	EndpointOut                               = models.EndpointOut
 	EndpointPatch                             = models.EndpointPatch
 	EndpointSecretOut                         = models.EndpointSecretOut
@@ -175,6 +182,9 @@ type (
 	MetaConfigOut                             = models.MetaConfigOut
 	NangoConfig                               = models.NangoConfig
 	NangoConfigOut                            = models.NangoConfigOut
+	Oauth2AuthMethodInOut                     = models.Oauth2AuthMethodInOut
+	Oauth2GrantTypeInOut                      = models.Oauth2GrantTypeInOut
+	OauthJwsSigningAlgorithm                  = models.OauthJwsSigningAlgorithm
 	OpenClawConfig                            = models.OpenClawConfig
 	OpenClawConfigOut                         = models.OpenClawConfigOut
 	OperationalWebhookEndpointHeadersIn       = models.OperationalWebhookEndpointHeadersIn
