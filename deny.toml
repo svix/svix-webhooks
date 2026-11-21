@@ -10,6 +10,7 @@ targets = [
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
+unmaintained = "all"
 # there are multiple projects in here
 unused-ignored-advisory = "allow"
 ignore = [
@@ -60,6 +61,7 @@ deny = [
     # See: https://github.com/serde-rs/serde/issues/2538
     { name = "serde_derive", version = ">1.0.171, <1.0.184"},
     { name = "axum", version = "<0.7" },
+    { name = "bincode" },
 ]
 skip = []
 skip-tree = []
