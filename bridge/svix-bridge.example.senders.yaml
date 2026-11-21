@@ -99,6 +99,8 @@ senders:
       dlq_config:
         queue_key: "my_queue_dlq"
         max_receives: 5
+      # Optional: default "payload"
+      payload_key: "payload"
     # Optional - when unset, messages from the queue will be sent to Svix as-is.
     transformation: |
       function handler(input) {
