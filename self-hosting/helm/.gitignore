@@ -1,0 +1,26 @@
+# Helm chart values override files
+values-*.yaml
+custom-*.yaml
+*.values.yaml
+
+# Helm package files
+*.tgz
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Secret files
+secrets/
+*.secret
+*.key
+*.pem
