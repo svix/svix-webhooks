@@ -440,3 +440,65 @@ func TestDefaultAndRegionalServerUrlsAreUsedAsIs(t *testing.T) {
 		})
 	}
 }
+
+func TestPathParamsAreEscaped(t *testing.T) {
+	t.Run("application get escapes reserved characters", func(t *testing.T) {
+		tests := []struct {
+			id              string
+			wantEscapedPath string
+		}{
+			{id: "org/team", wantEscapedPath: "/api/v1/app/org%2Fteam"},
+			{id: "../other", wantEscapedPath: "/api/v1/app/..%2Fother"},
+			{id: "app?admin=1", wantEscapedPath: "/api/v1/app/app%3Fadmin=1"},
+			{id: "app#frag", wantEscapedPath: "/api/v1/app/app%23frag"},
+			{id: "100%", wantEscapedPath: "/api/v1/app/100%25"},
+			{id: "my app", wantEscapedPath: "/api/v1/app/my%20app"},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.id, func(t *testing.T) {
+				svx := newMockClient()
+				httpmock.Activate()
+				defer httpmock.DeactivateAndReset()
+
+				var gotPath string
+				var gotRawQuery string
+				httpmock.RegisterNoResponder(func(r *http.Request) (*http.Response, error) {
+					gotPath = r.URL.EscapedPath()
+					gotRawQuery = r.URL.RawQuery
+					return httpmock.NewStringResponse(200, appCreateOut), nil
+				})
+
+				if _, err := svx.Application().Get(context.Background(), tt.id); err != nil {
+					t.Fatalf("Application.Get(%q) failed: %v", tt.id, err)
+				}
+				if gotPath != tt.wantEscapedPath {
+					t.Errorf("EscapedPath() = %q, want %q", gotPath, tt.wantEscapedPath)
+				}
+				if gotRawQuery != "" {
+					t.Errorf("RawQuery = %q, want empty", gotRawQuery)
+				}
+			})
+		}
+	})
+
+	t.Run("endpoint get does not expand placeholder text from earlier params", func(t *testing.T) {
+		svx := newMockClient()
+		httpmock.Activate()
+		defer httpmock.DeactivateAndReset()
+
+		var gotPath string
+		httpmock.RegisterNoResponder(func(r *http.Request) (*http.Response, error) {
+			gotPath = r.URL.EscapedPath()
+			return httpmock.NewStringResponse(200, `{"id":"ep_1","url":"https://example.com","version":1,"disabled":false,"createdAt":"2019-08-24T14:15:22Z","updatedAt":"2019-08-24T14:15:22Z"}`), nil
+		})
+
+		if _, err := svx.Endpoint().Get(context.Background(), "{endpoint_id}", "ep_1"); err != nil {
+			t.Fatalf("Endpoint.Get failed: %v", err)
+		}
+		want := "/api/v1/app/%7Bendpoint_id%7D/endpoint/ep_1"
+		if gotPath != want {
+			t.Errorf("EscapedPath() = %q, want %q", gotPath, want)
+		}
+	})
+}

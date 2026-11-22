@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/Go: Percent-encode path parameters so reserved characters (`/`, `?`, `#`, `%`) do not alter the request URL
 
 ## Version 2.11.0
 * Libs/C#: Improve retry logic (retry on HTTP 423)
