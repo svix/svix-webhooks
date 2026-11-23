@@ -7,6 +7,9 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 
+## Version 2.11.1
+* Attempt to fix Java release
+
 ## Version 2.11.0
 * Libs/C#: Improve retry logic (retry on HTTP 423)
 * Libs/Go: Improve retry logic (retry on HTTP 423)
