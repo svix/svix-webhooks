@@ -21,14 +21,19 @@ jobs:
           server-id: central
           server-username-env-var: NEXUS_USERNAME
           server-password-env-var: NEXUS_PASSWORD
-          gpg-passphrase-env-var: MAVEN_GPG_PASSPHRASE
-          gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+
+      - name: Install GPG Signing Key
+        run: |
+          echo -e "$OSSRH_GPG_SECRET_KEY" | gpg --batch --import
+        env:
+          OSSRH_GPG_SECRET_KEY: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
 
       - name: Publish
         run: |
           cd java
-          mvn -B -P release deploy
+          mvn -B -P release deploy -Dgpg.keyname="$OSSRH_GPG_KEY_NAME"
         env:
           NEXUS_USERNAME: "${{secrets.NEXUS_USERNAME}}"
           NEXUS_PASSWORD: "${{secrets.NEXUS_PASSWORD}}"
+          OSSRH_GPG_KEY_NAME: "${{secrets.OSSRH_GPG_KEY_NAME}}"
           MAVEN_GPG_PASSPHRASE: "${{secrets.OSSRH_GPG_SECRET_KEY_PASSWORD}}"
