@@ -7,6 +7,11 @@ The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.
 
 ## Unreleased
 
+## Version 2.11.2
+* Attempt to fix Java release again
+* Bump standardwebhooks to 1.3.0 in JavaScript and Python libs
+* Replace syntect and tui-syntax-highlight with arborium
+
 ## Version 2.11.1
 * Attempt to fix Java release
 
