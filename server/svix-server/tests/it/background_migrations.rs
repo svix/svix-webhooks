@@ -468,11 +468,11 @@ async fn test_failure_stops_subsequent_migrations() {
     .fetch_all(&pool)
     .await
     .unwrap();
-    assert!(ran.contains(&"test_stop_on_fail_1".to_string()));
-    assert!(ran.contains(&"test_stop_on_fail_2".to_string()));
-    assert!(!ran.contains(&"test_stop_on_fail_3".to_string()));
-    assert!(!ran.contains(&"test_stop_on_fail_4".to_string()));
-    assert!(!ran.contains(&"test_stop_on_fail_5".to_string()));
+    assert!(ran.iter().any(|r| r == "test_stop_on_fail_1"));
+    assert!(ran.iter().any(|r| r == "test_stop_on_fail_2"));
+    assert!(!ran.iter().any(|r| r == "test_stop_on_fail_3"));
+    assert!(!ran.iter().any(|r| r == "test_stop_on_fail_4"));
+    assert!(!ran.iter().any(|r| r == "test_stop_on_fail_5"));
 
     for m in &migrations {
         cleanup(&pool, m.id).await;
