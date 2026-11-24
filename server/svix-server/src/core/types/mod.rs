@@ -187,7 +187,7 @@ pub trait BaseId: Deref<Target = String> {
 
     fn validate_(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
-        let Some(rest) = self.strip_prefix(SELF::PREFIX) else {
+        let Some(rest) = self.strip_prefix(Self::PREFIX) else {
             errors.add(
                 ALL_ERROR,
                 validation_error(Some("id"), Some("Invalid id. Expected different prefix")),
