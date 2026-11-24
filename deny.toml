@@ -10,13 +10,12 @@ targets = [
 db-path = "~/.cargo/advisory-db"
 db-urls = ["https://github.com/rustsec/advisory-db"]
 yanked = "deny"
+unmaintained = "all"
 # there are multiple projects in here
 unused-ignored-advisory = "allow"
 ignore = [
     # TODO: Update dependencies that use rsa crate
     "RUSTSEC-2023-0071",
-    # TODO(15080): replace syntect
-    "RUSTSEC-2025-0141",
     # TODO: get rid of proc-macro2 (in favor of proc-macro3, I guess)
     "RUSTSEC-2026-0173",
     # TODO(15015): move from chrono to jiff
@@ -63,6 +62,7 @@ deny = [
     # See: https://github.com/serde-rs/serde/issues/2538
     { name = "serde_derive", version = ">1.0.171, <1.0.184"},
     { name = "axum", version = "<0.7" },
+    { name = "bincode" },
 ]
 skip = []
 skip-tree = []
