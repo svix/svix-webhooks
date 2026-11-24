@@ -820,6 +820,20 @@ impl<T: JsonSchema + Serialize> OperationOutput for JsonStatusUpsert<T> {
     }
 }
 
+pub(crate) fn handle_panic(
+    err: Box<dyn std::any::Any + Send + 'static>,
+) -> axum::response::Response {
+    if let Some(err) = err.downcast_ref::<String>() {
+        tracing::error!(?err, "Unhandled panic");
+    } else if let Some(err) = err.downcast_ref::<&'static str>() {
+        tracing::error!(?err, "Unhandled panic");
+    } else {
+        tracing::error!("Unhandled non-string panic");
+    }
+
+    Error::http(HttpError::internal_server_error(None, None)).into_response()
+}
+
 #[cfg(test)]
 mod tests {
     use serde_json::json;

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 use aide::axum::ApiRouter;
-use tower_http::trace::TraceLayer;
+use tower_http::{catch_panic::CatchPanicLayer, trace::TraceLayer};
 
 use crate::{
     AppState,
@@ -23,14 +23,15 @@ pub fn router(cfg: Configuration) -> ApiRouter<AppState> {
         .merge(endpoints::message::router())
         .merge(endpoints::attempt::router())
         .merge(endpoints::admin::router())
-        .layer(
+        .layer((
             TraceLayer::new_for_http()
                 .make_span_with(AxumOtelSpanCreator::new(
                     cfg.opentelemetry_address.is_some(),
                 ))
                 .on_response(AxumOtelOnResponse)
                 .on_failure(AxumOtelOnFailure),
-        );
+            CatchPanicLayer::custom(utils::handle_panic),
+        ));
 
     #[cfg(debug_assertions)]
     if cfg!(debug_assertions) {
