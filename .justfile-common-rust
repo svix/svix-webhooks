@@ -1,4 +1,5 @@
 # Reformat both this justfile and the rust sources.
+[group("lint")]
 [no-exit-message]
 fmt:
     cargo +nightly fmt --all
@@ -6,14 +7,24 @@ fmt:
     cargo machete --fix
     just --fmt --unstable
 
+# Check formatting on both this justfile and the rust sources
+[group("lint")]
+[no-exit-message]
+fmt-check:
+    just --fmt --unstable --check
+    cargo +nightly fmt --all --check
+    cargo sort --workspace --check
+    cargo machete
+
+
 # Run `cargo clippy` for the rfust codebase.
+[group("lint")]
+[no-exit-message]
 clippy *args='':
     cargo clippy --all-targets --all-features {{ args }} -- -D warnings
 
-# Run lints (fmt and clippy)
-lint: fmt clippy && fmt
-
 # Run `cargo check` on the rust codebase
+[no-exit-message]
 check:
     cargo check --all-targets
 
