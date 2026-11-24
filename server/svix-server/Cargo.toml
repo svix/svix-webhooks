@@ -85,7 +85,7 @@ time = { version = "0.3.47", features = ["std"] }
 tokio = { version = "1.24.2", features = ["full"] }
 tokio-util = "0.7"
 tower = "0.5.1"
-tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id"] }
+tower-http = { version = "0.6.1", features = ["trace", "cors", "normalize-path", "request-id", "catch-panic"] }
 tracing = "0.1.35"
 tracing-opentelemetry = "0.33.0"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
