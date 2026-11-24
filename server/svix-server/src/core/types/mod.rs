@@ -187,12 +187,20 @@ pub trait BaseId: Deref<Target = String> {
 
     fn validate_(&self) -> Result<(), ValidationErrors> {
         let mut errors = ValidationErrors::new();
-        if !&self.starts_with(Self::PREFIX) {
+        let Some(rest) = self.strip_prefix(SELF::PREFIX) else {
             errors.add(
                 ALL_ERROR,
                 validation_error(Some("id"), Some("Invalid id. Expected different prefix")),
             );
-        }
+            return Err(errors);
+        };
+        if let Err(e) = KsuidMs::from_base62(rest) {
+            errors.add(
+                ALL_ERROR,
+                validation_error(Some("id"), Some("Invalid id. Unexpected format")),
+            );
+        };
+
         if errors.is_empty() {
             Ok(())
         } else {
