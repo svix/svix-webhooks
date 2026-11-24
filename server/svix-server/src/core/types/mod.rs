@@ -194,7 +194,7 @@ pub trait BaseId: Deref<Target = String> {
             );
             return Err(errors);
         };
-        if let Err(e) = KsuidMs::from_base62(rest) {
+        if KsuidMs::from_base62(rest).is_err() {
             errors.add(
                 ALL_ERROR,
                 validation_error(Some("id"), Some("Invalid id. Unexpected format")),
