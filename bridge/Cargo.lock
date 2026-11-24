@@ -4136,7 +4136,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge"
-version = "1.102.0"
+version = "1.103.0"
 dependencies = [
  "anyhow",
  "assign",
@@ -4175,7 +4175,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge-plugin-kafka"
-version = "1.102.0"
+version = "1.103.0"
 dependencies = [
  "base64 0.22.1",
  "ctor",
@@ -4193,7 +4193,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge-plugin-queue"
-version = "1.102.0"
+version = "1.103.0"
 dependencies = [
  "async-rs",
  "aws-config",
@@ -4217,7 +4217,7 @@ dependencies = [
 
 [[package]]
 name = "svix-bridge-types"
-version = "1.102.0"
+version = "1.103.0"
 dependencies = [
  "async-trait",
  "serde",
