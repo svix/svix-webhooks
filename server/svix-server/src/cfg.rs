@@ -229,11 +229,15 @@ pub struct ConfigurationInner {
     /// Subnets to whitelist for outbound webhooks. Note that allowing endpoints in private IP space
     /// is a security risk and should only be allowed if you are using the service internally or for
     /// testing purposes. Should be specified in CIDR notation, e.g., `[127.0.0.1/32, 172.17.0.0/16, 192.168.0.0/16]`
+    ///
+    /// By default, all traffic to private subnets is rejected.
     pub whitelist_subnets: Option<Arc<Vec<IpNet>>>,
 
     /// Hostnames to whitelist for outbound webhooks. Note that allowing a name here will bypass any
     /// IP filtering, and should only be done for hostnames which are fully in your control and
     /// when your DNS configuration is fully-trusted.
+    ///
+    /// By default, all traffic is rejected to names that resolve to private IPs.
     #[serde(default)]
     pub whitelist_names: Option<Arc<Vec<String>>>,
 
@@ -290,6 +294,9 @@ pub struct ProxyConfig {
     ///   done before the proxy gets involved
     /// - `http://` or `https://` proxy, sending HTTP requests to the proxy;
     ///   both HTTP and HTTPS targets are supported
+    ///
+    /// Note that if a proxy is enabled, IP/SSRF filtering is **not** performed by
+    /// Svix and is the responsibility of the proxy server.
     #[serde(rename = "proxy_addr")]
     pub addr: ProxyAddr,
 

@@ -144,7 +144,8 @@ worker_max_tasks = 500
 # Maximum seconds of queue long-poll
 queue_max_poll_secs = 20
 
-# Optional address of socks5 or http/https proxy server.
+# Optional address of socks5 or http/https proxy server. If `proxy_addr` is set, then the Svix server will
+# apply no IP filtering, and any filtering for outbound traffic is the responsibility of the proxy server.
 # proxy_addr = socks5://localhost:1080
 
 # Optional comma-separated list of IPV4/IPV6 addresses, CIDR blocks, and URLs that should bypass proxy server. Hostnames
