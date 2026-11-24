@@ -66,7 +66,7 @@ fn lock_key(id: &str) -> i64 {
     0x7a9f2c51 * (CRC_IEEE.checksum(id.as_bytes()) as i64)
 }
 
-const CONCURRENT_CREATE_TABLE_ERRORS: [&str; _] = [
+const CONCURRENT_CREATE_TABLE_ERRORS: [&str; 3] = [
     "23505", // unique key violation (for the insert into `pg_type`)
     "42P07", // duplicate_table
     "42710", // duplicate object
