@@ -16,6 +16,9 @@ unused-ignored-advisory = "allow"
 ignore = [
     # TODO: Update dependencies that use rsa crate
     "RUSTSEC-2023-0071",
+    # TODO(15080): replace syntect
+    "RUSTSEC-2025-0141",
+    # TODO: get rid of proc-macro2 (in favor of proc-macro3, I guess)
     "RUSTSEC-2026-0173",
     # TODO(15015): move from chrono to jiff
     "RUSTSEC-2026-0543",
