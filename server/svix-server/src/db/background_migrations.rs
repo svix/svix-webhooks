@@ -66,13 +66,21 @@ fn lock_key(id: &str) -> i64 {
     0x7a9f2c51 * (CRC_IEEE.checksum(id.as_bytes()) as i64)
 }
 
+const CONCURRENT_CREATE_TABLE_ERRORS: [&str; _] = [
+    "23505", // unique key violation (for the insert into `pg_type`)
+    "42P07", // duplicate_table
+    "42710", // duplicate object
+];
+
 /// PostgreSQL `CREATE TABLE IF NOT EXISTS` is not atomic against a concurrent
 /// `CREATE TABLE`. Two sessions can both pass the existence check; the loser
 /// then fails while inserting the new type into `pg_type` (`23505`) or with
 /// `duplicate_table` (`42P07`). Either error means the table now exists.
 fn is_concurrent_create_table_error(err: &sqlx::Error) -> bool {
     match err {
-        sqlx::Error::Database(db) => matches!(db.code().as_deref(), Some("23505") | Some("42P07")),
+        sqlx::Error::Database(db) => db
+            .code()
+            .is_some_and(|s| CONCURRENT_CREATE_TABLE_ERRORS.contains(&s.as_ref())),
         _ => false,
     }
 }
