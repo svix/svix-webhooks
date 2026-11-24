@@ -60,6 +60,60 @@ where
     }
 }
 
+/// Wrapper around Duration to get ValidateRange implemented
+/// Delete me when https://github.com/Keats/validator/issues/408 is fixed
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub struct DurationSeconds(Duration);
+
+impl std::fmt::Debug for DurationSeconds {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.0.fmt(f)
+    }
+}
+
+impl DurationSeconds {
+    const fn from_secs(secs: u64) -> Self {
+        Self(Duration::from_secs(secs))
+    }
+}
+
+impl validator::ValidateRange<DurationSeconds> for DurationSeconds {
+    fn less_than(&self, min: Self) -> Option<bool> {
+        Some(self < &min)
+    }
+
+    fn greater_than(&self, min: Self) -> Option<bool> {
+        Some(self > &min)
+    }
+}
+
+impl std::ops::Deref for DurationSeconds {
+    type Target = Duration;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl<'de> serde::de::Deserialize<'de> for DurationSeconds {
+    fn deserialize<D>(deserializer: D) -> std::prelude::v1::Result<Self, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        let secs = u64::deserialize(deserializer)?;
+        Ok(Self(Duration::from_secs(secs)))
+    }
+}
+
+impl serde::ser::Serialize for DurationSeconds {
+    fn serialize<S>(&self, serializer: S) -> std::prelude::v1::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_secs().serialize(serializer)
+    }
+}
+
 fn deserialize_hours<'de, D>(deserializer: D) -> Result<Duration, D::Error>
 where
     D: Deserializer<'de>,
@@ -206,8 +260,8 @@ pub struct ConfigurationInner {
     pub endpoint_https_only: bool,
 
     /// How long to wait when making a request (in seconds)
-    #[validate(range(min = 1, max = 30))]
-    pub worker_request_timeout: u16,
+    #[validate(range(min = DurationSeconds::from_secs(1), max = DurationSeconds::from_secs(30)))]
+    pub worker_request_timeout: DurationSeconds,
 
     /// How long of a period an endpoint must be consistently failing to be disabled. If a message
     /// is successfully sent during this time, then the endpoint will not disable.

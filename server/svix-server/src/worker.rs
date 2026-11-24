@@ -17,7 +17,6 @@ use http::{
     HeaderMap, HeaderName, HeaderValue, StatusCode, Version,
     header::{CONTENT_TYPE, RETRY_AFTER, USER_AGENT},
 };
-use http_body_util::BodyExt as _;
 use itertools::Itertools;
 use sea_orm::{
     ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder, Set,
@@ -276,7 +275,7 @@ struct PendingDispatch {
     url: String,
     headers: CasePreservingHeaderMap,
     payload: String,
-    request_timeout: u64,
+    request_timeout: Duration,
     created_at: DateTimeUtc,
 }
 
@@ -326,7 +325,7 @@ async fn prepare_dispatch(
         url: endp.url.clone(),
         headers,
         payload: payload.to_owned(),
-        request_timeout: cfg.worker_request_timeout as _,
+        request_timeout: *cfg.worker_request_timeout,
         created_at: attempt_created_at,
     }))
 }
@@ -349,14 +348,13 @@ async fn make_http_call(
     }: PendingDispatch,
     client: &WebhookClient,
 ) -> Result<CompletedDispatch> {
-    let req = RequestBuilder::new()
+    let req = RequestBuilder::new(request_timeout)
         .method(method)
         .uri_str(&url)
         .map_err(|e| Error::validation(format_args!("URL is invalid: {e:?}")))?
         .headers(headers)
-        .body(payload.into(), HeaderValue::from_static("application/json"))
+        .body(payload, HeaderValue::from_static("application/json"))
         .version(Version::HTTP_11)
-        .timeout(Duration::from_secs(request_timeout))
         .build()
         .map_err(Error::generic)?;
 
@@ -375,7 +373,7 @@ async fn make_http_call(
         ..Default::default()
     };
 
-    match client.execute(req).await {
+    match client.execute(req, RESPONSE_MAX_SIZE).await {
         Ok(res) => {
             // Calculate the duration in milliseconds
             let duration_ms = (Utc::now() - created_at).num_milliseconds();
@@ -393,15 +391,9 @@ async fn make_http_call(
                 None
             };
 
-            let (res_parts, body) = res.into_parts();
-            let body = match read_body_up_to(body, RESPONSE_MAX_SIZE).await {
-                Ok(bytes) => bytes_to_string(bytes),
-                Err(err) => format!("Error reading response body: {err}"),
-            };
-
             let attempt = messageattempt::ActiveModel {
                 response_status_code: Set(status_code),
-                response: Set(body),
+                response: Set(bytes_to_string(res.body)),
                 status: Set(status),
                 response_duration_ms: Set(duration_ms),
                 ..attempt
@@ -409,7 +401,7 @@ async fn make_http_call(
 
             match http_error {
                 Some(err) => {
-                    let retry_after = retry_after(&res_parts.headers, Utc::now());
+                    let retry_after = retry_after(&res.headers, Utc::now());
                     Ok(CompletedDispatch::Failed(FailedDispatch {
                         attempt,
                         err: Error::generic(err),
@@ -811,27 +803,6 @@ async fn dispatch_message_task(
     }
 }
 
-/// Reads at most `limit` bytes of `body` and leaves the rest unread: only that much is ever stored.
-async fn read_body_up_to<B>(body: B, limit: usize) -> Result<bytes::Bytes, B::Error>
-where
-    B: hyper::body::Body<Data = bytes::Bytes>,
-{
-    let mut body = std::pin::pin!(body);
-    let mut buffer = bytes::BytesMut::new();
-
-    while buffer.len() < limit {
-        let Some(frame) = body.as_mut().frame().await else {
-            break;
-        };
-        if let Ok(data) = frame?.into_data() {
-            buffer.extend_from_slice(&data);
-        }
-    }
-
-    buffer.truncate(limit);
-    Ok(buffer.freeze())
-}
-
 fn bytes_to_string(bytes: bytes::Bytes) -> String {
     match std::str::from_utf8(&bytes) {
         Ok(v) => v.to_owned(),
@@ -1216,7 +1187,7 @@ mod tests {
 
     use super::{
         CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers,
-        read_body_up_to, retry_after, sign_msg,
+        retry_after, sign_msg,
     };
     use crate::core::{
         cryptography::{AsymmetricKey, Encryption},
@@ -1479,42 +1450,5 @@ mod tests {
         // and we handle no header at all, obvs
         headers.clear();
         assert_matches!(retry_after(&headers, now), None);
-    }
-
-    #[tokio::test]
-    async fn test_read_body_up_to_stops_at_limit() {
-        use std::{
-            convert::Infallible,
-            sync::{
-                Arc,
-                atomic::{AtomicUsize, Ordering},
-            },
-        };
-
-        use http_body_util::StreamBody;
-        use hyper::body::Frame;
-
-        let frames_read = Arc::new(AtomicUsize::new(0));
-        let counter = frames_read.clone();
-        let frames = futures::stream::iter((0..100).map(move |_| {
-            counter.fetch_add(1, Ordering::Relaxed);
-            Ok::<_, Infallible>(Frame::data(Bytes::from(vec![b'a'; 1000])))
-        }));
-
-        let bytes = read_body_up_to(StreamBody::new(frames), 2500)
-            .await
-            .unwrap();
-
-        assert_eq!(bytes.len(), 2500);
-        assert_eq!(frames_read.load(Ordering::Relaxed), 3);
-    }
-
-    #[tokio::test]
-    async fn test_read_body_up_to_keeps_short_body() {
-        let body = http_body_util::Full::new(Bytes::from_static(b"short"));
-
-        let bytes = read_body_up_to(body, 2500).await.unwrap();
-
-        assert_eq!(bytes, Bytes::from_static(b"short"));
     }
 }
