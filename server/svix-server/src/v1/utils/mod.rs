@@ -3,7 +3,7 @@
 
 use std::{
     borrow::Cow,
-    collections::HashSet,
+    collections::BTreeMap,
     error::Error as StdError,
     ops::Deref,
     sync::LazyLock,
@@ -31,7 +31,7 @@ use validator::{Validate, ValidationError};
 
 use crate::{
     core::types::{
-        ApplicationIdOrUid, BaseId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
+        ALL_ERROR, ApplicationIdOrUid, BaseId, EndpointIdOrUid, EventTypeName, EventTypeNameSet,
         MessageAttemptId, MessageIdOrUid,
     },
     error::{Error, HttpError, Result, ValidationErrorItem},
@@ -467,9 +467,12 @@ pub fn validation_errors(
     err.into_errors()
         .into_iter()
         .flat_map(|(k, v)| {
-            // Add the next field to the location
+            // Add the next field to the location, omitting the internal `"__all__"`
+            // sentinel when a parent path is already present.
             let mut loc = acc_path.clone();
-            loc.push(k.into_owned());
+            if k != ALL_ERROR || loc.is_empty() {
+                loc.push(k.into_owned());
+            }
 
             match v {
                 // If it's a [`validator::ValidationErrorsKind::Field`], then it will be a vector of
@@ -614,7 +617,7 @@ where
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self> {
         let pairs = form_urlencoded::parse(parts.uri.query().unwrap_or_default().as_bytes());
 
-        let event_types: HashSet<EventTypeName> = pairs
+        let event_types: Vec<EventTypeName> = pairs
             .filter(|(key, _)|
                 // want to handle both `?event_types=`, `?event_types[]=`, and `?event_types[1]=`
                 key == "event_types" || (key.starts_with("event_types[") && key.ends_with(']')))
@@ -629,11 +632,27 @@ where
         if event_types.is_empty() {
             Ok(Self(None))
         } else {
-            let event_types = EventTypeNameSet(event_types);
-            event_types.validate().map_err(|e| {
-                HttpError::unprocessable_entity(validation_errors(vec!["query".to_owned()], e))
-            })?;
-            Ok(Self(Some(event_types)))
+            let mut list_errors = BTreeMap::new();
+            for (idx, item) in event_types.iter().enumerate() {
+                if let Err(err) = item.validate() {
+                    list_errors.insert(idx, Box::new(err));
+                }
+            }
+            if !list_errors.is_empty() {
+                let mut errors = validator::ValidationErrors::new();
+                errors.errors_mut().insert(
+                    Cow::Borrowed("event_types"),
+                    validator::ValidationErrorsKind::List(list_errors),
+                );
+                return Err(HttpError::unprocessable_entity(validation_errors(
+                    vec!["query".to_owned()],
+                    errors,
+                ))
+                .into());
+            }
+            Ok(Self(Some(EventTypeNameSet(
+                event_types.into_iter().collect(),
+            ))))
         }
     }
 }
@@ -962,5 +981,87 @@ mod tests {
 
         assert!(validate_no_control_characters(a).is_ok());
         assert!(validate_no_control_characters(b).is_err());
+    }
+
+    #[test]
+    fn test_validation_errors_omits_all_sentinel_with_parent() {
+        #[derive(Debug, Validate)]
+        struct QueryWithChannel {
+            #[validate(nested)]
+            channel: crate::core::types::EventChannel,
+        }
+
+        let invalid = QueryWithChannel {
+            channel: crate::core::types::EventChannel("bad,channel".to_owned()),
+        };
+        let errs = invalid.validate().unwrap_err();
+        let items = validation_errors(vec!["query".to_owned()], errs);
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].loc, vec!["query", "channel"]);
+
+        let top_level = crate::core::types::EventChannel("bad,channel".to_owned())
+            .validate()
+            .unwrap_err();
+        let top_items = validation_errors(vec![], top_level);
+        assert_eq!(top_items.len(), 1);
+        assert_eq!(top_items[0].loc, vec!["__all__"]);
+    }
+
+    #[tokio::test]
+    async fn test_event_types_query_params_validation_location() {
+        use axum::extract::FromRequestParts;
+
+        use super::EventTypesQueryParams;
+        use crate::error::{Error, HttpErrorBody};
+
+        let (mut parts, ()) = http::Request::builder()
+            .uri("/?event_types=1,")
+            .body(())
+            .unwrap()
+            .into_parts();
+        let err = EventTypesQueryParams::from_request_parts(&mut parts, &())
+            .await
+            .err()
+            .expect("empty trailing event type should fail validation");
+        match err {
+            Error::Http(http_err) => match http_err.body {
+                HttpErrorBody::Validation(v) => {
+                    assert_eq!(v.detail.len(), 1);
+                    assert_eq!(v.detail[0].loc, vec!["query", "event_types", "[1]"]);
+                }
+                other => panic!("unexpected error body: {other:?}"),
+            },
+            other => panic!("unexpected error: {other:?}"),
+        }
+
+        let (mut parts, ()) = http::Request::builder()
+            .uri("/?event_types=bad!,ok")
+            .body(())
+            .unwrap()
+            .into_parts();
+        let err = EventTypesQueryParams::from_request_parts(&mut parts, &())
+            .await
+            .err()
+            .expect("invalid first event type should fail validation");
+        match err {
+            Error::Http(http_err) => match http_err.body {
+                HttpErrorBody::Validation(v) => {
+                    assert_eq!(v.detail.len(), 1);
+                    assert_eq!(v.detail[0].loc, vec!["query", "event_types", "[0]"]);
+                }
+                other => panic!("unexpected error body: {other:?}"),
+            },
+            other => panic!("unexpected error: {other:?}"),
+        }
+
+        let (mut parts, ()) = http::Request::builder()
+            .uri("/?event_types=ok.1,ok.2")
+            .body(())
+            .unwrap()
+            .into_parts();
+        let ok = EventTypesQueryParams::from_request_parts(&mut parts, &())
+            .await
+            .unwrap();
+        assert_eq!(ok.0.unwrap().0.len(), 2);
     }
 }
