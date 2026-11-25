@@ -3355,9 +3355,9 @@ dependencies = [
 
 [[package]]
 name = "rdkafka"
-version = "0.38.0"
+version = "0.40.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f1856d72dbbbea0d2a5b2eaf6af7fb3847ef2746e883b11781446a51dbc85c0"
+checksum = "41efe6cce81066ae2e5ece4b64e8eee0602ef0f757506a04c0731c17d9dbd04f"
 dependencies = [
  "futures-channel",
  "futures-util",
@@ -4340,7 +4340,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "once_cell",
  "rustix",
  "windows-sys 0.52.0",
