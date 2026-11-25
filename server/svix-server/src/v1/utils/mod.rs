@@ -1012,7 +1012,7 @@ mod tests {
         use axum::extract::FromRequestParts;
 
         use super::EventTypesQueryParams;
-        use crate::error::{Error, HttpErrorBody};
+        use crate::error::ErrorType;
 
         let (mut parts, ()) = http::Request::builder()
             .uri("/?event_types=1,")
@@ -1023,14 +1023,15 @@ mod tests {
             .await
             .err()
             .expect("empty trailing event type should fail validation");
-        match err {
-            Error::Http(http_err) => match http_err.body {
-                HttpErrorBody::Validation(v) => {
-                    assert_eq!(v.detail.len(), 1);
-                    assert_eq!(v.detail[0].loc, vec!["query", "event_types", "[1]"]);
-                }
-                other => panic!("unexpected error body: {other:?}"),
-            },
+        match err.typ {
+            ErrorType::Http(http_err) => {
+                let body = serde_json::to_value(&http_err.body).unwrap();
+                assert_eq!(body["detail"].as_array().unwrap().len(), 1);
+                assert_eq!(
+                    body["detail"][0]["loc"],
+                    json!(["query", "event_types", "[1]"])
+                );
+            }
             other => panic!("unexpected error: {other:?}"),
         }
 
@@ -1043,14 +1044,15 @@ mod tests {
             .await
             .err()
             .expect("invalid first event type should fail validation");
-        match err {
-            Error::Http(http_err) => match http_err.body {
-                HttpErrorBody::Validation(v) => {
-                    assert_eq!(v.detail.len(), 1);
-                    assert_eq!(v.detail[0].loc, vec!["query", "event_types", "[0]"]);
-                }
-                other => panic!("unexpected error body: {other:?}"),
-            },
+        match err.typ {
+            ErrorType::Http(http_err) => {
+                let body = serde_json::to_value(&http_err.body).unwrap();
+                assert_eq!(body["detail"].as_array().unwrap().len(), 1);
+                assert_eq!(
+                    body["detail"][0]["loc"],
+                    json!(["query", "event_types", "[0]"])
+                );
+            }
             other => panic!("unexpected error: {other:?}"),
         }
 
