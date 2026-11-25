@@ -1009,10 +1009,18 @@ mod tests {
 
     #[tokio::test]
     async fn test_event_types_query_params_validation_location() {
-        use axum::extract::FromRequestParts;
+        use axum::{extract::FromRequestParts, response::IntoResponse};
 
         use super::EventTypesQueryParams;
-        use crate::error::ErrorType;
+
+        async fn error_json(err: crate::error::Error) -> serde_json::Value {
+            let resp = err.into_response();
+            assert_eq!(resp.status(), http::StatusCode::UNPROCESSABLE_ENTITY);
+            let bytes = axum::body::to_bytes(resp.into_body(), usize::MAX)
+                .await
+                .unwrap();
+            serde_json::from_slice(&bytes).unwrap()
+        }
 
         let (mut parts, ()) = http::Request::builder()
             .uri("/?event_types=1,")
@@ -1023,17 +1031,12 @@ mod tests {
             .await
             .err()
             .expect("empty trailing event type should fail validation");
-        match err.typ {
-            ErrorType::Http(http_err) => {
-                let body = serde_json::to_value(&http_err.body).unwrap();
-                assert_eq!(body["detail"].as_array().unwrap().len(), 1);
-                assert_eq!(
-                    body["detail"][0]["loc"],
-                    json!(["query", "event_types", "[1]"])
-                );
-            }
-            other => panic!("unexpected error: {other:?}"),
-        }
+        let body = error_json(err).await;
+        assert_eq!(body["detail"].as_array().unwrap().len(), 1);
+        assert_eq!(
+            body["detail"][0]["loc"],
+            json!(["query", "event_types", "[1]"])
+        );
 
         let (mut parts, ()) = http::Request::builder()
             .uri("/?event_types=bad!,ok")
@@ -1044,17 +1047,12 @@ mod tests {
             .await
             .err()
             .expect("invalid first event type should fail validation");
-        match err.typ {
-            ErrorType::Http(http_err) => {
-                let body = serde_json::to_value(&http_err.body).unwrap();
-                assert_eq!(body["detail"].as_array().unwrap().len(), 1);
-                assert_eq!(
-                    body["detail"][0]["loc"],
-                    json!(["query", "event_types", "[0]"])
-                );
-            }
-            other => panic!("unexpected error: {other:?}"),
-        }
+        let body = error_json(err).await;
+        assert_eq!(body["detail"].as_array().unwrap().len(), 1);
+        assert_eq!(
+            body["detail"][0]["loc"],
+            json!(["query", "event_types", "[0]"])
+        );
 
         let (mut parts, ()) = http::Request::builder()
             .uri("/?event_types=ok.1,ok.2")
