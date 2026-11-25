@@ -409,7 +409,7 @@ async fn make_http_call(
 
             match http_error {
                 Some(err) => {
-                    let retry_after = retry_after(&res_parts.headers);
+                    let retry_after = retry_after(&res_parts.headers, Utc::now());
                     Ok(CompletedDispatch::Failed(FailedDispatch {
                         attempt,
                         err: Error::generic(err),
@@ -493,38 +493,48 @@ async fn handle_successful_dispatch(
 
 const MAX_RETRY_AFTER: TimeDelta = TimeDelta::days(7);
 
-pub fn retry_after(hdr_map: &HeaderMap) -> Option<DateTime<Utc>> {
-    let retry_after = hdr_map.get(RETRY_AFTER)?;
-    let retry_after_str = retry_after.to_str().ok()?;
-
+fn retry_after_inner(
+    retry_after_str: &str,
+    now: DateTime<Utc>,
+    upper_bound: DateTime<Utc>,
+) -> Option<DateTime<Utc>> {
     if let Ok(date) = DateTime::parse_from_rfc2822(retry_after_str) {
         return Some(date.with_timezone(&Utc));
     }
 
-    if let Ok(seconds_f64) = retry_after_str.parse::<f64>() {
-        let now = Utc::now();
-        let seconds = seconds_f64.ceil() as i64;
-        let duration = TimeDelta::try_seconds(seconds).unwrap_or(MAX_RETRY_AFTER);
-        let upper_bound = now + MAX_RETRY_AFTER;
-        return Some(
-            now.checked_add_signed(duration)
-                .unwrap_or_else(|| {
-                    tracing::warn!(
-                        header_value = retry_after_str,
-                        "unreasonably long value for retry-after"
-                    );
-                    upper_bound
-                })
-                .clamp(now, upper_bound),
-        );
+    if let Ok(date) = DateTime::parse_from_rfc3339(retry_after_str) {
+        return Some(date.with_timezone(&Utc));
     }
 
-    tracing::warn!(
-        header_value = retry_after_str,
-        "Failed to parse retry-after header"
-    );
+    if let Ok(seconds_f64) = retry_after_str.parse::<f64>() {
+        let seconds = seconds_f64.ceil() as i64;
+        if seconds < 0 {
+            tracing::debug!(retry_after_str, seconds, "ignoring negative retry-after");
+            return None;
+        }
+        let duration = chrono::TimeDelta::try_seconds(seconds).unwrap_or(MAX_RETRY_AFTER);
+        return Some(now.checked_add_signed(duration).unwrap_or_else(|| {
+            tracing::warn!(retry_after_str, "unreasonably long value for retry-after");
+            upper_bound
+        }));
+    }
 
+    tracing::debug!("Failed to parse retry-after header: {}", retry_after_str);
     None
+}
+
+/// Parse the Retry-After header
+///
+/// This supports both RFC2822 and RFC3339 absolute date-times, as well as integer/floating-point
+/// numbers of seconds. The returned value is clamped to not more than [`MAX_RETRY_AFTER`] in the
+/// future
+pub fn retry_after(hdr_map: &HeaderMap, now: DateTime<Utc>) -> Option<DateTime<Utc>> {
+    let retry_after = hdr_map.get(RETRY_AFTER)?;
+    let retry_after_str = retry_after.to_str().ok()?;
+
+    let upper_bound = now + MAX_RETRY_AFTER;
+
+    retry_after_inner(retry_after_str, now, upper_bound).map(|v| v.clamp(now, upper_bound))
 }
 
 fn limit_retry_delay(base: Duration, retry_after: Duration) -> Duration {
@@ -1203,7 +1213,6 @@ mod tests {
     use chrono::{DateTime, TimeDelta, Utc};
     use ed25519_compact::Signature;
     use http::HeaderMap;
-    use more_asserts::assert_lt;
 
     use super::{
         CasePreservingHeaderMap, SVIX_SIGNATURE, bytes_to_string, generate_msg_headers,
@@ -1362,58 +1371,114 @@ mod tests {
 
     #[test]
     fn test_retry_after() {
-        let max_time = Utc::now() + TimeDelta::days(7) + TimeDelta::seconds(30);
         let mut headers = HeaderMap::new();
 
+        let now: DateTime<Utc> = DateTime::parse_from_rfc3339("2025-10-20T07:00:00Z")
+            .unwrap()
+            .with_timezone(&Utc);
+
+        // valid absolute timestamp (RFC 2822)
         headers.insert(
             "retry-after",
-            "Wed, 21 Oct 2015 07:28:00 GMT".parse().unwrap(),
+            "Wed, 22 Oct 2025 07:28:00 GMT".parse().unwrap(),
         );
-        let result = retry_after(&headers).unwrap();
+        let result = retry_after(&headers, now).unwrap();
         assert_eq!(
             result,
-            DateTime::parse_from_rfc2822("Wed, 21 Oct 2015 07:28:00 GMT")
+            DateTime::parse_from_rfc3339("2025-10-22T07:28:00Z")
+                .unwrap()
+                .with_timezone(&Utc)
+        );
+
+        // invalid absolute timestamp (RFC 2822)
+        headers.insert(
+            "retry-after",
+            "Wed, 22 Oct 2025 07:28:00 YOUR MOM".parse().unwrap(),
+        );
+        let result = retry_after(&headers, now);
+        assert_matches!(result, None);
+
+        // valid absolute timestamp (ISO8601 / RFC3339)
+        headers.insert("retry-after", "2025-10-22T07:28:00Z".parse().unwrap());
+        let result = retry_after(&headers, now).unwrap();
+        assert_eq!(
+            result,
+            DateTime::parse_from_rfc3339("2025-10-22T07:28:00Z")
+                .unwrap()
+                .with_timezone(&Utc)
+        );
+
+        // past is clamped to now
+        headers.insert(
+            "retry-after",
+            "Wed, 20 Oct 1999 07:28:00 GMT".parse().unwrap(),
+        );
+        let result = retry_after(&headers, now).unwrap();
+        assert_eq!(
+            result,
+            DateTime::parse_from_rfc3339("2025-10-20T07:00:00Z")
+                .unwrap()
+                .with_timezone(&Utc)
+        );
+
+        // future is clamped to 7 days from now
+        headers.insert(
+            "retry-after",
+            "Wed, 20 Oct 9999 07:28:00 GMT".parse().unwrap(),
+        );
+        let result = retry_after(&headers, now).unwrap();
+        assert_eq!(
+            result,
+            DateTime::parse_from_rfc3339("2025-10-27T07:00:00Z")
                 .unwrap()
                 .with_timezone(&Utc)
         );
 
         headers.insert("retry-after", "120".parse().unwrap());
-        let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + TimeDelta::seconds(120);
-        assert_lt!((result - expected).num_seconds().abs(), 2);
+        let result = retry_after(&headers, now).unwrap();
+        let expected = now + TimeDelta::seconds(120);
+        assert_eq!(result, expected);
 
         headers.insert("retry-after", "120.1".parse().unwrap());
-        let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + TimeDelta::seconds(121);
-        assert_lt!((result - expected).num_seconds().abs(), 2);
+        let result = retry_after(&headers, now).unwrap();
+        let expected = now + TimeDelta::seconds(121);
+        assert_eq!(result, expected);
 
         headers.insert("retry-after", "120.6".parse().unwrap());
-        let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + TimeDelta::seconds(121);
-        assert_lt!((result - expected).num_seconds().abs(), 2);
+        let result = retry_after(&headers, now).unwrap();
+        let expected = now + TimeDelta::seconds(121);
+        assert_eq!(result, expected);
 
         headers.insert("retry-after", "120.0".parse().unwrap());
-        let result = retry_after(&headers).unwrap();
-        let expected = Utc::now() + TimeDelta::seconds(120);
-        assert_lt!((result - expected).num_seconds().abs(), 2);
+        let result = retry_after(&headers, now).unwrap();
+        let expected = now + TimeDelta::seconds(120);
+        assert_eq!(result, expected);
 
-        // it should ignore things that don't look at all like dates or intervals
+        // negative times are ignored
+        headers.insert("retry-after", "-120.0".parse().unwrap());
+        let result = retry_after(&headers, now);
+        assert_matches!(result, None);
+
+        // huge times are clamped to 7 days from now
+        headers.insert("retry-after", "9223372036854776".parse().unwrap());
+        let result = retry_after(&headers, now).unwrap();
+        let expected = now + TimeDelta::days(7);
+        assert_eq!(result, expected);
+
+        // yeah, that includes exponential notation
+        headers.insert("retry-after", "1e999".parse().unwrap());
+        let result = retry_after(&headers, now).unwrap();
+        let expected = now + TimeDelta::days(7);
+        assert_eq!(result, expected);
+
+        // sure we just ignore total garbage
         headers.clear();
         headers.insert("retry-after", "invalid".parse().unwrap());
-        assert_matches!(retry_after(&headers), None);
+        assert_matches!(retry_after(&headers, now), None);
 
-        // it should clamp very large (but valid) values to 7 days from now
+        // and we handle no header at all, obvs
         headers.clear();
-        headers.insert("retry-after", "4611686018427387904".parse().unwrap());
-        assert_matches!(retry_after(&headers), Some(x) if x < max_time);
-
-        // it should handle values > i64::MAX
-        headers.clear();
-        headers.insert("retry-after", "36893488147419103232".parse().unwrap());
-        assert_matches!(retry_after(&headers), Some(x) if x < max_time);
-
-        headers.clear();
-        assert_matches!(retry_after(&headers), None);
+        assert_matches!(retry_after(&headers, now), None);
     }
 
     #[tokio::test]

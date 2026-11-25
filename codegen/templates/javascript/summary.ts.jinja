@@ -38,8 +38,8 @@ export type SvixOptions = {
     retryScheduleInMs?: number[];
   },
   {
-    /** The number of times the client will retry if a server-side error
-     *  or timeout is received.
+    /** The number of times the client will retry if a server-side error,
+     *  HTTP 423 (Locked), or a timeout is received.
      *  Default: 2
      */
     numRetries?: number;

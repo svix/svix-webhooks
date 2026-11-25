@@ -10,15 +10,17 @@ import (
 type ApplicationAlertEvent string
 
 const (
-	APPLICATIONALERTEVENT_ENDPOINT_DISABLED         ApplicationAlertEvent = "endpoint.disabled"
-	APPLICATIONALERTEVENT_MESSAGE_ATTEMPT_EXHAUSTED ApplicationAlertEvent = "message.attempt.exhausted"
-	APPLICATIONALERTEVENT_STREAM_SINK_DISABLED      ApplicationAlertEvent = "stream.sink.disabled"
+	APPLICATIONALERTEVENT_ENDPOINT_DISABLED             ApplicationAlertEvent = "endpoint.disabled"
+	APPLICATIONALERTEVENT_MESSAGE_ATTEMPT_EXHAUSTED     ApplicationAlertEvent = "message.attempt.exhausted"
+	APPLICATIONALERTEVENT_STREAM_SINK_DISABLED          ApplicationAlertEvent = "stream.sink.disabled"
+	APPLICATIONALERTEVENT_ENDPOINT_RESPONSE_STATUS_CODE ApplicationAlertEvent = "endpoint.response.status_code"
 )
 
 var allowedApplicationAlertEvent = []ApplicationAlertEvent{
 	"endpoint.disabled",
 	"message.attempt.exhausted",
 	"stream.sink.disabled",
+	"endpoint.response.status_code",
 }
 
 func (v *ApplicationAlertEvent) UnmarshalJSON(src []byte) error {
@@ -37,7 +39,8 @@ func (v *ApplicationAlertEvent) UnmarshalJSON(src []byte) error {
 }
 
 var ApplicationAlertEventFromString = map[string]ApplicationAlertEvent{
-	"endpoint.disabled":         APPLICATIONALERTEVENT_ENDPOINT_DISABLED,
-	"message.attempt.exhausted": APPLICATIONALERTEVENT_MESSAGE_ATTEMPT_EXHAUSTED,
-	"stream.sink.disabled":      APPLICATIONALERTEVENT_STREAM_SINK_DISABLED,
+	"endpoint.disabled":             APPLICATIONALERTEVENT_ENDPOINT_DISABLED,
+	"message.attempt.exhausted":     APPLICATIONALERTEVENT_MESSAGE_ATTEMPT_EXHAUSTED,
+	"stream.sink.disabled":          APPLICATIONALERTEVENT_STREAM_SINK_DISABLED,
+	"endpoint.response.status_code": APPLICATIONALERTEVENT_ENDPOINT_RESPONSE_STATUS_CODE,
 }

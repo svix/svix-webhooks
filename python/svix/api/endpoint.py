@@ -13,6 +13,10 @@ from ..models import (
     EndpointHeadersOut,
     EndpointHeadersPatchIn,
     EndpointIn,
+    EndpointMtlsConfigIn,
+    EndpointMtlsOut,
+    EndpointOauthConfigIn,
+    EndpointOauthOut,
     EndpointOut,
     EndpointPatch,
     EndpointSecretOut,
@@ -421,6 +425,98 @@ class EndpointAsync(ApiBaseAsync):
         )
         return ReplayOut.model_validate(response.json())
 
+    async def get_oauth_config(self, app_id: str, endpoint_id: str) -> EndpointOauthOut:
+        """Get endpoint OAuth status and configuration.
+
+        Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return EndpointOauthOut.model_validate(response.json())
+
+    async def set_oauth_config(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_oauth_config_in: EndpointOauthConfigIn,
+    ) -> None:
+        """Set endpoint OAuth configuration.
+
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
+        await self._request_asyncio(
+            method="put",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=endpoint_oauth_config_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    async def delete_oauth_config(self, app_id: str, endpoint_id: str) -> None:
+        """Delete endpoint OAuth configuration."""
+        await self._request_asyncio(
+            method="delete",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+
+    async def get_mtls_config(self, app_id: str, endpoint_id: str) -> EndpointMtlsOut:
+        """Get endpoint mTLS status and configuration.
+
+        Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled."""
+        response = await self._request_asyncio(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return EndpointMtlsOut.model_validate(response.json())
+
+    async def set_mtls_config(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_mtls_config_in: EndpointMtlsConfigIn,
+    ) -> None:
+        """Set endpoint mTLS configuration.
+
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
+        await self._request_asyncio(
+            method="put",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=endpoint_mtls_config_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    async def delete_mtls_config(self, app_id: str, endpoint_id: str) -> None:
+        """Delete endpoint mTLS configuration."""
+        await self._request_asyncio(
+            method="delete",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+
     async def get_stats(
         self,
         app_id: str,
@@ -798,6 +894,98 @@ class Endpoint(ApiBaseSync):
             json_body=bulk_replay_in.model_dump_json(exclude_unset=True, by_alias=True),
         )
         return ReplayOut.model_validate(response.json())
+
+    def get_oauth_config(self, app_id: str, endpoint_id: str) -> EndpointOauthOut:
+        """Get endpoint OAuth status and configuration.
+
+        Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return EndpointOauthOut.model_validate(response.json())
+
+    def set_oauth_config(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_oauth_config_in: EndpointOauthConfigIn,
+    ) -> None:
+        """Set endpoint OAuth configuration.
+
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
+        self._request_sync(
+            method="put",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=endpoint_oauth_config_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    def delete_oauth_config(self, app_id: str, endpoint_id: str) -> None:
+        """Delete endpoint OAuth configuration."""
+        self._request_sync(
+            method="delete",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+
+    def get_mtls_config(self, app_id: str, endpoint_id: str) -> EndpointMtlsOut:
+        """Get endpoint mTLS status and configuration.
+
+        Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled."""
+        response = self._request_sync(
+            method="get",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
+        return EndpointMtlsOut.model_validate(response.json())
+
+    def set_mtls_config(
+        self,
+        app_id: str,
+        endpoint_id: str,
+        endpoint_mtls_config_in: EndpointMtlsConfigIn,
+    ) -> None:
+        """Set endpoint mTLS configuration.
+
+        This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan."""
+        self._request_sync(
+            method="put",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+            json_body=endpoint_mtls_config_in.model_dump_json(
+                exclude_unset=True, by_alias=True
+            ),
+        )
+
+    def delete_mtls_config(self, app_id: str, endpoint_id: str) -> None:
+        """Delete endpoint mTLS configuration."""
+        self._request_sync(
+            method="delete",
+            path="/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls",
+            path_params={
+                "app_id": app_id,
+                "endpoint_id": endpoint_id,
+            },
+        )
 
     def get_stats(
         self,

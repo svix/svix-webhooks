@@ -11,30 +11,16 @@ jobs:
     environment: release
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Setup Java
-        uses: actions/setup-java@v6
+        uses: actions/setup-java@v6.3.0
         with:
           distribution: 'temurin'
-          java-version: '11'
-
-      - name: Restore gradle.properties
-        run: |
-          mkdir -p ~/.gradle/
-          echo "GRADLE_USER_HOME=${HOME}/.gradle" >> "$GITHUB_ENV"
-
-          {
-            echo "NEXUS_USERNAME=$NEXUS_USERNAME"
-            echo "NEXUS_PASSWORD=$NEXUS_PASSWORD"
-            echo "signing.gnupg.keyName=$OSSRH_GPG_KEY_NAME"
-            echo "signing.gnupg.passphrase=$OSSRH_GPG_SECRET_KEY_PASSWORD"
-          } >> ~/.gradle/gradle.properties
-        env:
-          NEXUS_USERNAME: "${{secrets.NEXUS_USERNAME}}"
-          NEXUS_PASSWORD: "${{secrets.NEXUS_PASSWORD}}"
-          OSSRH_GPG_KEY_NAME: "${{secrets.OSSRH_GPG_KEY_NAME}}"
-          OSSRH_GPG_SECRET_KEY_PASSWORD: "${{secrets.OSSRH_GPG_SECRET_KEY_PASSWORD}}"
+          java-version: '25'
+          server-id: central
+          server-username-env-var: NEXUS_USERNAME
+          server-password-env-var: NEXUS_PASSWORD
 
       - name: Install GPG Signing Key
         run: |
@@ -45,4 +31,9 @@ jobs:
       - name: Publish
         run: |
           cd java
-          ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+          mvn -B -P release deploy -Dgpg.keyname="$OSSRH_GPG_KEY_NAME"
+        env:
+          NEXUS_USERNAME: "${{secrets.NEXUS_USERNAME}}"
+          NEXUS_PASSWORD: "${{secrets.NEXUS_PASSWORD}}"
+          OSSRH_GPG_KEY_NAME: "${{secrets.OSSRH_GPG_KEY_NAME}}"
+          MAVEN_GPG_PASSPHRASE: "${{secrets.OSSRH_GPG_SECRET_KEY_PASSWORD}}"

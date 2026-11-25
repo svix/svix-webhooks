@@ -187,3 +187,55 @@ for (const status of [400, 503]) {
     assert.equal(calls, 1);
   });
 }
+
+test("HTTP 423 Locked is retried and a later success is returned", async () => {
+  let calls = 0;
+  const retryCounts: Array<string | null> = [];
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    retryScheduleInMs: [0],
+    fetch: async (_input, init) => {
+      calls += 1;
+      retryCounts.push(new Headers(init?.headers).get("svix-retry-count"));
+      if (calls === 1) {
+        return new Response(
+          JSON.stringify({
+            code: "LOCKED",
+            detail: "Another request is currently in your castle",
+          }),
+          { status: 423 }
+        );
+      }
+      return new Response('{"data":[],"iterator":null,"done":true}');
+    },
+  });
+
+  const result = await svx.application.list();
+  assert.deepEqual(result.data, []);
+  assert.equal(calls, 2);
+  assert.deepEqual(retryCounts, [null, "1"]);
+});
+
+test("HTTP 409 Conflict is not retried", async () => {
+  let calls = 0;
+  const errorBody = JSON.stringify({
+    code: "CONFLICT",
+    detail: "Sorry, someone else already ate this cake",
+  });
+  const svx = new Svix("token", {
+    serverUrl: "https://api.example.com",
+    retryScheduleInMs: [0],
+    fetch: async () => {
+      calls += 1;
+      return new Response(errorBody, { status: 409 });
+    },
+  });
+
+  await assert.rejects(svx.application.list(), (error: unknown) => {
+    assert.ok(error instanceof ApiException);
+    assert.equal(error.code, 409);
+    assert.deepEqual(error.body, JSON.parse(errorBody));
+    return true;
+  });
+  assert.equal(calls, 1);
+});

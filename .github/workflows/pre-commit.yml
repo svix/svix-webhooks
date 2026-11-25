@@ -8,6 +8,12 @@ jobs:
     name: Validate pre-commit
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+      - uses: pre-commit/action@v3.0.1
+      - name: Verify the workflow lockfile
+        uses: j178/prek-action@v3.1.0
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          extra-args: "--hook-stage manual gh-actions-lock-verify --all-files"

@@ -51,7 +51,7 @@ Add this dependency to your project's POM:
 <dependency>
   <groupId>com.svix</groupId>
   <artifactId>svix</artifactId>
-  <version>2.10.0</version>
+  <version>2.11.1</version>
   <scope>compile</scope>
 </dependency>
 ```
@@ -61,7 +61,7 @@ Add this dependency to your project's POM:
 Add this dependency to your project's build file:
 
 ```groovy
-implementation "com.svix:svix:2.10.0"
+implementation "com.svix:svix:2.11.1"
 ```
 
 # Development
@@ -71,11 +71,11 @@ First checkout the [core README](../README.md#development) for details on how to
 ## Requirements
 
  - Java 1.8+
- - Gradle
+ - Maven 3.6.3+
 
 ## Building the library
 ```sh
-./gradlew build
+mvn package
 ```
 
 ## Running Tests
@@ -83,11 +83,11 @@ First checkout the [core README](../README.md#development) for details on how to
 Simply run:
 
 ```sh
-./gradlew test
+mvn test
 ```
 
 ## Publishing to Maven
 
 ```sh
-./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+mvn -P release deploy
 ```

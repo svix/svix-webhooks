@@ -7,7 +7,7 @@ use std::time::Duration;
 use rdkafka::{
     ClientConfig,
     message::{Header, OwnedHeaders},
-    producer::{FutureProducer, FutureRecord},
+    producer::{FutureProducer, FutureRecord, future_producer::Delivery},
     util::Timeout,
 };
 use serde_json::json;
@@ -154,15 +154,34 @@ fn kafka_producer() -> FutureProducer {
         .unwrap()
 }
 
-async fn publish(producer: &FutureProducer, topic: &str, payload: &[u8]) {
+pub struct PublishedMessageMetadata {
+    partition: i32,
+    offset: i64,
+}
+
+impl From<Delivery> for PublishedMessageMetadata {
+    fn from(value: Delivery) -> Self {
+        Self {
+            partition: value.partition,
+            offset: value.offset,
+        }
+    }
+}
+
+async fn publish(
+    producer: &FutureProducer,
+    topic: &str,
+    payload: &[u8],
+) -> PublishedMessageMetadata {
     info!(topic, "publishing message");
-    producer
+    let result = producer
         .send(
             FutureRecord::<(), _>::to(topic).payload(payload),
             Timeout::After(Duration::from_secs(3)),
         )
         .await
         .unwrap();
+    result.into()
 }
 
 async fn publish_with_metadata(
@@ -171,8 +190,8 @@ async fn publish_with_metadata(
     key: &[u8],
     headers: OwnedHeaders,
     payload: &[u8],
-) {
-    producer
+) -> PublishedMessageMetadata {
+    let result = producer
         .send(
             FutureRecord::<[u8], _>::to(topic)
                 .key(key)
@@ -182,6 +201,7 @@ async fn publish_with_metadata(
         )
         .await
         .unwrap();
+    result.into()
 }
 
 /// Push a msg on the queue.
@@ -477,7 +497,7 @@ async fn test_consume_transformed_json_envelope_ok() {
             key: "empty",
             value: None::<&[u8]>,
         });
-    publish_with_metadata(
+    let result = publish_with_metadata(
         &producer,
         topic,
         &[b'm', 0xff, b'k'],
@@ -492,8 +512,8 @@ async fn test_consume_transformed_json_envelope_ok() {
         .unwrap();
     assert_eq!(input["key"], "m\u{fffd}k");
     assert_eq!(input["topic"], topic.as_str());
-    assert_eq!(input["partition"], 0);
-    assert_eq!(input["offset"], 0);
+    assert_eq!(input["partition"], result.partition);
+    assert_eq!(input["offset"], result.offset);
     assert_eq!(
         input["headers"],
         json!([

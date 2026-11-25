@@ -18,6 +18,22 @@ import {
   EndpointHeadersPatchInSerializer,
 } from "../models/endpointHeadersPatchIn";
 import { type EndpointIn, EndpointInSerializer } from "../models/endpointIn";
+import {
+  type EndpointMtlsConfigIn,
+  EndpointMtlsConfigInSerializer,
+} from "../models/endpointMtlsConfigIn";
+import {
+  type EndpointMtlsOut,
+  EndpointMtlsOutSerializer,
+} from "../models/endpointMtlsOut";
+import {
+  type EndpointOauthConfigIn,
+  EndpointOauthConfigInSerializer,
+} from "../models/endpointOauthConfigIn";
+import {
+  type EndpointOauthOut,
+  EndpointOauthOutSerializer,
+} from "../models/endpointOauthOut";
 import { type EndpointOut, EndpointOutSerializer } from "../models/endpointOut";
 import { type EndpointPatch, EndpointPatchSerializer } from "../models/endpointPatch";
 import {
@@ -390,6 +406,119 @@ export class Endpoint {
     request.setBody(BulkReplayInSerializer._toJsonObject(bulkReplayIn));
 
     return await request.send(this.requestCtx, ReplayOutSerializer._fromJsonObject);
+  }
+
+  /**
+   * Get endpoint OAuth status and configuration.
+   *
+   * Returns a 200 with `enabled: false` and `config: null` when OAuth is not enabled.
+   */
+  public async getOauthConfig(
+    appId: string,
+    endpointId: string
+  ): Promise<EndpointOauthOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.send(
+      this.requestCtx,
+      EndpointOauthOutSerializer._fromJsonObject
+    );
+  }
+
+  /**
+   * Set endpoint OAuth configuration.
+   *
+   * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+   */
+  public async setOauthConfig(
+    appId: string,
+    endpointId: string,
+    endpointOauthConfigIn: EndpointOauthConfigIn
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(EndpointOauthConfigInSerializer._toJsonObject(endpointOauthConfigIn));
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /** Delete endpoint OAuth configuration. */
+  public async deleteOauthConfig(appId: string, endpointId: string): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/oauth"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /**
+   * Get endpoint mTLS status and configuration.
+   *
+   * Returns a 200 with `enabled: false` and `config: null` when mTLS is not enabled.
+   */
+  public async getMtlsConfig(
+    appId: string,
+    endpointId: string
+  ): Promise<EndpointMtlsOut> {
+    const request = new SvixRequest(
+      HttpMethod.GET,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.send(this.requestCtx, EndpointMtlsOutSerializer._fromJsonObject);
+  }
+
+  /**
+   * Set endpoint mTLS configuration.
+   *
+   * This operation is only available in the <a href="https://svix.com/pricing" target="_blank">Enterprise</a> plan.
+   */
+  public async setMtlsConfig(
+    appId: string,
+    endpointId: string,
+    endpointMtlsConfigIn: EndpointMtlsConfigIn
+  ): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.PUT,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+    request.setBody(EndpointMtlsConfigInSerializer._toJsonObject(endpointMtlsConfigIn));
+
+    return await request.sendNoResponseBody(this.requestCtx);
+  }
+
+  /** Delete endpoint mTLS configuration. */
+  public async deleteMtlsConfig(appId: string, endpointId: string): Promise<void> {
+    const request = new SvixRequest(
+      HttpMethod.DELETE,
+      "/api/v1/app/{app_id}/endpoint/{endpoint_id}/mtls"
+    );
+
+    request.setPathParam("app_id", appId);
+    request.setPathParam("endpoint_id", endpointId);
+
+    return await request.sendNoResponseBody(this.requestCtx);
   }
 
   /** Get basic statistics for the endpoint. */

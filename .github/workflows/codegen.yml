@@ -11,7 +11,7 @@ jobs:
     name: Check for uncommitted changes
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
       - name: Regen openapi libs
         run: ./regen_openapi.py
@@ -21,6 +21,7 @@ jobs:
           gs=$(git status -s)
           if [[ -n "$gs" ]]; then
             echo 'there are uncommitted changes!'
+            # shellcheck disable=SC2016
             echo 'please rerun `regen_openapi.py` and commit the result'
             git status
             git diff | head -100

@@ -165,7 +165,8 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 
 	resp, err := client.HTTPClient.Do(request)
 	for try := 0; try < len(client.RetrySchedule); try++ {
-		if err == nil && resp.StatusCode < 500 {
+		// 423 Locked is retried, alongside 5xx.
+		if err == nil && resp.StatusCode < 500 && resp.StatusCode != http.StatusLocked {
 			break
 		}
 		// don't retry if the caller cancelled the request or its deadline passed
@@ -225,7 +226,7 @@ func SerializeParamToMap(key string, val interface{}, d map[string]string, err *
 		return
 	}
 	// If val is null don't add it to the query params map
-	if val == nil || (reflect.ValueOf(val).Kind() == reflect.Ptr && reflect.ValueOf(val).IsNil()) {
+	if val == nil || (reflect.ValueOf(val).Kind() == reflect.Pointer && reflect.ValueOf(val).IsNil()) {
 		switch key {
 		case "with_content":
 			// default with_content to false, it only defaults to true server-side
@@ -251,7 +252,7 @@ func SerializeParamToMap(key string, val interface{}, d map[string]string, err *
 func serializeQueryOrHeaderParam(val interface{}, key string) (string, error) {
 	v := reflect.ValueOf(val)
 	var value string
-	if val == nil || (reflect.ValueOf(val).Kind() == reflect.Ptr && reflect.ValueOf(val).IsNil()) {
+	if val == nil || (reflect.ValueOf(val).Kind() == reflect.Pointer && reflect.ValueOf(val).IsNil()) {
 		return "", fmt.Errorf("can't serialize nil as a query param, key: %s", key)
 	}
 

@@ -15,9 +15,9 @@ jobs:
     name: Check formatting
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
-      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
           components: rustfmt
@@ -29,11 +29,11 @@ jobs:
     name: 'Run cargo-sort'
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
         name: Checkout
 
       - name: Install cargo sort
-        uses: taiki-e/install-action@86f7a0ffb25f40114606501a311ebcfaf882ea32 # v2.88.0
+        uses: taiki-e/install-action@v2.88.0
         with:
           tool: cargo-sort@2.1.3
 
@@ -44,8 +44,8 @@ jobs:
     name: Run Hadolint
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7
-      - uses: hadolint/hadolint-action@06be81baf89a55ffd0e24b8f04a4185738dd3387 # v3.5.0
+      - uses: actions/checkout@v7.0.1
+      - uses: hadolint/hadolint-action@v3.5.0
         with:
           dockerfile: svix-cli/Dockerfile
 
@@ -55,16 +55,16 @@ jobs:
     strategy:
       matrix:
         # keep this in sync with svix-cli/Cargo.toml MSRV
-        rust: ["1.88.0", stable, beta]
+        rust: ["1.90.0", stable, beta]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
 
-      - uses: dtolnay/rust-toolchain@683b588c487a69d01f6c6ddf40f036ff682cc2c8 # v1
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
           components: clippy
 
-      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
+      - uses: Swatinem/rust-cache@v2.9.3
         with:
           workspaces: "svix-cli -> target"
           # only save the cache on the main branch
@@ -73,7 +73,7 @@ jobs:
           # include relevant information in the cache name
           prefix-key: "cli-${{ matrix.rust }}"
 
-      - uses: taiki-e/install-action@86f7a0ffb25f40114606501a311ebcfaf882ea32 # v2.88.0
+      - uses: taiki-e/install-action@v2.88.0
         with:
           tool: nextest
 

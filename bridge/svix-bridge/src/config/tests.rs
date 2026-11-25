@@ -507,21 +507,21 @@ fn test_senders_example() {
     assert!(conf.receivers.is_empty());
 }
 
-#[test]
-fn test_variable_substitution_missing_vars() {
+#[tokio::test]
+async fn test_variable_substitution_missing_vars() {
     let src = r#"
     opentelemetry:
         address: "${OTEL_ADDR}"
     "#;
     let vars = HashMap::new();
-    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let cfg = Config::from_src(src, Some(&vars)).await.unwrap();
     let otel = cfg.opentelemetry.unwrap();
     // when lookups in the vars map fail, the original token text is preserved.
     assert_eq!(&otel.address, "${OTEL_ADDR}");
 }
 
-#[test]
-fn test_variable_substitution_available_vars() {
+#[tokio::test]
+async fn test_variable_substitution_available_vars() {
     let src = r#"
     opentelemetry:
         address: "${OTEL_ADDR}"
@@ -533,15 +533,15 @@ fn test_variable_substitution_available_vars() {
         String::from("http://127.0.0.1:8080"),
     );
     vars.insert(String::from("OTEL_SAMPLE_RATIO"), String::from("0.25"));
-    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let cfg = Config::from_src(src, Some(&vars)).await.unwrap();
     // when lookups succeed, the token should be replaced.
     let otel = cfg.opentelemetry.unwrap();
     assert_eq!(&otel.address, "http://127.0.0.1:8080");
     assert_eq!(otel.sample_ratio, Some(0.25));
 }
 
-#[test]
-fn test_variable_substitution_braces_optional() {
+#[tokio::test]
+async fn test_variable_substitution_braces_optional() {
     let src = r#"
     opentelemetry:
         # Formerly failing to use ${} notation means the port number would not be substituted.
@@ -552,15 +552,15 @@ fn test_variable_substitution_braces_optional() {
     vars.insert(String::from("OTEL_SCHEME"), String::from("https"));
     vars.insert(String::from("OTEL_HOST"), String::from("127.0.0.1"));
     vars.insert(String::from("OTEL_PORT"), String::from("9999"));
-    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let cfg = Config::from_src(src, Some(&vars)).await.unwrap();
     // when lookups succeed, the token should be replaced.
     let otel = cfg.opentelemetry.unwrap();
     // Not the user-intended outcome, but it simplifies the parsing requirements.
     assert_eq!(&otel.address, "https://127.0.0.1:9999");
 }
 
-#[test]
-fn test_variable_substitution_missing_numeric_var_is_err() {
+#[tokio::test]
+async fn test_variable_substitution_missing_numeric_var_is_err() {
     // Unfortunate side-effect of templating yaml.
     //
     // If the variable is missing, usually you've got three options:
@@ -585,7 +585,7 @@ fn test_variable_substitution_missing_numeric_var_is_err() {
         sample_ratio: ${OTEL_SAMPLE_RATIO}
     "#;
     let vars = HashMap::new();
-    let err = Config::from_src(src, Some(&vars)).err().unwrap();
+    let err = Config::from_src(src, Some(&vars)).await.err().unwrap();
     let want = "Failed to parse config: error: line 6 column 23: invalid floating point";
     assert!(
         err.to_string().starts_with(want),
@@ -596,8 +596,8 @@ fn test_variable_substitution_missing_numeric_var_is_err() {
 /// This is probably a given, but we should expect a single variable can be referenced multiple
 /// times within the config.
 /// The concrete use case: auth tokens.
-#[test]
-fn test_variable_substitution_repeated_lookups() {
+#[tokio::test]
+async fn test_variable_substitution_repeated_lookups() {
     let src = r#"
     senders:
       - name: "rabbitmq-1"
@@ -625,7 +625,7 @@ fn test_variable_substitution_repeated_lookups() {
     vars.insert(String::from("QUEUE_NAME_1"), String::from("one"));
     vars.insert(String::from("QUEUE_NAME_2"), String::from("two"));
     vars.insert(String::from("SVIX_TOKEN"), String::from("x"));
-    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let cfg = Config::from_src(src, Some(&vars)).await.unwrap();
 
     if let WebhookSenderConfig {
         input:
@@ -664,8 +664,8 @@ fn test_variable_substitution_repeated_lookups() {
 /// Variables in js source code fragments could result in invalid JS source.
 /// Now that we are validating transformations parse as JS, this test aims to make sure the
 /// replacements happen before the JS parsing does.
-#[test]
-fn test_variable_substitution_in_transformations() {
+#[tokio::test]
+async fn test_variable_substitution_in_transformations() {
     let src = r#"
     senders:
       - name: "rabbitmq-1"
@@ -695,15 +695,15 @@ fn test_variable_substitution_in_transformations() {
     let mut vars = HashMap::new();
     vars.insert(String::from("NUMBER"), String::from("123"));
     vars.insert(String::from("QUEUE_NAME"), String::from("one"));
-    let cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let cfg = Config::from_src(src, Some(&vars)).await.unwrap();
 
     let xform = cfg.senders[0].transformation().unwrap();
     xform.source().contains(r#"queueName: "one""#);
     xform.source().contains(r#"number: 123 - 10,"#);
 }
 
-#[test]
-fn test_kafka_sasl_mechanism_default() {
+#[tokio::test]
+async fn test_kafka_sasl_mechanism_default() {
     // When kafka_sasl_mechanism is omitted, it should default to SCRAM-SHA-512
     let src = r#"
     senders:
@@ -720,11 +720,11 @@ fn test_kafka_sasl_mechanism_default() {
           type: "svix"
           token: "XYZ"
     "#;
-    Config::from_src(src, None).unwrap();
+    Config::from_src(src, None).await.unwrap();
 }
 
-#[test]
-fn test_kafka_sasl_mechanism_explicit() {
+#[tokio::test]
+async fn test_kafka_sasl_mechanism_explicit() {
     for mechanism in ["PLAIN", "SCRAM-SHA-256", "SCRAM-SHA-512"] {
         let src = format!(
             r#"
@@ -745,13 +745,14 @@ fn test_kafka_sasl_mechanism_explicit() {
     "#
         );
         Config::from_src(&src, None)
+            .await
             .unwrap_or_else(|e| panic!("failed to parse mechanism {mechanism}: {e}"));
     }
 }
 
 /// Check that the config parser validates the JS source fragments in it.
-#[test]
-fn test_transformation_validation_bad_syntax_is_err() {
+#[tokio::test]
+async fn test_transformation_validation_bad_syntax_is_err() {
     let src = r#"
     senders:
       - name: "bad xform"
@@ -766,15 +767,15 @@ fn test_transformation_validation_bad_syntax_is_err() {
           type: "svix"
           token: "xxx"
     "#;
-    let err = Config::from_src(src, None).err().unwrap();
+    let err = Config::from_src(src, None).await.err().unwrap();
     assert!(
         err.to_string()
             .contains("failed to parse transformation for sender `bad xform`")
     )
 }
 
-#[test]
-fn test_var_substitution_json_values_ok() {
+#[tokio::test]
+async fn test_var_substitution_json_values_ok() {
     let src = r#""#;
     let mut vars = HashMap::new();
     // GCP credentials is one place where we _expect_ json to be supplied as an env var.
@@ -784,11 +785,11 @@ fn test_var_substitution_json_values_ok() {
         r#"{"foo": true, "bar": 123}"#.into(),
     );
     // Should not be an error
-    let _cfg = Config::from_src(src, Some(&vars)).unwrap();
+    let _cfg = Config::from_src(src, Some(&vars)).await.unwrap();
 }
 
-#[test]
-fn test_pollers_parse_ok() {
+#[tokio::test]
+async fn test_pollers_parse_ok() {
     let src = r#"
     receivers:
       - name: "poller-to-rabbitmq-example"
@@ -805,13 +806,13 @@ fn test_pollers_parse_ok() {
           routing_key: "example"
           "#;
     // Should not be an error
-    let cfg = Config::from_src(src, None).unwrap();
+    let cfg = Config::from_src(src, None).await.unwrap();
     assert_eq!(cfg.receivers.len(), 1);
     std::assert_matches!(cfg.receivers[0].input, ReceiverInput::SvixMessagePoller(_));
 }
 
-#[test]
-fn test_pollers_parse_garbage_token_err() {
+#[tokio::test]
+async fn test_pollers_parse_garbage_token_err() {
     let src = r#"
     receivers:
       - name: "poller-to-rabbitmq-example"
@@ -824,5 +825,5 @@ fn test_pollers_parse_garbage_token_err() {
           exchange: ""
           routing_key: "example"
           "#;
-    assert!(Config::from_src(src, None).is_err());
+    assert!(Config::from_src(src, None).await.is_err());
 }

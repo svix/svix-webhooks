@@ -159,6 +159,7 @@ pub enum AuthenticationCommands {
 {
   \"envId\": \"org_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"appId\": \"app_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
+  \"orgGroupId\": \"orgrp_1srOrx2ZWZBpBUvZwXKQmoEYga2\",
   \"streamAppId\": \"strm_2yZwUhtgs5Ai8T9yRQJXA\",
   \"permissionSource\": \"OidcJwt\",
   \"sessionId\": \"user_1FB8\"

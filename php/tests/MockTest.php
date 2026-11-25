@@ -476,6 +476,37 @@ class MockTest extends TestCase
         }
     }
 
+    public function testHttp423LockedIsRetriedAndLaterSuccessIsReturned(): void
+    {
+        $this->mockHandler->append(
+            new Response(423, [], '{"code":"locked","detail":"Locked"}'),
+            new Response(200, [], MsgOut)
+        );
+
+        $svx = new \Svix\Svix("super_secret", new SvixOptions(debug: true), httpClient: $this->httpClient);
+        $svx->message->create("app_id", MessageIn::create("event-type", ["id" => "one"]));
+
+        $this->assertCount(2, $this->requestHistory);
+        $this->assertEquals('1', $this->requestHistory[1]['request']->getHeaderLine('svix-retry-count'));
+    }
+
+    public function testHttp409ConflictIsNotRetried(): void
+    {
+        $this->mockHandler->append(
+            new Response(409, [], '{"code":"conflict","detail":"Conflict"}'),
+            new Response(200, [], MsgOut)
+        );
+
+        $svx = new \Svix\Svix("super_secret", new SvixOptions(debug: true), httpClient: $this->httpClient);
+        try {
+            $svx->message->create("app_id", MessageIn::create("event-type", ["id" => "one"]));
+            $this->fail('expected ApiException');
+        } catch (\Svix\Exception\ApiException $e) {
+            $this->assertEquals(409, $e->getCode());
+        }
+        $this->assertCount(1, $this->requestHistory);
+    }
+
     public function testRetryOnConnectionError(): void
     {
         // Guzzle raises ConnectException for timeouts, DNS failures, refused connections, etc.

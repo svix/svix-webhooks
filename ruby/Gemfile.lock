@@ -1,14 +1,14 @@
 PATH
   remote: .
   specs:
-    svix (2.10.0)
+    svix (2.11.1)
       base64 (~> 0.3.0)
       logger (~> 1.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    addressable (2.9.0)
+    addressable (2.9.1)
       public_suffix (>= 2.0.2, < 8.0)
     base64 (0.3.0)
     bigdecimal (4.1.1)

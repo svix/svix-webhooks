@@ -4,7 +4,7 @@
 # with `docker build -f bridge/Dockerfile .`
 
 # Base build
-FROM cgr.dev/chainguard/wolfi-base@sha256:0feab531471d2edfcca55f18883441cb7df598e724fa2dedf9985273f532eed7 AS build
+FROM cgr.dev/chainguard/wolfi-base@sha256:94fa13e26d449f7d78dbcd02d12ea37a0da80d24fcc3e1f17b95d515dec607a7 AS build
 SHELL ["/bin/sh", "-eux", "-c"]
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
     apk add rust~1.98.1 \
@@ -73,13 +73,14 @@ RUN mkdir /scripts
 COPY bridge/scripts/check-deps.sh /scripts/check-deps.sh
 
 # Production
-FROM cgr.dev/chainguard/wolfi-base@sha256:0feab531471d2edfcca55f18883441cb7df598e724fa2dedf9985273f532eed7 AS base
+FROM cgr.dev/chainguard/wolfi-base@sha256:94fa13e26d449f7d78dbcd02d12ea37a0da80d24fcc3e1f17b95d515dec607a7 AS base
 SHELL ["/bin/sh", "-eux", "-c"]
 
+# hadolint ignore=DL3018
 RUN --mount=target=/var/cache/apk,type=cache,sharing=locked --mount=target=/tmp,type=cache,sharing=locked <<EOF
     apk update
     apk add \
-        ca-certificates~20260909-r3 \
+        ca-certificates \
         openssl~4 \
         tini~0.19 \
         bash~5

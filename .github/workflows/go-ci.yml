@@ -10,9 +10,9 @@ jobs:
       matrix:
         version: ["1.23.x", "1.21.x"]
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7.0.1
       - name: Setup Go
-        uses: actions/setup-go@v7
+        uses: actions/setup-go@v7.1.0
         with:
           go-version: ${{ matrix.version }}
           cache-dependency-path: ./go.sum

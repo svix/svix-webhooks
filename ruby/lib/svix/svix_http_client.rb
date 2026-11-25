@@ -111,7 +111,7 @@ module Svix
       [0.05, 0.1, 0.2].each_with_index do |sleep_duration, index|
         begin
           res = http.request(request)
-          return res unless Integer(res.code) >= 500
+          return res unless Integer(res.code) >= 500 || Integer(res.code) == 423
         rescue *RETRYABLE_ERRORS
           # retried below
         end

@@ -129,15 +129,23 @@ async fn health(
     )
 }
 
+#[cfg(debug_assertions)]
+async fn health_panic() {
+    panic!("at the disco")
+}
+
 pub fn router() -> ApiRouter<AppState> {
     let tag = openapi_tag("Health");
 
-    ApiRouter::new()
+    let router = ApiRouter::new()
         .api_route("/health/ping", get(ping).head(ping))
         .api_route_with(
             "/health",
             get_with(health, |op| op.response::<204, ()>().with(health_operation))
                 .head_with(health, health_operation),
             tag,
-        )
+        );
+    #[cfg(debug_assertions)]
+    let router = router.route("/health/panic", get(health_panic));
+    router
 }

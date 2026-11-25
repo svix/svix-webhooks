@@ -47,5 +47,6 @@ type SettingsInternalOut struct {
 	ShowFeatureTooltips           *bool                   `json:"showFeatureTooltips,omitempty"`
 	WebhooksAutoConfig            *bool                   `json:"webhooksAutoConfig,omitempty"`
 	EndpointsPerAppLimit          *uint32                 `json:"endpointsPerAppLimit,omitempty"`
+	ChannelsPerEndpointLimit      *uint32                 `json:"channelsPerEndpointLimit,omitempty"`
 	McpToken                      *bool                   `json:"mcpToken,omitempty"`
 }

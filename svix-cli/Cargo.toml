@@ -3,7 +3,7 @@ name = "svix-cli"
 description = "A CLI to interact with the Svix API."
 homepage = "https://www.svix.com"
 authors = ["Svix Inc. <oss@svix.com>"]
-version = "2.10.0"
+version = "2.11.1"
 edition = "2021"
 license = "MIT"
 keywords = ["svix", "webhooks", "diahook"]
@@ -11,7 +11,7 @@ categories = ["development-tools", "asynchronous", "network-programming", "web-p
 repository = "https://github.com/svix/svix-webhooks"
 publish = false
 # keep this in sync with .github/workflows/cli-lint.yml
-rust-version = "1.88"
+rust-version = "1.90"
 
 [package.metadata.dist]
 dist = true
@@ -39,12 +39,13 @@ svix_beta = ["svix/svix_beta"]
 
 [dependencies]
 anyhow = "1.0.94"
+arborium = { version = "2.18.2", features = ["lang-bash", "lang-c-sharp", "lang-go", "lang-java", "lang-javascript", "lang-kotlin", "lang-php", "lang-python", "lang-ruby", "lang-rust"] }
+arborium-theme = "2.18.2"
 base64 = "0.22.1"
 chrono = "0.4.39"
 clap = { version = "4.5.23", features = ["derive"] }
 clap_complete = "4.5.38"
 colored_json = "5.0.0"
-concolor-clap = "0.1.0"
 dialoguer = "0.12.0"
 dirs = "6.0.0"
 figment = { version = "0.10.19", features = ["toml", "env"] }
@@ -63,13 +64,11 @@ rustls = "0.23.34"
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
 svix = { path = "../rust" }
-syntect = { version = "5", default-features = false, features = ["default-syntaxes", "default-themes", "regex-fancy"] }
 tokio = { version = "1.42.0", features = ["macros", "time", "rt-multi-thread"] }
 tokio-tungstenite = { version = "0.29.0", features = ["rustls-tls-native-roots"] }
 toml = "0.8.19"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", default-features = false, features = ["std", "ansi", "fmt", "registry", "local-time"] }
-tui-syntax-highlight = { version = "0.2", default-features = false, features = ["regex-fancy"] }
 url = "2.5.4"
 
 [build-dependencies]

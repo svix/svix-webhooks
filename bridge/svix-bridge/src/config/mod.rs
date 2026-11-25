@@ -111,8 +111,9 @@ pub struct Config {
     pub opentelemetry: Option<OtelExporterConfig>,
     #[serde(default = "default_http_listen_address")]
     pub http_listen_address: SocketAddr,
-    #[serde(default = "default_transformation_worker_count")]
-    pub transformation_worker_count: NonZeroUsize,
+    /// Deprecated: this is no longer used
+    #[serde(default)]
+    pub transformation_worker_count: Option<NonZeroUsize>,
     #[serde(default)]
     pub js_engine: JsExecutor,
 }
@@ -122,7 +123,7 @@ pub type Configuration = Arc<Config>;
 impl Config {
     /// Build a Config from yaml source.
     /// Optionally accepts a map to perform variable substitution with.
-    pub fn from_src(
+    pub async fn from_src(
         raw_src: &str,
         vars: Option<&HashMap<String, String>>,
     ) -> std::io::Result<Self> {
@@ -139,14 +140,24 @@ impl Config {
         let cfg: Self = serde_saphyr::from_str(&src)
             .map_err(|e| Error::other(format!("Failed to parse config: {e}")))?;
 
+        if cfg.js_engine != JsExecutor::QuickJs {
+            // derpy, but tracing isn't setup yet, so we have to eprintln
+            eprintln!(
+                "Ignoring js_engine backend {:?}: only quick-js is supported",
+                cfg.js_engine
+            );
+        }
+
         for sc in &cfg.senders {
             if let Some(tc) = sc.transformation() {
-                crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
-                    Error::other(format!(
-                        "failed to parse transformation for sender `{}`: {e:?}",
-                        sc.name(),
-                    ))
-                })?;
+                crate::runtime::validate_script(tc.source().as_str())
+                    .await
+                    .map_err(|e| {
+                        Error::other(format!(
+                            "failed to parse transformation for sender `{}`: {e:?}",
+                            sc.name(),
+                        ))
+                    })?;
             }
         }
 
@@ -156,11 +167,13 @@ impl Config {
                 .as_ref()
                 .map(|tc| (&receiver.name, tc))
         }) {
-            crate::runtime::validate_script(tc.source().as_str()).map_err(|e| {
-                Error::other(format!(
-                    "failed to parse transformation for receiver `{name}`: {e:?}"
-                ))
-            })?;
+            crate::runtime::validate_script(tc.source().as_str())
+                .await
+                .map_err(|e| {
+                    Error::other(format!(
+                        "failed to parse transformation for receiver `{name}`: {e:?}"
+                    ))
+                })?;
         }
 
         Ok(cfg)
@@ -173,10 +186,6 @@ impl Config {
 
 fn default_http_listen_address() -> SocketAddr {
     "0.0.0.0:5000".parse().expect("default http listen address")
-}
-
-fn default_transformation_worker_count() -> NonZeroUsize {
-    NonZeroUsize::new(4).expect("4 is greater than 0")
 }
 
 #[derive(Deserialize)]
