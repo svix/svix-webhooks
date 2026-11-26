@@ -29,6 +29,7 @@ pub fn router(cfg: Configuration) -> ApiRouter<AppState> {
                     cfg.opentelemetry_address.is_some(),
                 ))
                 .on_response(AxumOtelOnResponse)
+                .on_eos(tower_http::trace::DefaultOnEos::new().level(tracing::Level::TRACE))
                 .on_failure(AxumOtelOnFailure),
             CatchPanicLayer::custom(utils::handle_panic),
         ));
