@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "svix.fullname" . }}-{{ .Values.backend.name }}
+  labels:
+    {{- include "svix.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- with .Values.backend.service }}
+  type: {{ .type | default "ClusterIP" }}
+  ports:
+    - port: {{ .port | default 8071 }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  {{- else }}
+  type: ClusterIP
+  ports:
+    - port: 8071
+      targetPort: http
+      protocol: TCP
+      name: http
+  {{- end }}
+  selector:
+    {{- include "svix.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: backend 
