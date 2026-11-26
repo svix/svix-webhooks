@@ -441,3 +441,34 @@ def test_svix_message_create(
     assert message_out.event_type == event_type.name
     if with_channel:
         assert message_out.channels == [channel]
+
+
+def test_non_json_error_response_raises_http_error(httpx_mock):
+    svix_api = Svix(auth_token="not-a-real-auth-token")
+
+    httpx_mock.add_response(
+        url="https://api.svix.com/api/v1/app",
+        status_code=502,
+        headers={"content-type": "text/html"},
+        text="<html><body><h1>502 Bad Gateway</h1></body></html>",
+        is_reusable=True,
+    )
+    with pytest.raises(HttpError) as exc_info:
+        svix_api.application.list()
+    assert exc_info.value.status_code == 502
+    assert "502 Bad Gateway" in exc_info.value.detail
+    # the request is still retried before the error is raised
+    assert len(httpx_mock.get_requests()) == 4
+
+
+def test_empty_error_response_raises_http_error(httpx_mock):
+    svix_api = Svix(auth_token="not-a-real-auth-token")
+
+    httpx_mock.add_response(
+        url="https://api.svix.com/api/v1/app",
+        status_code=404,
+        text="",
+    )
+    with pytest.raises(HttpError) as exc_info:
+        svix_api.application.list()
+    assert exc_info.value.status_code == 404
