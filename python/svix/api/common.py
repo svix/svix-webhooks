@@ -31,7 +31,7 @@ def sanitize_field(v: t.Any) -> t.Any:
 def _serialize_single_param(val: t.Any) -> str:
     if isinstance(val, datetime):
         if val.tzinfo is None:
-            val.replace(tzinfo=timezone.utc)
+            return val.replace(tzinfo=timezone.utc).isoformat()
         return val.isoformat()
     elif isinstance(val, bool):
         return "true" if val else "false"
