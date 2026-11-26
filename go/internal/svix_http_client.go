@@ -200,7 +200,7 @@ func executeRequestWithRetries(client *SvixHttpClient, request *http.Request) (*
 func replacePathKeys(path string, pathParams map[string]string) string {
 	for key, value := range pathParams {
 		placeholder := "{" + key + "}"
-		path = strings.ReplaceAll(path, placeholder, value)
+		path = strings.ReplaceAll(path, placeholder, url.PathEscape(value))
 	}
 	return path
 }
