@@ -132,7 +132,7 @@ trait Consumer {
     /// Will nack the delivery if either the JSON parse, transformation, or the request to svix fails.
     #[tracing::instrument(skip_all, fields(messaging.operation = "process"))]
     async fn process(&self, delivery: DeliveryWrapper) -> std::io::Result<()> {
-        let payload = if let Some(xform_cfg) = self.transformation() {
+        let parsed = if let Some(xform_cfg) = self.transformation() {
             let input = match xform_cfg.format() {
                 TransformerInputFormat::Json => {
                     let json_payload = match delivery.payload() {
@@ -169,7 +169,7 @@ trait Consumer {
                     delivery.nack().await.map_err(Error::from)?;
                     return Ok(());
                 }
-                Ok(x) => serde_json::from_value(serde_json::Value::Object(x))?,
+                Ok(x) => serde_json::from_value(serde_json::Value::Object(x)),
             }
         } else {
             // Parse as JSON when not using a transformation because Create Message requires JSON.
@@ -182,7 +182,15 @@ trait Consumer {
                     return Ok(());
                 }
             };
-            serde_json::from_value(json_payload)?
+            serde_json::from_value(json_payload)
+        };
+        let payload: CreateMessageRequest = match parsed {
+            Ok(p) => p,
+            Err(e) => {
+                tracing::error!("nack: {e}");
+                delivery.nack().await.map_err(Error::from)?;
+                return Ok(());
+            }
         };
 
         match create_svix_message(self.svix_client(), payload).await {
@@ -244,4 +252,90 @@ async fn create_svix_message(
         .await
         .map_err(Error::from)?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use omniqueue::backends::InMemoryBackend;
+    use svix_bridge_types::{TransformerInputFormat, svix::api::Svix};
+
+    use super::*;
+
+    struct TestConsumer {
+        svix: Svix,
+        transformation: Option<TransformationConfig>,
+        transformer_tx: Option<TransformerTx>,
+    }
+
+    #[async_trait]
+    impl Consumer for TestConsumer {
+        fn source(&self) -> &str {
+            "test"
+        }
+        fn system(&self) -> &str {
+            "in-memory"
+        }
+        fn transformer_tx(&self) -> Option<&TransformerTx> {
+            self.transformer_tx.as_ref()
+        }
+        fn transformation(&self) -> Option<&TransformationConfig> {
+            self.transformation.as_ref()
+        }
+        fn svix_client(&self) -> &Svix {
+            &self.svix
+        }
+        async fn consumer(&self) -> std::io::Result<DynConsumer> {
+            unimplemented!()
+        }
+    }
+
+    /// Valid JSON which is not a Create Message request should be nacked, not bubbled up as an
+    /// error which would leave the delivery neither acked nor nacked.
+    async fn assert_nacked(consumer: TestConsumer) {
+        let (producer, mut queue) = InMemoryBackend::new_pair();
+        producer.send_raw(br#"{"foo":"bar"}"#).await.unwrap();
+        let delivery = queue.receive().await.unwrap();
+
+        consumer.process(delivery.into()).await.unwrap();
+
+        // The in-memory backend puts nacked messages back on the queue.
+        assert_eq!(queue.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn test_process_nacks_unexpected_shape() {
+        assert_nacked(TestConsumer {
+            svix: Svix::new("xxxx".into(), None),
+            transformation: None,
+            transformer_tx: None,
+        })
+        .await;
+    }
+
+    #[tokio::test]
+    async fn test_process_nacks_unexpected_transformation_output() {
+        let (transformer_tx, mut transformer_rx) =
+            tokio::sync::mpsc::unbounded_channel::<TransformerJob>();
+        tokio::spawn(async move {
+            while let Some(job) = transformer_rx.recv().await {
+                let TransformerInput::Json(input) = job.input else {
+                    unreachable!()
+                };
+                let output = input.as_object().unwrap().clone();
+                job.callback_tx
+                    .send(Ok(TransformerOutput::Object(output)))
+                    .ok();
+            }
+        });
+
+        assert_nacked(TestConsumer {
+            svix: Svix::new("xxxx".into(), None),
+            transformation: Some(TransformationConfig::Explicit {
+                format: TransformerInputFormat::Json,
+                src: String::from("function handler(x) { return x; }"),
+            }),
+            transformer_tx: Some(transformer_tx),
+        })
+        .await;
+    }
 }
