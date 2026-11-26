@@ -44,7 +44,7 @@ jobs:
           cd javascript
           npm run test
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2.2.0
 
       - name: Bun compatibility tests
         run: |
