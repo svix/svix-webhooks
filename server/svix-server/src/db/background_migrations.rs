@@ -18,16 +18,31 @@ pub enum Error {
 const GLOBAL_LOCK_ID: &str = "_svix_background_migrations";
 
 // Background migrations go here:
-pub static MIGRATIONS: &[BackgroundMigration] = &[BackgroundMigration {
-    id: "2026_04_1777303796_messageattempt_per_endp_no_status",
-    apply_sql: &[r#"
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS messageattempt_per_endp_no_status
-        ON messageattempt USING btree (endp_id, id DESC)
-        INCLUDE (status, response_status_code)
-    "#],
-    cleanup_sql: None,
-    revert_sql: Some(&["DROP INDEX CONCURRENTLY IF EXISTS messageattempt_per_endp_no_status"]),
-}];
+pub static MIGRATIONS: &[BackgroundMigration] = &[
+    BackgroundMigration {
+        id: "2026_04_1777303796_messageattempt_per_endp_no_status",
+        apply_sql: &[r#"
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS messageattempt_per_endp_no_status
+            ON messageattempt USING btree (endp_id, id DESC)
+            INCLUDE (status, response_status_code)
+        "#],
+        cleanup_sql: None,
+        revert_sql: Some(&["DROP INDEX CONCURRENTLY IF EXISTS messageattempt_per_endp_no_status"]),
+    },
+    // Lets `list_attempted_messages` drive its first query from the endpoint's own attempts
+    // (newest message first) instead of merge-joining backwards over every newer message in the
+    // table, which is the slow tail when an endpoint's messages are older than the newest ones
+    // (issue #2805).
+    BackgroundMigration {
+        id: "2026_11_1794675670_messageattempt_per_endp_msg",
+        apply_sql: &[r#"
+            CREATE INDEX CONCURRENTLY IF NOT EXISTS messageattempt_per_endp_msg
+            ON messageattempt USING btree (endp_id, msg_id DESC)
+        "#],
+        cleanup_sql: None,
+        revert_sql: Some(&["DROP INDEX CONCURRENTLY IF EXISTS messageattempt_per_endp_msg"]),
+    },
+];
 
 #[derive(Copy, Clone)]
 pub struct BackgroundMigration {
@@ -342,4 +357,23 @@ async fn revert_inner(
 
     tracing::info!(id = migration.id, "Background migration reverted");
     Ok(true)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::MIGRATIONS;
+
+    #[test]
+    fn messageattempt_per_endp_msg_migration_registered() {
+        let migration = MIGRATIONS
+            .iter()
+            .find(|m| m.id.ends_with("messageattempt_per_endp_msg"))
+            .expect("missing (endp_id, msg_id DESC) background migration for #2805");
+
+        let sql = migration.apply_sql.join(" ");
+        assert!(sql.contains("CREATE INDEX CONCURRENTLY"));
+        assert!(sql.contains("messageattempt_per_endp_msg"));
+        assert!(sql.contains("(endp_id, msg_id DESC)"));
+        assert!(migration.revert_sql.is_some());
+    }
 }
