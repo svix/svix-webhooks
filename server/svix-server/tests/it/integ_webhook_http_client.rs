@@ -1,4 +1,4 @@
-use std::{net::TcpListener, sync::Arc};
+use std::{net::TcpListener, sync::Arc, time::Duration};
 
 use axum::{body::Body, extract::State};
 use http::{HeaderValue, Request, StatusCode, Version, header::USER_AGENT};
@@ -6,6 +6,9 @@ use http_body_util::BodyExt as _;
 use serde::{Deserialize, Serialize};
 use svix_server::core::webhook_http_client::{Error, RequestBuilder, WebhookClient};
 use tokio::sync::mpsc;
+
+const REQUEST_TIMEOUT: Duration = Duration::from_secs(3);
+const MAX_BODY_SIZE: usize = 1024;
 
 pub struct TestReceiver {
     pub uri: String,
@@ -71,7 +74,6 @@ pub struct TestSerializable {
     test: String,
 }
 
-#[ignore]
 #[tokio::test]
 async fn test_client_basic_operation() {
     // Compares output to `reqwest`.
@@ -89,7 +91,7 @@ async fn test_client_basic_operation() {
 
     let mut receiver = TestReceiver::start(StatusCode::OK);
 
-    let our_req = RequestBuilder::new()
+    let our_req = RequestBuilder::new(REQUEST_TIMEOUT)
         .uri_str(&receiver.uri)
         .unwrap()
         .json_body(TestSerializable {
@@ -97,19 +99,17 @@ async fn test_client_basic_operation() {
         })
         .unwrap()
         .version(Version::HTTP_11)
+        .user_agent(HeaderValue::from_static("bananas"))
         .build()
         .unwrap();
 
-    let _resp = our_client.execute(our_req).await.unwrap();
+    let _resp = our_client.execute(our_req, MAX_BODY_SIZE).await.unwrap();
 
     let our_http_req = receiver.req_recv.recv().await.unwrap();
 
     let _resp = reqwest_client
         .post(&receiver.uri)
-        .header(
-            USER_AGENT,
-            HeaderValue::from_static(concat!("Svix-Webhooks/", env!("CARGO_PKG_VERSION"))),
-        )
+        .header(USER_AGENT, HeaderValue::from_static("bananas"))
         .version(Version::HTTP_11)
         .json(&TestSerializable {
             test: "value".to_owned(),
@@ -132,7 +132,7 @@ async fn test_client_basic_operation() {
 async fn test_filtering() {
     let our_client = WebhookClient::new(None, None, false, None);
 
-    let our_req = RequestBuilder::new()
+    let our_req = RequestBuilder::new(REQUEST_TIMEOUT)
         .uri_str("http://127.0.0.1/")
         .unwrap()
         .json_body(TestSerializable {
@@ -144,11 +144,14 @@ async fn test_filtering() {
         .unwrap();
 
     assert!(matches!(
-        our_client.execute(our_req).await.unwrap_err(),
+        our_client
+            .execute(our_req, MAX_BODY_SIZE)
+            .await
+            .unwrap_err(),
         Error::BlockedIp
     ));
 
-    let our_req = RequestBuilder::new()
+    let our_req = RequestBuilder::new(REQUEST_TIMEOUT)
         .uri_str("http://localhost/")
         .unwrap()
         .json_body(TestSerializable {
@@ -160,7 +163,10 @@ async fn test_filtering() {
         .unwrap();
 
     assert!(matches!(
-        our_client.execute(our_req).await.unwrap_err(),
+        our_client
+            .execute(our_req, MAX_BODY_SIZE)
+            .await
+            .unwrap_err(),
         Error::BlockedIp
     ));
 }

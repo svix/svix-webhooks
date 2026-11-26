@@ -120,7 +120,7 @@ fn warn_if_risky_redis_pending_timeout(cfg: &Configuration) {
         return;
     }
 
-    let http_timeout = cfg.worker_request_timeout as u64;
+    let http_timeout = cfg.worker_request_timeout.as_secs();
     let pending = cfg.redis_pending_duration_secs;
 
     if pending < http_timeout + BUFFER_SECS {

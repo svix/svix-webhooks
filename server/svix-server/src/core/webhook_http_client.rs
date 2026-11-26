@@ -9,14 +9,12 @@ use std::{
     time::{Duration, Instant},
 };
 
-use axum::{body::Body, response::Response};
 use axum_extra::headers::{Authorization, authorization::Credentials};
 use bytes::Bytes;
-use futures::{FutureExt, future::BoxFuture};
 use hickory_resolver::{Resolver, TokioResolver, net::NetError};
 use http::{HeaderMap, HeaderValue, Method, StatusCode, Version};
-use http_body_util::Full;
-use hyper::{Uri, body::Incoming, ext::HeaderCaseMap};
+use http_body_util::{BodyExt, Full};
+use hyper::{Uri, ext::HeaderCaseMap};
 use hyper_openssl::client::legacy::{HttpsConnector, MaybeHttpsStream};
 use hyper_util::{
     client::{
@@ -101,7 +99,65 @@ fn ssl_builder(disable_tls_verification: bool) -> SslConnectorBuilder {
     ssl
 }
 
+#[derive(Debug)]
+pub struct Response {
+    pub status: StatusCode,
+    pub version: Version,
+    pub body: Bytes,
+    pub headers: HeaderMap,
+}
+
+impl Response {
+    pub fn status(&self) -> StatusCode {
+        self.status
+    }
+
+    pub fn version(&self) -> http::Version {
+        self.version
+    }
+}
+
+impl TryFrom<Response> for http::Response<Bytes> {
+    type Error = http::Error;
+
+    fn try_from(value: Response) -> Result<Self, Self::Error> {
+        let mut builder = http::Response::builder()
+            .status(value.status)
+            .version(value.version);
+        // this is only None if the builder is in an error state
+        if let Some(header_ref) = builder.headers_mut() {
+            *header_ref = value.headers;
+        }
+        builder.body(value.body)
+    }
+}
+
+/// Reads at most `limit` bytes of `body` and leaves the rest unread: only that much is ever stored.
+async fn read_body_up_to<B>(body: B, limit: usize) -> Result<Bytes, B::Error>
+where
+    B: hyper::body::Body<Data = Bytes>,
+{
+    let mut body = std::pin::pin!(body);
+    let mut buffer = bytes::BytesMut::new();
+
+    while buffer.len() < limit {
+        // NOTE: frame-size is capped to 16KB by default by hyper
+        let Some(frame) = body.as_mut().frame().await else {
+            break;
+        };
+        if let Ok(data) = frame?.into_data() {
+            buffer.extend_from_slice(&data);
+        }
+    }
+
+    buffer.truncate(limit);
+    Ok(buffer.freeze())
+}
+
 impl WebhookClient {
+    // if the request fails very quickly, automatically retry it once
+    const INSTA_RETRY_BEFORE: Duration = Duration::from_secs(1);
+
     pub fn new(
         whitelist_nets: Option<Arc<Vec<IpNet>>>,
         whitelist_names: Option<Arc<Vec<String>>>,
@@ -132,68 +188,68 @@ impl WebhookClient {
         }
     }
 
-    pub async fn execute(&self, request: Request) -> Result<Response, Error> {
-        let resp = self.execute_inner(request, true).await?;
-        Ok(resp.map(Body::new))
-    }
-
-    pub fn execute_inner(
+    #[tracing::instrument(skip_all, name = "webhook_client_execute", level = "trace")]
+    pub async fn execute(
         &self,
         request: Request,
-        retry: bool,
-    ) -> BoxFuture<'_, Result<Response<Incoming>, Error>> {
-        async move {
-            if request.blocked_ip(self.whitelist_nets.as_slice()) {
-                return Err(Error::BlockedIp);
-            }
-            let org_req = request.clone();
-
-            let mut req = if let Some(body) = request.body {
-                hyper::Request::builder()
-                    .method(request.method)
-                    .uri(request.uri)
-                    .version(request.version)
-                    .body(Full::from(body))
-                    .map_err(Error::InvalidHttpRequest)?
-            } else {
-                hyper::Request::builder()
-                    .method(request.method)
-                    .uri(request.uri)
-                    .version(request.version)
-                    .body(Full::default())
-                    .map_err(Error::InvalidHttpRequest)?
-            };
-
-            *req.headers_mut() = request.headers;
-
-            if let Some(header_names) = request.header_names {
-                req.extensions_mut().insert(header_names);
-            }
-
-            let start = Instant::now();
-            let res = if let Some(timeout) = request.timeout {
-                match tokio::time::timeout(timeout, self.client.request(req)).await {
-                    Ok(Ok(resp)) => Ok(resp),
-                    Ok(Err(e)) => Err(e.into()),
-                    Err(_to) => Err(Error::TimedOut),
-                }
-            } else {
-                self.client.request(req).await.map_err(Into::into)
-            };
-
-            if !retry {
-                return res;
-            }
-
-            match res {
-                Err(Error::FailedRequest(e)) if start.elapsed() < Duration::from_millis(1000) => {
-                    tracing::info!("Insta-retrying: {e}");
-                    self.execute_inner(org_req, false).await
-                }
-                res => res,
-            }
+        max_resp_bytes: usize,
+    ) -> Result<Response, Error> {
+        if request.blocked_ip(&*self.whitelist_nets) {
+            tracing::debug!(
+                host = request.uri.host().map(tracing::field::display),
+                "request to blocked address"
+            );
+            return Err(Error::BlockedIp);
         }
-        .boxed()
+        tokio::time::timeout(
+            request.timeout,
+            self.send_request_with_retry_fetch_body(request, max_resp_bytes),
+        )
+        .await
+        .map_err(|_| Error::TimedOut)
+        .flatten()
+    }
+
+    async fn send_request_with_retry(
+        &self,
+        request: Request,
+    ) -> Result<http::Response<hyper::body::Incoming>, Error> {
+        let req: http::Request<_> = request.try_into()?;
+
+        let start = Instant::now();
+        let res = self.client.request(req.clone()).await.map_err(|e| e.into());
+
+        let response = match &res {
+            Err(Error::FailedRequest(e)) if start.elapsed() < Self::INSTA_RETRY_BEFORE => {
+                tracing::info!("Insta-retrying: {e}");
+                self.client.request(req).await?
+            }
+            _ => res?,
+        };
+
+        Ok(response)
+    }
+
+    async fn send_request_with_retry_fetch_body(
+        &self,
+        request: Request,
+        max_resp_bytes: usize,
+    ) -> Result<Response, Error> {
+        let mut response = self.send_request_with_retry(request).await?;
+        let status = response.status();
+        let version = response.version();
+        let headers = std::mem::take(response.headers_mut());
+
+        let body = read_body_up_to(response.into_body(), max_resp_bytes)
+            .await
+            .unwrap_or_else(|err| format!("Error reading response body: {err}").into());
+
+        Ok(Response {
+            status,
+            body,
+            headers,
+            version,
+        })
     }
 }
 
@@ -203,8 +259,8 @@ pub struct Request {
     uri: Uri,
     headers: HeaderMap,
     header_names: Option<HeaderCaseMap>,
-    body: Option<Vec<u8>>,
-    timeout: Option<Duration>,
+    body: Option<Bytes>,
+    timeout: Duration,
     version: Version,
 }
 
@@ -235,6 +291,29 @@ impl Request {
     }
 }
 
+impl TryFrom<Request> for http::Request<Full<Bytes>> {
+    type Error = Error;
+
+    fn try_from(value: Request) -> Result<Self, Self::Error> {
+        let body = value.body.map(Full::new).unwrap_or_default();
+
+        let mut req = hyper::Request::builder()
+            .method(value.method)
+            .uri(value.uri)
+            .version(value.version)
+            .body(body)
+            .map_err(Error::InvalidHttpRequest)?;
+
+        *req.headers_mut() = value.headers;
+
+        if let Some(header_names) = value.header_names {
+            req.extensions_mut().insert(header_names);
+        }
+
+        Ok(req)
+    }
+}
+
 pub struct RequestBuilder {
     method: Option<Method>,
     uri: Option<Uri>,
@@ -242,9 +321,9 @@ pub struct RequestBuilder {
     user_agent: Option<HeaderValue>,
     headers: Option<HeaderMap>,
     header_names: Option<HeaderCaseMap>,
-    body: Option<Vec<u8>>,
+    body: Option<Bytes>,
     version: Option<Version>,
-    timeout: Option<Duration>,
+    timeout: Duration,
     basic_auth: Option<Vec<u8>>,
 
     // Derived from body
@@ -314,8 +393,15 @@ impl std::fmt::Display for UriError {
     }
 }
 
+#[cfg(test)]
+impl Default for RequestBuilder {
+    fn default() -> Self {
+        Self::new(Duration::from_secs(60))
+    }
+}
+
 impl RequestBuilder {
-    pub fn new() -> Self {
+    pub fn new(timeout: Duration) -> Self {
         Self {
             method: None,
             uri: None,
@@ -325,7 +411,7 @@ impl RequestBuilder {
             header_names: None,
             body: None,
             version: None,
-            timeout: None,
+            timeout,
             content_type: None,
             basic_auth: None,
         }
@@ -379,8 +465,8 @@ impl RequestBuilder {
         self
     }
 
-    pub fn body(mut self, body: Vec<u8>, content_type: HeaderValue) -> Self {
-        self.body = Some(body);
+    pub fn body(mut self, body: impl Into<Bytes>, content_type: HeaderValue) -> Self {
+        self.body = Some(body.into());
         self.content_type = Some(content_type);
         self
     }
@@ -396,19 +482,13 @@ impl RequestBuilder {
     }
 
     pub fn timeout(mut self, timeout: Duration) -> Self {
-        self.timeout = Some(timeout);
+        self.timeout = timeout;
         self
     }
 
     pub fn user_agent(mut self, user_agent: HeaderValue) -> Self {
         self.user_agent = Some(user_agent);
         self
-    }
-}
-
-impl Default for RequestBuilder {
-    fn default() -> Self {
-        Self::new()
     }
 }
 
@@ -807,10 +887,11 @@ mod tests {
 
     use axum::{Router, routing};
     use axum_server::tls_openssl::{OpenSSLAcceptor, OpenSSLConfig};
+    use bytes::Bytes;
     use http::{HeaderValue, Method, Version, header::AUTHORIZATION};
     use ipnet::IpNet;
 
-    use super::{RequestBuilder, WebhookClient, is_allowed};
+    use super::{RequestBuilder, WebhookClient, is_allowed, read_body_up_to};
     use crate::core::types::CasePreservingHeaderMap;
 
     #[test]
@@ -905,20 +986,20 @@ mod tests {
 
     #[test]
     fn test_builder() {
-        match RequestBuilder::new().build() {
+        match RequestBuilder::default().build() {
             Err(e) => assert_eq!("Build failed: uri missing; version missing", e.to_string()),
             Ok(_) => panic!(),
         }
 
         assert!(
-            RequestBuilder::new()
+            RequestBuilder::default()
                 .version(Version::HTTP_11)
                 .build()
                 .is_err()
         );
 
         assert!(
-            RequestBuilder::new()
+            RequestBuilder::default()
                 .uri_str("http://127.0.0.1/")
                 .unwrap()
                 .version(Version::HTTP_11)
@@ -933,7 +1014,7 @@ mod tests {
         hdrs.try_insert("tEsT-header-1", HeaderValue::from_static("value"))
             .unwrap();
 
-        let req = RequestBuilder::new()
+        let req = RequestBuilder::default()
             .uri_str("http://127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -956,7 +1037,7 @@ mod tests {
 
     #[test]
     fn test_url_basic_auth() {
-        let req = RequestBuilder::new()
+        let req = RequestBuilder::default()
             .uri_str("http://test:123@127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -965,7 +1046,7 @@ mod tests {
 
         assert_eq!(req.headers[&AUTHORIZATION], "Basic dGVzdDoxMjM=".as_bytes());
 
-        let req_user_only = RequestBuilder::new()
+        let req_user_only = RequestBuilder::default()
             .uri_str("http://test:@127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -977,7 +1058,7 @@ mod tests {
             "Basic dGVzdDo=".as_bytes()
         );
 
-        let req_pass_only = RequestBuilder::new()
+        let req_pass_only = RequestBuilder::default()
             .uri_str("http://:123@127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -989,7 +1070,7 @@ mod tests {
             "Basic OjEyMw==".as_bytes()
         );
 
-        let req_no_basic_auth = RequestBuilder::new()
+        let req_no_basic_auth = RequestBuilder::default()
             .uri_str("http://127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -998,7 +1079,7 @@ mod tests {
 
         assert!(req_no_basic_auth.headers.get("authorization").is_none());
 
-        let req_special_chars = RequestBuilder::new()
+        let req_special_chars = RequestBuilder::default()
             .uri_str("http://test==:123==@127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -1013,7 +1094,7 @@ mod tests {
 
     #[test]
     fn test_host_header() {
-        let req = RequestBuilder::new()
+        let req = RequestBuilder::default()
             .uri_str("http://127.0.0.1/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -1022,7 +1103,7 @@ mod tests {
 
         assert_eq!(req.headers.get("host").unwrap(), "127.0.0.1".as_bytes());
 
-        let req_with_port = RequestBuilder::new()
+        let req_with_port = RequestBuilder::default()
             .uri_str("http://127.0.0.1:8000/")
             .unwrap()
             .version(Version::HTTP_11)
@@ -1072,7 +1153,7 @@ mod tests {
                 .unwrap();
         });
 
-        let request = RequestBuilder::new()
+        let request = RequestBuilder::default()
             .method(Method::GET)
             .uri_str(&url)
             .unwrap()
@@ -1085,16 +1166,21 @@ mod tests {
         // Assert that a [`WebhookClient`] without the disabled flag will err on making to a request
         // to this server with the self-signed certificate
         let whc_with_validation = WebhookClient::new(Some(whitelist.clone()), None, false, None);
-        assert!(whc_with_validation.execute(request.clone()).await.is_err());
+        assert!(
+            whc_with_validation
+                .execute(request.clone(), 100)
+                .await
+                .is_err()
+        );
 
         // And assert that when the flag is enabled, that it will succeed
         let whc_without_validation = WebhookClient::new(Some(whitelist), None, true, None);
-        assert!(whc_without_validation.execute(request).await.is_ok());
+        assert!(whc_without_validation.execute(request, 100).await.is_ok());
     }
 
     macro_rules! assert_should_be_blocked {
         ($url:tt, $expected:literal) => {
-            let request = RequestBuilder::new()
+            let request = RequestBuilder::default()
                 .method(Method::GET)
                 .uri_str($url)
                 .expect("URL should parse")
@@ -1130,5 +1216,42 @@ mod tests {
         // this one is technically illegal, but some (permissive) libraries allow
         // it
         assert_matches::assert_matches!(url::Url::try_from("https://::1"), Err(_));
+    }
+
+    #[tokio::test]
+    async fn test_read_body_up_to_stops_at_limit() {
+        use std::{
+            convert::Infallible,
+            sync::{
+                Arc,
+                atomic::{AtomicUsize, Ordering},
+            },
+        };
+
+        use http_body_util::StreamBody;
+        use hyper::body::Frame;
+
+        let frames_read = Arc::new(AtomicUsize::new(0));
+        let counter = frames_read.clone();
+        let frames = futures::stream::iter((0..100).map(move |_| {
+            counter.fetch_add(1, Ordering::Relaxed);
+            Ok::<_, Infallible>(Frame::data(Bytes::from(vec![b'a'; 1000])))
+        }));
+
+        let bytes = read_body_up_to(StreamBody::new(frames), 2500)
+            .await
+            .unwrap();
+
+        assert_eq!(bytes.len(), 2500);
+        assert_eq!(frames_read.load(Ordering::Relaxed), 3);
+    }
+
+    #[tokio::test]
+    async fn test_read_body_up_to_keeps_short_body() {
+        let body = http_body_util::Full::new(Bytes::from_static(b"short"));
+
+        let bytes = read_body_up_to(body, 2500).await.unwrap();
+
+        assert_eq!(bytes, Bytes::from_static(b"short"));
     }
 }
