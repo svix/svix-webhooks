@@ -230,6 +230,52 @@ namespace Svix.Tests
         }
 
         [Fact]
+        public void TestMultiSigPayloadSkipsMalformedEntry()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+
+            string[] sigs = new string[]
+            {
+                "malformed", // no version separator
+                testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY), // valid signature
+            };
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, String.Join(" ", sigs));
+
+            var wh = new Webhook(testPayload.secret);
+
+            wh.Verify(testPayload.payload, testPayload.headers);
+        }
+
+        [Fact]
+        public void TestMultiSigPayloadSkipsEmptyEntryFromDoubleSpace()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+            var valid = testPayload.headers.Get(TestPayload.SVIX_SIGNATURE_HEADER_KEY);
+            testPayload.headers.Set(
+                TestPayload.SVIX_SIGNATURE_HEADER_KEY,
+                "v1,Ceo5qEr07ixe2NLpvHk3FH9bwy/WavXrAFQ/9tdO6mc=  " + valid
+            );
+
+            var wh = new Webhook(testPayload.secret);
+
+            wh.Verify(testPayload.payload, testPayload.headers);
+        }
+
+        [Fact]
+        public void TestOnlyMalformedSignatureThrowsNoMatch()
+        {
+            var testPayload = new TestPayload(DateTimeOffset.UtcNow);
+            testPayload.headers.Set(TestPayload.SVIX_SIGNATURE_HEADER_KEY, "malformed");
+
+            var wh = new Webhook(testPayload.secret);
+
+            var ex = Assert.Throws<WebhookVerificationException>(() =>
+                wh.Verify(testPayload.payload, testPayload.headers)
+            );
+            Assert.Equal("No matching signature found", ex.Message);
+        }
+
+        [Fact]
         public void TestSignatureVerificationWorksWithoutPrefix()
         {
             var testPayload = new TestPayload(DateTimeOffset.UtcNow);

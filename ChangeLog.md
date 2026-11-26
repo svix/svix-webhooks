@@ -6,6 +6,7 @@ The Svix Server changelog has moved to [server/ChangeLog.md](./server/ChangeLog.
 The Svix Bridge changelog has moved to [bridge/ChangeLog.md](./bridge/ChangeLog.md).
 
 ## Unreleased
+* Libs/C#: Skip malformed signature entries in `Webhook.Verify` instead of rejecting the whole header, like the other SDKs
 
 ## Version 2.11.1
 * Attempt to fix Java release
