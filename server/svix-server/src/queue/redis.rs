@@ -145,6 +145,9 @@ async fn new_pair_inner(
     let dsn = cfg.redis_dsn.as_deref().unwrap();
     let pool =
         RedisManager::from_queue_backend(&cfg.queue_backend(), cfg.redis_pool_max_size).await;
+    if cfg.redis_startup_probe_enabled {
+        pool.probe().await;
+    }
 
     // Create the stream and consumer group for the MAIN queue should it not already exist. The
     // consumer is created automatically upon use so it does not have to be created here.
