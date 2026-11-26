@@ -54,18 +54,22 @@ Install SQLx CLI for database migrations
 $ cargo install sqlx-cli
 ```
 
-For automatic reload while developing:
+If you would like auto-reloading, you will need to install [watchexec](https://github.com/watchexec/watchexec):
 ```
-$ cargo install cargo-watch
+$ cargo install watchexec
 ```
+
+Many helpful commands are provided as [Just](https://just.systems/) recipes, and the remainder of this guide will assume that you have `just` available:
+```
+$ cargo install just
+```
+
 
 ## Run the development server
 
 To run the auto-reloading development server run:
 ```
-# Move to the inner svix-server directory.
-cd svix-server
-cargo watch -x run
+just watch-run
 ```
 
 This however will fail, as you also need to point the server to the database and setup a few other configurations.
@@ -76,14 +80,14 @@ The easiest way to achieve that is to use docker compose to setup a dockerize de
 # From the svix inner directory
 cp development.env .env
 # Set up docker (may need sudo depending on your setup)
-docker compose up
+just dc up -d
 ```
 
-Now run `cargo watch -x run` again to start the development server against your local docker environment.
+Now run `just watch-run` again to start the development server against your local docker environment.
 
 Now generate an auth token, you can do it by running:
 ```
-cargo run jwt generate
+just run jwt generate
 ```
 
 See [the main README](../README.md) for instructions on how to generate it in production.
@@ -94,22 +98,14 @@ One last missing piece to the puzzle is running the SQL migrations.
 
 From the same directory as the `.env` file run:
 ```
-cargo sqlx migrate run
-```
-
-More useful commands:
-```
-# View the migrations and their status
-cargo sqlx migrate info
-# Reverting the latest migration
-cargo sqlx migrate revert
+just run migrate
 ```
 
 ## Creating new SQL migration
 
 As you saw before you run/revert migrations. To generate new migrations you just run:
 ```
-cargo sqlx migrate add -r MIGRATION_NAME
+just add-migration some-label
 ```
 
 And fill up the created migration files.
@@ -120,8 +116,7 @@ And fill up the created migration files.
 Please run these two commands before pushing code:
 
 ```
-cargo clippy --fix
-cargo fmt
+just lint-fix
 ```
 
 ## Testing
@@ -130,9 +125,9 @@ By default, `cargo test` will run the full test suite which assumes a running Po
 These databases are configured with the same environment variables as with running the actual server.
 
 The easiest way to get these tests to pass is to:
-    1. Use the `testing-docker-compose.yml` file with `docker-compose` to launch the databases on their default ports.
+    1. Use the `testing-docker-compose.yml` file with `docker-compose` to launch the databases on their default ports. You can
     2. Create a `.env` file as you would when running the server for real.
-    3. Migrate the database with `cargo run -- migrate`.
+    3. Migrate the database with `just run migrate`.
     4. Run `cargo test --all-targets`
 
 Alternatively, if you're only interested in running unit tests, you can just run `cargo test --lib`. These tests don't make any assumptions about the surrounding environment.
